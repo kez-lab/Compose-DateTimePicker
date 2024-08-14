@@ -1,3 +1,31 @@
+## Picker
+기본 Picker로 Number, Date, 카테고리 등등 모든 분야에 활용 가능
+```kotlin
+@OptIn(ExperimentalFoundationApi::class)
+@Composable
+fun Picker(
+    items: List<String>,
+    modifier: Modifier = Modifier,
+    state: PickerState = rememberPickerState(),
+    startIndex: Int = 0,
+    visibleItemsCount: Int = 3,
+    textModifier: Modifier = Modifier,
+    textStyle: TextStyle = LocalTextStyle.current,
+    selectedTextStyle: TextStyle = LocalTextStyle.current,
+    dividerColor: Color = LocalContentColor.current,
+    itemPadding: PaddingValues = PaddingValues(8.dp),
+    fadingEdgeGradient: Brush = Brush.verticalGradient(
+        0f to Color.Transparent,
+        0.5f to Color.Black,
+        1f to Color.Transparent
+    ),
+    horizontalAlignment: Alignment.Horizontal = Alignment.CenterHorizontally,
+    verticalAlignment: Alignment.Vertical = Alignment.CenterVertically,
+    dividerThickness: Dp = 2.dp,
+    dividerShape: Shape = RoundedCornerShape(10.dp),
+)
+```
+
 ## YearMonthDatePicker
 년도, 월을 선택할 수 있는 Picker
 ```kotlin
