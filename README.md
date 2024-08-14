@@ -1,3 +1,6 @@
+## Picker 제작 과정기
+[[Android/Compose] Picker, NumberPicker, DatePicker 제작 과정기 1부](https://velog.io/@kej_ad/AndroidCompose-Year-Month-DatePicker-%EB%A7%8C%EB%93%A4%EA%B8%B0)
+
 ## Picker
 기본 Picker로 Number, Date, 카테고리 등등 모든 분야에 활용 가능
 ```kotlin
