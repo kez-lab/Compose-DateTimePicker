@@ -1,3 +1,17 @@
+## 📦 **설치 방법**
+```groovy
+// groovy
+dependencies {
+    implementation 'io.github.kez-lab:compose-datepicker:0.0.1'
+}
+```
+```kotlin
+// kotlin dsl
+dependencies {
+    implementation("io.github.kez-lab:compose-datepicker:0.0.1")
+} 
+```
+
 ## Picker 제작 과정기
 [[Android/Compose] Picker, NumberPicker, DatePicker 제작 과정기 1부](https://velog.io/@kej_ad/AndroidCompose-Year-Month-DatePicker-%EB%A7%8C%EB%93%A4%EA%B8%B0)
 
