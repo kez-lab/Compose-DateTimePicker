@@ -97,24 +97,6 @@ fun TimePicker(
                 )
 
                 Picker(
-                    state = hourPickerState,
-                    items = minuteItems,
-                    startIndex = initialMinuteIndex,
-                    visibleItemsCount = visibleItemsCount,
-                    modifier = Modifier.width(pickerWidth),
-                    textStyle = textStyle,
-                    selectedTextStyle = selectedTextStyle,
-                    textModifier = Modifier.padding(itemPadding),
-                    dividerColor = dividerColor,
-                    itemPadding = itemPadding,
-                    fadingEdgeGradient = fadingEdgeGradient,
-                    horizontalAlignment = horizontalAlignment,
-                    verticalAlignment = verticalAlignment,
-                    dividerThickness = dividerThickness,
-                    dividerShape = dividerShape,
-                )
-
-                Picker(
                     state = minutePickerState,
                     modifier = Modifier.width(pickerWidth),
                     items = hourItems,
@@ -130,6 +112,24 @@ fun TimePicker(
                     verticalAlignment = verticalAlignment,
                     dividerThickness = dividerThickness,
                     dividerShape = dividerShape
+                )
+
+                Picker(
+                    state = hourPickerState,
+                    items = minuteItems,
+                    startIndex = initialMinuteIndex,
+                    visibleItemsCount = visibleItemsCount,
+                    modifier = Modifier.width(pickerWidth),
+                    textStyle = textStyle,
+                    selectedTextStyle = selectedTextStyle,
+                    textModifier = Modifier.padding(itemPadding),
+                    dividerColor = dividerColor,
+                    itemPadding = itemPadding,
+                    fadingEdgeGradient = fadingEdgeGradient,
+                    horizontalAlignment = horizontalAlignment,
+                    verticalAlignment = verticalAlignment,
+                    dividerThickness = dividerThickness,
+                    dividerShape = dividerShape,
                 )
             }
         }
