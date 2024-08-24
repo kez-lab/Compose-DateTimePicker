@@ -21,7 +21,7 @@ class MainActivity : ComponentActivity() {
             ComposePickerTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
                     Box(modifier = Modifier.padding(innerPadding)) {
-                        YearMonthDatePicker()
+                        TimePicker()
                     }
                 }
             }

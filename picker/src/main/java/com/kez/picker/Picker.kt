@@ -66,16 +66,33 @@ fun Picker(
     verticalAlignment: Alignment.Vertical = Alignment.CenterVertically,
     dividerThickness: Dp = 2.dp,
     dividerShape: Shape = RoundedCornerShape(10.dp),
+    isInfinity: Boolean = true
 ) {
     val density = LocalDensity.current
     val visibleItemsMiddle = remember { visibleItemsCount / 2 }
-    val listScrollCount = Int.MAX_VALUE
-    val listScrollMiddle = remember { listScrollCount / 2 }
-    val listStartIndex = remember {
-        listScrollMiddle - listScrollMiddle % items.size - visibleItemsMiddle + startIndex
+
+    val adjustedItems = if (!isInfinity) {
+        listOf("") + items + listOf("")
+    } else {
+        items
     }
 
-    fun getItem(index: Int) = items[index % items.size]
+    val listScrollCount = if (isInfinity) {
+        Int.MAX_VALUE
+    } else {
+        adjustedItems.size
+    }
+
+    val listScrollMiddle = remember { listScrollCount / 2 }
+    val listStartIndex = remember {
+        if (isInfinity)  {
+            listScrollMiddle - listScrollMiddle % adjustedItems.size - visibleItemsMiddle + startIndex
+        } else {
+            startIndex + 1
+        }
+    }
+
+    fun getItem(index: Int) = adjustedItems[index % adjustedItems.size]
 
     val listState = rememberLazyListState(initialFirstVisibleItemIndex = listStartIndex)
     val flingBehavior = rememberSnapFlingBehavior(lazyListState = listState)
