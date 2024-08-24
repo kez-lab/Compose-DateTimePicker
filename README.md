@@ -1,8 +1,8 @@
 
 ## Picker 제작 과정기
 [[Android/Compose] Picker, NumberPicker, DatePicker 제작 과정기 1부](https://velog.io/@kej_ad/AndroidCompose-Year-Month-DatePicker-%EB%A7%8C%EB%93%A4%EA%B8%B0)
-# Compose-DateTimePicker
 
+# Compose-DateTimePicker
 `Compose-DateTimePicker`는 Jetpack Compose를 사용하여 간단하고 유연한 날짜 및 시간 선택기를 제공하는 라이브러리입니다. 이 라이브러리를 사용하면 Android 애플리케이션에서 아름답고 직관적인 사용자 인터페이스를 쉽게 구현할 수 있습니다.
 
 ## 기능
@@ -31,7 +31,7 @@
 
     ```kotlin
     dependencies {
-        implementation("io.github.kez-lab:compose-datepicker:0.0.1")
+        implementation("io.github.kez-lab:compose-date-time-picker:0.0.2")
     }
     ```
 
