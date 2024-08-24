@@ -82,7 +82,7 @@ fun YearMonthDatePicker(
                     itemPadding = itemPadding,
                     fadingEdgeGradient = fadingEdgeGradient,
                     horizontalAlignment = horizontalAlignment,
-                    verticalAlignment = verticalAlignment,
+                    itemTextAlignment = verticalAlignment,
                     dividerThickness = dividerThickness,
                     dividerShape = dividerShape
                 )
@@ -99,7 +99,7 @@ fun YearMonthDatePicker(
                     itemPadding = itemPadding,
                     fadingEdgeGradient = fadingEdgeGradient,
                     horizontalAlignment = horizontalAlignment,
-                    verticalAlignment = verticalAlignment,
+                    itemTextAlignment = verticalAlignment,
                     dividerThickness = dividerThickness,
                     dividerShape = dividerShape
                 )

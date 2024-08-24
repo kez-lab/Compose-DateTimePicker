@@ -63,7 +63,7 @@ fun Picker(
         1f to Color.Transparent
     ),
     horizontalAlignment: Alignment.Horizontal = Alignment.CenterHorizontally,
-    verticalAlignment: Alignment.Vertical = Alignment.CenterVertically,
+    itemTextAlignment: Alignment.Vertical = Alignment.CenterVertically,
     dividerThickness: Dp = 2.dp,
     dividerShape: Shape = RoundedCornerShape(10.dp),
     isInfinity: Boolean = true
@@ -85,7 +85,7 @@ fun Picker(
 
     val listScrollMiddle = remember { listScrollCount / 2 }
     val listStartIndex = remember {
-        if (isInfinity)  {
+        if (isInfinity) {
             listScrollMiddle - listScrollMiddle % adjustedItems.size - visibleItemsMiddle + startIndex
         } else {
             startIndex + 1
@@ -156,7 +156,7 @@ fun Picker(
                     textAlign = TextAlign.Center,
                     modifier = Modifier
                         .height(itemHeight)
-                        .wrapContentHeight(align = verticalAlignment)
+                        .wrapContentHeight(align = itemTextAlignment)
                         .fillParentMaxWidth()
                         .then(textModifier)
                 )
