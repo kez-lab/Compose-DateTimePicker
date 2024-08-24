@@ -7,8 +7,8 @@ plugins {
     alias(libs.plugins.vanniktech.maven)
 }
 
-group = "io.github.KwaEuiJin"
-version = "0.0.1"
+group = "io.github.kez-lab"
+version = "0.0.2"
 
 android {
     namespace = "com.kez.picker"
@@ -63,12 +63,12 @@ mavenPublishing {
 
     signAllPublications()
 
-    coordinates("io.github.KwakEuiJin", "compose-datepicker", "0.0.1")
+    coordinates("io.github.kez-lab", "compose-date-time-picker", "0.0.2")
 
     pom {
-        name = "Compose-DatePicker"
-        description = "Compose DatePicker"
-        url = "https://github.com/KwakEuiJin/Compose-DatePicker"
+        name = "Compose-DateTimePicker"
+        description = "Compose-DateTimePicker"
+        url = "https://github.com/kez-lab/Compose-DateTimePicker"
         inceptionYear = "2024"
 
         licenses {
@@ -81,14 +81,14 @@ mavenPublishing {
             developer {
                 id = "KwakEuiJin"
                 name = "KEZ"
-                url = "https://github.com/KwakEuiJin"
+                url = "https://github.com/kez-lab"
             }
         }
 
         scm {
-            url.set("https://github.com/KwakEuiJin/Compose-DatePicker")
-            connection.set("scm:git:git://github.com/KwakEuiJin/Compose-DatePicker.git")
-            developerConnection.set("scm:git:ssh://git@github.com/KwakEuiJin/Compose-DatePicker.git")
+            url.set("https://github.com/kez-lab/Compose-DateTimePicker")
+            connection.set("scm:git:git://github.com/kez-lab/Compose-DateTimePicker.git")
+            developerConnection.set("scm:git:ssh://git@github.com/kez-lab/Compose-DateTimePicker.git")
         }
     }
 }
