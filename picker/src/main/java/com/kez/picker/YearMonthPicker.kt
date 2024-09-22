@@ -4,7 +4,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
@@ -22,16 +21,17 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.kez.picker.model.YearMonth
 import com.kez.picker.util.MONTH_RANGE
 import com.kez.picker.util.YEAR_RANGE
+import com.kez.picker.util.currentDate
+import kotlinx.datetime.LocalDate
 
 @Composable
-fun YearMonthDatePicker(
+fun YearMonthPicker(
     modifier: Modifier = Modifier,
     yearPickerState: PickerState = rememberPickerState(),
     monthPickerState: PickerState = rememberPickerState(),
-    initYearMonth: YearMonth = YearMonth.now(),
+    startLocalDate: LocalDate = currentDate,
     yearItems: List<String> = YEAR_RANGE,
     monthItems: List<String> = MONTH_RANGE,
     visibleItemsCount: Int = 3,
@@ -51,29 +51,32 @@ fun YearMonthDatePicker(
     spacingBetweenPickers: Dp = 20.dp,
     pickerWidth: Dp = 100.dp
 ) {
-    Surface(modifier = modifier.fillMaxSize()) {
+    Surface(modifier = modifier) {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center,
-            modifier = Modifier.fillMaxSize()
+            modifier = Modifier.fillMaxWidth()
         ) {
 
-            val initialYearIndex = remember {
-                yearItems.indexOf(initYearMonth.year.toString())
+            val yearStartIndex = remember {
+                yearItems.indexOf(startLocalDate.year.toString())
             }
-            val initialMonthIndex = remember {
-                monthItems.indexOf(initYearMonth.month.toString())
+            val monthStartIndex = remember {
+                monthItems.indexOf(startLocalDate.monthNumber.toString())
             }
 
             Row(
                 modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(spacingBetweenPickers, Alignment.CenterHorizontally),
+                horizontalArrangement = Arrangement.spacedBy(
+                    spacingBetweenPickers,
+                    Alignment.CenterHorizontally
+                ),
             ) {
                 Picker(
                     state = yearPickerState,
                     modifier = Modifier.width(pickerWidth),
                     items = yearItems,
-                    startIndex = initialYearIndex,
+                    startIndex = yearStartIndex,
                     visibleItemsCount = visibleItemsCount,
                     textModifier = Modifier.padding(itemPadding),
                     textStyle = textStyle,
@@ -89,7 +92,7 @@ fun YearMonthDatePicker(
                 Picker(
                     state = monthPickerState,
                     items = monthItems,
-                    startIndex = initialMonthIndex,
+                    startIndex = monthStartIndex,
                     visibleItemsCount = visibleItemsCount,
                     modifier = Modifier.width(pickerWidth),
                     textStyle = textStyle,
