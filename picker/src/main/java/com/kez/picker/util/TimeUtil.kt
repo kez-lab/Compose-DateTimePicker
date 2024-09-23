@@ -7,12 +7,18 @@ import kotlinx.datetime.toLocalDateTime
 internal val YEAR_RANGE = (1000..9999).map { it.toString() }
 internal val MONTH_RANGE = (1..12).map { it.toString() }
 
-internal val HOUR_RANGE = (1..12).map { it.toString() }
+internal val HOUR24_RANGE = (0..23).map { it.toString() }
+internal val HOUR12_RANGE = (1..12).map { it.toString() }
 internal val MINUTE_RANGE = (0..59).map { it.toString() }
 
-internal val currentTime = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault())
+internal val currentDateTime = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault())
 
-internal val currentYear = currentTime.year
-internal val currentMonth = currentTime.monthNumber
-internal val currentMinute = currentTime.minute
-internal val currentHour = currentTime.hour
+internal val currentDate = currentDateTime.date
+internal val currentYear = currentDateTime.year
+internal val currentMonth = currentDateTime.monthNumber
+internal val currentMinute = currentDateTime.minute
+internal val currentHour = currentDateTime.hour
+
+enum class TimeFormat {
+    HOUR_12, HOUR_24
+}

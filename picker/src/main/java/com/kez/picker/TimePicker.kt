@@ -6,14 +6,12 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -25,10 +23,12 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.kez.picker.util.HOUR_RANGE
+import com.kez.picker.util.HOUR12_RANGE
+import com.kez.picker.util.HOUR24_RANGE
 import com.kez.picker.util.MINUTE_RANGE
-import com.kez.picker.util.currentHour
-import com.kez.picker.util.currentMinute
+import com.kez.picker.util.TimeFormat
+import com.kez.picker.util.currentDateTime
+import kotlinx.datetime.LocalDateTime
 
 @Composable
 fun TimePicker(
@@ -36,10 +36,13 @@ fun TimePicker(
     minutePickerState: PickerState = rememberPickerState(),
     hourPickerState: PickerState = rememberPickerState(),
     periodPickerState: PickerState = rememberPickerState(),
-    initMinute: Int = currentMinute,
-    initHour: Int = currentHour,
+    timeFormat: TimeFormat = TimeFormat.HOUR_24,
+    startTime: LocalDateTime = currentDateTime,
     minuteItems: List<String> = MINUTE_RANGE,
-    hourItems: List<String> = HOUR_RANGE,
+    hourItems: List<String> = when (timeFormat) {
+        TimeFormat.HOUR_12 -> HOUR12_RANGE
+        TimeFormat.HOUR_24 -> HOUR24_RANGE
+    },
     periodItems: List<String> = listOf("AM", "PM"),
     visibleItemsCount: Int = 3,
     itemPadding: PaddingValues = PaddingValues(8.dp),
@@ -58,19 +61,34 @@ fun TimePicker(
     spacingBetweenPickers: Dp = 20.dp,
     pickerWidth: Dp = 100.dp
 ) {
-    Surface(modifier = modifier.fillMaxSize()) {
+    Surface(modifier = modifier) {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center,
-            modifier = Modifier.fillMaxSize()
+            modifier = Modifier.fillMaxWidth()
         ) {
 
-            val initialMinuteIndex = remember {
-                minuteItems.indexOf(initMinute.toString())
+            val minuteStartIndex = remember {
+                minuteItems.indexOf(startTime.minute.toString())
             }
 
-            val initialHourIndex = remember {
-                hourItems.indexOf(initHour.toString())
+            val hourStartIndex = remember {
+                val startHour = when (timeFormat) {
+                    TimeFormat.HOUR_12 -> {
+                        val hour = startTime.hour % 12
+                        if (hour == 0) 12 else hour
+                    }
+
+                    TimeFormat.HOUR_24 -> startTime.hour
+                }
+                hourItems.indexOf(startHour.toString())
+            }
+
+            val periodStartIndex = remember {
+                when (timeFormat) {
+                    TimeFormat.HOUR_24 -> 0
+                    TimeFormat.HOUR_12 -> 1
+                }
             }
 
             Row(
@@ -88,6 +106,7 @@ fun TimePicker(
                     textModifier = Modifier.padding(itemPadding),
                     dividerColor = dividerColor,
                     itemPadding = itemPadding,
+                    startIndex = periodStartIndex,
                     fadingEdgeGradient = fadingEdgeGradient,
                     horizontalAlignment = horizontalAlignment,
                     itemTextAlignment = verticalAlignment,
@@ -98,9 +117,7 @@ fun TimePicker(
 
                 Spacer(modifier = Modifier.width(spacingBetweenPickers))
 
-                Box(
-                    contentAlignment = Alignment.Center
-                ) {
+                Box(contentAlignment = Alignment.Center) {
                     Row(
                         verticalAlignment = Alignment.CenterVertically
                     ) {
@@ -108,7 +125,7 @@ fun TimePicker(
                             state = hourPickerState,
                             modifier = Modifier.width(pickerWidth),
                             items = hourItems,
-                            startIndex = initialHourIndex,
+                            startIndex = hourStartIndex,
                             visibleItemsCount = visibleItemsCount,
                             textModifier = Modifier.padding(itemPadding),
                             textStyle = textStyle,
@@ -127,7 +144,7 @@ fun TimePicker(
                         Picker(
                             state = minutePickerState,
                             items = minuteItems,
-                            startIndex = initialMinuteIndex,
+                            startIndex = minuteStartIndex,
                             visibleItemsCount = visibleItemsCount,
                             modifier = Modifier.width(pickerWidth),
                             textStyle = textStyle,
@@ -142,13 +159,6 @@ fun TimePicker(
                             dividerShape = dividerShape,
                         )
                     }
-                    Text(
-                        text = ":",
-                        style = selectedTextStyle,
-                        modifier = Modifier
-                            .padding(horizontal = spacingBetweenPickers / 2)
-                            .align(Alignment.Center)
-                    )
                 }
             }
         }
