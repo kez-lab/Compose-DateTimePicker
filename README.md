@@ -69,7 +69,7 @@ fun MyTimePicker() {
 ```kotlin
 @Composable
 fun MyDatePicker() {
-    YearMonthDatePicker(
+    YearMonthPicker(
         initYearMonth = YearMonth.now(),
         yearPickerState = rememberPickerState(),
         monthPickerState = rememberPickerState()
