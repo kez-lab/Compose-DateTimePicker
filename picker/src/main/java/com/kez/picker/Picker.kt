@@ -19,6 +19,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
@@ -39,15 +40,15 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.lerp
 import kotlinx.coroutines.flow.distinctUntilChanged
-import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.mapNotNull
 import kotlin.math.abs
 
 
 @Composable
-fun Picker(
-    items: List<String>,
+fun <T> Picker(
+    items: List<T>,
     modifier: Modifier = Modifier,
-    state: PickerState = rememberPickerState(),
+    state: PickerState<T>,
     startIndex: Int = 0,
     visibleItemsCount: Int = 3,
     textModifier: Modifier = Modifier,
@@ -70,7 +71,7 @@ fun Picker(
     val visibleItemsMiddle = remember { visibleItemsCount / 2 }
 
     val adjustedItems = if (!isInfinity) {
-        listOf("") + items + listOf("")
+        listOf(null) + items + listOf(null)
     } else {
         items
     }
@@ -101,7 +102,7 @@ fun Picker(
 
     LaunchedEffect(listState) {
         snapshotFlow { listState.firstVisibleItemIndex }
-            .map { index -> getItem(index + visibleItemsMiddle) }
+            .mapNotNull { index -> getItem(index + visibleItemsMiddle) }
             .distinctUntilChanged()
             .collect { item -> state.selectedItem = item }
     }
@@ -121,7 +122,6 @@ fun Picker(
                 listScrollCount,
                 key = { it },
             ) { index ->
-
                 val fraction by remember {
                     derivedStateOf {
                         val currentItem =
@@ -135,8 +135,12 @@ fun Picker(
                     }
                 }
 
+                val currentItemText by remember {
+                    mutableStateOf(if (getItem(index) == null) "" else getItem(index).toString())
+                }
+
                 Text(
-                    text = getItem(index),
+                    text = currentItemText,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
                     style = textStyle.copy(
