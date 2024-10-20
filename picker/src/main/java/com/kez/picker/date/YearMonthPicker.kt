@@ -1,4 +1,4 @@
-package com.kez.picker
+package com.kez.picker.date
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -21,6 +21,9 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.kez.picker.Picker
+import com.kez.picker.PickerState
+import com.kez.picker.rememberPickerState
 import com.kez.picker.util.MONTH_RANGE
 import com.kez.picker.util.YEAR_RANGE
 import com.kez.picker.util.currentDate
@@ -29,11 +32,11 @@ import kotlinx.datetime.LocalDate
 @Composable
 fun YearMonthPicker(
     modifier: Modifier = Modifier,
-    yearPickerState: PickerState = rememberPickerState(),
-    monthPickerState: PickerState = rememberPickerState(),
+    yearPickerState: PickerState<Int> = rememberPickerState(currentDate.year),
+    monthPickerState: PickerState<Int> = rememberPickerState(currentDate.monthNumber),
     startLocalDate: LocalDate = currentDate,
-    yearItems: List<String> = YEAR_RANGE,
-    monthItems: List<String> = MONTH_RANGE,
+    yearItems: List<Int> = YEAR_RANGE,
+    monthItems: List<Int> = MONTH_RANGE,
     visibleItemsCount: Int = 3,
     itemPadding: PaddingValues = PaddingValues(8.dp),
     textStyle: TextStyle = TextStyle(fontSize = 16.sp),
@@ -59,10 +62,10 @@ fun YearMonthPicker(
         ) {
 
             val yearStartIndex = remember {
-                yearItems.indexOf(startLocalDate.year.toString())
+                yearItems.indexOf(startLocalDate.year)
             }
             val monthStartIndex = remember {
-                monthItems.indexOf(startLocalDate.monthNumber.toString())
+                monthItems.indexOf(startLocalDate.monthNumber)
             }
 
             Row(

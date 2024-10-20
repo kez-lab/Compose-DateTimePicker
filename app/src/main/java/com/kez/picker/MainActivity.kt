@@ -1,12 +1,12 @@
 package com.kez.picker
 
 import android.os.Bundle
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.Button
@@ -16,11 +16,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
+import com.kez.picker.date.YearMonthPicker
+import com.kez.picker.time.TimePickerDialog
 import com.kez.picker.ui.theme.ComposePickerTheme
-import com.kez.picker.util.TimeFormat
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -55,20 +55,24 @@ class MainActivity : ComponentActivity() {
                     }
 
                     if (isShowTimePicker.value) {
-                        Dialog(
-                            onDismissRequest = {
-                                isShowTimePicker.value = false
-                            },
+                        TimePickerDialog(
+                            modifier = Modifier.wrapContentSize(),
                             properties = DialogProperties(
                                 dismissOnBackPress = true,
                                 dismissOnClickOutside = true
-                            )
-                        ) {
-                            TimePicker(
-                                modifier = Modifier.wrapContentSize(),
-                                timeFormat = TimeFormat.HOUR_12
-                            )
-                        }
+                            ),
+                            onDismissRequest = {
+                                isShowTimePicker.value = false
+                            },
+                            onDoneClickListener = { localDateTime ->
+                                isShowTimePicker.value = false
+                                Toast.makeText(
+                                    this@MainActivity,
+                                    "Selected Time: $localDateTime",
+                                    Toast.LENGTH_SHORT
+                                ).show()
+                            }
+                        )
                     }
 
                     if (isShowYearMonthPicker.value) {
