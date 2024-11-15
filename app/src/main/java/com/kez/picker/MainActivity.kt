@@ -16,6 +16,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import com.kez.picker.date.YearMonthPicker
@@ -61,6 +62,7 @@ class MainActivity : ComponentActivity() {
                                 dismissOnBackPress = true,
                                 dismissOnClickOutside = true
                             ),
+                            dividerColor = Color.Gray,
                             onDismissRequest = {
                                 isShowTimePicker.value = false
                             },

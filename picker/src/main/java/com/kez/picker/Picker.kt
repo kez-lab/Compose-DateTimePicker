@@ -63,7 +63,7 @@ fun <T> Picker(
     ),
     horizontalAlignment: Alignment.Horizontal = Alignment.CenterHorizontally,
     itemTextAlignment: Alignment.Vertical = Alignment.CenterVertically,
-    dividerThickness: Dp = 2.dp,
+    dividerThickness: Dp = 1.dp,
     dividerShape: Shape = RoundedCornerShape(10.dp),
     isInfinity: Boolean = true
 ) {

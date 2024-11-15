@@ -60,7 +60,7 @@ fun TimePicker(
     ),
     horizontalAlignment: Alignment.Horizontal = Alignment.CenterHorizontally,
     verticalAlignment: Alignment.Vertical = Alignment.CenterVertically,
-    dividerThickness: Dp = 2.dp,
+    dividerThickness: Dp = 1.dp,
     dividerShape: Shape = RoundedCornerShape(10.dp),
     spacingBetweenPickers: Dp = 20.dp,
     pickerWidth: Dp = 80.dp
