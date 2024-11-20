@@ -31,7 +31,7 @@
 
     ```kotlin
     dependencies {
-        implementation("io.github.kez-lab:compose-date-time-picker:0.0.2")
+        implementation("io.github.kez-lab:compose-date-time-picker:0.0.3")
     }
     ```
 

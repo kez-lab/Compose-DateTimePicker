@@ -8,7 +8,7 @@ plugins {
 }
 
 group = "io.github.kez-lab"
-version = "0.0.2"
+version = "0.0.3"
 
 android {
     namespace = "com.kez.picker"
@@ -63,7 +63,7 @@ mavenPublishing {
 
     signAllPublications()
 
-    coordinates("io.github.kez-lab", "compose-date-time-picker", "0.0.2")
+    coordinates("io.github.kez-lab", "compose-date-time-picker", "0.0.3")
 
     pom {
         name = "Compose-DateTimePicker"
