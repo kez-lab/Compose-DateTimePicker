@@ -1,7 +1,6 @@
-package com.kez.picker
+package com.kez.picker.time
 
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -23,27 +22,32 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.kez.picker.Picker
+import com.kez.picker.PickerState
 import com.kez.picker.util.HOUR12_RANGE
 import com.kez.picker.util.HOUR24_RANGE
 import com.kez.picker.util.MINUTE_RANGE
 import com.kez.picker.util.TimeFormat
+import com.kez.picker.util.TimePeriod
 import com.kez.picker.util.currentDateTime
+import com.kez.picker.util.currentHour
+import com.kez.picker.util.currentMinute
 import kotlinx.datetime.LocalDateTime
 
 @Composable
 fun TimePicker(
     modifier: Modifier = Modifier,
-    minutePickerState: PickerState = rememberPickerState(),
-    hourPickerState: PickerState = rememberPickerState(),
-    periodPickerState: PickerState = rememberPickerState(),
+    minutePickerState: PickerState<Int> = remember { PickerState(currentMinute) },
+    hourPickerState: PickerState<Int> = remember { PickerState(currentHour) },
+    periodPickerState: PickerState<TimePeriod> = remember { PickerState(TimePeriod.AM) },
     timeFormat: TimeFormat = TimeFormat.HOUR_24,
     startTime: LocalDateTime = currentDateTime,
-    minuteItems: List<String> = MINUTE_RANGE,
-    hourItems: List<String> = when (timeFormat) {
+    minuteItems: List<Int> = MINUTE_RANGE,
+    hourItems: List<Int> = when (timeFormat) {
         TimeFormat.HOUR_12 -> HOUR12_RANGE
         TimeFormat.HOUR_24 -> HOUR24_RANGE
     },
-    periodItems: List<String> = listOf("AM", "PM"),
+    periodItems: List<TimePeriod> = TimePeriod.entries,
     visibleItemsCount: Int = 3,
     itemPadding: PaddingValues = PaddingValues(8.dp),
     textStyle: TextStyle = TextStyle(fontSize = 16.sp),
@@ -56,10 +60,10 @@ fun TimePicker(
     ),
     horizontalAlignment: Alignment.Horizontal = Alignment.CenterHorizontally,
     verticalAlignment: Alignment.Vertical = Alignment.CenterVertically,
-    dividerThickness: Dp = 2.dp,
+    dividerThickness: Dp = 1.dp,
     dividerShape: Shape = RoundedCornerShape(10.dp),
     spacingBetweenPickers: Dp = 20.dp,
-    pickerWidth: Dp = 100.dp
+    pickerWidth: Dp = 80.dp
 ) {
     Surface(modifier = modifier) {
         Column(
@@ -69,7 +73,7 @@ fun TimePicker(
         ) {
 
             val minuteStartIndex = remember {
-                minuteItems.indexOf(startTime.minute.toString())
+                minuteItems.indexOf(startTime.minute)
             }
 
             val hourStartIndex = remember {
@@ -81,7 +85,7 @@ fun TimePicker(
 
                     TimeFormat.HOUR_24 -> startTime.hour
                 }
-                hourItems.indexOf(startHour.toString())
+                hourItems.indexOf(startHour)
             }
 
             val periodStartIndex = remember {
@@ -96,9 +100,49 @@ fun TimePicker(
                 horizontalArrangement = Arrangement.Center,
                 verticalAlignment = Alignment.CenterVertically
             ) {
+                if (timeFormat == TimeFormat.HOUR_12) {
+                    Picker(
+                        state = periodPickerState,
+                        items = periodItems,
+                        visibleItemsCount = visibleItemsCount,
+                        modifier = Modifier.width(pickerWidth),
+                        textStyle = textStyle,
+                        selectedTextStyle = selectedTextStyle,
+                        textModifier = Modifier.padding(itemPadding),
+                        dividerColor = dividerColor,
+                        itemPadding = itemPadding,
+                        startIndex = periodStartIndex,
+                        fadingEdgeGradient = fadingEdgeGradient,
+                        horizontalAlignment = horizontalAlignment,
+                        itemTextAlignment = verticalAlignment,
+                        dividerThickness = dividerThickness,
+                        dividerShape = dividerShape,
+                        isInfinity = false,
+                    )
+                    Spacer(modifier = Modifier.width(spacingBetweenPickers))
+                }
                 Picker(
-                    state = periodPickerState,
-                    items = periodItems,
+                    state = hourPickerState,
+                    modifier = Modifier.width(pickerWidth),
+                    items = hourItems,
+                    startIndex = hourStartIndex,
+                    visibleItemsCount = visibleItemsCount,
+                    textModifier = Modifier.padding(itemPadding),
+                    textStyle = textStyle,
+                    selectedTextStyle = selectedTextStyle,
+                    dividerColor = dividerColor,
+                    itemPadding = itemPadding,
+                    fadingEdgeGradient = fadingEdgeGradient,
+                    horizontalAlignment = horizontalAlignment,
+                    itemTextAlignment = verticalAlignment,
+                    dividerThickness = dividerThickness,
+                    dividerShape = dividerShape
+                )
+                Spacer(modifier = Modifier.width(spacingBetweenPickers))
+                Picker(
+                    state = minutePickerState,
+                    items = minuteItems,
+                    startIndex = minuteStartIndex,
                     visibleItemsCount = visibleItemsCount,
                     modifier = Modifier.width(pickerWidth),
                     textStyle = textStyle,
@@ -106,60 +150,12 @@ fun TimePicker(
                     textModifier = Modifier.padding(itemPadding),
                     dividerColor = dividerColor,
                     itemPadding = itemPadding,
-                    startIndex = periodStartIndex,
                     fadingEdgeGradient = fadingEdgeGradient,
                     horizontalAlignment = horizontalAlignment,
                     itemTextAlignment = verticalAlignment,
                     dividerThickness = dividerThickness,
                     dividerShape = dividerShape,
-                    isInfinity = false,
                 )
-
-                Spacer(modifier = Modifier.width(spacingBetweenPickers))
-
-                Box(contentAlignment = Alignment.Center) {
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Picker(
-                            state = hourPickerState,
-                            modifier = Modifier.width(pickerWidth),
-                            items = hourItems,
-                            startIndex = hourStartIndex,
-                            visibleItemsCount = visibleItemsCount,
-                            textModifier = Modifier.padding(itemPadding),
-                            textStyle = textStyle,
-                            selectedTextStyle = selectedTextStyle,
-                            dividerColor = dividerColor,
-                            itemPadding = itemPadding,
-                            fadingEdgeGradient = fadingEdgeGradient,
-                            horizontalAlignment = horizontalAlignment,
-                            itemTextAlignment = verticalAlignment,
-                            dividerThickness = dividerThickness,
-                            dividerShape = dividerShape
-                        )
-
-                        Spacer(modifier = Modifier.width(spacingBetweenPickers))
-
-                        Picker(
-                            state = minutePickerState,
-                            items = minuteItems,
-                            startIndex = minuteStartIndex,
-                            visibleItemsCount = visibleItemsCount,
-                            modifier = Modifier.width(pickerWidth),
-                            textStyle = textStyle,
-                            selectedTextStyle = selectedTextStyle,
-                            textModifier = Modifier.padding(itemPadding),
-                            dividerColor = dividerColor,
-                            itemPadding = itemPadding,
-                            fadingEdgeGradient = fadingEdgeGradient,
-                            horizontalAlignment = horizontalAlignment,
-                            itemTextAlignment = verticalAlignment,
-                            dividerThickness = dividerThickness,
-                            dividerShape = dividerShape,
-                        )
-                    }
-                }
             }
         }
     }
