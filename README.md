@@ -37,8 +37,10 @@
 
 ## 사용법
 
-### 시간 선택기(TimePicker)
+### 시간 선택기 다이얼로그(TimePickerDialog)
+<img src="https://github.com/user-attachments/assets/90cc3bbb-6e28-40e9-8480-4924b362d7c6" alt="TimePickerDialog" width="500"/>
 
+### 시간 선택기(TimePicker)
 간단한 시간 선택기를 사용하려면 `TimePicker` 컴포저블을 사용합니다.
 
 ```kotlin
