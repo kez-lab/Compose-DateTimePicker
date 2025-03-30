@@ -1,4 +1,4 @@
-package com.kez.picker.time
+package com.kez.picker.date
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -29,32 +29,26 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import com.kez.picker.PickerState
-import com.kez.picker.util.HOUR12_RANGE
-import com.kez.picker.util.HOUR24_RANGE
-import com.kez.picker.util.MINUTE_RANGE
-import com.kez.picker.util.TimeFormat
-import com.kez.picker.util.TimePeriod
-import com.kez.picker.util.calculateTime
-import com.kez.picker.util.currentDateTime
-import com.kez.picker.util.currentHour
-import com.kez.picker.util.currentMinute
-import kotlinx.datetime.LocalDateTime
+import com.kez.picker.rememberPickerState
+import com.kez.picker.util.MONTH_RANGE
+import com.kez.picker.util.YEAR_RANGE
+import com.kez.picker.util.currentDate
+import kotlinx.datetime.DatePeriod
+import kotlinx.datetime.LocalDate
+import kotlinx.datetime.plus
 
 @Composable
-fun TimePickerDialog(
+fun DateRangePickerDialog(
     modifier: Modifier = Modifier,
-    properties: DialogProperties,
-    minutePickerState: PickerState<Int> = PickerState(currentMinute),
-    hourPickerState: PickerState<Int> = PickerState(currentHour),
-    periodPickerState: PickerState<TimePeriod> = PickerState(TimePeriod.AM),
-    timeFormat: TimeFormat = TimeFormat.HOUR_24,
-    startTime: LocalDateTime = currentDateTime,
-    minuteItems: List<Int> = MINUTE_RANGE,
-    hourItems: List<Int> = when (timeFormat) {
-        TimeFormat.HOUR_12 -> HOUR12_RANGE
-        TimeFormat.HOUR_24 -> HOUR24_RANGE
-    },
-    periodItems: List<TimePeriod> = TimePeriod.entries,
+    properties: DialogProperties = DialogProperties(),
+    startDateYearPickerState: PickerState<Int> = rememberPickerState(currentDate.year),
+    startDateMonthPickerState: PickerState<Int> = rememberPickerState(currentDate.monthNumber),
+    endDateYearPickerState: PickerState<Int> = rememberPickerState(currentDate.year),
+    endDateMonthPickerState: PickerState<Int> = rememberPickerState(currentDate.monthNumber),
+    initialStartDate: LocalDate = currentDate,
+    initialEndDate: LocalDate = currentDate.plus(DatePeriod(months = 1)),
+    yearItems: List<Int> = YEAR_RANGE,
+    monthItems: List<Int> = MONTH_RANGE,
     visibleItemsCount: Int = 3,
     itemPadding: PaddingValues = PaddingValues(8.dp),
     textStyle: TextStyle = TextStyle(fontSize = 16.sp),
@@ -70,10 +64,13 @@ fun TimePickerDialog(
     dividerThickness: Dp = 1.dp,
     dividerShape: Shape = RoundedCornerShape(10.dp),
     spacingBetweenPickers: Dp = 20.dp,
+    spacingBetweenSections: Dp = 16.dp,
     pickerWidth: Dp = 80.dp,
-    titleText: String = "Time Picker",
+    startDateLabel: String = "Start Date",
+    endDateLabel: String = "End Date",
+    titleText: String = "Date Range",
     onDismissRequest: () -> Unit,
-    onDoneClickListener: (LocalDateTime) -> Unit
+    onDoneClickListener: (startDate: LocalDate, endDate: LocalDate) -> Unit
 ) {
     Dialog(
         onDismissRequest = onDismissRequest,
@@ -103,16 +100,16 @@ fun TimePickerDialog(
                         .padding(vertical = 8.dp)
                 )
 
-                TimePicker(
+                DateRangePicker(
                     modifier = Modifier.wrapContentSize(),
-                    minutePickerState = minutePickerState,
-                    hourPickerState = hourPickerState,
-                    periodPickerState = periodPickerState,
-                    timeFormat = timeFormat,
-                    startTime = startTime,
-                    minuteItems = minuteItems,
-                    hourItems = hourItems,
-                    periodItems = periodItems,
+                    startDateYearPickerState = startDateYearPickerState,
+                    startDateMonthPickerState = startDateMonthPickerState,
+                    endDateYearPickerState = endDateYearPickerState,
+                    endDateMonthPickerState = endDateMonthPickerState,
+                    initialStartDate = initialStartDate,
+                    initialEndDate = initialEndDate,
+                    yearItems = yearItems,
+                    monthItems = monthItems,
                     visibleItemsCount = visibleItemsCount,
                     itemPadding = itemPadding,
                     textStyle = textStyle,
@@ -124,13 +121,18 @@ fun TimePickerDialog(
                     dividerThickness = dividerThickness,
                     dividerShape = dividerShape,
                     spacingBetweenPickers = spacingBetweenPickers,
-                    pickerWidth = pickerWidth
+                    spacingBetweenSections = spacingBetweenSections,
+                    pickerWidth = pickerWidth,
+                    startDateLabel = startDateLabel,
+                    endDateLabel = endDateLabel
                 )
+
                 HorizontalDivider(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(vertical = 8.dp)
                 )
+
                 Row(
                     modifier = Modifier
                         .fillMaxWidth(),
@@ -147,18 +149,24 @@ fun TimePickerDialog(
                     TextButton(
                         modifier = Modifier,
                         onClick = {
-                            val hour = hourPickerState.selectedItem
-                            val minute = minutePickerState.selectedItem
-                            val period = periodPickerState.selectedItem
+                            val startYear = startDateYearPickerState.selectedItem
+                            val startMonth = startDateMonthPickerState.selectedItem
+                            val endYear = endDateYearPickerState.selectedItem
+                            val endMonth = endDateMonthPickerState.selectedItem
 
-                            onDoneClickListener(
-                                calculateTime(
-                                    hour = hour,
-                                    minute = minute,
-                                    period = period,
-                                    timeFormat = timeFormat,
-                                )
+                            val startDate = LocalDate(
+                                year = startYear,
+                                monthNumber = startMonth,
+                                dayOfMonth = initialStartDate.dayOfMonth
                             )
+
+                            val endDate = LocalDate(
+                                year = endYear,
+                                monthNumber = endMonth,
+                                dayOfMonth = initialEndDate.dayOfMonth
+                            )
+
+                            onDoneClickListener(startDate, endDate)
                         },
                     ) {
                         Text("Done")

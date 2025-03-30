@@ -13,7 +13,7 @@ internal val MINUTE_RANGE = (0..59).toList()
 
 internal val currentDateTime = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault())
 
-internal val currentDate = currentDateTime.date
+val currentDate = currentDateTime.date
 internal val currentYear = currentDateTime.year
 internal val currentMonth = currentDateTime.monthNumber
 internal val currentMinute = currentDateTime.minute

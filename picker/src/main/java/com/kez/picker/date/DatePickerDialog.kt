@@ -1,4 +1,4 @@
-package com.kez.picker.time
+package com.kez.picker.date
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -29,36 +29,25 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import com.kez.picker.PickerState
-import com.kez.picker.util.HOUR12_RANGE
-import com.kez.picker.util.HOUR24_RANGE
-import com.kez.picker.util.MINUTE_RANGE
-import com.kez.picker.util.TimeFormat
-import com.kez.picker.util.TimePeriod
-import com.kez.picker.util.calculateTime
-import com.kez.picker.util.currentDateTime
-import com.kez.picker.util.currentHour
-import com.kez.picker.util.currentMinute
-import kotlinx.datetime.LocalDateTime
+import com.kez.picker.rememberPickerState
+import com.kez.picker.util.MONTH_RANGE
+import com.kez.picker.util.YEAR_RANGE
+import com.kez.picker.util.currentDate
+import kotlinx.datetime.LocalDate
 
 @Composable
-fun TimePickerDialog(
+fun DatePickerDialog(
     modifier: Modifier = Modifier,
-    properties: DialogProperties,
-    minutePickerState: PickerState<Int> = PickerState(currentMinute),
-    hourPickerState: PickerState<Int> = PickerState(currentHour),
-    periodPickerState: PickerState<TimePeriod> = PickerState(TimePeriod.AM),
-    timeFormat: TimeFormat = TimeFormat.HOUR_24,
-    startTime: LocalDateTime = currentDateTime,
-    minuteItems: List<Int> = MINUTE_RANGE,
-    hourItems: List<Int> = when (timeFormat) {
-        TimeFormat.HOUR_12 -> HOUR12_RANGE
-        TimeFormat.HOUR_24 -> HOUR24_RANGE
-    },
-    periodItems: List<TimePeriod> = TimePeriod.entries,
+    properties: DialogProperties = DialogProperties(),
+    yearPickerState: PickerState<Int> = rememberPickerState(currentDate.year),
+    monthPickerState: PickerState<Int> = rememberPickerState(currentDate.monthNumber),
+    startLocalDate: LocalDate = currentDate,
+    yearItems: List<Int> = YEAR_RANGE,
+    monthItems: List<Int> = MONTH_RANGE,
     visibleItemsCount: Int = 3,
     itemPadding: PaddingValues = PaddingValues(8.dp),
     textStyle: TextStyle = TextStyle(fontSize = 16.sp),
-    selectedTextStyle: TextStyle = TextStyle(fontSize = 22.sp),
+    selectedTextStyle: TextStyle = TextStyle(fontSize = 24.sp),
     dividerColor: Color = LocalContentColor.current,
     fadingEdgeGradient: Brush = Brush.verticalGradient(
         0f to Color.Transparent,
@@ -67,13 +56,13 @@ fun TimePickerDialog(
     ),
     horizontalAlignment: Alignment.Horizontal = Alignment.CenterHorizontally,
     verticalAlignment: Alignment.Vertical = Alignment.CenterVertically,
-    dividerThickness: Dp = 1.dp,
+    dividerThickness: Dp = 2.dp,
     dividerShape: Shape = RoundedCornerShape(10.dp),
     spacingBetweenPickers: Dp = 20.dp,
-    pickerWidth: Dp = 80.dp,
-    titleText: String = "Time Picker",
+    pickerWidth: Dp = 100.dp,
+    titleText: String = "Date Picker",
     onDismissRequest: () -> Unit,
-    onDoneClickListener: (LocalDateTime) -> Unit
+    onDoneClickListener: (LocalDate) -> Unit
 ) {
     Dialog(
         onDismissRequest = onDismissRequest,
@@ -103,16 +92,13 @@ fun TimePickerDialog(
                         .padding(vertical = 8.dp)
                 )
 
-                TimePicker(
+                YearMonthPicker(
                     modifier = Modifier.wrapContentSize(),
-                    minutePickerState = minutePickerState,
-                    hourPickerState = hourPickerState,
-                    periodPickerState = periodPickerState,
-                    timeFormat = timeFormat,
-                    startTime = startTime,
-                    minuteItems = minuteItems,
-                    hourItems = hourItems,
-                    periodItems = periodItems,
+                    yearPickerState = yearPickerState,
+                    monthPickerState = monthPickerState,
+                    startLocalDate = startLocalDate,
+                    yearItems = yearItems,
+                    monthItems = monthItems,
                     visibleItemsCount = visibleItemsCount,
                     itemPadding = itemPadding,
                     textStyle = textStyle,
@@ -126,11 +112,13 @@ fun TimePickerDialog(
                     spacingBetweenPickers = spacingBetweenPickers,
                     pickerWidth = pickerWidth
                 )
+
                 HorizontalDivider(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(vertical = 8.dp)
                 )
+
                 Row(
                     modifier = Modifier
                         .fillMaxWidth(),
@@ -147,16 +135,14 @@ fun TimePickerDialog(
                     TextButton(
                         modifier = Modifier,
                         onClick = {
-                            val hour = hourPickerState.selectedItem
-                            val minute = minutePickerState.selectedItem
-                            val period = periodPickerState.selectedItem
+                            val year = yearPickerState.selectedItem
+                            val month = monthPickerState.selectedItem
 
                             onDoneClickListener(
-                                calculateTime(
-                                    hour = hour,
-                                    minute = minute,
-                                    period = period,
-                                    timeFormat = timeFormat,
+                                LocalDate(
+                                    year = year,
+                                    monthNumber = month,
+                                    dayOfMonth = startLocalDate.dayOfMonth
                                 )
                             )
                         },

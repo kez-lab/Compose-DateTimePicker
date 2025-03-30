@@ -58,6 +58,7 @@ dependencies {
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
     implementation(libs.kotlinx.datetime)
+    implementation("androidx.appcompat:appcompat:1.6.1") // AppCompat for locale support
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)

@@ -1,3 +1,62 @@
 <resources>
     <string name="app_name">Compose-Picker</string>
+    
+    <!-- General -->
+    <string name="language">Language</string>
+    <string name="english">English</string>
+    <string name="korean">Korean</string>
+    <string name="settings">Settings</string>
+    <string name="apply">Apply</string>
+    
+    <!-- App title and descriptions -->
+    <string name="app_title">Compose DateTimePicker</string>
+    <string name="library_title">Compose DateTimePicker Library</string>
+    <string name="library_description">A collection of customizable date and time pickers built with Jetpack Compose. This sample showcases various picker components available in the library.</string>
+    <string name="component_examples">Component Examples</string>
+    <string name="github_link">View source code on GitHub: kez-lab/Compose-DateTimePicker</string>
+    
+    <!-- Component titles and descriptions -->
+    <string name="time_picker_12h_title">Time Picker (12-hour)</string>
+    <string name="time_picker_12h_desc">Select time with hour (12h), minute and AM/PM pickers</string>
+    <string name="time_picker_24h_title">Time Picker (24-hour)</string>
+    <string name="time_picker_24h_desc">Select time with hour (24h) and minute pickers</string>
+    <string name="date_picker_title">Date Picker</string>
+    <string name="date_picker_desc">Select date with year and month pickers</string>
+    <string name="date_range_picker_title">Date Range Picker</string>
+    <string name="date_range_picker_desc">Select a date range with separate start and end dates</string>
+    <string name="year_month_picker_title">Year Month Picker Component</string>
+    <string name="year_month_picker_desc">See the direct YearMonthPicker component without a dialog wrapper</string>
+    
+    <!-- Button texts -->
+    <string name="open_12h_time_picker">Open 12-Hour Time Picker</string>
+    <string name="open_24h_time_picker">Open 24-Hour Time Picker</string>
+    <string name="open_date_picker">Open Date Picker Dialog</string>
+    <string name="open_date_range_picker">Open Date Range Picker Dialog</string>
+    <string name="show_year_month_picker">Show YearMonth Picker</string>
+    <string name="close">Close</string>
+    
+    <!-- Dialog titles -->
+    <string name="select_time_12h">Select Time (12-hour)</string>
+    <string name="select_time_24h">Select Time (24-hour)</string>
+    <string name="select_date">Select a Date</string>
+    <string name="select_date_range">Date Range</string>
+    <string name="select_year_month">Select Year &amp; Month</string>
+    
+    <!-- Status texts -->
+    <string name="no_time_selected">No time selected</string>
+    <string name="no_24h_time_selected">No 24-hour time selected</string>
+    <string name="no_date_selected">No date selected</string>
+    <string name="no_date_range_selected">No date range selected</string>
+    <string name="selected_time">Selected Time: %1$s</string>
+    <string name="selected_date">Selected Date: %1$s</string>
+    <string name="selected_range">Selected Range: %1$s to %2$s</string>
+    
+    <!-- Badge texts -->
+    <string name="basic">Basic</string>
+    <string name="advanced">Advanced</string>
+    <string name="custom">Custom</string>
+    
+    <!-- Dialog buttons -->
+    <string name="cancel">Cancel</string>
+    <string name="done">Done</string>
 </resources>

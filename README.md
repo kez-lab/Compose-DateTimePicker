@@ -1,5 +1,3 @@
-
-## Picker 제작 과정기
 [[Android/Compose] Picker, NumberPicker, DatePicker 제작 과정기 1부](https://velog.io/@kej_ad/AndroidCompose-Year-Month-DatePicker-%EB%A7%8C%EB%93%A4%EA%B8%B0)
 
 # Compose-DateTimePicker
@@ -9,6 +7,8 @@
 
 - \[x\] 간단한 시간 선택기
 - \[x\] 간단한 날짜 선택기 (년/월)
+- \[x\] 날짜 선택기 다이얼로그
+- \[x\] 날짜 범위 선택기 및 다이얼로그
 - \[x\] 무한 스크롤 지원
 - \[x\] 텍스트 스타일 및 아이템 배치 조정
 - \[x\] 커스터마이징 가능한 디자인
