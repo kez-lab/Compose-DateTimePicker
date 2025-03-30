@@ -62,7 +62,6 @@ import kotlinx.datetime.DatePeriod
 import kotlinx.datetime.plus
 
 class MainActivity : ComponentActivity() {
-    private val isSettingsDialogVisible = mutableStateOf(false)
 
     @OptIn(ExperimentalMaterial3Api::class)
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -86,19 +85,7 @@ class MainActivity : ComponentActivity() {
                             },
                             colors = TopAppBarDefaults.topAppBarColors(
                                 containerColor = Primary
-                            ),
-                            actions = {
-                                // Settings icon
-                                IconButton(onClick = {
-                                    isSettingsDialogVisible.value = true
-                                }) {
-                                    Icon(
-                                        painter = painterResource(id = R.drawable.ic_settings),
-                                        contentDescription = stringResource(R.string.settings),
-                                        tint = Color.White
-                                    )
-                                }
-                            }
+                            )
                         )
                     },
                     modifier = Modifier.fillMaxSize()
