@@ -5,7 +5,12 @@
 # Gradle files
 .gradle/
 build/
-gradle.properties
+local.properties
+.externalNativeBuild/
+.cxx/
+gradle-app.setting
+!gradle-wrapper.jar
+.gradletasknamecache
 
 # Local configuration file (sdk path, etc)
 local.properties
@@ -22,7 +27,10 @@ output.json
 
 # IntelliJ
 *.iml
+*.iws
+*.ipr
 .idea/
+out/
 misc.xml
 deploymentTargetDropDown.xml
 render.experimental.xml
@@ -189,3 +197,56 @@ fabric.properties
 .cursor
 
 # End of https://www.toptal.com/developers/gitignore/api/android,kotlin,androidstudio
+
+## VSCode
+.vscode/
+*.code-workspace
+.history/
+
+## Xcode
+xcuserdata/
+*.xcodeproj/*
+!*.xcodeproj/project.pbxproj
+!*.xcodeproj/xcshareddata/
+!*.xcworkspace/contents.xcworkspacedata
+**/xcshareddata/WorkspaceSettings.xcsettings
+*.xcscmblueprint
+*.xccheckout
+DerivedData/
+.build/
+
+# 코틀린 
+.kotlin/
+.kotlin-js-store/
+kotlin-js-store/
+
+# Compose Multiplatform 특화
+iosApp/Pods/
+iosApp/Podfile.lock
+iosApp/iosApp.xcworkspace/
+iosApp/iosApp.xcodeproj/xcuserdata/
+iosApp/iosApp.xcodeproj/project.xcworkspace/
+iosApp/iosApp/Config.xcconfig
+
+# 빌드 결과물
+*/build/
+*/out/
+*.aar
+*.ap_
+*.apk
+*.aab
+*.dex
+*.class
+*.hprof
+
+# 기타
+.DS_Store
+Thumbs.db
+*.log
+hs_err_pid*
+.swiftpm/
+
+# 커스텀 프로퍼티 파일
+*.properties
+!gradle.properties
+!gradle-wrapper.properties
