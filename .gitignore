@@ -185,4 +185,7 @@ fabric.properties
 
 !/gradle/wrapper/gradle-wrapper.jar
 
+# Cursor
+.cursor
+
 # End of https://www.toptal.com/developers/gitignore/api/android,kotlin,androidstudio
