@@ -1,106 +1,133 @@
-
 ## Picker 제작 과정기
 [[Android/Compose] Picker, NumberPicker, DatePicker 제작 과정기 1부](https://velog.io/@kej_ad/AndroidCompose-Year-Month-DatePicker-%EB%A7%8C%EB%93%A4%EA%B8%B0)
 
-# Compose-DateTimePicker
-`Compose-DateTimePicker`는 Jetpack Compose를 사용하여 간단하고 유연한 날짜 및 시간 선택기를 제공하는 라이브러리입니다. 이 라이브러리를 사용하면 Android 애플리케이션에서 아름답고 직관적인 사용자 인터페이스를 쉽게 구현할 수 있습니다.
+# Compose DateTimePicker
 
-## 기능
+Compose Multiplatform용 날짜 및 시간 선택기 라이브러리입니다. Android, iOS, Desktop(JVM) 및 Web을 지원합니다.
 
-- \[x\] 간단한 시간 선택기
-- \[x\] 간단한 날짜 선택기 (년/월)
-- \[x\] 무한 스크롤 지원
-- \[x\] 텍스트 스타일 및 아이템 배치 조정
-- \[x\] 커스터마이징 가능한 디자인
+## 개요
 
-## 설치
+이 라이브러리는 Compose Multiplatform을 사용하여 개발된 날짜 및 시간 선택 UI 컴포넌트를 제공합니다. 다양한 플랫폼에서 일관된 사용자 경험을 제공하면서도 각 플랫폼의 특성을 고려한 설계가 적용되었습니다.
+
+### 주요 기능
+
+- **TimePicker**: 12시간제 및 24시간제를 지원하는 시간 선택기
+- **YearMonthPicker**: 연도와 월을 선택할 수 있는 날짜 선택기
+- **다양한 커스터마이징 옵션**: 글꼴, 색상, 크기 등을 사용자 지정 가능
+- **반응형 디자인**: 다양한 화면 크기에 대응
+- **표준 Compose 컴포넌트 호환**: 기존 Compose UI에 자연스럽게 통합
+
+## 설치 방법
 
 ### Gradle
 
-1. 프로젝트의 `build.gradle` 파일에 Maven Central을 추가합니다:
-
-    ```groovy
-    allprojects {
-        repositories {
-            mavenCentral()
-        }
-    }
-    ```
-
-2. 모듈의 `build.gradle` 파일에 라이브러리를 추가합니다:
-
-    ```kotlin
-    dependencies {
-        implementation("io.github.kez-lab:compose-date-time-picker:0.0.3")
-    }
-    ```
-
-## 사용법
-
-### 시간 선택기 다이얼로그(TimePickerDialog)
-<img src="https://github.com/user-attachments/assets/90cc3bbb-6e28-40e9-8480-4924b362d7c6" alt="TimePickerDialog" width="500"/>
-
-### 시간 선택기(TimePicker)
-간단한 시간 선택기를 사용하려면 `TimePicker` 컴포저블을 사용합니다.
+build.gradle.kts (모듈 수준) 파일에 다음 의존성을 추가합니다:
 
 ```kotlin
-@Composable
-fun MyTimePicker() {
-    TimePicker(
-        initHour = 12,
-        initMinute = 30,
-        periodPickerState = rememberPickerState(),
-        hourPickerState = rememberPickerState(),
-        minutePickerState = rememberPickerState()
-    )
+dependencies {
+    implementation("io.github.kez-lab:compose-date-time-picker:0.2.0")
 }
 ```
 
-#### 매개변수
+## 사용 방법
 
-- `initHour`: 초기 시간 설정 (기본값: `currentHour`)
-- `initMinute`: 초기 분 설정 (기본값: `currentMinute`)
-- `periodPickerState`: 오전/오후 선택기 상태
-- `hourPickerState`: 시간 선택기 상태
-- `minutePickerState`: 분 선택기 상태
-
-### 날짜 선택기(YearMonthDatePicker)
-
-년/월 선택기를 사용하려면 `YearMonthDatePicker` 컴포저블을 사용합니다.
+### TimePicker
 
 ```kotlin
-@Composable
-fun MyDatePicker() {
-    YearMonthPicker(
-        initYearMonth = YearMonth.now(),
-        yearPickerState = rememberPickerState(),
-        monthPickerState = rememberPickerState()
-    )
-}
+// 24시간제 시간 선택기
+TimePicker(
+    hourPickerState = rememberPickerState(currentHour),
+    minutePickerState = rememberPickerState(currentMinute),
+    timeFormat = TimeFormat.HOUR_24
+)
+
+// 12시간제 시간 선택기
+TimePicker(
+    hourPickerState = rememberPickerState(
+        if (currentHour > 12) currentHour - 12 else if (currentHour == 0) 12 else currentHour
+    ),
+    minutePickerState = rememberPickerState(currentMinute),
+    periodPickerState = rememberPickerState(if (currentHour >= 12) TimePeriod.PM else TimePeriod.AM),
+    timeFormat = TimeFormat.HOUR_12
+)
 ```
 
-#### 매개변수
+### YearMonthPicker
 
-- `initYearMonth`: 초기 연/월 설정 (기본값: `YearMonth.now()`)
-- `yearPickerState`: 연 선택기 상태
-- `monthPickerState`: 월 선택기 상태
+```kotlin
+YearMonthPicker(
+    yearPickerState = rememberPickerState(currentDate.year),
+    monthPickerState = rememberPickerState(currentDate.monthNumber)
+)
+```
+
+### 상태 관리
+
+```kotlin
+// PickerState를 사용하여 상태 관리
+val hourState = rememberPickerState(currentHour)
+val minuteState = rememberPickerState(currentMinute)
+
+// 선택된 값 접근
+val selectedHour = hourState.selectedItem
+val selectedMinute = minuteState.selectedItem
+```
 
 ## 커스터마이징
 
-모든 컴포저블은 텍스트 스타일, 간격, 색상 및 더 많은 속성을 커스터마이징할 수 있도록 구성되어 있습니다. 예를 들어, 텍스트 스타일을 커스터마이징하려면 다음과 같이 할 수 있습니다:
-
 ```kotlin
-@Composable
-fun CustomTimePicker() {
-    TimePicker(
-        textStyle = TextStyle(fontSize = 18.sp, color = Color.Gray),
-        selectedTextStyle = TextStyle(fontSize = 24.sp, color = Color.Black)
-    )
-}
+TimePicker(
+    hourPickerState = rememberPickerState(currentHour),
+    minutePickerState = rememberPickerState(currentMinute),
+    timeFormat = TimeFormat.HOUR_24,
+    textStyle = TextStyle(fontSize = 14.sp, color = Color.Gray),
+    selectedTextStyle = TextStyle(fontSize = 18.sp, color = Color.Black, fontWeight = FontWeight.Bold),
+    dividerColor = Color.Blue,
+    visibleItemsCount = 5,
+    pickerWidth = 80.dp
+)
+```
+
+## 프로젝트 구조
+
+```
+Compose-DateTimePicker/
+├── datetimepicker/                # 라이브러리 모듈
+│   └── src/
+│       ├── commonMain/            # 공통 코드
+│       │   └── kotlin/com/kez/picker/
+│       │       ├── date/          # 날짜 선택기
+│       │       ├── time/          # 시간 선택기
+│       │       └── util/          # 유틸리티 클래스
+│       ├── androidMain/           # Android 구현
+│       ├── iosMain/               # iOS 구현
+│       ├── desktopMain/           # Desktop(JVM) 구현
+│       └── jsMain/                # Web 구현
+└── sample/                        # 샘플 앱
+    └── src/
+        ├── commonMain/            # 공통 샘플 코드
+        ├── androidMain/           # Android 샘플 진입점
+        ├── iosMain/               # iOS 샘플 진입점
+        ├── jvmMain/               # Desktop 샘플 진입점
+        └── jsMain/                # Web 샘플 진입점
 ```
 
 ## 라이선스
 
-`Compose-DateTimePicker`는 [Apache License 2.0](./LICENSE)에 따라 라이선스가 부여됩니다. 자세한 내용은 LICENSE 파일을 참조하십시오.
+```
+Copyright 2024 KEZ Lab
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+   http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+```
 
 
