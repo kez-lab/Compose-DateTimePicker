@@ -25,3 +25,4 @@ dependencyResolutionManagement {
 rootProject.name = "Compose-DateTimePicker"
 include(":datetimepicker")
 include(":sample")
+include(":iosApp")

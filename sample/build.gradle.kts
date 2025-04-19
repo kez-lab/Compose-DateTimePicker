@@ -21,6 +21,17 @@ kotlin {
     iosArm64()
     iosSimulatorArm64()
     
+    listOf(
+        iosX64(),
+        iosArm64(),
+        iosSimulatorArm64()
+    ).forEach {
+        it.binaries.framework {
+            baseName = "sample"
+            isStatic = true
+        }
+    }
+    
     jvm("desktop")
     
     js(IR) {
@@ -39,6 +50,9 @@ kotlin {
             
             implementation(libs.kotlinx.datetime)
             implementation(libs.kotlinx.coroutines.core)
+
+            implementation(libs.composeIcons.featherIcons)
+
         }
         
         commonTest.dependencies {
@@ -48,6 +62,7 @@ kotlin {
         androidMain.dependencies {
             implementation(libs.androidx.activityCompose)
             implementation(libs.kotlinx.coroutines.android)
+            implementation("androidx.core:core-splashscreen:1.0.1")
         }
         
         iosMain.dependencies {
