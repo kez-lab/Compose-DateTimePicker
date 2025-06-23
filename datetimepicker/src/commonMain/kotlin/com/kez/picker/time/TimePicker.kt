@@ -35,7 +35,7 @@ import com.kez.picker.util.currentMinute
 import kotlinx.datetime.LocalDateTime
 
 /**
- * A time picker component that allows the user to select hours and minutes.
+ * A time picker component that allows the user to select hours, minutes, and—when using the 12-hour format—the AM/PM period.
  * 
  * @param modifier The modifier to be applied to the component.
  * @param minutePickerState The state for the minute picker.
