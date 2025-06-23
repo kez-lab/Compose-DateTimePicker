@@ -1,27 +1,24 @@
-## Picker 제작 과정기
-[[Android/Compose] Picker, NumberPicker, DatePicker 제작 과정기 1부](https://velog.io/@kej_ad/AndroidCompose-Year-Month-DatePicker-%EB%A7%8C%EB%93%A4%EA%B8%B0)
-
 # Compose DateTimePicker
 
-Compose Multiplatform용 날짜 및 시간 선택기 라이브러리입니다. Android, iOS, Desktop(JVM) 및 Web을 지원합니다.
+[Android/Compose] Picker 제작 과정기 1부](https://velog.io/@kej_ad/AndroidCompose-Year-Month-DatePicker-%EB%A7%8C%EB%93%A4%EA%B8%B0)
+
+Compose DateTimePicker는 Compose Multiplatform 기반의 날짜 및 시간 선택기 라이브러리입니다. 하나의 코드 베이스로 Android, iOS, Desktop(JVM), Web에서 동일한 UI를 제공하며, 다양한 커스터마이징 옵션을 통해 앱의 스타일에 맞게 쉽게 적용할 수 있습니다.
 
 ## 개요
 
-이 라이브러리는 Compose Multiplatform을 사용하여 개발된 날짜 및 시간 선택 UI 컴포넌트를 제공합니다. 다양한 플랫폼에서 일관된 사용자 경험을 제공하면서도 각 플랫폼의 특성을 고려한 설계가 적용되었습니다.
+이 라이브러리는 날짜와 시간 선택을 위한 공통 UI 컴포넌트를 제공합니다. 모든 플랫폼에서 동일한 사용성을 목표로 하며, 간결한 API와 폭넓은 커스터마이징 기능을 제공합니다.
 
-### 주요 기능
+### 주요 특징
 
-- **TimePicker**: 12시간제 및 24시간제를 지원하는 시간 선택기
-- **YearMonthPicker**: 연도와 월을 선택할 수 있는 날짜 선택기
-- **다양한 커스터마이징 옵션**: 글꼴, 색상, 크기 등을 사용자 지정 가능
-- **반응형 디자인**: 다양한 화면 크기에 대응
-- **표준 Compose 컴포넌트 호환**: 기존 Compose UI에 자연스럽게 통합
+- **TimePicker**: 12시간제와 24시간제를 모두 지원합니다.
+- **YearMonthPicker**: 연도와 월을 간편하게 선택할 수 있습니다.
+- **다양한 사용자 정의**: 글꼴, 색상, 표시 항목 수 등을 손쉽게 변경할 수 있습니다.
+- **반응형 레이아웃**: 화면 크기에 맞춰 자연스럽게 조정됩니다.
+- **Compose 호환성**: 기존 Compose UI에 매끄럽게 통합됩니다.
 
-## 설치 방법
+## 설치
 
-### Gradle
-
-build.gradle.kts (모듈 수준) 파일에 다음 의존성을 추가합니다:
+Gradle을 사용한다면 다음과 같이 의존성을 추가합니다. 라이브러리는 Maven Central에 배포되어 있습니다.
 
 ```kotlin
 dependencies {
@@ -29,19 +26,19 @@ dependencies {
 }
 ```
 
-## 사용 방법
+## 기본 사용 방법
 
 ### TimePicker
 
 ```kotlin
-// 24시간제 시간 선택기
+// 24시간제 시간 선택기 예시
 TimePicker(
     hourPickerState = rememberPickerState(currentHour),
     minutePickerState = rememberPickerState(currentMinute),
     timeFormat = TimeFormat.HOUR_24
 )
 
-// 12시간제 시간 선택기
+// 12시간제 시간 선택기 예시
 TimePicker(
     hourPickerState = rememberPickerState(
         if (currentHour > 12) currentHour - 12 else if (currentHour == 0) 12 else currentHour
@@ -61,19 +58,17 @@ YearMonthPicker(
 )
 ```
 
-### 상태 관리
+### 선택 값 가져오기
+
+`PickerState`는 현재 선택된 값을 `selectedItem` 속성으로 제공합니다. 이를 통해 사용자 입력을 쉽게 처리할 수 있습니다.
 
 ```kotlin
-// PickerState를 사용하여 상태 관리
 val hourState = rememberPickerState(currentHour)
-val minuteState = rememberPickerState(currentMinute)
-
-// 선택된 값 접근
 val selectedHour = hourState.selectedItem
-val selectedMinute = minuteState.selectedItem
 ```
+## 커스터마이징 예시
 
-## 커스터마이징
+글꼴 크기, 색상, 표시되는 아이템 수 등 여러 속성을 변경해 원하는 모양으로 조정할 수 있습니다.
 
 ```kotlin
 TimePicker(
@@ -88,9 +83,20 @@ TimePicker(
 )
 ```
 
+## 샘플 프로젝트
+
+라이브러리 사용 예제를 직접 확인하고 싶다면 `sample` 모듈을 실행해 보세요. Android, iOS, Desktop, Web 모든 플랫폼에서 동작하도록 구성되어 있습니다.
+
+```bash
+./gradlew :sample:androidApp:installDebug   # Android 설치
+./gradlew :sample:desktopApp:run            # Desktop 실행
+```
+
+기타 플랫폼의 실행 방법은 `sample/` 디렉터리의 README를 참고하세요.
+
 ## 프로젝트 구조
 
-```
+```text
 Compose-DateTimePicker/
 ├── datetimepicker/                # 라이브러리 모듈
 │   └── src/
@@ -103,7 +109,7 @@ Compose-DateTimePicker/
 │       ├── iosMain/               # iOS 구현
 │       ├── desktopMain/           # Desktop(JVM) 구현
 │       └── jsMain/                # Web 구현
-└── sample/                        # 샘플 앱
+└── sample/                        # 샘플 애플리케이션
     └── src/
         ├── commonMain/            # 공통 샘플 코드
         ├── androidMain/           # Android 샘플 진입점
@@ -129,5 +135,3 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 ```
-
-
