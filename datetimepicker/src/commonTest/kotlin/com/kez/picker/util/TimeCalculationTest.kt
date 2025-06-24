@@ -2,9 +2,18 @@ package com.kez.picker.util
 
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlinx.datetime.Clock
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalDateTime
+import kotlinx.datetime.toLocalDateTime
 
 class TimeCalculationTest {
+    // 현재 날짜를 고정하여 가져온다
+    private val testDate: LocalDate = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()).date
+    private val currentYear: Int = testDate.year
+    private val currentMonth: Int = testDate.monthNumber
+    private val currentDate: LocalDate = testDate
 
     // 24시간 형식에서 23:45 입력 시 동일한 시간이 반환되는지 확인
     @Test
