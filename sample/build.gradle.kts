@@ -1,3 +1,5 @@
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+
 plugins {
     alias(libs.plugins.multiplatform)
     alias(libs.plugins.android.application)
@@ -10,10 +12,8 @@ kotlin {
     jvmToolchain(17)
 
     androidTarget {
-        compilations.all {
-            kotlinOptions {
-                jvmTarget = "17"
-            }
+        compilerOptions {
+            jvmTarget = JvmTarget.fromTarget("17")
         }
     }
 
@@ -48,6 +48,7 @@ kotlin {
             implementation(compose.foundation)
             implementation(compose.material3)
             implementation(compose.ui)
+            implementation(compose.components.uiToolingPreview)
             implementation(compose.components.resources)
             implementation(libs.androidx.navigation.compose)
 
