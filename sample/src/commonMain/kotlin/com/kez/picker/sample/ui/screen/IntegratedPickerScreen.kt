@@ -25,8 +25,8 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CenterAlignedTopAppBar
-import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -147,7 +147,7 @@ internal fun IntegratedPickerScreen(navController: NavController) {
                             text = { Text("시간 선택") },
                             icon = { Icon(FeatherIcons.Clock, null) })
                     }
-                    Divider()
+                    HorizontalDivider()
                     AnimatedContent(
                         targetState = selectedTabIndex,
                         transitionSpec = {
