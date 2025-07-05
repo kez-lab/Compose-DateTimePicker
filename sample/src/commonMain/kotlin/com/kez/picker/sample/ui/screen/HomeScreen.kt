@@ -28,6 +28,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.kez.picker.sample.ui.navigation.Screen
 import compose.icons.FeatherIcons
 import compose.icons.feathericons.ArrowRight
 import compose.icons.feathericons.Calendar
@@ -69,7 +70,7 @@ internal fun HomeScreen(navController: NavController) {
                     title = "통합 샘플",
                     description = "날짜와 시간을 함께 선택하는 예제",
                     icon = FeatherIcons.CheckCircle,
-                    onClick = { navController.navigate("integrated") }
+                    onClick = { navController.navigate(Screen.Integrated.route) }
                 )
             }
             item {
@@ -77,7 +78,7 @@ internal fun HomeScreen(navController: NavController) {
                     title = "시간 피커 샘플",
                     description = "TimePicker 컴포넌트 단독 예제",
                     icon = FeatherIcons.Clock,
-                    onClick = { navController.navigate("time_picker") }
+                    onClick = { navController.navigate(Screen.TimePicker.route) }
                 )
             }
             item {
@@ -85,7 +86,7 @@ internal fun HomeScreen(navController: NavController) {
                     title = "날짜 피커 샘플",
                     description = "YearMonthPicker 컴포넌트 단독 예제",
                     icon = FeatherIcons.Calendar,
-                    onClick = { navController.navigate("date_picker") }
+                    onClick = { navController.navigate(Screen.DatePicker.route) }
                 )
             }
         }
