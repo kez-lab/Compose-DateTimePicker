@@ -42,7 +42,7 @@ kotlin {
 
     sourceSets {
         commonMain.dependencies {
-            implementation("io.github.kez-lab:compose-date-time-picker:0.2.0")
+            implementation(project(":datetimepicker"))
 
             implementation(compose.runtime)
             implementation(compose.foundation)

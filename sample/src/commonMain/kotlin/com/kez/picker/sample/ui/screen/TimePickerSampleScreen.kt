@@ -38,7 +38,8 @@ import compose.icons.feathericons.ArrowLeft
 @Composable
 internal fun TimePickerSampleScreen(navController: NavController) {
     var selectedFormat by remember { mutableIntStateOf(0) }
-    val hour12State = rememberPickerState(if (currentHour > 12) currentHour - 12 else if (currentHour == 0) 12 else currentHour)
+    val hour12State =
+        rememberPickerState(if (currentHour > 12) currentHour - 12 else if (currentHour == 0) 12 else currentHour)
     val hour24State = rememberPickerState(currentHour)
     val minuteState = rememberPickerState(currentMinute)
     val periodState = rememberPickerState(if (currentHour >= 12) TimePeriod.PM else TimePeriod.AM)
@@ -59,9 +60,18 @@ internal fun TimePickerSampleScreen(navController: NavController) {
             modifier = Modifier.fillMaxSize().padding(it).padding(16.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            TabRow(selectedTabIndex = selectedFormat, modifier = Modifier.clip(RoundedCornerShape(16.dp))) {
-                Tab(selected = selectedFormat == 0, onClick = { selectedFormat = 0 }, text = { Text("12시간제") })
-                Tab(selected = selectedFormat == 1, onClick = { selectedFormat = 1 }, text = { Text("24시간제") })
+            TabRow(
+                selectedTabIndex = selectedFormat,
+                modifier = Modifier.clip(RoundedCornerShape(16.dp))
+            ) {
+                Tab(
+                    selected = selectedFormat == 0,
+                    onClick = { selectedFormat = 0 },
+                    text = { Text("12시간제") })
+                Tab(
+                    selected = selectedFormat == 1,
+                    onClick = { selectedFormat = 1 },
+                    text = { Text("24시간제") })
             }
             Spacer(modifier = Modifier.height(32.dp))
             if (selectedFormat == 0) {
