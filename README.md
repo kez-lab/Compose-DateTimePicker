@@ -6,9 +6,14 @@ Compose DateTimePicker는 Compose Multiplatform 기반의 날짜 및 시간 선�
 
 ## 스크린샷
 
-| Android | iOS | Desktop | Web |
+| 통합 샘플(날짜) | 통합 샘플(시간) | 날짜 | 시간 |
 | :---: | :---: | :---: | :---: |
-| (이미지) | (이미지) | (이미지) | (이미지) |
+| ![Screenshot_20250704_233155](https://github.com/user-attachments/assets/4093bca6-3831-4a68-8abc-7e954cf5fabd) | ![Screenshot_20250704_233221](https://github.com/user-attachments/assets/8468b4e4-6acd-4084-9ea8-6ab394fb43bc) |![화면 기록 2025-07-04 오후 11 33 16](https://github.com/user-attachments/assets/21b1a482-9951-4e06-92d4-86b956cf3a26) | ![화면 기록 2025-07-04 오후 11 32 51](https://github.com/user-attachments/assets/6cafac1f-b95a-44a1-88af-fb5fbac81e63)|
+
+
+
+
+
 
 ## 개요
 
