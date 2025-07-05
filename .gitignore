@@ -197,6 +197,9 @@ fabric.properties
 # Cursor
 .cursor
 
+# Gemini
+.gemini/
+
 # End of https://www.toptal.com/developers/gitignore/api/android,kotlin,androidstudio
 
 ## VSCode
