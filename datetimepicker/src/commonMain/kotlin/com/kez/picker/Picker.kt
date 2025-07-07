@@ -155,9 +155,7 @@ fun <T> Picker(
                     }
                 }
 
-                val currentItemText by remember {
-                    mutableStateOf(getItem(index)?.toString().orEmpty())
-                }
+                val currentItemText = getItem(index)?.toString().orEmpty()
 
                 Text(
                     text = currentItemText,
