@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
@@ -51,7 +52,6 @@ import kotlin.math.abs
  * @param state The state of the picker.
  * @param startIndex The initial index to display.
  * @param visibleItemsCount The number of items visible at once.
- * @param textModifier The modifier to be applied to the text.
  * @param textStyle The style of the text for unselected items.
  * @param selectedTextStyle The style of the text for the selected item.
  * @param dividerColor The color of the dividers.
@@ -61,6 +61,7 @@ import kotlin.math.abs
  * @param itemTextAlignment The vertical alignment of the text within items.
  * @param dividerThickness The thickness of the dividers.
  * @param dividerShape The shape of the dividers.
+ * @param isDividerVisible Whether the divider should be visible.
  * @param isInfinity Whether the picker should loop infinitely.
  */
 @Composable
@@ -70,7 +71,6 @@ fun <T> Picker(
     state: PickerState<T>,
     startIndex: Int = 0,
     visibleItemsCount: Int = 3,
-    textModifier: Modifier = Modifier,
     textStyle: TextStyle = LocalTextStyle.current,
     selectedTextStyle: TextStyle = LocalTextStyle.current,
     dividerColor: Color = LocalContentColor.current,
@@ -84,6 +84,7 @@ fun <T> Picker(
     itemTextAlignment: Alignment.Vertical = Alignment.CenterVertically,
     dividerThickness: Dp = 1.dp,
     dividerShape: Shape = RoundedCornerShape(10.dp),
+    isDividerVisible: Boolean = true,
     isInfinity: Boolean = true
 ) {
     val density = LocalDensity.current
@@ -155,7 +156,7 @@ fun <T> Picker(
                 }
 
                 val currentItemText by remember {
-                    mutableStateOf(if (getItem(index) == null) "" else getItem(index).toString())
+                    mutableStateOf(getItem(index)?.toString().orEmpty())
                 }
 
                 Text(
@@ -179,40 +180,42 @@ fun <T> Picker(
                         .height(itemHeight)
                         .wrapContentHeight(align = itemTextAlignment)
                         .fillMaxWidth()
-                        .then(textModifier)
+                        .padding(itemPadding)
                 )
             }
         }
 
-        Box(
-            modifier = Modifier
-                .align(Alignment.Center)
-                .fillMaxWidth()
-                .height(itemHeight)
-        ) {
-            HorizontalDivider(
-                color = dividerColor,
-                thickness = dividerThickness,
+        if (isDividerVisible) {
+            Box(
                 modifier = Modifier
+                    .align(Alignment.Center)
                     .fillMaxWidth()
-                    .background(
-                        color = dividerColor,
-                        shape = dividerShape
-                    )
-                    .align(Alignment.TopCenter)
-            )
+                    .height(itemHeight)
+            ) {
+                HorizontalDivider(
+                    color = dividerColor,
+                    thickness = dividerThickness,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .background(
+                            color = dividerColor,
+                            shape = dividerShape
+                        )
+                        .align(Alignment.TopCenter)
+                )
 
-            HorizontalDivider(
-                color = dividerColor,
-                thickness = dividerThickness,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .background(
-                        color = dividerColor,
-                        shape = dividerShape
-                    )
-                    .align(Alignment.BottomCenter)
-            )
+                HorizontalDivider(
+                    color = dividerColor,
+                    thickness = dividerThickness,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .background(
+                            color = dividerColor,
+                            shape = dividerShape
+                        )
+                        .align(Alignment.BottomCenter)
+                )
+            }
         }
     }
 }

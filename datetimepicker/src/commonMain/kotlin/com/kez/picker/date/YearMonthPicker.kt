@@ -1,12 +1,11 @@
 package com.kez.picker.date
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.Surface
@@ -31,8 +30,9 @@ import kotlinx.datetime.LocalDate
 
 /**
  * A year and month picker component.
- * 
+ *
  * @param modifier The modifier to be applied to the component.
+ * @param pickerModifier The modifier to be applied to each picker.
  * @param yearPickerState The state for the year picker.
  * @param monthPickerState The state for the month picker.
  * @param startLocalDate The initial date to display.
@@ -49,11 +49,12 @@ import kotlinx.datetime.LocalDate
  * @param dividerThickness The thickness of the dividers.
  * @param dividerShape The shape of the dividers.
  * @param spacingBetweenPickers The spacing between the pickers.
- * @param pickerWidth The width of each picker.
+ * @param isDividerVisible Whether the divider should be visible.
  */
 @Composable
 fun YearMonthPicker(
     modifier: Modifier = Modifier,
+    pickerModifier: Modifier = Modifier,
     yearPickerState: PickerState<Int> = rememberPickerState(currentDate.year),
     monthPickerState: PickerState<Int> = rememberPickerState(currentDate.monthNumber),
     startLocalDate: LocalDate = currentDate,
@@ -74,9 +75,9 @@ fun YearMonthPicker(
     dividerThickness: Dp = 2.dp,
     dividerShape: Shape = RoundedCornerShape(10.dp),
     spacingBetweenPickers: Dp = 20.dp,
-    pickerWidth: Dp = 100.dp
+    isDividerVisible: Boolean = true
 ) {
-    Surface(modifier = modifier) {
+    Box(modifier = modifier) {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center,
@@ -99,11 +100,10 @@ fun YearMonthPicker(
             ) {
                 Picker(
                     state = yearPickerState,
-                    modifier = Modifier.width(pickerWidth),
+                    modifier = pickerModifier.weight(1f),
                     items = yearItems,
                     startIndex = yearStartIndex,
                     visibleItemsCount = visibleItemsCount,
-                    textModifier = Modifier.padding(itemPadding),
                     textStyle = textStyle,
                     selectedTextStyle = selectedTextStyle,
                     dividerColor = dividerColor,
@@ -112,24 +112,25 @@ fun YearMonthPicker(
                     horizontalAlignment = horizontalAlignment,
                     itemTextAlignment = verticalAlignment,
                     dividerThickness = dividerThickness,
-                    dividerShape = dividerShape
+                    dividerShape = dividerShape,
+                    isDividerVisible = isDividerVisible,
                 )
                 Picker(
                     state = monthPickerState,
                     items = monthItems,
                     startIndex = monthStartIndex,
                     visibleItemsCount = visibleItemsCount,
-                    modifier = Modifier.width(pickerWidth),
+                    modifier = pickerModifier.weight(1f),
                     textStyle = textStyle,
                     selectedTextStyle = selectedTextStyle,
-                    textModifier = Modifier.padding(itemPadding),
                     dividerColor = dividerColor,
                     itemPadding = itemPadding,
                     fadingEdgeGradient = fadingEdgeGradient,
                     horizontalAlignment = horizontalAlignment,
                     itemTextAlignment = verticalAlignment,
                     dividerThickness = dividerThickness,
-                    dividerShape = dividerShape
+                    dividerShape = dividerShape,
+                    isDividerVisible = isDividerVisible,
                 )
             }
         }
