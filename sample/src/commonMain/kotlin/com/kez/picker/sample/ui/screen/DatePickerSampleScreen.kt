@@ -46,6 +46,7 @@ internal fun DatePickerSampleScreen(navController: NavController) {
             verticalArrangement = Arrangement.Center
         ) {
             YearMonthPicker(
+                modifier = Modifier.padding(horizontal = 12.dp),
                 yearPickerState = yearState,
                 monthPickerState = monthState
             )
