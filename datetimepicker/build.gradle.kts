@@ -107,7 +107,7 @@ mavenPublishing {
 
     signAllPublications()
 
-    coordinates("io.github.kez-lab", "compose-date-time-picker", "0.2.0")
+    coordinates("io.github.kez-lab", "compose-date-time-picker", "0.3.0")
 
     pom {
         name = "Compose-DateTimePicker"

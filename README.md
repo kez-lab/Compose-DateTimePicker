@@ -33,7 +33,7 @@ Gradle을 사용한다면 다음과 같이 의존성을 추가합니다. 라이�
 
 ```kotlin
 dependencies {
-    implementation("io.github.kez-lab:compose-date-time-picker:0.2.0")
+    implementation("io.github.kez-lab:compose-date-time-picker:0.3.0")
 }
 ```
 
