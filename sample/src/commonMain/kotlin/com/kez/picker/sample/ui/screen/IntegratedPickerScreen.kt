@@ -166,7 +166,6 @@ internal fun IntegratedPickerScreen(navController: NavController) {
                                 YearMonthPicker(
                                     yearPickerState = yearState,
                                     monthPickerState = monthState,
-                                    pickerWidth = 120.dp,
                                     textStyle = TextStyle(
                                         fontSize = 18.sp,
                                         color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
@@ -184,7 +183,6 @@ internal fun IntegratedPickerScreen(navController: NavController) {
                                     minutePickerState = minuteState,
                                     periodPickerState = periodState,
                                     timeFormat = TimeFormat.HOUR_12,
-                                    pickerWidth = 80.dp,
                                     textStyle = TextStyle(
                                         fontSize = 18.sp,
                                         color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
