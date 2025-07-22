@@ -11,7 +11,7 @@ plugins {
 }
 
 group = "io.github.kez-lab"
-version = "0.2.0"
+version = "0.3.0"
 
 kotlin {
     jvmToolchain(17)
@@ -107,7 +107,7 @@ mavenPublishing {
 
     signAllPublications()
 
-    coordinates("io.github.kez-lab", "compose-date-time-picker", "0.2.0")
+    coordinates("io.github.kez-lab", "compose-date-time-picker", "0.3.0")
 
     pom {
         name = "Compose-DateTimePicker"
