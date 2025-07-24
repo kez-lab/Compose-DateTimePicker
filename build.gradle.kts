@@ -6,3 +6,11 @@ plugins {
     alias(libs.plugins.compose) apply false
     alias(libs.plugins.compose.compiler) apply false
 }
+
+tasks.register("printVersion") {
+    doLast {
+        val version = project.findProperty("VERSION_NAME")
+            ?: throw IllegalArgumentException("VERSION_NAME property not found")
+        println(version)
+    }
+}
