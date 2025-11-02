@@ -1,5 +1,6 @@
 package com.kez.picker.date
 
+import kotlinx.datetime.number
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -56,7 +57,7 @@ fun YearMonthPicker(
     modifier: Modifier = Modifier,
     pickerModifier: Modifier = Modifier,
     yearPickerState: PickerState<Int> = rememberPickerState(currentDate.year),
-    monthPickerState: PickerState<Int> = rememberPickerState(currentDate.monthNumber),
+    monthPickerState: PickerState<Int> = rememberPickerState(currentDate.month.number),
     startLocalDate: LocalDate = currentDate,
     yearItems: List<Int> = YEAR_RANGE,
     monthItems: List<Int> = MONTH_RANGE,
@@ -88,7 +89,7 @@ fun YearMonthPicker(
                 yearItems.indexOf(startLocalDate.year)
             }
             val monthStartIndex = remember {
-                monthItems.indexOf(startLocalDate.monthNumber)
+                monthItems.indexOf(startLocalDate.month.number)
             }
 
             Row(

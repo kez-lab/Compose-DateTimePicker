@@ -1,7 +1,10 @@
+@file:OptIn(kotlin.time.ExperimentalTime::class)
+
 package com.kez.picker.util
 
-import kotlinx.datetime.Clock
+import kotlin.time.Clock
 import kotlinx.datetime.TimeZone
+import kotlinx.datetime.number
 import kotlinx.datetime.toLocalDateTime
 
 /**
@@ -47,7 +50,7 @@ val currentYear = currentDateTime.year
 /**
  * Current month number (1-12).
  */
-val currentMonth = currentDateTime.monthNumber
+val currentMonth = currentDateTime.month.number
 
 /**
  * Current minute (0-59).

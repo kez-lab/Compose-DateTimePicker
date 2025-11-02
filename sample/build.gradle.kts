@@ -90,7 +90,7 @@ kotlin {
 
 android {
     namespace = "com.kez.picker.sample"
-    compileSdk = 35
+    compileSdk = 36
 
     defaultConfig {
         applicationId = "com.kez.picker.sample"
