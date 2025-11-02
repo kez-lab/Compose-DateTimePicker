@@ -31,8 +31,8 @@ fun calculateTime(
 
     return LocalDateTime(
         year = currentYear,
-        monthNumber = currentMonth,
-        dayOfMonth = currentDate.dayOfMonth,
+        month = currentMonth,
+        day = currentDate.day,
         hour = adjustHour.coerceIn(0, 23),
         minute = minute.coerceIn(0, 59)
     )

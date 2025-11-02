@@ -1,18 +1,21 @@
+@file:OptIn(kotlin.time.ExperimentalTime::class)
+
 package com.kez.picker.util
 
 import kotlin.test.Test
 import kotlin.test.assertEquals
-import kotlinx.datetime.Clock
+import kotlin.time.Clock
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalDateTime
+import kotlinx.datetime.number
 import kotlinx.datetime.toLocalDateTime
 
 class TimeCalculationTest {
     // 현재 날짜를 고정하여 가져온다
     private val testDate: LocalDate = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()).date
     private val currentYear: Int = testDate.year
-    private val currentMonth: Int = testDate.monthNumber
+    private val currentMonth: Int = testDate.month.number
     private val currentDate: LocalDate = testDate
 
     // 24시간 형식에서 23:45 입력 시 동일한 시간이 반환되는지 확인
@@ -26,8 +29,8 @@ class TimeCalculationTest {
 
         val expected = LocalDateTime(
             year = currentYear,
-            monthNumber = currentMonth,
-            dayOfMonth = currentDate.dayOfMonth,
+            month = currentMonth,
+            day = currentDate.day,
             hour = 23,
             minute = 45
         )
@@ -47,8 +50,8 @@ class TimeCalculationTest {
 
         val expected = LocalDateTime(
             year = currentYear,
-            monthNumber = currentMonth,
-            dayOfMonth = currentDate.dayOfMonth,
+            month = currentMonth,
+            day = currentDate.day,
             hour = 15,
             minute = 15
         )
@@ -68,8 +71,8 @@ class TimeCalculationTest {
 
         val expected = LocalDateTime(
             year = currentYear,
-            monthNumber = currentMonth,
-            dayOfMonth = currentDate.dayOfMonth,
+            month = currentMonth,
+            day = currentDate.day,
             hour = 0,
             minute = 0
         )
@@ -89,8 +92,8 @@ class TimeCalculationTest {
 
         val expected = LocalDateTime(
             year = currentYear,
-            monthNumber = currentMonth,
-            dayOfMonth = currentDate.dayOfMonth,
+            month = currentMonth,
+            day = currentDate.day,
             hour = 12,
             minute = 30
         )
