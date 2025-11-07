@@ -34,29 +34,23 @@ kotlin {
 
     jvm("desktop")
 
-    js(IR) {
-        browser {
-            binaries.executable()
-        }
-    }
-
     sourceSets {
         commonMain.dependencies {
             implementation(project(":datetimepicker"))
 
-            implementation(compose.runtime)
-            implementation(compose.foundation)
-            implementation(compose.material3)
-            implementation(compose.ui)
-            implementation(compose.components.uiToolingPreview)
-            implementation(compose.components.resources)
+            implementation(libs.compose.runtime)
+            implementation(libs.compose.foundation)
+            implementation(libs.compose.material3)
+            implementation(libs.compose.ui)
+            implementation(libs.compose.ui.tooling)
+            implementation(libs.compose.ui.tooling.preview)
+            implementation(libs.compose.components.resources)
             implementation(libs.androidx.navigation.compose)
 
             implementation(libs.kotlinx.datetime)
             implementation(libs.kotlinx.coroutines.core)
 
             implementation(libs.composeIcons.featherIcons)
-
         }
 
         commonTest.dependencies {
@@ -64,9 +58,9 @@ kotlin {
         }
 
         androidMain.dependencies {
-            implementation(libs.androidx.activityCompose)
+            implementation(libs.androidx.ui.tooling.preview)
             implementation(libs.kotlinx.coroutines.android)
-            implementation("androidx.core:core-splashscreen:1.0.1")
+            implementation(libs.androidx.core.splashscreen)
         }
 
         iosMain.dependencies {
@@ -79,12 +73,6 @@ kotlin {
                 implementation(libs.kotlinx.coroutines.swing)
             }
         }
-
-        val jsMain by getting {
-            dependencies {
-                implementation(compose.web.core)
-            }
-        }
     }
 }
 
@@ -95,7 +83,7 @@ android {
     defaultConfig {
         applicationId = "com.kez.picker.sample"
         minSdk = 24
-        targetSdk = 35
+        targetSdk = 36
         versionCode = 1
         versionName = "1.0.0"
     }

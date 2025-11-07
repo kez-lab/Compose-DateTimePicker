@@ -47,6 +47,7 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
@@ -65,7 +66,6 @@ import compose.icons.feathericons.ArrowLeft
 import compose.icons.feathericons.Bell
 import compose.icons.feathericons.Calendar
 import compose.icons.feathericons.Clock
-import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -159,7 +159,7 @@ internal fun IntegratedPickerScreen(navController: NavController) {
                         label = "Picker Animation"
                     ) { tabIndex ->
                         Box(
-                            modifier = Modifier.padding(16.dp).height(220.dp),
+                            modifier = Modifier.padding(16.dp).height(280.dp),
                             contentAlignment = Alignment.Center
                         ) {
                             if (tabIndex == 0) {
@@ -201,14 +201,12 @@ internal fun IntegratedPickerScreen(navController: NavController) {
             }
             Spacer(modifier = Modifier.weight(1f))
             Button(
-                onClick = { /* 저장 로직 */ },
+                onClick = { /* 선택 완료 로직 (샘플 앱 데모) */ },
                 modifier = Modifier.fillMaxWidth().height(56.dp),
-                shape = RoundedCornerShape(16.dp),
+                shape = RoundedCornerShape(12.dp),
                 colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
             ) {
-                Icon(FeatherIcons.Bell, contentDescription = null)
-                Spacer(modifier = Modifier.width(8.dp))
-                Text("알림 저장", fontSize = 16.sp, fontWeight = FontWeight.Bold)
+                Text("선택 완료", fontSize = 16.sp, fontWeight = FontWeight.SemiBold)
             }
         }
     }
@@ -217,65 +215,61 @@ internal fun IntegratedPickerScreen(navController: NavController) {
 
 @Composable
 internal fun SelectedDateTimeCard(date: String, time: String) {
+    // 심플한 단색 카드 (그라디언트 제거)
     Card(
         modifier = Modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(20.dp),
-        elevation = CardDefaults.cardElevation(4.dp),
+        shape = RoundedCornerShape(16.dp),
+        elevation = CardDefaults.cardElevation(2.dp),
         colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surface
+            containerColor = MaterialTheme.colorScheme.primaryContainer
         )
     ) {
-        Box(
+        Row(
             modifier = Modifier
-                .background(
-                    Brush.linearGradient(
-                        colors = listOf(
-                            MaterialTheme.colorScheme.primary.copy(alpha = 0.8f),
-                            MaterialTheme.colorScheme.secondary.copy(alpha = 0.7f)
-                        )
-                    )
-                )
-                .padding(24.dp)
+                .fillMaxWidth()
+                .padding(16.dp),
+            horizontalArrangement = Arrangement.SpaceEvenly,
+            verticalAlignment = Alignment.CenterVertically
         ) {
             Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceAround,
-                verticalAlignment = Alignment.CenterVertically
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                    Icon(
-                        imageVector = FeatherIcons.Calendar,
-                        contentDescription = "날짜",
-                        tint = MaterialTheme.colorScheme.onPrimary,
-                        modifier = Modifier.size(28.dp)
-                    )
-                    Spacer(modifier = Modifier.height(8.dp))
-                    Text(
-                        text = date,
-                        color = MaterialTheme.colorScheme.onPrimary,
-                        fontSize = 20.sp,
-                        fontWeight = FontWeight.SemiBold
-                    )
-                }
-                Box(
-                    modifier = Modifier.width(1.dp).height(60.dp)
-                        .background(MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.5f))
+                Icon(
+                    imageVector = FeatherIcons.Calendar,
+                    contentDescription = "날짜",
+                    tint = MaterialTheme.colorScheme.primary,
+                    modifier = Modifier.size(20.dp)
                 )
-                Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                    Icon(
-                        imageVector = FeatherIcons.Clock,
-                        contentDescription = "시간",
-                        tint = MaterialTheme.colorScheme.onPrimary,
-                        modifier = Modifier.size(28.dp)
-                    )
-                    Spacer(modifier = Modifier.height(8.dp))
-                    Text(
-                        text = time,
-                        color = MaterialTheme.colorScheme.onPrimary,
-                        fontSize = 20.sp,
-                        fontWeight = FontWeight.SemiBold
-                    )
-                }
+                Text(
+                    text = date,
+                    color = MaterialTheme.colorScheme.onSurface,
+                    fontSize = 16.sp,
+                    fontWeight = FontWeight.Medium
+                )
+            }
+            Box(
+                modifier = Modifier
+                    .width(1.dp)
+                    .height(24.dp)
+                    .background(MaterialTheme.colorScheme.outline.copy(alpha = 0.3f))
+            )
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                Icon(
+                    imageVector = FeatherIcons.Clock,
+                    contentDescription = "시간",
+                    tint = MaterialTheme.colorScheme.primary,
+                    modifier = Modifier.size(20.dp)
+                )
+                Text(
+                    text = time,
+                    color = MaterialTheme.colorScheme.onSurface,
+                    fontSize = 16.sp,
+                    fontWeight = FontWeight.Medium
+                )
             }
         }
     }
@@ -288,10 +282,4 @@ fun PreviewTimeCard() {
         date = "2023년 10월",
         time = "03:30 PM"
     )
-}
-
-@Preview
-@Composable
-fun PreviewIntegratedPickerScreen() {
-    Text("HELLO")
 }

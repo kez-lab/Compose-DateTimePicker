@@ -3,8 +3,8 @@ import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 plugins {
     alias(libs.plugins.multiplatform)
     alias(libs.plugins.android.library)
-    alias(libs.plugins.compose)
-    alias(libs.plugins.compose.compiler)
+    alias(libs.plugins.compose)           // org.jetbrains.compose
+    alias(libs.plugins.compose.compiler)  // org.jetbrains.kotlin.plugin.compose (K2)
     alias(libs.plugins.vanniktech.maven)
     alias(libs.plugins.kotlinx.serialization)
 }
@@ -25,42 +25,36 @@ kotlin {
 
     jvm("desktop")
 
-    js(IR) {
-        browser()
-    }
-
     sourceSets {
         commonMain.dependencies {
-            implementation(compose.runtime)
-            implementation(compose.foundation)
-            implementation(compose.material3)
-            implementation(compose.ui)
-            implementation(compose.components.resources)
+            implementation(libs.compose.runtime)
+            implementation(libs.compose.foundation)
+            implementation(libs.compose.material3)
+            implementation(libs.compose.ui)
+
+            implementation(libs.compose.components.resources)
+
             implementation(libs.kotlinx.datetime)
             implementation(libs.kotlinx.coroutines.core)
         }
 
-        commonTest.dependencies {
-            implementation(kotlin("test"))
+        val commonTest by getting {
+            dependencies {
+                implementation(kotlin("test"))
+            }
         }
 
         androidMain.dependencies {
-            // Android-specific dependencies if needed
+            implementation(libs.androidx.ui.tooling.preview)
         }
 
         iosMain.dependencies {
-            // iOS-specific dependencies if needed
+
         }
 
         val desktopMain by getting {
             dependencies {
-                implementation(compose.desktop.common)
-            }
-        }
 
-        val jsMain by getting {
-            dependencies {
-                implementation(compose.web.core)
             }
         }
     }
@@ -72,6 +66,7 @@ android {
 
     defaultConfig {
         minSdk = 24
+        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
     buildTypes {
@@ -89,11 +84,13 @@ android {
         targetCompatibility = JavaVersion.VERSION_17
     }
 
-    buildFeatures {
-        compose = true
-    }
+    buildFeatures { compose = true }
+}
 
-    composeOptions {
-        kotlinCompilerExtensionVersion = libs.versions.compose.get()
+// (선택) JetBrains Compose 리소스 생성 옵션
+compose {
+    resources {
+        publicResClass = true
+        packageOfResClass = "com.kez.picker.resources"
     }
 }
