@@ -255,3 +255,8 @@ hs_err_pid*
 !gradle.properties
 !gradle-wrapper.properties
 /gradle.properties
+
+# AI Tools
+CLAUDE.md
+.serena
+
