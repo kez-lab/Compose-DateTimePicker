@@ -34,6 +34,7 @@ import compose.icons.feathericons.ArrowRight
 import compose.icons.feathericons.Calendar
 import compose.icons.feathericons.CheckCircle
 import compose.icons.feathericons.Clock
+import compose.icons.feathericons.Layers
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -59,34 +60,35 @@ internal fun HomeScreen(navController: NavController) {
                 .padding(innerPadding).padding(16.dp)
         ) {
             item {
-                Text(
-                    "샘플 목록",
-                    style = MaterialTheme.typography.titleLarge,
-                    modifier = Modifier.padding(bottom = 16.dp)
-                )
-            }
-            item {
                 MenuListItem(
-                    title = "통합 샘플",
-                    description = "날짜와 시간을 함께 선택하는 예제",
+                    title = "Integrated Sample",
+                    description = "Date and time picker combined",
                     icon = FeatherIcons.CheckCircle,
                     onClick = { navController.navigate(Screen.Integrated.route) }
                 )
             }
             item {
                 MenuListItem(
-                    title = "시간 피커 샘플",
-                    description = "TimePicker 컴포넌트 단독 예제",
+                    title = "TimePicker Sample",
+                    description = "Standalone TimePicker component",
                     icon = FeatherIcons.Clock,
                     onClick = { navController.navigate(Screen.TimePicker.route) }
                 )
             }
             item {
                 MenuListItem(
-                    title = "날짜 피커 샘플",
-                    description = "YearMonthPicker 컴포넌트 단독 예제",
+                    title = "DatePicker Sample",
+                    description = "Standalone YearMonthPicker component",
                     icon = FeatherIcons.Calendar,
                     onClick = { navController.navigate(Screen.DatePicker.route) }
+                )
+            }
+            item {
+                MenuListItem(
+                    title = "BottomSheet Sample",
+                    description = "Date/time selection in bottom sheet",
+                    icon = FeatherIcons.Layers,
+                    onClick = { navController.navigate(Screen.BottomSheet.route) }
                 )
             }
         }
@@ -128,7 +130,7 @@ internal fun MenuListItem(
                 )
                 Text(description, style = MaterialTheme.typography.bodyMedium, color = Color.Gray)
             }
-            Icon(FeatherIcons.ArrowRight, contentDescription = "이동")
+            Icon(FeatherIcons.ArrowRight, contentDescription = "Navigate")
         }
     }
 }

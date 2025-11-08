@@ -13,11 +13,34 @@ A Compose Multiplatform date and time picker library that provides a consistent 
 
 ## 📱 Screenshots
 
-| Integrated Sample (Date) | Integrated Sample (Time) | Date Picker | Time Picker |
-| :---: | :---: | :---: | :---: |
-| ![Screenshot_20250704_233155](https://github.com/user-attachments/assets/4093bca6-3831-4a68-8abc-7e954cf5fabd) | ![Screenshot_20250704_233221](https://github.com/user-attachments/assets/8468b4e4-6acd-4084-9ea8-6ab394fb43bc) |![화면 기록 2025-07-04 오후 11 33 16](https://github.com/user-attachments/assets/21b1a482-9951-4e06-92d4-86b956cf3a26) | ![화면 기록 2025-07-04 오후 11 32 51](https://github.com/user-attachments/assets/6cafac1f-b95a-44a1-88af-fb5fbac81e63)|
+### Sample Screens
 
-> **Note**: Screenshots show an older version with gradients. The latest version uses a simplified single-color design.
+<table>
+  <tr>
+    <td align="center">
+      <img src="./screenshot/timepicker_screen_sample.png" width="250" /><br />
+      <b>TimePicker Sample</b>
+    </td>
+    <td align="center">
+      <img src="./screenshot/datepicker_screen_sample.png" width="250" /><br />
+      <b>DatePicker Sample</b>
+    </td>
+  </tr>
+</table>
+
+### BottomSheet Integration
+
+<table>
+  <tr>
+    <td align="center">
+      <video src="./screenshot/Screen_recording_20251108_230142.mp4" width="250" controls></video><br />
+      <b>BottomSheet Sample</b><br />
+      <sub>Date and time selection in bottom sheet</sub>
+    </td>
+  </tr>
+</table>
+
+> **Demo**: The video above shows the complete interaction flow for date and time selection using bottom sheets.
 
 ---
 
@@ -26,6 +49,7 @@ A Compose Multiplatform date and time picker library that provides a consistent 
 - 🌐 **Multiplatform**: Android, iOS, Desktop (JVM), and Web support
 - ⏰ **TimePicker**: 12-hour and 24-hour format support
 - 📅 **YearMonthPicker**: Year and month selection component
+- 📱 **BottomSheet Ready**: Works seamlessly with Material3 ModalBottomSheet
 - 🎨 **Fully Customizable**: Colors, fonts, sizes, visible item counts, and more
 - 📐 **Responsive Layout**: Automatically adapts to screen sizes
 - 🧩 **Compose Native**: Seamless integration with Jetpack Compose and Compose Multiplatform
@@ -170,6 +194,55 @@ fun YearMonthPickerExample() {
             text = "Selected: ${yearState.selectedItem}/${monthState.selectedItem}",
             style = MaterialTheme.typography.titleLarge
         )
+    }
+}
+```
+
+### 4. BottomSheet Integration
+
+```kotlin
+import androidx.compose.material3.*
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun BottomSheetPickerExample() {
+    var showBottomSheet by remember { mutableStateOf(false) }
+    val sheetState = rememberModalBottomSheetState()
+    val hourState = rememberPickerState(currentHour)
+    val minuteState = rememberPickerState(currentMinute)
+    val scope = rememberCoroutineScope()
+
+    Button(onClick = { showBottomSheet = true }) {
+        Text("Select Time")
+    }
+
+    if (showBottomSheet) {
+        ModalBottomSheet(
+            onDismissRequest = { showBottomSheet = false },
+            sheetState = sheetState
+        ) {
+            Column(
+                modifier = Modifier.fillMaxWidth().padding(16.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                TimePicker(
+                    hourPickerState = hourState,
+                    minutePickerState = minuteState,
+                    timeFormat = TimeFormat.HOUR_24
+                )
+
+                Button(
+                    onClick = {
+                        scope.launch {
+                            sheetState.hide()
+                            showBottomSheet = false
+                        }
+                    }
+                ) {
+                    Text("Confirm")
+                }
+            }
+        }
     }
 }
 ```

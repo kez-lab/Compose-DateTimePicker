@@ -5,6 +5,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.kez.picker.sample.ui.navigation.Screen
+import com.kez.picker.sample.ui.screen.BottomSheetSampleScreen
 import com.kez.picker.sample.ui.screen.DatePickerSampleScreen
 import com.kez.picker.sample.ui.screen.HomeScreen
 import com.kez.picker.sample.ui.screen.IntegratedPickerScreen
@@ -23,6 +24,7 @@ fun App() {
             composable(Screen.Integrated.route) { IntegratedPickerScreen(navController) }
             composable(Screen.TimePicker.route) { TimePickerSampleScreen(navController) }
             composable(Screen.DatePicker.route) { DatePickerSampleScreen(navController) }
+            composable(Screen.BottomSheet.route) { BottomSheetSampleScreen(navController) }
         }
     }
 }

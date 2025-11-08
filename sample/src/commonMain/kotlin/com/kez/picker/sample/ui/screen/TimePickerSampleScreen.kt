@@ -1,6 +1,5 @@
 package com.kez.picker.sample.ui.screen
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -32,9 +31,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
 import com.kez.picker.rememberPickerState
 import com.kez.picker.time.TimePicker
 import com.kez.picker.util.TimeFormat
@@ -44,6 +45,10 @@ import com.kez.picker.util.currentMinute
 import compose.icons.FeatherIcons
 import compose.icons.feathericons.ArrowLeft
 import compose.icons.feathericons.Clock
+import kotlinx.datetime.LocalTime
+import kotlinx.datetime.format
+import kotlinx.datetime.format.Padding
+import kotlinx.datetime.format.char
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -55,13 +60,38 @@ internal fun TimePickerSampleScreen(navController: NavController) {
     val minuteState = rememberPickerState(currentMinute)
     val periodState = rememberPickerState(if (currentHour >= 12) TimePeriod.PM else TimePeriod.AM)
 
-    // 선택된 시간 텍스트 계산
+    val ktxTimeFormat12 = LocalTime.Format {
+        amPmHour(padding = Padding.ZERO)
+        char(':')
+        minute(padding = Padding.ZERO)
+        char(' ')
+        amPmMarker(am = TimePeriod.AM.name, pm = TimePeriod.PM.name)
+    }
+
+    val ktxTimeFormat24 = LocalTime.Format {
+        hour(padding = Padding.ZERO)
+        char(':')
+        minute(padding = Padding.ZERO)
+    }
+
     val selectedTimeText by remember {
         derivedStateOf {
             if (selectedFormat == 0) {
-                "%02d:%02d %s".format(hour12State.selectedItem, minuteState.selectedItem, periodState.selectedItem)
+                val hour12 = hour12State.selectedItem // (1 ~ 12)
+                val minute = minuteState.selectedItem
+                val isAm = periodState.selectedItem == TimePeriod.AM
+
+                val hour24 = when {
+                    isAm && hour12 == 12 -> 0    // 12:xx AM (midnight) -> 0
+                    !isAm && hour12 != 12 -> hour12 + 12 // 1:xx PM (13) ~ 11:xx PM (23)
+                    else -> hour12               // 1:xx AM (1) ~ 11:xx AM (11), 12:xx PM (12)
+                }
+                val time = LocalTime(hour24, minute)
+                time.format(ktxTimeFormat12)
+
             } else {
-                "%02d:%02d".format(hour24State.selectedItem, minuteState.selectedItem)
+                val time = LocalTime(hour24State.selectedItem, minuteState.selectedItem)
+                time.format(ktxTimeFormat24)
             }
         }
     }
@@ -69,10 +99,10 @@ internal fun TimePickerSampleScreen(navController: NavController) {
     Scaffold(
         topBar = {
             CenterAlignedTopAppBar(
-                title = { Text("시간 피커 샘플", fontWeight = FontWeight.Bold) },
+                title = { Text("TimePicker Sample", fontWeight = FontWeight.Bold) },
                 navigationIcon = {
                     IconButton(onClick = { navController.popBackStack() }) {
-                        Icon(FeatherIcons.ArrowLeft, contentDescription = "뒤로가기")
+                        Icon(FeatherIcons.ArrowLeft, contentDescription = "Back")
                     }
                 }
             )
@@ -82,7 +112,6 @@ internal fun TimePickerSampleScreen(navController: NavController) {
             modifier = Modifier.fillMaxSize().padding(it).padding(16.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            // 선택 결과 표시 카드
             Card(
                 modifier = Modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(12.dp),
@@ -98,13 +127,13 @@ internal fun TimePickerSampleScreen(navController: NavController) {
                 ) {
                     Icon(
                         imageVector = FeatherIcons.Clock,
-                        contentDescription = "선택된 시간",
+                        contentDescription = "Selected time",
                         tint = MaterialTheme.colorScheme.primary,
                         modifier = Modifier.size(20.dp)
                     )
                     Spacer(modifier = Modifier.padding(horizontal = 8.dp))
                     Text(
-                        text = "선택된 시간: $selectedTimeText",
+                        text = "Selected time: $selectedTimeText",
                         fontSize = 16.sp,
                         fontWeight = FontWeight.Medium,
                         color = MaterialTheme.colorScheme.onSurface
@@ -121,11 +150,11 @@ internal fun TimePickerSampleScreen(navController: NavController) {
                 Tab(
                     selected = selectedFormat == 0,
                     onClick = { selectedFormat = 0 },
-                    text = { Text("12시간제") })
+                    text = { Text("12-Hour") })
                 Tab(
                     selected = selectedFormat == 1,
                     onClick = { selectedFormat = 1 },
-                    text = { Text("24시간제") })
+                    text = { Text("24-Hour") })
             }
             Spacer(modifier = Modifier.height(32.dp))
             if (selectedFormat == 0) {
@@ -144,4 +173,10 @@ internal fun TimePickerSampleScreen(navController: NavController) {
             }
         }
     }
+}
+
+@Preview
+@Composable
+fun TimePickerSampleScreenPreview() {
+    TimePickerSampleScreen(rememberNavController())
 }

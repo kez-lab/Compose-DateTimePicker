@@ -43,7 +43,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -51,6 +50,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
 import com.kez.picker.date.YearMonthPicker
 import com.kez.picker.rememberPickerState
 import com.kez.picker.sample.formatTime12
@@ -63,7 +63,6 @@ import com.kez.picker.util.currentHour
 import com.kez.picker.util.currentMinute
 import compose.icons.FeatherIcons
 import compose.icons.feathericons.ArrowLeft
-import compose.icons.feathericons.Bell
 import compose.icons.feathericons.Calendar
 import compose.icons.feathericons.Clock
 
@@ -92,7 +91,7 @@ internal fun IntegratedPickerScreen(navController: NavController) {
             CenterAlignedTopAppBar(
                 title = {
                     Text(
-                        "통합 샘플",
+                        "Integrated Sample",
                         fontWeight = FontWeight.Bold
                     )
                 },
@@ -100,7 +99,7 @@ internal fun IntegratedPickerScreen(navController: NavController) {
                     IconButton(onClick = { navController.popBackStack() }) {
                         Icon(
                             FeatherIcons.ArrowLeft,
-                            contentDescription = "뒤로가기"
+                            contentDescription = "Back"
                         )
                     }
                 },
@@ -139,12 +138,12 @@ internal fun IntegratedPickerScreen(navController: NavController) {
                         Tab(
                             selected = selectedTabIndex == 0,
                             onClick = { selectedTabIndex = 0 },
-                            text = { Text("날짜 선택") },
+                            text = { Text("Date") },
                             icon = { Icon(FeatherIcons.Calendar, null) })
                         Tab(
                             selected = selectedTabIndex == 1,
                             onClick = { selectedTabIndex = 1 },
-                            text = { Text("시간 선택") },
+                            text = { Text("Time") },
                             icon = { Icon(FeatherIcons.Clock, null) })
                     }
                     HorizontalDivider()
@@ -201,12 +200,12 @@ internal fun IntegratedPickerScreen(navController: NavController) {
             }
             Spacer(modifier = Modifier.weight(1f))
             Button(
-                onClick = { /* 선택 완료 로직 (샘플 앱 데모) */ },
+                onClick = { /* Selection complete logic (sample app demo) */ },
                 modifier = Modifier.fillMaxWidth().height(56.dp),
                 shape = RoundedCornerShape(12.dp),
                 colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
             ) {
-                Text("선택 완료", fontSize = 16.sp, fontWeight = FontWeight.SemiBold)
+                Text("Confirm Selection", fontSize = 16.sp, fontWeight = FontWeight.SemiBold)
             }
         }
     }
@@ -215,7 +214,7 @@ internal fun IntegratedPickerScreen(navController: NavController) {
 
 @Composable
 internal fun SelectedDateTimeCard(date: String, time: String) {
-    // 심플한 단색 카드 (그라디언트 제거)
+    // Simple solid color card (gradient removed)
     Card(
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(16.dp),
@@ -237,7 +236,7 @@ internal fun SelectedDateTimeCard(date: String, time: String) {
             ) {
                 Icon(
                     imageVector = FeatherIcons.Calendar,
-                    contentDescription = "날짜",
+                    contentDescription = "Date",
                     tint = MaterialTheme.colorScheme.primary,
                     modifier = Modifier.size(20.dp)
                 )
@@ -260,7 +259,7 @@ internal fun SelectedDateTimeCard(date: String, time: String) {
             ) {
                 Icon(
                     imageVector = FeatherIcons.Clock,
-                    contentDescription = "시간",
+                    contentDescription = "Time",
                     tint = MaterialTheme.colorScheme.primary,
                     modifier = Modifier.size(20.dp)
                 )
@@ -278,8 +277,5 @@ internal fun SelectedDateTimeCard(date: String, time: String) {
 @Preview
 @Composable
 fun PreviewTimeCard() {
-    SelectedDateTimeCard(
-        date = "2023년 10월",
-        time = "03:30 PM"
-    )
+    IntegratedPickerScreen(rememberNavController())
 }

@@ -26,9 +26,11 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
 import com.kez.picker.date.YearMonthPicker
 import com.kez.picker.rememberPickerState
 import com.kez.picker.sample.getMonthName
@@ -43,7 +45,7 @@ internal fun DatePickerSampleScreen(navController: NavController) {
     val yearState = rememberPickerState(currentDate.year)
     val monthState = rememberPickerState(currentDate.monthNumber)
 
-    // 선택된 날짜 텍스트 계산
+    // Calculate selected date text
     val selectedDateText by remember {
         derivedStateOf {
             "${yearState.selectedItem}년 ${getMonthName(monthState.selectedItem)}"
@@ -53,10 +55,10 @@ internal fun DatePickerSampleScreen(navController: NavController) {
     Scaffold(
         topBar = {
             CenterAlignedTopAppBar(
-                title = { Text("날짜 피커 샘플", fontWeight = FontWeight.Bold) },
+                title = { Text("DatePicker Sample", fontWeight = FontWeight.Bold) },
                 navigationIcon = {
                     IconButton(onClick = { navController.popBackStack() }) {
-                        Icon(FeatherIcons.ArrowLeft, contentDescription = "뒤로가기")
+                        Icon(FeatherIcons.ArrowLeft, contentDescription = "Back")
                     }
                 }
             )
@@ -65,9 +67,8 @@ internal fun DatePickerSampleScreen(navController: NavController) {
         Column(
             modifier = Modifier.fillMaxSize().padding(it).padding(16.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center
         ) {
-            // 선택 결과 표시 카드
+            // Selected result display card
             Card(
                 modifier = Modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(12.dp),
@@ -83,13 +84,13 @@ internal fun DatePickerSampleScreen(navController: NavController) {
                 ) {
                     Icon(
                         imageVector = FeatherIcons.Calendar,
-                        contentDescription = "선택된 날짜",
+                        contentDescription = "Selected date",
                         tint = MaterialTheme.colorScheme.primary,
                         modifier = Modifier.size(20.dp)
                     )
                     Spacer(modifier = Modifier.padding(horizontal = 8.dp))
                     Text(
-                        text = "선택된 날짜: $selectedDateText",
+                        text = "Selected date: $selectedDateText",
                         fontSize = 16.sp,
                         fontWeight = FontWeight.Medium,
                         color = MaterialTheme.colorScheme.onSurface
@@ -104,6 +105,15 @@ internal fun DatePickerSampleScreen(navController: NavController) {
                 yearPickerState = yearState,
                 monthPickerState = monthState
             )
+
+            // TODO: Add day selection capability
+            Spacer(modifier = Modifier.height(16.dp))
         }
     }
+}
+
+@Preview
+@Composable
+fun DatePickerSampleScreenPreview() {
+    DatePickerSampleScreen(rememberNavController())
 }
