@@ -68,7 +68,7 @@ A Compose Multiplatform date and time picker library that provides a consistent 
 
 ```kotlin
 dependencies {
-    implementation("io.github.kez-lab:compose-date-time-picker:0.3.0")
+    implementation("io.github.kez-lab:compose-date-time-picker:0.4.0")
 }
 ```
 
