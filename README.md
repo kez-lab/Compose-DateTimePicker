@@ -338,7 +338,7 @@ Open the `iosApp/` project in Xcode and run.
 
 Build and serve the web application:
 ```bash
-./gradlew :sample:jsBrowserRun
+./gradlew :sample:wasmJsBrowserDevelopmentRun 
 ```
 
 ---

@@ -1,4 +1,5 @@
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+import org.jetbrains.kotlin.gradle.ExperimentalWasmDsl
 
 plugins {
     alias(libs.plugins.multiplatform)
@@ -34,6 +35,16 @@ kotlin {
 
     jvm("desktop")
 
+    @OptIn(ExperimentalWasmDsl::class)
+    wasmJs {
+        browser {
+            commonWebpackConfig {
+                outputFileName = "sampleApp.js"
+            }
+        }
+        binaries.executable()
+    }
+
     sourceSets {
         commonMain.dependencies {
             implementation(project(":datetimepicker"))
@@ -65,6 +76,10 @@ kotlin {
 
         iosMain.dependencies {
             // iOS-specific dependencies if needed
+        }
+
+        wasmJsMain.dependencies {
+
         }
 
         val desktopMain by getting {
