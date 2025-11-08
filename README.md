@@ -327,7 +327,7 @@ In Android Studio or IntelliJ IDEA:
 
 Or run via Gradle:
 ```bash
-./gradlew :sample:run
+./gradlew :sample:desktopRun -DmainClass=com.kez.picker.sample.MainKt --quiet
 ```
 
 ### iOS
