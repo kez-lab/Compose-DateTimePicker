@@ -33,14 +33,14 @@ A Compose Multiplatform date and time picker library that provides a consistent 
 <table>
   <tr>
     <td align="center">
-      <video src="./screenshot/Screen_recording_20251108_230142.mp4" width="250" controls></video><br />
+      <img src="./screenshot/demo.gif" width="250" /><br />
       <b>BottomSheet Sample</b><br />
       <sub>Date and time selection in bottom sheet</sub>
     </td>
   </tr>
 </table>
 
-> **Demo**: The video above shows the complete interaction flow for date and time selection using bottom sheets.
+> **Demo**: The animation above shows the complete interaction flow for date and time selection using bottom sheets.
 
 ---
 
