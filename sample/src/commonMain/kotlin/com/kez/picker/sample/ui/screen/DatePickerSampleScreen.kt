@@ -29,8 +29,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.navigation.NavController
-import androidx.navigation.compose.rememberNavController
 import com.kez.picker.date.YearMonthPicker
 import com.kez.picker.rememberPickerState
 import com.kez.picker.sample.getMonthName
@@ -38,12 +36,15 @@ import com.kez.picker.util.currentDate
 import compose.icons.FeatherIcons
 import compose.icons.feathericons.ArrowLeft
 import compose.icons.feathericons.Calendar
+import kotlinx.datetime.number
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-internal fun DatePickerSampleScreen(navController: NavController) {
+internal fun DatePickerSampleScreen(
+    onBackPressed: () -> Unit = {},
+) {
     val yearState = rememberPickerState(currentDate.year)
-    val monthState = rememberPickerState(currentDate.monthNumber)
+    val monthState = rememberPickerState(currentDate.month.number)
 
     // Calculate selected date text
     val selectedDateText by remember {
@@ -57,7 +58,9 @@ internal fun DatePickerSampleScreen(navController: NavController) {
             CenterAlignedTopAppBar(
                 title = { Text("DatePicker Sample", fontWeight = FontWeight.Bold) },
                 navigationIcon = {
-                    IconButton(onClick = { navController.popBackStack() }) {
+                    IconButton(onClick = {
+                        onBackPressed()
+                    }) {
                         Icon(FeatherIcons.ArrowLeft, contentDescription = "Back")
                     }
                 }
@@ -115,5 +118,5 @@ internal fun DatePickerSampleScreen(navController: NavController) {
 @Preview
 @Composable
 fun DatePickerSampleScreenPreview() {
-    DatePickerSampleScreen(rememberNavController())
+    DatePickerSampleScreen()
 }
