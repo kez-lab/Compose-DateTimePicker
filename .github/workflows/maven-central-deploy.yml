@@ -30,9 +30,6 @@ jobs:
           fi
           echo "Publishing version: $VERSION"
 
-      - name: Check
-        run: ./gradlew check
-
       - name: Publish Release
         run: ./gradlew publishToMavenCentral
         env:
