@@ -44,7 +44,7 @@ import kotlinx.datetime.number
  * @param textStyle The style of the text for unselected items.
  * @param selectedTextStyle The style of the text for the selected item.
  * @param dividerColor The color of the dividers.
- * @param selectedItemBackground The background color of each individual picker's selected item area.
+ * @param selectedItemBackgroundColor The background color of each individual picker's selected item area.
  * @param selectedItemBackgroundShape The shape of the selected item background.
  * @param fadingEdgeGradient The gradient to use for fading edges.
  * @param horizontalAlignment The horizontal alignment of items.
@@ -68,7 +68,7 @@ fun YearMonthPicker(
     textStyle: TextStyle = TextStyle(fontSize = 16.sp),
     selectedTextStyle: TextStyle = TextStyle(fontSize = 24.sp),
     dividerColor: Color = LocalContentColor.current,
-    selectedItemBackground: Color = Color.Transparent,
+    selectedItemBackgroundColor: Color = Color.Transparent,
     selectedItemBackgroundShape: Shape = RoundedCornerShape(12.dp),
     fadingEdgeGradient: Brush = Brush.verticalGradient(
         0f to Color.Transparent,
@@ -112,7 +112,7 @@ fun YearMonthPicker(
                     textStyle = textStyle,
                     selectedTextStyle = selectedTextStyle,
                     dividerColor = dividerColor,
-                    selectedItemBackgroundColor = selectedItemBackground,
+                    selectedItemBackgroundColor = selectedItemBackgroundColor,
                     selectedItemBackgroundShape = selectedItemBackgroundShape,
                     itemPadding = itemPadding,
                     fadingEdgeGradient = fadingEdgeGradient,
@@ -131,7 +131,7 @@ fun YearMonthPicker(
                     textStyle = textStyle,
                     selectedTextStyle = selectedTextStyle,
                     dividerColor = dividerColor,
-                    selectedItemBackgroundColor = selectedItemBackground,
+                    selectedItemBackgroundColor = selectedItemBackgroundColor,
                     selectedItemBackgroundShape = selectedItemBackgroundShape,
                     itemPadding = itemPadding,
                     fadingEdgeGradient = fadingEdgeGradient,

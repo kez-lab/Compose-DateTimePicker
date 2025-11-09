@@ -130,7 +130,7 @@ internal fun BackgroundStylePickerScreen(
                             fontWeight = FontWeight.Bold
                         ),
                         isDividerVisible = false,
-                        selectedItemBackground = MaterialTheme.colorScheme.primaryContainer
+                        selectedItemBackgroundColor = MaterialTheme.colorScheme.primaryContainer
                     )
                 }
             }
@@ -166,7 +166,7 @@ internal fun BackgroundStylePickerScreen(
                             fontWeight = FontWeight.Bold
                         ),
                         isDividerVisible = false,
-                        selectedItemBackground = MaterialTheme.colorScheme.primaryContainer
+                        selectedItemBackgroundColor = MaterialTheme.colorScheme.primaryContainer
                     )
                 }
             }
