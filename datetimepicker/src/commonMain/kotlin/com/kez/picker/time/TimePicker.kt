@@ -7,11 +7,9 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.LocalContentColor
-import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -20,6 +18,7 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -53,6 +52,8 @@ import kotlinx.datetime.LocalDateTime
  * @param textStyle The style of the text for unselected items.
  * @param selectedTextStyle The style of the text for the selected item.
  * @param dividerColor The color of the dividers.
+ * @param selectedItemBackground The background color of the selected item area.
+ * @param selectedItemBackgroundShape The shape of the selected item background.
  * @param fadingEdgeGradient The gradient to use for fading edges.
  * @param horizontalAlignment The horizontal alignment of items.
  * @param verticalAlignment The vertical alignment of the text within items.
@@ -81,6 +82,8 @@ fun TimePicker(
     textStyle: TextStyle = TextStyle(fontSize = 16.sp),
     selectedTextStyle: TextStyle = TextStyle(fontSize = 22.sp),
     dividerColor: Color = LocalContentColor.current,
+    selectedItemBackground: Color = Color.Transparent,
+    selectedItemBackgroundShape: Shape = RoundedCornerShape(12.dp),
     fadingEdgeGradient: Brush = Brush.verticalGradient(
         0f to Color.Transparent,
         0.5f to Color.Black,
@@ -135,6 +138,8 @@ fun TimePicker(
                         textStyle = textStyle,
                         selectedTextStyle = selectedTextStyle,
                         dividerColor = dividerColor,
+                        selectedItemBackgroundColor = selectedItemBackground,
+                        selectedItemBackgroundShape = selectedItemBackgroundShape,
                         itemPadding = itemPadding,
                         startIndex = periodStartIndex,
                         fadingEdgeGradient = fadingEdgeGradient,
@@ -143,7 +148,7 @@ fun TimePicker(
                         dividerThickness = dividerThickness,
                         dividerShape = dividerShape,
                         isDividerVisible = isDividerVisible,
-                        isInfinity = false,
+                        isInfinity = false
                     )
                     Spacer(modifier = Modifier.width(spacingBetweenPickers))
                 }
@@ -156,13 +161,15 @@ fun TimePicker(
                     textStyle = textStyle,
                     selectedTextStyle = selectedTextStyle,
                     dividerColor = dividerColor,
+                    selectedItemBackgroundColor = selectedItemBackground,
+                    selectedItemBackgroundShape = selectedItemBackgroundShape,
                     itemPadding = itemPadding,
                     fadingEdgeGradient = fadingEdgeGradient,
                     horizontalAlignment = horizontalAlignment,
                     itemTextAlignment = verticalAlignment,
                     dividerThickness = dividerThickness,
                     dividerShape = dividerShape,
-                    isDividerVisible = isDividerVisible,
+                    isDividerVisible = isDividerVisible
                 )
                 Spacer(modifier = Modifier.width(spacingBetweenPickers))
                 Picker(
@@ -174,15 +181,64 @@ fun TimePicker(
                     textStyle = textStyle,
                     selectedTextStyle = selectedTextStyle,
                     dividerColor = dividerColor,
+                    selectedItemBackgroundColor = selectedItemBackground,
+                    selectedItemBackgroundShape = selectedItemBackgroundShape,
                     itemPadding = itemPadding,
                     fadingEdgeGradient = fadingEdgeGradient,
                     horizontalAlignment = horizontalAlignment,
                     itemTextAlignment = verticalAlignment,
                     dividerThickness = dividerThickness,
                     dividerShape = dividerShape,
-                    isDividerVisible = isDividerVisible,
+                    isDividerVisible = isDividerVisible
                 )
             }
         }
     }
-} 
+}
+
+@Preview(name = "24-Hour Format", group = "TimePicker - Formats", showBackground = true)
+@Composable
+fun TimePickerPreview24Hour() {
+    TimePicker(
+        timeFormat = TimeFormat.HOUR_24
+    )
+}
+
+@Preview(name = "12-Hour Format with AM/PM", group = "TimePicker - Formats", showBackground = true)
+@Composable
+fun TimePickerPreview12Hour() {
+    TimePicker(
+        timeFormat = TimeFormat.HOUR_12
+    )
+}
+
+@Preview(name = "No Divider", group = "TimePicker - Styles", showBackground = true)
+@Composable
+fun TimePickerNoDividerPreview() {
+    TimePicker(
+        timeFormat = TimeFormat.HOUR_24,
+        isDividerVisible = false
+    )
+}
+
+@Preview(name = "Custom Colors", group = "TimePicker - Styles", showBackground = true)
+@Composable
+fun TimePickerCustomColorsPreview() {
+    TimePicker(
+        timeFormat = TimeFormat.HOUR_12,
+        textStyle = TextStyle(fontSize = 16.sp, color = Color.Gray),
+        selectedTextStyle = TextStyle(fontSize = 22.sp, color = Color(0xFF6200EE)),
+        dividerColor = Color(0xFF6200EE)
+    )
+}
+
+@Preview(name = "Large Text Size", group = "TimePicker - Styles", showBackground = true)
+@Composable
+fun TimePickerLargeTextPreview() {
+    TimePicker(
+        timeFormat = TimeFormat.HOUR_24,
+        textStyle = TextStyle(fontSize = 20.sp),
+        selectedTextStyle = TextStyle(fontSize = 28.sp),
+        visibleItemsCount = 5
+    )
+}

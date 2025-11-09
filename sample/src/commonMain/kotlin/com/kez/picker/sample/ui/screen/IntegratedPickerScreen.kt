@@ -139,13 +139,11 @@ internal fun IntegratedPickerScreen(
                         Tab(
                             selected = selectedTabIndex == 0,
                             onClick = { selectedTabIndex = 0 },
-                            text = { Text("Date") },
-                            icon = { Icon(FeatherIcons.Calendar, null) })
+                            text = { Text("Date") })
                         Tab(
                             selected = selectedTabIndex == 1,
                             onClick = { selectedTabIndex = 1 },
-                            text = { Text("Time") },
-                            icon = { Icon(FeatherIcons.Clock, null) })
+                            text = { Text("Time") })
                     }
                     HorizontalDivider()
                     AnimatedContent(

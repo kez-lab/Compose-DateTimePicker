@@ -1,6 +1,5 @@
 package com.kez.picker.date
 
-import kotlinx.datetime.number
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -9,7 +8,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.LocalContentColor
-import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -18,6 +16,7 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -28,6 +27,7 @@ import com.kez.picker.util.MONTH_RANGE
 import com.kez.picker.util.YEAR_RANGE
 import com.kez.picker.util.currentDate
 import kotlinx.datetime.LocalDate
+import kotlinx.datetime.number
 
 /**
  * A year and month picker component.
@@ -44,6 +44,8 @@ import kotlinx.datetime.LocalDate
  * @param textStyle The style of the text for unselected items.
  * @param selectedTextStyle The style of the text for the selected item.
  * @param dividerColor The color of the dividers.
+ * @param selectedItemBackground The background color of each individual picker's selected item area.
+ * @param selectedItemBackgroundShape The shape of the selected item background.
  * @param fadingEdgeGradient The gradient to use for fading edges.
  * @param horizontalAlignment The horizontal alignment of items.
  * @param verticalAlignment The vertical alignment of the text within items.
@@ -66,6 +68,8 @@ fun YearMonthPicker(
     textStyle: TextStyle = TextStyle(fontSize = 16.sp),
     selectedTextStyle: TextStyle = TextStyle(fontSize = 24.sp),
     dividerColor: Color = LocalContentColor.current,
+    selectedItemBackground: Color = Color.Transparent,
+    selectedItemBackgroundShape: Shape = RoundedCornerShape(12.dp),
     fadingEdgeGradient: Brush = Brush.verticalGradient(
         0f to Color.Transparent,
         0.5f to Color.Black,
@@ -108,6 +112,8 @@ fun YearMonthPicker(
                     textStyle = textStyle,
                     selectedTextStyle = selectedTextStyle,
                     dividerColor = dividerColor,
+                    selectedItemBackgroundColor = selectedItemBackground,
+                    selectedItemBackgroundShape = selectedItemBackgroundShape,
                     itemPadding = itemPadding,
                     fadingEdgeGradient = fadingEdgeGradient,
                     horizontalAlignment = horizontalAlignment,
@@ -125,6 +131,8 @@ fun YearMonthPicker(
                     textStyle = textStyle,
                     selectedTextStyle = selectedTextStyle,
                     dividerColor = dividerColor,
+                    selectedItemBackgroundColor = selectedItemBackground,
+                    selectedItemBackgroundShape = selectedItemBackgroundShape,
                     itemPadding = itemPadding,
                     fadingEdgeGradient = fadingEdgeGradient,
                     horizontalAlignment = horizontalAlignment,
@@ -136,4 +144,38 @@ fun YearMonthPicker(
             }
         }
     }
-} 
+}
+
+@Preview(name = "Default", group = "YearMonthPicker - Basic", showBackground = true)
+@Composable
+fun YearMonthPickerPreview() {
+    YearMonthPicker()
+}
+
+@Preview(name = "No Divider", group = "YearMonthPicker - Variations", showBackground = true)
+@Composable
+fun YearMonthPickerNoDividerPreview() {
+    YearMonthPicker(
+        isDividerVisible = false,
+    )
+}
+
+@Preview(name = "Custom Colors", group = "YearMonthPicker - Styles", showBackground = true)
+@Composable
+fun YearMonthPickerCustomColorsPreview() {
+    YearMonthPicker(
+        textStyle = TextStyle(fontSize = 16.sp, color = Color.Gray),
+        selectedTextStyle = TextStyle(fontSize = 24.sp, color = Color(0xFF03DAC5)),
+        dividerColor = Color(0xFF03DAC5)
+    )
+}
+
+@Preview(name = "Large Text", group = "YearMonthPicker - Styles", showBackground = true)
+@Composable
+fun YearMonthPickerLargeTextPreview() {
+    YearMonthPicker(
+        textStyle = TextStyle(fontSize = 18.sp),
+        selectedTextStyle = TextStyle(fontSize = 28.sp),
+        visibleItemsCount = 5
+    )
+}
