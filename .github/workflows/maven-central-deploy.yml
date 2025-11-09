@@ -30,9 +30,6 @@ jobs:
           fi
           echo "Publishing version: $VERSION"
 
-      - name: Assemble
-        run: ./gradlew assemble
-
       - name: Check
         run: ./gradlew check
 
