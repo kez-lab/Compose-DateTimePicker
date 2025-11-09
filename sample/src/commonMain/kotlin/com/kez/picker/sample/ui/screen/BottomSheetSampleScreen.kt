@@ -56,7 +56,9 @@ import kotlinx.datetime.number
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-internal fun BottomSheetSampleScreen(navController: NavController) {
+internal fun BottomSheetSampleScreen(
+    onBackPressed: () -> Unit = {},
+) {
     // Date/time state management
     val yearState = rememberPickerState(currentDate.year)
     val monthState = rememberPickerState(currentDate.month.number)
@@ -91,7 +93,7 @@ internal fun BottomSheetSampleScreen(navController: NavController) {
             CenterAlignedTopAppBar(
                 title = { Text("BottomSheet Sample", fontWeight = FontWeight.Bold) },
                 navigationIcon = {
-                    IconButton(onClick = { navController.popBackStack() }) {
+                    IconButton(onClick = { onBackPressed() }) {
                         Icon(FeatherIcons.ArrowLeft, contentDescription = "Back")
                     }
                 }

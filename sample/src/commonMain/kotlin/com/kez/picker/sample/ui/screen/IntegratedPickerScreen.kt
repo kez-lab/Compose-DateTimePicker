@@ -49,7 +49,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.kez.picker.date.YearMonthPicker
 import com.kez.picker.rememberPickerState
@@ -68,7 +67,9 @@ import compose.icons.feathericons.Clock
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-internal fun IntegratedPickerScreen(navController: NavController) {
+internal fun IntegratedPickerScreen(
+    onBackPressed: () -> Unit = {},
+) {
     val yearState = rememberPickerState(currentDate.year)
     val monthState = rememberPickerState(currentDate.monthNumber)
     val hourState =
@@ -96,7 +97,7 @@ internal fun IntegratedPickerScreen(navController: NavController) {
                     )
                 },
                 navigationIcon = {
-                    IconButton(onClick = { navController.popBackStack() }) {
+                    IconButton(onClick = { onBackPressed() }) {
                         Icon(
                             FeatherIcons.ArrowLeft,
                             contentDescription = "Back"
@@ -277,5 +278,5 @@ internal fun SelectedDateTimeCard(date: String, time: String) {
 @Preview
 @Composable
 fun PreviewTimeCard() {
-    IntegratedPickerScreen(rememberNavController())
+    IntegratedPickerScreen()
 }

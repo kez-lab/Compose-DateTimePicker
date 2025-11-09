@@ -68,7 +68,7 @@ A Compose Multiplatform date and time picker library that provides a consistent 
 
 ```kotlin
 dependencies {
-    implementation("io.github.kez-lab:compose-date-time-picker:0.3.0")
+    implementation("io.github.kez-lab:compose-date-time-picker:0.4.0")
 }
 ```
 
@@ -338,7 +338,7 @@ Open the `iosApp/` project in Xcode and run.
 
 Build and serve the web application:
 ```bash
-./gradlew :sample:jsBrowserRun
+./gradlew :sample:wasmJsBrowserDevelopmentRun 
 ```
 
 ---

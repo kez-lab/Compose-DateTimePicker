@@ -52,7 +52,9 @@ import kotlinx.datetime.format.char
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-internal fun TimePickerSampleScreen(navController: NavController) {
+internal fun TimePickerSampleScreen(
+    onBackPressed: () -> Unit = {},
+) {
     var selectedFormat by remember { mutableIntStateOf(0) }
     val hour12State =
         rememberPickerState(if (currentHour > 12) currentHour - 12 else if (currentHour == 0) 12 else currentHour)
@@ -101,7 +103,7 @@ internal fun TimePickerSampleScreen(navController: NavController) {
             CenterAlignedTopAppBar(
                 title = { Text("TimePicker Sample", fontWeight = FontWeight.Bold) },
                 navigationIcon = {
-                    IconButton(onClick = { navController.popBackStack() }) {
+                    IconButton(onClick = { onBackPressed() }) {
                         Icon(FeatherIcons.ArrowLeft, contentDescription = "Back")
                     }
                 }
@@ -178,5 +180,5 @@ internal fun TimePickerSampleScreen(navController: NavController) {
 @Preview
 @Composable
 fun TimePickerSampleScreenPreview() {
-    TimePickerSampleScreen(rememberNavController())
+    TimePickerSampleScreen()
 }
