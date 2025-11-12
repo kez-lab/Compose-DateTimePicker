@@ -212,6 +212,7 @@ fun <T> Picker(
                         .height(itemHeight)
                         .fillMaxWidth()
                         .clickable(
+                            enabled = getItem(index) != null,
                             role = Role.Button,
                             indication = null,
                             interactionSource = remember { MutableInteractionSource() },
