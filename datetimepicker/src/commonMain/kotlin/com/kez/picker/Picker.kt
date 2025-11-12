@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -20,7 +19,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
@@ -37,9 +35,11 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.lerp
+import androidx.compose.ui.unit.sp
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.mapNotNull
 import kotlin.math.abs
@@ -55,6 +55,8 @@ import kotlin.math.abs
  * @param textStyle The style of the text for unselected items.
  * @param selectedTextStyle The style of the text for the selected item.
  * @param dividerColor The color of the dividers.
+ * @param selectedItemBackgroundColor The background color of the selected item area.
+ * @param selectedItemBackgroundShape The shape of the background of the selected item area.
  * @param itemPadding The padding around each item.
  * @param fadingEdgeGradient The gradient to use for fading edges.
  * @param horizontalAlignment The horizontal alignment of items.
@@ -67,13 +69,15 @@ import kotlin.math.abs
 @Composable
 fun <T> Picker(
     items: List<T>,
-    modifier: Modifier = Modifier,
     state: PickerState<T>,
     startIndex: Int = 0,
+    modifier: Modifier = Modifier,
     visibleItemsCount: Int = 3,
     textStyle: TextStyle = LocalTextStyle.current,
     selectedTextStyle: TextStyle = LocalTextStyle.current,
     dividerColor: Color = LocalContentColor.current,
+    selectedItemBackgroundColor: Color = Color.Transparent,
+    selectedItemBackgroundShape: Shape = RoundedCornerShape(12.dp),
     itemPadding: PaddingValues = PaddingValues(8.dp),
     fadingEdgeGradient: Brush = Brush.verticalGradient(
         0f to Color.Transparent,
@@ -117,7 +121,11 @@ fun <T> Picker(
     val flingBehavior = rememberSnapFlingBehavior(lazyListState = listState)
 
     val itemHeight = with(density) {
-        selectedTextStyle.fontSize.toDp() + itemPadding.calculateTopPadding() + itemPadding.calculateBottomPadding()
+        selectedTextStyle.fontSize
+            .toPx()
+            .toDp()
+            .plus(itemPadding.calculateTopPadding())
+            .plus(itemPadding.calculateBottomPadding())
     }
 
     LaunchedEffect(listState) {
@@ -128,6 +136,42 @@ fun <T> Picker(
     }
 
     Box(modifier = modifier) {
+        Box(
+            modifier = Modifier
+                .align(Alignment.Center)
+                .background(
+                    color = selectedItemBackgroundColor,
+                    shape = selectedItemBackgroundShape
+                )
+                .fillMaxWidth()
+                .height(itemHeight)
+        ) {
+            if (isDividerVisible) {
+                HorizontalDivider(
+                    color = dividerColor,
+                    thickness = dividerThickness,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .background(
+                            color = dividerColor,
+                            shape = dividerShape
+                        )
+                        .align(Alignment.TopCenter)
+                )
+
+                HorizontalDivider(
+                    color = dividerColor,
+                    thickness = dividerThickness,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .background(
+                            color = dividerColor,
+                            shape = dividerShape
+                        )
+                        .align(Alignment.BottomCenter)
+                )
+            }
+        }
         LazyColumn(
             state = listState,
             flingBehavior = flingBehavior,
@@ -157,62 +201,32 @@ fun <T> Picker(
 
                 val currentItemText = getItem(index)?.toString().orEmpty()
 
-                Text(
-                    text = currentItemText,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis,
-                    style = textStyle.copy(
-                        fontSize = lerp(
-                            selectedTextStyle.fontSize,
-                            textStyle.fontSize,
-                            fraction
-                        ),
-                        color = lerp(
-                            selectedTextStyle.color,
-                            textStyle.color,
-                            fraction
-                        )
-                    ),
-                    textAlign = TextAlign.Center,
+                Box(
                     modifier = Modifier
                         .height(itemHeight)
-                        .wrapContentHeight(align = itemTextAlignment)
                         .fillMaxWidth()
-                        .padding(itemPadding)
-                )
-            }
-        }
-
-        if (isDividerVisible) {
-            Box(
-                modifier = Modifier
-                    .align(Alignment.Center)
-                    .fillMaxWidth()
-                    .height(itemHeight)
-            ) {
-                HorizontalDivider(
-                    color = dividerColor,
-                    thickness = dividerThickness,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .background(
-                            color = dividerColor,
-                            shape = dividerShape
-                        )
-                        .align(Alignment.TopCenter)
-                )
-
-                HorizontalDivider(
-                    color = dividerColor,
-                    thickness = dividerThickness,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .background(
-                            color = dividerColor,
-                            shape = dividerShape
-                        )
-                        .align(Alignment.BottomCenter)
-                )
+                        .padding(itemPadding),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(
+                        text = currentItemText,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
+                        style = textStyle.copy(
+                            fontSize = lerp(
+                                selectedTextStyle.fontSize,
+                                textStyle.fontSize,
+                                fraction
+                            ),
+                            color = lerp(
+                                selectedTextStyle.color,
+                                textStyle.color,
+                                fraction
+                            ),
+                        ),
+                        textAlign = TextAlign.Center
+                    )
+                }
             }
         }
     }
@@ -229,4 +243,110 @@ private fun Modifier.fadingEdge(brush: Brush) = this
     .drawWithContent {
         drawContent()
         drawRect(brush = brush, blendMode = BlendMode.DstIn)
-    } 
+    }
+
+@Preview(name = "Basic Picker", group = "Picker - Basic", showBackground = true)
+@Composable
+fun PickerPreview() {
+    val state = rememberPickerState("Item 1")
+    Picker(
+        items = listOf("1", "2", "3"),
+        state = state,
+        textStyle = TextStyle(fontSize = 16.sp),
+        selectedTextStyle = TextStyle(fontSize = 24.sp)
+    )
+}
+
+@Preview(name = "Long Text Items", group = "Picker - Variations", showBackground = true)
+@Composable
+fun PickerLongTextPreview() {
+    val state = rememberPickerState("Long Item 1")
+    Picker(
+        items = listOf("Long Item 1", "Long Item 2", "Long Item 3"),
+        state = state,
+        textStyle = TextStyle(fontSize = 16.sp),
+        selectedTextStyle = TextStyle(fontSize = 24.sp)
+    )
+}
+
+@Preview(name = "Many Items", group = "Picker - Variations", showBackground = true)
+@Composable
+fun PickerManyItemsPreview() {
+    val items = (1..100).map { "Item $it" }
+    val state = rememberPickerState("Item 50")
+    Picker(
+        items = items,
+        state = state,
+        startIndex = 49,
+        textStyle = TextStyle(fontSize = 16.sp),
+        selectedTextStyle = TextStyle(fontSize = 24.sp)
+    )
+}
+
+@Preview(name = "No Divider", group = "Picker - Variations", showBackground = true)
+@Composable
+fun PickerNoDividerPreview() {
+    val state = rememberPickerState("Item 2")
+    Picker(
+        items = listOf("Item 1", "Item 2", "Item 3"),
+        state = state,
+        isDividerVisible = false,
+        textStyle = TextStyle(fontSize = 16.sp),
+        selectedTextStyle = TextStyle(fontSize = 24.sp)
+    )
+}
+
+@Preview(name = "Custom Colors", group = "Picker - Styles", showBackground = true)
+@Composable
+fun PickerCustomColorsPreview() {
+    val state = rememberPickerState("Blue")
+    Picker(
+        items = listOf("Red", "Green", "Blue"),
+        state = state,
+        textStyle = TextStyle(fontSize = 16.sp, color = Color.Gray),
+        selectedTextStyle = TextStyle(fontSize = 24.sp, color = Color.Blue),
+        dividerColor = Color.Blue
+    )
+}
+
+@Preview(name = "Bounded Scroll", group = "Picker - Variations", showBackground = true)
+@Composable
+fun PickerBoundedPreview() {
+    val state = rememberPickerState("Item 2")
+    Picker(
+        items = listOf("Item 1", "Item 2", "Item 3", "Item 4", "Item 5"),
+        state = state,
+        isInfinity = false,
+        textStyle = TextStyle(fontSize = 16.sp),
+        selectedTextStyle = TextStyle(fontSize = 24.sp)
+    )
+}
+
+@Preview(name = "5 Visible Items", group = "Picker - Styles", showBackground = true)
+@Composable
+fun Picker5VisibleItemsPreview() {
+    val items = (1..10).map { "Item $it" }
+    val state = rememberPickerState("Item 5")
+    Picker(
+        items = items,
+        state = state,
+        startIndex = 4,
+        visibleItemsCount = 5,
+        textStyle = TextStyle(fontSize = 16.sp),
+        selectedTextStyle = TextStyle(fontSize = 24.sp)
+    )
+}
+
+@Preview(name = "Selected Background", group = "Picker - Styles", showBackground = true)
+@Composable
+fun PickerSelectedBackgroundPreview() {
+    val state = rememberPickerState("Item 2")
+    Picker(
+        items = listOf("Item 1", "Item 2", "Item 3"),
+        state = state,
+        textStyle = TextStyle(fontSize = 16.sp, color = Color.Gray),
+        selectedTextStyle = TextStyle(fontSize = 24.sp, color = Color.Blue),
+        dividerColor = Color.Blue,
+        selectedItemBackgroundColor = Color.Blue.copy(alpha = 0.1f)
+    )
+}

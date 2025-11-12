@@ -35,6 +35,8 @@ import compose.icons.feathericons.Calendar
 import compose.icons.feathericons.CheckCircle
 import compose.icons.feathericons.Clock
 import compose.icons.feathericons.Layers
+import compose.icons.feathericons.Minus
+import compose.icons.feathericons.Square
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -89,6 +91,14 @@ internal fun HomeScreen(navController: NavController) {
                     description = "Date/time selection in bottom sheet",
                     icon = FeatherIcons.Layers,
                     onClick = { navController.navigate(Screen.BottomSheet.route) }
+                )
+            }
+            item {
+                MenuListItem(
+                    title = "Background Style",
+                    description = "Picker with background design",
+                    icon = FeatherIcons.Square,
+                    onClick = { navController.navigate(Screen.BackgroundStyle.route) }
                 )
             }
         }

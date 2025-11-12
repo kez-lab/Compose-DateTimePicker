@@ -8,6 +8,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.kez.picker.sample.ui.navigation.Screen
+import com.kez.picker.sample.ui.screen.BackgroundStylePickerScreen
 import com.kez.picker.sample.ui.screen.BottomSheetSampleScreen
 import com.kez.picker.sample.ui.screen.DatePickerSampleScreen
 import com.kez.picker.sample.ui.screen.HomeScreen
@@ -52,6 +53,11 @@ fun App() {
             }
             composable(Screen.BottomSheet.route) {
                 BottomSheetSampleScreen(
+                    onBackPressed = { handleNavigateBack(navController) }
+                )
+            }
+            composable(Screen.BackgroundStyle.route) {
+                BackgroundStylePickerScreen(
                     onBackPressed = { handleNavigateBack(navController) }
                 )
             }
