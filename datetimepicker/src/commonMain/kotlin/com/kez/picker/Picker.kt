@@ -223,11 +223,6 @@ fun <T> Picker(
                                 textStyle.color,
                                 fraction
                             ),
-                            lineHeight = lerp(
-                                selectedTextStyle.fontSize,
-                                textStyle.fontSize,
-                                fraction
-                            ),
                         ),
                         textAlign = TextAlign.Center
                     )
