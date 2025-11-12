@@ -34,8 +34,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.navigation.NavController
-import androidx.navigation.compose.rememberNavController
 import com.kez.picker.rememberPickerState
 import com.kez.picker.time.TimePicker
 import com.kez.picker.util.TimeFormat
@@ -170,6 +168,7 @@ internal fun TimePickerSampleScreen(
                 TimePicker(
                     hourPickerState = hour24State,
                     minutePickerState = minuteState,
+                    visibleItemsCount = 5,
                     timeFormat = TimeFormat.HOUR_24
                 )
             }
