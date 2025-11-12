@@ -104,11 +104,10 @@ jobs:
           xcrun simctl boot "CI-iPhone15" || true
           xcrun simctl list | head -n 50
 
-      # iOS Framework Create + iOS Simulator Unit Test
+      # iOS Simulator Unit Test
       - name: Gradle Build & Test • iOS
         uses: gradle/gradle-build-action@v3
         with:
           arguments: |
             ${{ env.MODULE }}:clean
-            ${{ env.MODULE }}:assembleXCFramework
             ${{ env.MODULE }}:iosSimulatorArm64Test
