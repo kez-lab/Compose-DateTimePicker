@@ -1,4 +1,4 @@
-name: CI - Compose MPP TimePicker (Build & Test)
+name: CI - Compose Multiplatform TimePicker (Build & Test)
 
 on:
   push:
