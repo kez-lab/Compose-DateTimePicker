@@ -216,9 +216,13 @@ fun <T> Picker(
                             indication = null,
                             interactionSource = remember { MutableInteractionSource() },
                             onClick = {
-                                scope.launch {
-                                    val targetIndex = index - visibleItemsMiddle
-                                    listState.animateScrollToItem(targetIndex)
+                                val currentCenterIndex = listState.firstVisibleItemIndex + visibleItemsMiddle
+                                if (index != currentCenterIndex) {
+                                    scope.launch {
+                                        val targetIndex = (index - visibleItemsMiddle)
+                                            .coerceIn(0, listScrollCount - 1)
+                                        listState.animateScrollToItem(targetIndex)
+                                    }
                                 }
                             }
                         )
