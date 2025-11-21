@@ -31,7 +31,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.kez.picker.date.YearMonthPicker
-import com.kez.picker.rememberPickerState
+import com.kez.picker.rememberTimePickerState
+import com.kez.picker.rememberYearMonthPickerState
 import com.kez.picker.sample.formatTime12
 import com.kez.picker.sample.getMonthName
 import com.kez.picker.time.TimePicker
@@ -49,19 +50,22 @@ import kotlinx.datetime.number
 internal fun BackgroundStylePickerScreen(
     onBackPressed: () -> Unit = {},
 ) {
-    val yearState = rememberPickerState(currentDate.year)
-    val monthState = rememberPickerState(currentDate.month.number)
-    val hourState =
-        rememberPickerState(if (currentHour > 12) currentHour - 12 else if (currentHour == 0) 12 else currentHour)
-    val minuteState = rememberPickerState(currentMinute)
-    val periodState = rememberPickerState(if (currentHour >= 12) TimePeriod.PM else TimePeriod.AM)
+    val yearMonthState = rememberYearMonthPickerState(
+        initialYear = currentDate.year,
+        initialMonth = currentDate.monthNumber
+    )
+    val timeState = rememberTimePickerState(
+        initialHour = if (currentHour > 12) currentHour - 12 else if (currentHour == 0) 12 else currentHour,
+        initialMinute = currentMinute,
+        initialPeriod = if (currentHour >= 12) TimePeriod.PM else TimePeriod.AM
+    )
 
-    val selectedDateText = remember(yearState.selectedItem, monthState.selectedItem) {
-        "${yearState.selectedItem}년 ${getMonthName(monthState.selectedItem)}"
+    val selectedDateText = remember(yearMonthState.selectedYear, yearMonthState.selectedMonth) {
+        "${yearMonthState.selectedYear}년 ${getMonthName(yearMonthState.selectedMonth)}"
     }
     val selectedTimeText =
-        remember(hourState.selectedItem, minuteState.selectedItem, periodState.selectedItem) {
-            formatTime12(hourState.selectedItem, minuteState.selectedItem, periodState.selectedItem)
+        remember(timeState.selectedHour, timeState.selectedMinute, timeState.selectedPeriod) {
+            formatTime12(timeState.selectedHour, timeState.selectedMinute, timeState.selectedPeriod)
         }
 
     Scaffold(
@@ -118,8 +122,7 @@ internal fun BackgroundStylePickerScreen(
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     YearMonthPicker(
-                        yearPickerState = yearState,
-                        monthPickerState = monthState,
+                        state = yearMonthState,
                         textStyle = TextStyle(
                             fontSize = 18.sp,
                             color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
@@ -152,9 +155,7 @@ internal fun BackgroundStylePickerScreen(
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     TimePicker(
-                        hourPickerState = hourState,
-                        minutePickerState = minuteState,
-                        periodPickerState = periodState,
+                        state = timeState,
                         timeFormat = TimeFormat.HOUR_12,
                         textStyle = TextStyle(
                             fontSize = 18.sp,

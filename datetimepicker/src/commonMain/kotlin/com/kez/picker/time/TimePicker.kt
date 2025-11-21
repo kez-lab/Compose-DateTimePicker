@@ -23,15 +23,14 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.kez.picker.Picker
-import com.kez.picker.PickerState
+import com.kez.picker.TimePickerState
+import com.kez.picker.rememberTimePickerState
 import com.kez.picker.util.HOUR12_RANGE
 import com.kez.picker.util.HOUR24_RANGE
 import com.kez.picker.util.MINUTE_RANGE
 import com.kez.picker.util.TimeFormat
 import com.kez.picker.util.TimePeriod
 import com.kez.picker.util.currentDateTime
-import com.kez.picker.util.currentHour
-import com.kez.picker.util.currentMinute
 import kotlinx.datetime.LocalDateTime
 
 /**
@@ -66,9 +65,7 @@ import kotlinx.datetime.LocalDateTime
 fun TimePicker(
     modifier: Modifier = Modifier,
     pickerModifier: Modifier = Modifier,
-    minutePickerState: PickerState<Int> = remember { PickerState(currentMinute) },
-    hourPickerState: PickerState<Int> = remember { PickerState(currentHour) },
-    periodPickerState: PickerState<TimePeriod> = remember { PickerState(TimePeriod.AM) },
+    state: TimePickerState = rememberTimePickerState(),
     timeFormat: TimeFormat = TimeFormat.HOUR_24,
     startTime: LocalDateTime = currentDateTime,
     minuteItems: List<Int> = MINUTE_RANGE,
@@ -131,7 +128,7 @@ fun TimePicker(
             ) {
                 if (timeFormat == TimeFormat.HOUR_12) {
                     Picker(
-                        state = periodPickerState,
+                        state = state.periodState,
                         items = periodItems,
                         visibleItemsCount = visibleItemsCount,
                         modifier = pickerModifier.weight(1f),
@@ -153,7 +150,7 @@ fun TimePicker(
                     Spacer(modifier = Modifier.width(spacingBetweenPickers))
                 }
                 Picker(
-                    state = hourPickerState,
+                    state = state.hourState,
                     modifier = pickerModifier.weight(1f),
                     items = hourItems,
                     startIndex = hourStartIndex,
@@ -173,7 +170,7 @@ fun TimePicker(
                 )
                 Spacer(modifier = Modifier.width(spacingBetweenPickers))
                 Picker(
-                    state = minutePickerState,
+                    state = state.minuteState,
                     items = minuteItems,
                     startIndex = minuteStartIndex,
                     visibleItemsCount = visibleItemsCount,
