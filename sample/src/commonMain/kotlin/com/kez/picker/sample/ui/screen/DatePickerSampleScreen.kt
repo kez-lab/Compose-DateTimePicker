@@ -30,7 +30,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.kez.picker.date.YearMonthPicker
-import com.kez.picker.rememberPickerState
+import com.kez.picker.rememberYearMonthPickerState
 import com.kez.picker.sample.getMonthName
 import com.kez.picker.util.currentDate
 import compose.icons.FeatherIcons
@@ -43,13 +43,15 @@ import kotlinx.datetime.number
 internal fun DatePickerSampleScreen(
     onBackPressed: () -> Unit = {},
 ) {
-    val yearState = rememberPickerState(currentDate.year)
-    val monthState = rememberPickerState(currentDate.month.number)
+    val state = rememberYearMonthPickerState(
+        initialYear = currentDate.year,
+        initialMonth = currentDate.monthNumber
+    )
 
     // Calculate selected date text
     val selectedDateText by remember {
         derivedStateOf {
-            "${yearState.selectedItem}년 ${getMonthName(monthState.selectedItem)}"
+            "${state.selectedYear}년 ${getMonthName(state.selectedMonth)}"
         }
     }
 
@@ -105,8 +107,7 @@ internal fun DatePickerSampleScreen(
 
             YearMonthPicker(
                 modifier = Modifier.padding(horizontal = 12.dp),
-                yearPickerState = yearState,
-                monthPickerState = monthState
+                state = state
             )
 
             // TODO: Add day selection capability
