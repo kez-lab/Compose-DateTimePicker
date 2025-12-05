@@ -76,7 +76,7 @@ internal fun IntegratedPickerScreen(
         initialMonth = currentDate.monthNumber
     )
     val timeState = rememberTimePickerState(
-        initialHour = currentHour,
+        initialHour = if (currentHour > 12) currentHour - 12 else if (currentHour == 0) 12 else currentHour,
         initialMinute = currentMinute,
         initialPeriod = if (currentHour >= 12) TimePeriod.PM else TimePeriod.AM
     )
