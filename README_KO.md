@@ -56,12 +56,12 @@ import com.kez.picker.util.currentMinute
 fun TimePicker24hExample() {
     val state = rememberTimePickerState(
         initialHour = currentHour,
-        initialMinute = currentMinute
+        initialMinute = currentMinute,
+        timeFormat = TimeFormat.HOUR_24
     )
 
     TimePicker(
-        state = state,
-        timeFormat = TimeFormat.HOUR_24
+        state = state
     )
 }
 ```
@@ -79,18 +79,15 @@ import com.kez.picker.util.currentMinute
 
 @Composable
 fun TimePicker12hExample() {
-    val currentPeriod = if (currentHour >= 12) TimePeriod.PM else TimePeriod.AM
-    val currentHour12 = if (currentHour > 12) currentHour - 12 else if (currentHour == 0) 12 else currentHour
-
+    // 12시간 형식 변환은 이제 state 내부에서 처리됩니다.
     val state = rememberTimePickerState(
-        initialHour = currentHour12,
+        initialHour = currentHour,
         initialMinute = currentMinute,
-        initialPeriod = currentPeriod
+        timeFormat = TimeFormat.HOUR_12
     )
 
     TimePicker(
-        state = state,
-        timeFormat = TimeFormat.HOUR_12
+        state = state
     )
 }
 ```
@@ -160,7 +157,6 @@ fun BottomSheetPickerExample() {
 | 파라미터 | 설명 | 기본값 |
 | :--- | :--- | :--- |
 | `state` | Picker를 제어하기 위한 상태 객체입니다. | `rememberTimePickerState()` |
-| `timeFormat` | 표시할 시간 형식입니다 (`HOUR_12` 또는 `HOUR_24`). | `HOUR_24` |
 | `startTime` | Picker에 설정될 초기 시간입니다. | `currentDateTime` |
 | `visibleItemsCount` | 리스트에 표시될 아이템의 개수입니다. | `3` |
 | `textStyle` | 선택되지 않은 아이템의 텍스트 스타일입니다. | `16.sp` |

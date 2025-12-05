@@ -56,12 +56,12 @@ import com.kez.picker.util.currentMinute
 fun TimePicker24hExample() {
     val state = rememberTimePickerState(
         initialHour = currentHour,
-        initialMinute = currentMinute
+        initialMinute = currentMinute,
+        timeFormat = TimeFormat.HOUR_24
     )
 
     TimePicker(
-        state = state,
-        timeFormat = TimeFormat.HOUR_24
+        state = state
     )
 }
 ```
@@ -79,18 +79,15 @@ import com.kez.picker.util.currentMinute
 
 @Composable
 fun TimePicker12hExample() {
-    val currentPeriod = if (currentHour >= 12) TimePeriod.PM else TimePeriod.AM
-    val currentHour12 = if (currentHour > 12) currentHour - 12 else if (currentHour == 0) 12 else currentHour
-
+    // Handling of 12-hour format conversion is now done internally by the state
     val state = rememberTimePickerState(
-        initialHour = currentHour12,
+        initialHour = currentHour,
         initialMinute = currentMinute,
-        initialPeriod = currentPeriod
+        timeFormat = TimeFormat.HOUR_12
     )
 
     TimePicker(
-        state = state,
-        timeFormat = TimeFormat.HOUR_12
+        state = state
     )
 }
 ```
@@ -160,7 +157,6 @@ fun BottomSheetPickerExample() {
 | Parameter | Description | Default |
 | :--- | :--- | :--- |
 | `state` | The state object to control the picker. | `rememberTimePickerState()` |
-| `timeFormat` | The format of time to display (`HOUR_12` or `HOUR_24`). | `HOUR_24` |
 | `startTime` | The initial time to set the picker to. | `currentDateTime` |
 | `visibleItemsCount` | Number of items visible in the list. | `3` |
 | `textStyle` | Style for unselected items. | `16.sp` |

@@ -66,9 +66,10 @@ internal fun BottomSheetSampleScreen(
         initialMonth = currentDate.monthNumber
     )
     val timeState = rememberTimePickerState(
-        initialHour = if (currentHour > 12) currentHour - 12 else if (currentHour == 0) 12 else currentHour,
+        initialHour = currentHour,
         initialMinute = currentMinute,
-        initialPeriod = if (currentHour >= 12) TimePeriod.PM else TimePeriod.AM
+        initialPeriod = if (currentHour >= 12) TimePeriod.PM else TimePeriod.AM,
+        timeFormat = TimeFormat.HOUR_12
     )
 
     // Selected date/time text
@@ -309,7 +310,6 @@ internal fun BottomSheetSampleScreen(
                     ) {
                         TimePicker(
                             state = timeState,
-                            timeFormat = TimeFormat.HOUR_12,
                             textStyle = TextStyle(
                                 fontSize = 18.sp,
                                 color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)

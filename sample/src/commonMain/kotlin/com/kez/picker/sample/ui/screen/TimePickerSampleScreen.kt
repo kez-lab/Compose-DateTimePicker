@@ -55,9 +55,10 @@ internal fun TimePickerSampleScreen(
 ) {
     var selectedFormat by remember { mutableIntStateOf(0) }
     val timeState12 = rememberTimePickerState(
-        initialHour = if (currentHour > 12) currentHour - 12 else if (currentHour == 0) 12 else currentHour,
+        initialHour = currentHour,
         initialMinute = currentMinute,
-        initialPeriod = if (currentHour >= 12) TimePeriod.PM else TimePeriod.AM
+        initialPeriod = if (currentHour >= 12) TimePeriod.PM else TimePeriod.AM,
+        timeFormat = TimeFormat.HOUR_12
     )
     val timeState24 = rememberTimePickerState(
         initialHour = currentHour,
@@ -163,14 +164,12 @@ internal fun TimePickerSampleScreen(
             Spacer(modifier = Modifier.height(32.dp))
             if (selectedFormat == 0) {
                 TimePicker(
-                    state = timeState12,
-                    timeFormat = TimeFormat.HOUR_12
+                    state = timeState12
                 )
             } else {
                 TimePicker(
                     state = timeState24,
-                    visibleItemsCount = 5,
-                    timeFormat = TimeFormat.HOUR_24
+                    visibleItemsCount = 5
                 )
             }
         }

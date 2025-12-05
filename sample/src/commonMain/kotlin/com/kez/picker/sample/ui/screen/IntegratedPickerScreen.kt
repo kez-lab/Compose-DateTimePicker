@@ -49,7 +49,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.navigation.compose.rememberNavController
 import com.kez.picker.date.YearMonthPicker
 import com.kez.picker.rememberTimePickerState
 import com.kez.picker.rememberYearMonthPickerState
@@ -65,6 +64,7 @@ import compose.icons.FeatherIcons
 import compose.icons.feathericons.ArrowLeft
 import compose.icons.feathericons.Calendar
 import compose.icons.feathericons.Clock
+import kotlinx.datetime.number
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -73,12 +73,13 @@ internal fun IntegratedPickerScreen(
 ) {
     val yearMonthState = rememberYearMonthPickerState(
         initialYear = currentDate.year,
-        initialMonth = currentDate.monthNumber
+        initialMonth = currentDate.month.number
     )
     val timeState = rememberTimePickerState(
-        initialHour = if (currentHour > 12) currentHour - 12 else if (currentHour == 0) 12 else currentHour,
+        initialHour = currentHour,
         initialMinute = currentMinute,
-        initialPeriod = if (currentHour >= 12) TimePeriod.PM else TimePeriod.AM
+        initialPeriod = if (currentHour >= 12) TimePeriod.PM else TimePeriod.AM,
+        timeFormat = TimeFormat.HOUR_12
     )
 
     var selectedTabIndex by remember { mutableIntStateOf(0) }
@@ -181,7 +182,6 @@ internal fun IntegratedPickerScreen(
                             } else {
                                 TimePicker(
                                     state = timeState,
-                                    timeFormat = TimeFormat.HOUR_12,
                                     textStyle = TextStyle(
                                         fontSize = 18.sp,
                                         color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
