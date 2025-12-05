@@ -34,7 +34,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.kez.picker.rememberPickerState
+import com.kez.picker.rememberTimePickerState
 import com.kez.picker.time.TimePicker
 import com.kez.picker.util.TimeFormat
 import com.kez.picker.util.TimePeriod
@@ -54,11 +54,16 @@ internal fun TimePickerSampleScreen(
     onBackPressed: () -> Unit = {},
 ) {
     var selectedFormat by remember { mutableIntStateOf(0) }
-    val hour12State =
-        rememberPickerState(if (currentHour > 12) currentHour - 12 else if (currentHour == 0) 12 else currentHour)
-    val hour24State = rememberPickerState(currentHour)
-    val minuteState = rememberPickerState(currentMinute)
-    val periodState = rememberPickerState(if (currentHour >= 12) TimePeriod.PM else TimePeriod.AM)
+    val timeState12 = rememberTimePickerState(
+        initialHour = currentHour,
+        initialMinute = currentMinute,
+        initialPeriod = if (currentHour >= 12) TimePeriod.PM else TimePeriod.AM,
+        timeFormat = TimeFormat.HOUR_12
+    )
+    val timeState24 = rememberTimePickerState(
+        initialHour = currentHour,
+        initialMinute = currentMinute
+    )
 
     val ktxTimeFormat12 = LocalTime.Format {
         amPmHour(padding = Padding.ZERO)
@@ -77,9 +82,9 @@ internal fun TimePickerSampleScreen(
     val selectedTimeText by remember {
         derivedStateOf {
             if (selectedFormat == 0) {
-                val hour12 = hour12State.selectedItem // (1 ~ 12)
-                val minute = minuteState.selectedItem
-                val isAm = periodState.selectedItem == TimePeriod.AM
+                val hour12 = timeState12.selectedHour // (1 ~ 12)
+                val minute = timeState12.selectedMinute
+                val isAm = timeState12.selectedPeriod == TimePeriod.AM
 
                 val hour24 = when {
                     isAm && hour12 == 12 -> 0    // 12:xx AM (midnight) -> 0
@@ -90,7 +95,7 @@ internal fun TimePickerSampleScreen(
                 time.format(ktxTimeFormat12)
 
             } else {
-                val time = LocalTime(hour24State.selectedItem, minuteState.selectedItem)
+                val time = LocalTime(timeState24.selectedHour, timeState24.selectedMinute)
                 time.format(ktxTimeFormat24)
             }
         }
@@ -159,17 +164,12 @@ internal fun TimePickerSampleScreen(
             Spacer(modifier = Modifier.height(32.dp))
             if (selectedFormat == 0) {
                 TimePicker(
-                    hourPickerState = hour12State,
-                    minutePickerState = minuteState,
-                    periodPickerState = periodState,
-                    timeFormat = TimeFormat.HOUR_12
+                    state = timeState12
                 )
             } else {
                 TimePicker(
-                    hourPickerState = hour24State,
-                    minutePickerState = minuteState,
-                    visibleItemsCount = 5,
-                    timeFormat = TimeFormat.HOUR_24
+                    state = timeState24,
+                    visibleItemsCount = 5
                 )
             }
         }
