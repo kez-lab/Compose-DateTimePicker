@@ -79,10 +79,18 @@ internal fun HomeScreen(navController: NavController) {
             }
             item {
                 MenuListItem(
-                    title = "DatePicker Sample",
+                    title = "YearMonthPicker Sample",
                     description = "Standalone YearMonthPicker component",
                     icon = FeatherIcons.Calendar,
                     onClick = { navController.navigate(Screen.DatePicker.route) }
+                )
+            }
+            item {
+                MenuListItem(
+                    title = "DayPicker Sample",
+                    description = "Full DatePicker (Year, Month, Day)",
+                    icon = FeatherIcons.Calendar,
+                    onClick = { navController.navigate(Screen.DayPicker.route) }
                 )
             }
             item {

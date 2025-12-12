@@ -47,6 +47,11 @@ fun App() {
                 )
             }
             composable(Screen.DatePicker.route) {
+                YearMonthPickerSampleScreen(
+                    onBackPressed = { handleNavigateBack(navController) }
+                )
+            }
+            composable(Screen.DayPicker.route) {
                 DatePickerSampleScreen(
                     onBackPressed = { handleNavigateBack(navController) }
                 )
