@@ -23,15 +23,14 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.kez.picker.Picker
-import com.kez.picker.PickerState
+import com.kez.picker.TimePickerState
+import com.kez.picker.rememberTimePickerState
 import com.kez.picker.util.HOUR12_RANGE
 import com.kez.picker.util.HOUR24_RANGE
 import com.kez.picker.util.MINUTE_RANGE
 import com.kez.picker.util.TimeFormat
 import com.kez.picker.util.TimePeriod
 import com.kez.picker.util.currentDateTime
-import com.kez.picker.util.currentHour
-import com.kez.picker.util.currentMinute
 import kotlinx.datetime.LocalDateTime
 
 /**
@@ -39,10 +38,7 @@ import kotlinx.datetime.LocalDateTime
  *
  * @param modifier The modifier to be applied to the component.
  * @param pickerModifier The modifier to be applied to each picker.
- * @param minutePickerState The state for the minute picker.
- * @param hourPickerState The state for the hour picker.
- * @param periodPickerState The state for the AM/PM period picker.
- * @param timeFormat The time format (12-hour or 24-hour).
+ * @param state The state object to control the picker.
  * @param startTime The initial time to display.
  * @param minuteItems The list of minute values to display.
  * @param hourItems The list of hour values to display.
@@ -66,13 +62,10 @@ import kotlinx.datetime.LocalDateTime
 fun TimePicker(
     modifier: Modifier = Modifier,
     pickerModifier: Modifier = Modifier,
-    minutePickerState: PickerState<Int> = remember { PickerState(currentMinute) },
-    hourPickerState: PickerState<Int> = remember { PickerState(currentHour) },
-    periodPickerState: PickerState<TimePeriod> = remember { PickerState(TimePeriod.AM) },
-    timeFormat: TimeFormat = TimeFormat.HOUR_24,
+    state: TimePickerState = rememberTimePickerState(),
     startTime: LocalDateTime = currentDateTime,
     minuteItems: List<Int> = MINUTE_RANGE,
-    hourItems: List<Int> = when (timeFormat) {
+    hourItems: List<Int> = when (state.timeFormat) {
         TimeFormat.HOUR_12 -> HOUR12_RANGE
         TimeFormat.HOUR_24 -> HOUR24_RANGE
     },
@@ -108,7 +101,7 @@ fun TimePicker(
             }
 
             val hourStartIndex = remember {
-                val startHour = when (timeFormat) {
+                val startHour = when (state.timeFormat) {
                     TimeFormat.HOUR_12 -> {
                         val hour = startTime.hour % 12
                         if (hour == 0) 12 else hour
@@ -129,9 +122,9 @@ fun TimePicker(
                 horizontalArrangement = Arrangement.Center,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                if (timeFormat == TimeFormat.HOUR_12) {
+                if (state.timeFormat == TimeFormat.HOUR_12) {
                     Picker(
-                        state = periodPickerState,
+                        state = state.periodState,
                         items = periodItems,
                         visibleItemsCount = visibleItemsCount,
                         modifier = pickerModifier.weight(1f),
@@ -153,7 +146,7 @@ fun TimePicker(
                     Spacer(modifier = Modifier.width(spacingBetweenPickers))
                 }
                 Picker(
-                    state = hourPickerState,
+                    state = state.hourState,
                     modifier = pickerModifier.weight(1f),
                     items = hourItems,
                     startIndex = hourStartIndex,
@@ -173,7 +166,7 @@ fun TimePicker(
                 )
                 Spacer(modifier = Modifier.width(spacingBetweenPickers))
                 Picker(
-                    state = minutePickerState,
+                    state = state.minuteState,
                     items = minuteItems,
                     startIndex = minuteStartIndex,
                     visibleItemsCount = visibleItemsCount,
@@ -200,7 +193,7 @@ fun TimePicker(
 @Composable
 fun TimePickerPreview24Hour() {
     TimePicker(
-        timeFormat = TimeFormat.HOUR_24
+        state = rememberTimePickerState(timeFormat = TimeFormat.HOUR_24)
     )
 }
 
@@ -208,7 +201,7 @@ fun TimePickerPreview24Hour() {
 @Composable
 fun TimePickerPreview12Hour() {
     TimePicker(
-        timeFormat = TimeFormat.HOUR_12
+        state = rememberTimePickerState(timeFormat = TimeFormat.HOUR_12)
     )
 }
 
@@ -216,7 +209,7 @@ fun TimePickerPreview12Hour() {
 @Composable
 fun TimePickerNoDividerPreview() {
     TimePicker(
-        timeFormat = TimeFormat.HOUR_24,
+        state = rememberTimePickerState(timeFormat = TimeFormat.HOUR_24),
         isDividerVisible = false
     )
 }
@@ -225,7 +218,7 @@ fun TimePickerNoDividerPreview() {
 @Composable
 fun TimePickerCustomColorsPreview() {
     TimePicker(
-        timeFormat = TimeFormat.HOUR_12,
+        state = rememberTimePickerState(timeFormat = TimeFormat.HOUR_12),
         textStyle = TextStyle(fontSize = 16.sp, color = Color.Gray),
         selectedTextStyle = TextStyle(fontSize = 22.sp, color = Color(0xFF6200EE)),
         dividerColor = Color(0xFF6200EE)
@@ -236,7 +229,7 @@ fun TimePickerCustomColorsPreview() {
 @Composable
 fun TimePickerLargeTextPreview() {
     TimePicker(
-        timeFormat = TimeFormat.HOUR_24,
+        state = rememberTimePickerState(timeFormat = TimeFormat.HOUR_24),
         textStyle = TextStyle(fontSize = 20.sp),
         selectedTextStyle = TextStyle(fontSize = 28.sp),
         visibleItemsCount = 5

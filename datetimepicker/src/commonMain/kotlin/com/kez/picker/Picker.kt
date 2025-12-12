@@ -75,8 +75,8 @@ import kotlin.math.abs
 fun <T> Picker(
     items: List<T>,
     state: PickerState<T>,
-    startIndex: Int = 0,
     modifier: Modifier = Modifier,
+    startIndex: Int = 0,
     visibleItemsCount: Int = 3,
     textStyle: TextStyle = LocalTextStyle.current,
     selectedTextStyle: TextStyle = LocalTextStyle.current,
@@ -94,7 +94,8 @@ fun <T> Picker(
     dividerThickness: Dp = 1.dp,
     dividerShape: Shape = RoundedCornerShape(10.dp),
     isDividerVisible: Boolean = true,
-    isInfinity: Boolean = true
+    isInfinity: Boolean = true,
+    content: @Composable ((T) -> Unit)? = null
 ) {
     val density = LocalDensity.current
     val visibleItemsMiddle = remember { visibleItemsCount / 2 }
@@ -205,14 +206,14 @@ fun <T> Picker(
                     }
                 }
 
-                val currentItemText = getItem(index)?.toString().orEmpty()
-
+                val item = getItem(index)
+                
                 Box(
                     modifier = Modifier
                         .height(itemHeight)
                         .fillMaxWidth()
                         .clickable(
-                            enabled = getItem(index) != null,
+                            enabled = item != null,
                             role = Role.Button,
                             indication = null,
                             interactionSource = remember { MutableInteractionSource() },
@@ -230,30 +231,35 @@ fun <T> Picker(
                         .padding(itemPadding),
                     contentAlignment = Alignment.Center
                 ) {
-                    Text(
-                        text = currentItemText,
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis,
-                        style = textStyle.copy(
-                            fontSize = lerp(
-                                selectedTextStyle.fontSize,
-                                textStyle.fontSize,
-                                fraction
-                            ),
-                            color = lerp(
-                                selectedTextStyle.color,
-                                textStyle.color,
-                                fraction
-                            ),
-                        ),
-                        textAlign = TextAlign.Center
-                    )
+                    if (item != null) {
+                        if (content != null) {
+                            content(item)
+                        } else {
+                            Text(
+                                text = item.toString(),
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis,
+                                style = textStyle.copy(
+                                    fontSize = lerp(
+                                        selectedTextStyle.fontSize,
+                                        textStyle.fontSize,
+                                        fraction
+                                    ),
+                                    color = lerp(
+                                        selectedTextStyle.color,
+                                        textStyle.color,
+                                        fraction
+                                    ),
+                                ),
+                                textAlign = TextAlign.Center
+                            )
+                        }
+                    }
                 }
             }
         }
     }
 }
-
 /**
  * Apply a fading edge effect to a modifier.
  *

@@ -21,8 +21,8 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.kez.picker.Picker
-import com.kez.picker.PickerState
-import com.kez.picker.rememberPickerState
+import com.kez.picker.YearMonthPickerState
+import com.kez.picker.rememberYearMonthPickerState
 import com.kez.picker.util.MONTH_RANGE
 import com.kez.picker.util.YEAR_RANGE
 import com.kez.picker.util.currentDate
@@ -58,8 +58,7 @@ import kotlinx.datetime.number
 fun YearMonthPicker(
     modifier: Modifier = Modifier,
     pickerModifier: Modifier = Modifier,
-    yearPickerState: PickerState<Int> = rememberPickerState(currentDate.year),
-    monthPickerState: PickerState<Int> = rememberPickerState(currentDate.month.number),
+    state: YearMonthPickerState = rememberYearMonthPickerState(),
     startLocalDate: LocalDate = currentDate,
     yearItems: List<Int> = YEAR_RANGE,
     monthItems: List<Int> = MONTH_RANGE,
@@ -104,7 +103,7 @@ fun YearMonthPicker(
                 ),
             ) {
                 Picker(
-                    state = yearPickerState,
+                    state = state.yearState,
                     modifier = pickerModifier.weight(1f),
                     items = yearItems,
                     startIndex = yearStartIndex,
@@ -123,7 +122,7 @@ fun YearMonthPicker(
                     isDividerVisible = isDividerVisible,
                 )
                 Picker(
-                    state = monthPickerState,
+                    state = state.monthState,
                     items = monthItems,
                     startIndex = monthStartIndex,
                     visibleItemsCount = visibleItemsCount,

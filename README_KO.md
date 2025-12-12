@@ -1,24 +1,24 @@
 # Compose DateTimePicker
 
-[![Read in Korean](https://img.shields.io/badge/README-Korean-green)](./README_KO.md)
+[![Read in English](https://img.shields.io/badge/README-English-blue)](./README.md)
 
-A generic, customizable, and multiplatform date and time picker library for Compose Multiplatform.
-It provides consistent UI components across Android, iOS, Desktop (JVM), and Web (Wasm).
+Compose Multiplatform을 위한 범용적이고 커스터마이징 가능한 날짜 및 시간 선택 라이브러리입니다.
+Android, iOS, Desktop (JVM), Web (Wasm) 등 다양한 플랫폼에서 일관된 UI 컴포넌트를 제공합니다.
 
-## Features
+## 주요 기능
 
-*   **Multiplatform Support**: seamless integration for Android, iOS, Desktop (JVM), and Web (Wasm).
-*   **TimePicker**: Supports both 12-hour (AM/PM) and 24-hour formats.
-*   **YearMonthPicker**: A dedicated component for selecting years and months.
-*   **Customizable**: Extensible API allowing custom content rendering, styling, and configuration.
-*   **State Management**: simplified state handling with `rememberTimePickerState` and `rememberYearMonthPickerState`.
-*   **Accessibility**: Built with accessibility in mind, supporting screen readers and navigation.
+*   **멀티플랫폼 지원**: Android, iOS, Desktop (JVM), Web (Wasm) 환경을 지원하며 원활한 통합이 가능합니다.
+*   **TimePicker**: 12시간(오전/오후) 및 24시간 형식을 모두 지원합니다.
+*   **YearMonthPicker**: 년도와 월을 선택할 수 있는 전용 컴포넌트를 제공합니다.
+*   **커스터마이징**: 커스텀 아이템 렌더링, 스타일링, 구성 변경이 가능한 유연한 API를 제공합니다.
+*   **상태 관리**: `rememberTimePickerState` 및 `rememberYearMonthPickerState`를 통해 간편하게 상태를 관리할 수 있습니다.
+*   **접근성**: 스크린 리더 및 내비게이션 지원 등 접근성을 고려하여 설계되었습니다.
 
-## Installation
+## 설치 방법
 
-Add the dependency to your version catalog or build file.
+버전 카탈로그 또는 빌드 파일에 의존성을 추가하여 사용할 수 있습니다.
 
-### Version Catalog (libs.versions.toml)
+### 버전 카탈로그 (libs.versions.toml)
 
 ```toml
 [versions]
@@ -36,13 +36,13 @@ dependencies {
 }
 ```
 
-## Usage
+## 사용법
 
 ### TimePicker
 
-Use `TimePicker` for time selection. It supports both 12-hour and 24-hour formats.
+시간 선택을 위해 `TimePicker`를 사용합니다. 12시간 및 24시간 형식을 지원합니다.
 
-#### 1. 24-Hour Format
+#### 1. 24시간 형식
 
 ```kotlin
 import androidx.compose.runtime.Composable
@@ -66,7 +66,7 @@ fun TimePicker24hExample() {
 }
 ```
 
-#### 2. 12-Hour Format (AM/PM)
+#### 2. 12시간 형식 (오전/오후)
 
 ```kotlin
 import androidx.compose.runtime.Composable
@@ -79,7 +79,7 @@ import com.kez.picker.util.currentMinute
 
 @Composable
 fun TimePicker12hExample() {
-    // Handling of 12-hour format conversion is now done internally by the state
+    // 12시간 형식 변환은 이제 state 내부에서 처리됩니다.
     val state = rememberTimePickerState(
         initialHour = currentHour,
         initialMinute = currentMinute,
@@ -94,7 +94,7 @@ fun TimePicker12hExample() {
 
 ### YearMonthPicker
 
-Use `YearMonthPicker` for selecting a specific month in a year.
+특정 연도와 월을 선택할 때 `YearMonthPicker`를 사용합니다.
 
 ```kotlin
 import androidx.compose.runtime.Composable
@@ -115,9 +115,9 @@ fun YearMonthPickerExample() {
 }
 ```
 
-### BottomSheet Integration
+### BottomSheet 통합
 
-The pickers work seamlessly within a `ModalBottomSheet` or other dialog components.
+Picker 컴포넌트는 `ModalBottomSheet`나 다른 다이얼로그 컴포넌트 내에서도 원활하게 작동합니다.
 
 ```kotlin
 import androidx.compose.material3.*
@@ -135,7 +135,7 @@ fun BottomSheetPickerExample() {
     val scope = rememberCoroutineScope()
 
     Button(onClick = { showBottomSheet = true }) {
-        Text("Select Time")
+        Text("시간 선택")
     }
 
     if (showBottomSheet) {
@@ -144,36 +144,36 @@ fun BottomSheetPickerExample() {
             sheetState = sheetState
         ) {
             TimePicker(state = state)
-            // Add confirmation buttons logic here
+            // 확인 버튼 로직 등 추가 가능
         }
     }
 }
 ```
 
-## API Reference
+## API 레퍼런스
 
 ### TimePicker
 
-| Parameter | Description | Default |
+| 파라미터 | 설명 | 기본값 |
 | :--- | :--- | :--- |
-| `state` | The state object to control the picker. | `rememberTimePickerState()` |
-| `startTime` | The initial time to set the picker to. | `currentDateTime` |
-| `visibleItemsCount` | Number of items visible in the list. | `3` |
-| `textStyle` | Style for unselected items. | `16.sp` |
-| `selectedTextStyle` | Style for selected item. | `22.sp` |
-| `dividerColor` | Color of the selection dividers. | `LocalContentColor.current` |
+| `state` | Picker를 제어하기 위한 상태 객체입니다. | `rememberTimePickerState()` |
+| `startTime` | Picker에 설정될 초기 시간입니다. | `currentDateTime` |
+| `visibleItemsCount` | 리스트에 표시될 아이템의 개수입니다. | `3` |
+| `textStyle` | 선택되지 않은 아이템의 텍스트 스타일입니다. | `16.sp` |
+| `selectedTextStyle` | 선택된 아이템의 텍스트 스타일입니다. | `22.sp` |
+| `dividerColor` | 구분선의 색상입니다. | `LocalContentColor.current` |
 
 ### YearMonthPicker
 
-| Parameter | Description | Default |
+| 파라미터 | 설명 | 기본값 |
 | :--- | :--- | :--- |
-| `state` | The state object to control the picker. | `rememberYearMonthPickerState()` |
-| `startLocalDate` | The initial date to set the picker to. | `currentDate` |
-| `yearItems` | List of years available for selection. | `1900..2100` |
-| `monthItems` | List of months available for selection. | `1..12` |
-| `visibleItemsCount` | Number of items visible in the list. | `3` |
+| `state` | Picker를 제어하기 위한 상태 객체입니다. | `rememberYearMonthPickerState()` |
+| `startLocalDate` | Picker에 설정될 초기 날짜입니다. | `currentDate` |
+| `yearItems` | 선택 가능한 연도 목록입니다. | `1900..2100` |
+| `monthItems` | 선택 가능한 월 목록입니다. | `1..12` |
+| `visibleItemsCount` | 리스트에 표시될 아이템의 개수입니다. | `3` |
 
-## License
+## 라이선스
 
 ```
 Copyright 2024 KEZ Lab
