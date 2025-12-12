@@ -102,7 +102,7 @@ fun rememberTimePickerState(
             initialHour
         }
     }
-    return remember(adjustedHour, initialMinute, initialPeriod) {
+    return remember(adjustedHour, initialMinute, initialPeriod, timeFormat) {
         TimePickerState(
             initialHour = adjustedHour,
             initialMinute = initialMinute,
