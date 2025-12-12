@@ -91,7 +91,7 @@ class YearMonthPickerState(
 fun rememberTimePickerState(
     initialHour: Int = currentHour,
     initialMinute: Int = currentMinute,
-    initialPeriod: TimePeriod = if (currentHour >= 12) TimePeriod.PM else TimePeriod.AM,
+    initialPeriod: TimePeriod = if (initialHour >= 12) TimePeriod.PM else TimePeriod.AM,
     timeFormat: TimeFormat = TimeFormat.HOUR_24
 ): TimePickerState {
     val adjustedHour = remember(initialHour, timeFormat) {
