@@ -54,6 +54,9 @@ internal fun TimePickerSampleScreen(
     onBackPressed: () -> Unit = {},
 ) {
     var selectedFormat by remember { mutableIntStateOf(0) }
+    val currentHour = currentHour()
+    val currentMinute = currentMinute()
+
     val timeState12 = rememberTimePickerState(
         initialHour = currentHour,
         initialMinute = currentMinute,

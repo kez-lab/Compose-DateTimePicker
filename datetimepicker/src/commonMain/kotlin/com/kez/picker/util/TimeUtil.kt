@@ -3,6 +3,8 @@
 package com.kez.picker.util
 
 import kotlin.time.Clock
+import kotlinx.datetime.LocalDate
+import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.number
 import kotlinx.datetime.toLocalDateTime
@@ -33,34 +35,49 @@ val HOUR12_RANGE = (1..12).toList()
 val MINUTE_RANGE = (0..59).toList()
 
 /**
- * Current date and time.
+ * Returns the current date and time.
+ * This function is called each time to get the actual current time,
+ * preventing stale time values in long-running applications.
+ *
+ * @return The current [LocalDateTime] in the system's default timezone.
  */
-val currentDateTime = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault())
+fun currentDateTime(): LocalDateTime =
+    Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault())
 
 /**
- * Current date.
+ * Returns the current date.
+ *
+ * @return The current [LocalDate].
  */
-val currentDate = currentDateTime.date
+fun currentDate(): LocalDate = currentDateTime().date
 
 /**
- * Current year.
+ * Returns the current year.
+ *
+ * @return The current year as an [Int].
  */
-val currentYear = currentDateTime.year
+fun currentYear(): Int = currentDateTime().year
 
 /**
- * Current month number (1-12).
+ * Returns the current month number (1-12).
+ *
+ * @return The current month number as an [Int].
  */
-val currentMonth = currentDateTime.month.number
+fun currentMonth(): Int = currentDateTime().month.number
 
 /**
- * Current minute (0-59).
+ * Returns the current minute (0-59).
+ *
+ * @return The current minute as an [Int].
  */
-val currentMinute = currentDateTime.minute
+fun currentMinute(): Int = currentDateTime().minute
 
 /**
- * Current hour (0-23).
+ * Returns the current hour (0-23).
+ *
+ * @return The current hour as an [Int].
  */
-val currentHour = currentDateTime.hour
+fun currentHour(): Int = currentDateTime().hour
 
 /**
  * Time format for time picker.
@@ -70,7 +87,7 @@ enum class TimeFormat {
      * 12-hour format (AM/PM).
      */
     HOUR_12,
-    
+
     /**
      * 24-hour format.
      */
@@ -85,9 +102,9 @@ enum class TimePeriod {
      * AM period (Ante Meridiem).
      */
     AM,
-    
+
     /**
      * PM period (Post Meridiem).
      */
     PM
-} 
+}

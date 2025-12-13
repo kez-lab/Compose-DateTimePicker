@@ -31,7 +31,6 @@ import com.kez.picker.util.MINUTE_RANGE
 import com.kez.picker.util.TimeFormat
 import com.kez.picker.util.TimePeriod
 import com.kez.picker.util.currentDateTime
-import kotlinx.datetime.LocalDateTime
 
 /**
  * A time picker component that allows the user to select hours, minutes, and—when using the 12-hour format—the AM/PM period.
@@ -63,7 +62,7 @@ fun TimePicker(
     modifier: Modifier = Modifier,
     pickerModifier: Modifier = Modifier,
     state: TimePickerState = rememberTimePickerState(),
-    startTime: LocalDateTime = currentDateTime,
+    startTime: kotlinx.datetime.LocalDateTime = currentDateTime(),
     minuteItems: List<Int> = MINUTE_RANGE,
     hourItems: List<Int> = when (state.timeFormat) {
         TimeFormat.HOUR_12 -> HOUR12_RANGE
