@@ -71,6 +71,10 @@ import kotlinx.datetime.number
 internal fun IntegratedPickerScreen(
     onBackPressed: () -> Unit = {},
 ) {
+    val currentDate = currentDate()
+    val currentHour = currentHour()
+    val currentMinute = currentMinute()
+
     val yearMonthState = rememberYearMonthPickerState(
         initialYear = currentDate.year,
         initialMonth = currentDate.month.number

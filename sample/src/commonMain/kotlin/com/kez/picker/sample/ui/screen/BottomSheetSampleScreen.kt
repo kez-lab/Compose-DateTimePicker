@@ -36,7 +36,6 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.navigation.NavController
 import com.kez.picker.date.YearMonthPicker
 import com.kez.picker.rememberTimePickerState
 import com.kez.picker.rememberYearMonthPickerState
@@ -60,11 +59,13 @@ import kotlinx.datetime.number
 internal fun BottomSheetSampleScreen(
     onBackPressed: () -> Unit = {},
 ) {
-    // Date/time state management
+    val currentDate = currentDate()
     val yearMonthState = rememberYearMonthPickerState(
         initialYear = currentDate.year,
-        initialMonth = currentDate.monthNumber
+        initialMonth = currentDate.month.number
     )
+    val currentHour = currentHour()
+    val currentMinute = currentMinute()
     val timeState = rememberTimePickerState(
         initialHour = currentHour,
         initialMinute = currentMinute,

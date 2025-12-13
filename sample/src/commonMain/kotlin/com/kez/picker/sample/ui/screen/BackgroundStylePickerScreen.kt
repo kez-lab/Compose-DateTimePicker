@@ -51,12 +51,13 @@ internal fun BackgroundStylePickerScreen(
     onBackPressed: () -> Unit = {},
 ) {
     val yearMonthState = rememberYearMonthPickerState(
-        initialYear = currentDate.year,
-        initialMonth = currentDate.monthNumber
+        initialYear = currentDate().year,
+        initialMonth = currentDate().month.number
     )
+    val currentHour = currentHour()
     val timeState = rememberTimePickerState(
         initialHour = currentHour,
-        initialMinute = currentMinute,
+        initialMinute = currentMinute(),
         initialPeriod = if (currentHour >= 12) TimePeriod.PM else TimePeriod.AM,
         timeFormat = TimeFormat.HOUR_12
     )
