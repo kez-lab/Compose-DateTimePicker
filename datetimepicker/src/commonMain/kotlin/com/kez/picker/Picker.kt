@@ -27,7 +27,6 @@ import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawWithContent
-import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.graphics.BlendMode
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
@@ -36,18 +35,31 @@ import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.lerp
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.role
+import androidx.compose.ui.semantics.selected
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.isSpecified
 import androidx.compose.ui.unit.lerp
 import androidx.compose.ui.unit.sp
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.mapNotNull
 import kotlinx.coroutines.launch
 import kotlin.math.abs
+
+/**
+ * Multiplier for infinite scroll list size.
+ * Uses a reasonable multiplier instead of Int.MAX_VALUE to prevent memory issues
+ * while still providing a virtually infinite scrolling experience.
+ */
+private const val INFINITE_SCROLL_MULTIPLIER = 1000
 
 /**
  * A generic picker component that displays a list of items and allows the user to select one.
@@ -97,6 +109,14 @@ fun <T> Picker(
     isInfinity: Boolean = true,
     content: @Composable ((T) -> Unit)? = null
 ) {
+    require(items.isNotEmpty()) { "Items list must not be empty" }
+    require(visibleItemsCount > 0 && visibleItemsCount % 2 == 1) {
+        "visibleItemsCount must be a positive odd number, but was $visibleItemsCount"
+    }
+    require(startIndex >= 0 && startIndex < items.size) {
+        "startIndex must be in range [0, ${items.size}), but was $startIndex"
+    }
+
     val density = LocalDensity.current
     val visibleItemsMiddle = remember { visibleItemsCount / 2 }
     val scope = rememberCoroutineScope()
@@ -108,33 +128,43 @@ fun <T> Picker(
     }
 
     val listScrollCount = if (isInfinity) {
-        Int.MAX_VALUE
+        adjustedItems.size * INFINITE_SCROLL_MULTIPLIER
     } else {
         adjustedItems.size
     }
 
-    val listScrollMiddle = remember { listScrollCount / 2 }
-    val listStartIndex = remember {
-        if (isInfinity) {
-            listScrollMiddle - listScrollMiddle % adjustedItems.size - visibleItemsMiddle + startIndex
-        } else {
-            startIndex + 1
+    val listScrollMiddle = remember(listScrollCount) { listScrollCount / 2 }
+    val listStartIndex =
+        remember(listScrollCount, adjustedItems.size, visibleItemsMiddle, startIndex) {
+            if (isInfinity) {
+                listScrollMiddle - listScrollMiddle % adjustedItems.size - visibleItemsMiddle + startIndex
+            } else {
+                startIndex + 1
+            }
         }
-    }
 
     fun getItem(index: Int) = adjustedItems[index % adjustedItems.size]
 
     val listState = rememberLazyListState(initialFirstVisibleItemIndex = listStartIndex)
     val flingBehavior = rememberSnapFlingBehavior(lazyListState = listState)
 
-    val itemHeight = with(density) {
-        selectedTextStyle.fontSize
-            .toPx()
-            .toDp()
-            .plus(itemPadding.calculateTopPadding())
-            .plus(itemPadding.calculateBottomPadding())
-    }
+    val selectedLineHeight = selectedTextStyle.lineHeight.takeIf { it.isSpecified } ?: 0.sp
+    val unselectedLineHeight = textStyle.lineHeight.takeIf { it.isSpecified } ?: 0.sp
+    val largestLineHeight =
+        if (selectedLineHeight > unselectedLineHeight) selectedLineHeight else unselectedLineHeight
 
+    val selectedFontSize = selectedTextStyle.fontSize.takeIf { it.isSpecified } ?: 0.sp
+    val unselectedFontSize = textStyle.fontSize.takeIf { it.isSpecified } ?: 0.sp
+    val largestFontSize =
+        if (selectedFontSize > unselectedFontSize) selectedFontSize else unselectedFontSize
+
+    val textHeightSp = if (largestLineHeight > 0.sp) largestLineHeight else largestFontSize
+
+    val itemHeight = with(density) {
+        textHeightSp.toDp() +
+                itemPadding.calculateTopPadding() +
+                itemPadding.calculateBottomPadding()
+    }
     LaunchedEffect(listState) {
         snapshotFlow { listState.firstVisibleItemIndex }
             .mapNotNull { index -> getItem(index + visibleItemsMiddle) }
@@ -179,6 +209,9 @@ fun <T> Picker(
                 )
             }
         }
+
+        val sharedInteractionSource = remember { MutableInteractionSource() }
+
         LazyColumn(
             state = listState,
             flingBehavior = flingBehavior,
@@ -207,18 +240,28 @@ fun <T> Picker(
                 }
 
                 val item = getItem(index)
-                
+                val isSelected = item == state.selectedItem
+                val itemDescription = item?.toString() ?: ""
+
                 Box(
                     modifier = Modifier
                         .height(itemHeight)
                         .fillMaxWidth()
+                        .semantics {
+                            if (item != null) {
+                                role = Role.Button
+                                contentDescription = itemDescription
+                                selected = isSelected
+                            }
+                        }
                         .clickable(
                             enabled = item != null,
                             role = Role.Button,
                             indication = null,
-                            interactionSource = remember { MutableInteractionSource() },
+                            interactionSource = sharedInteractionSource,
                             onClick = {
-                                val currentCenterIndex = listState.firstVisibleItemIndex + visibleItemsMiddle
+                                val currentCenterIndex =
+                                    listState.firstVisibleItemIndex + visibleItemsMiddle
                                 if (index != currentCenterIndex) {
                                     scope.launch {
                                         val targetIndex = (index - visibleItemsMiddle)
@@ -235,20 +278,27 @@ fun <T> Picker(
                         if (content != null) {
                             content(item)
                         } else {
+                            val baseColor = LocalContentColor.current
+                            val selectedColor =
+                                if (selectedTextStyle.color == Color.Unspecified) baseColor else selectedTextStyle.color
+
+                            val normalColor =
+                                if (textStyle.color == Color.Unspecified) baseColor.copy(alpha = 0.7f) else textStyle.color
+
                             Text(
-                                text = item.toString(),
+                                text = itemDescription,
                                 maxLines = 1,
                                 overflow = TextOverflow.Ellipsis,
                                 style = textStyle.copy(
                                     fontSize = lerp(
-                                        selectedTextStyle.fontSize,
-                                        textStyle.fontSize,
+                                        start = selectedTextStyle.fontSize,
+                                        stop = textStyle.fontSize,
                                         fraction
                                     ),
                                     color = lerp(
-                                        selectedTextStyle.color,
-                                        textStyle.color,
-                                        fraction
+                                        start = selectedColor,
+                                        stop = normalColor,
+                                        fraction = fraction
                                     ),
                                 ),
                                 textAlign = TextAlign.Center
@@ -260,6 +310,7 @@ fun <T> Picker(
         }
     }
 }
+
 /**
  * Apply a fading edge effect to a modifier.
  *
