@@ -26,7 +26,6 @@ import com.kez.picker.rememberYearMonthPickerState
 import com.kez.picker.util.MONTH_RANGE
 import com.kez.picker.util.YEAR_RANGE
 import com.kez.picker.util.currentDate
-import kotlinx.datetime.LocalDate
 import kotlinx.datetime.number
 
 /**
@@ -59,7 +58,7 @@ fun YearMonthPicker(
     modifier: Modifier = Modifier,
     pickerModifier: Modifier = Modifier,
     state: YearMonthPickerState = rememberYearMonthPickerState(),
-    startLocalDate: LocalDate = currentDate,
+    startLocalDate: kotlinx.datetime.LocalDate = currentDate(),
     yearItems: List<Int> = YEAR_RANGE,
     monthItems: List<Int> = MONTH_RANGE,
     visibleItemsCount: Int = 3,

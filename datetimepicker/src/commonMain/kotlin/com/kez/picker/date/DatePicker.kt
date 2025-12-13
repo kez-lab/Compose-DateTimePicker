@@ -10,6 +10,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.LocalContentColor
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.key
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -27,7 +28,6 @@ import com.kez.picker.rememberDatePickerState
 import com.kez.picker.util.MONTH_RANGE
 import com.kez.picker.util.YEAR_RANGE
 import com.kez.picker.util.currentDate
-import kotlinx.datetime.LocalDate
 import kotlinx.datetime.number
 
 /**
@@ -59,7 +59,7 @@ fun DatePicker(
     modifier: Modifier = Modifier,
     pickerModifier: Modifier = Modifier,
     state: DatePickerState = rememberDatePickerState(),
-    startLocalDate: LocalDate = currentDate,
+    startLocalDate: kotlinx.datetime.LocalDate = currentDate(),
     yearItems: List<Int> = YEAR_RANGE,
     monthItems: List<Int> = MONTH_RANGE,
     visibleItemsCount: Int = 3,
@@ -161,25 +161,27 @@ fun DatePicker(
                 )
 
                 // Day Picker
-                Picker(
-                    state = state.dayState,
-                    items = dayItems,
-                    startIndex = dayStartIndex,
-                    visibleItemsCount = visibleItemsCount,
-                    modifier = pickerModifier.weight(0.8f),
-                    textStyle = textStyle,
-                    selectedTextStyle = selectedTextStyle,
-                    dividerColor = dividerColor,
-                    selectedItemBackgroundColor = selectedItemBackgroundColor,
-                    selectedItemBackgroundShape = selectedItemBackgroundShape,
-                    itemPadding = itemPadding,
-                    fadingEdgeGradient = fadingEdgeGradient,
-                    horizontalAlignment = horizontalAlignment,
-                    itemTextAlignment = verticalAlignment,
-                    dividerThickness = dividerThickness,
-                    dividerShape = dividerShape,
-                    isDividerVisible = isDividerVisible,
-                )
+                key(maxDay) {
+                    Picker(
+                        state = state.dayState,
+                        items = dayItems,
+                        startIndex = dayStartIndex,
+                        visibleItemsCount = visibleItemsCount,
+                        modifier = pickerModifier.weight(0.8f),
+                        textStyle = textStyle,
+                        selectedTextStyle = selectedTextStyle,
+                        dividerColor = dividerColor,
+                        selectedItemBackgroundColor = selectedItemBackgroundColor,
+                        selectedItemBackgroundShape = selectedItemBackgroundShape,
+                        itemPadding = itemPadding,
+                        fadingEdgeGradient = fadingEdgeGradient,
+                        horizontalAlignment = horizontalAlignment,
+                        itemTextAlignment = verticalAlignment,
+                        dividerThickness = dividerThickness,
+                        dividerShape = dividerShape,
+                        isDividerVisible = isDividerVisible,
+                    )
+                }
             }
         }
     }

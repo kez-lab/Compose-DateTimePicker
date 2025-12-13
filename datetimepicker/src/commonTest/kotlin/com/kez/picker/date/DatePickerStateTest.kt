@@ -49,42 +49,55 @@ class DatePickerStateTest {
     }
 
     @Test
-    fun testValidate_ClampsDay() {
-        // Start at Jan 31
-        val state = DatePickerState(initialYear = 2023, initialMonth = 1, initialDay = 31)
-        
-        // Change to Feb (Manual simulate state change since DatePickerState doesn't observe itself automatically unless in Composable)
-        // But here we are unit testing the class logic.
-        // We simulate "user changed month to 2". Max day becomes 28.
-        // Currently selected day is 31.
-        
-        // We update the backing state for month directly (mimicking Picker behavior)
-        state.monthState.selectedItem = 2
-        
-        // Assert maxDay is updated
-        assertEquals(28, state.maxDay)
-        
-        // Validate should clamp day to 28
-        state.validate()
-        
+    fun testInitialDay_Clamped_WhenExceedsMaxDay() {
+        // Trying to set Feb 30 should be clamped to Feb 28
+        val state = DatePickerState(initialYear = 2023, initialMonth = 2, initialDay = 30)
         assertEquals(28, state.selectedDay)
     }
 
     @Test
-    fun testValidate_LeapYearChange() {
-        // Start at Feb 29, 2024 (Leap)
-        val state = DatePickerState(initialYear = 2024, initialMonth = 2, initialDay = 29)
-        assertEquals(29, state.maxDay)
-        
-        // Change Year to 2023 (Non-Leap)
-        state.yearState.selectedItem = 2023
-        
-        // Max day should be 28
-        assertEquals(28, state.maxDay)
-        
-        // Validate should clamp
-        state.validate()
-        
-        assertEquals(28, state.selectedDay)
+    fun testInitialDay_Clamped_LeapYear() {
+        // Trying to set Feb 30 on leap year should be clamped to Feb 29
+        val state = DatePickerState(initialYear = 2024, initialMonth = 2, initialDay = 30)
+        assertEquals(29, state.selectedDay)
+    }
+
+    @Test
+    fun testSelectedValues_MatchInitialValues() {
+        val state = DatePickerState(initialYear = 2025, initialMonth = 6, initialDay = 15)
+        assertEquals(2025, state.selectedYear)
+        assertEquals(6, state.selectedMonth)
+        assertEquals(15, state.selectedDay)
+    }
+
+    @Test
+    fun testMaxDay_AllMonths() {
+        val daysInMonth = mapOf(
+            1 to 31, 2 to 28, 3 to 31, 4 to 30,
+            5 to 31, 6 to 30, 7 to 31, 8 to 31,
+            9 to 30, 10 to 31, 11 to 30, 12 to 31
+        )
+
+        daysInMonth.forEach { (month, expectedDays) ->
+            val state = DatePickerState(initialYear = 2023, initialMonth = month, initialDay = 1)
+            assertEquals(expectedDays, state.maxDay, "Month $month should have $expectedDays days")
+        }
+    }
+
+    @Test
+    fun testMaxDay_February_LeapYearVariations() {
+        // Test various leap years
+        val leapYears = listOf(2000, 2004, 2020, 2024, 2400)
+        val nonLeapYears = listOf(1900, 2100, 2023, 2025)
+
+        leapYears.forEach { year ->
+            val state = DatePickerState(initialYear = year, initialMonth = 2, initialDay = 1)
+            assertEquals(29, state.maxDay, "Year $year should be a leap year with 29 days in Feb")
+        }
+
+        nonLeapYears.forEach { year ->
+            val state = DatePickerState(initialYear = year, initialMonth = 2, initialDay = 1)
+            assertEquals(28, state.maxDay, "Year $year should not be a leap year with 28 days in Feb")
+        }
     }
 }
