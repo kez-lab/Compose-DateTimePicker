@@ -8,8 +8,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.LocalContentColor
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -17,12 +15,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
-import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.kez.picker.Picker
+import com.kez.picker.PickerColors
+import com.kez.picker.PickerDefaults
+import com.kez.picker.PickerTextStyles
 import com.kez.picker.TimePickerState
 import com.kez.picker.rememberTimePickerState
 import com.kez.picker.util.HOUR12_RANGE
@@ -31,6 +30,7 @@ import com.kez.picker.util.MINUTE_RANGE
 import com.kez.picker.util.TimeFormat
 import com.kez.picker.util.TimePeriod
 import com.kez.picker.util.currentDateTime
+import kotlinx.datetime.LocalDateTime
 
 /**
  * A time picker component that allows the user to select hours, minutes, and—when using the 12-hour format—the AM/PM period.
@@ -43,12 +43,10 @@ import com.kez.picker.util.currentDateTime
  * @param hourItems The list of hour values to display.
  * @param periodItems The list of period values to display.
  * @param visibleItemsCount The number of items visible at once.
- * @param itemPadding The padding around each item.
- * @param textStyle The style of the text for unselected items.
- * @param selectedTextStyle The style of the text for the selected item.
- * @param dividerColor The color of the dividers.
- * @param selectedItemBackgroundColor The background color of the selected item area.
+ * @param colors The colors used by the picker. See [PickerDefaults.colors].
+ * @param textStyles The text styles used by the picker. See [PickerDefaults.textStyles].
  * @param selectedItemBackgroundShape The shape of the selected item background.
+ * @param itemPadding The padding around each item.
  * @param fadingEdgeGradient The gradient to use for fading edges.
  * @param horizontalAlignment The horizontal alignment of items.
  * @param verticalAlignment The vertical alignment of the text within items.
@@ -62,30 +60,24 @@ fun TimePicker(
     modifier: Modifier = Modifier,
     pickerModifier: Modifier = Modifier,
     state: TimePickerState = rememberTimePickerState(),
-    startTime: kotlinx.datetime.LocalDateTime = currentDateTime(),
+    startTime: LocalDateTime = currentDateTime(),
     minuteItems: List<Int> = MINUTE_RANGE,
     hourItems: List<Int> = when (state.timeFormat) {
         TimeFormat.HOUR_12 -> HOUR12_RANGE
         TimeFormat.HOUR_24 -> HOUR24_RANGE
     },
     periodItems: List<TimePeriod> = TimePeriod.entries,
-    visibleItemsCount: Int = 3,
-    itemPadding: PaddingValues = PaddingValues(8.dp),
-    textStyle: TextStyle = TextStyle(fontSize = 16.sp),
-    selectedTextStyle: TextStyle = TextStyle(fontSize = 22.sp),
-    dividerColor: Color = LocalContentColor.current,
-    selectedItemBackgroundColor: Color = Color.Transparent,
-    selectedItemBackgroundShape: Shape = RoundedCornerShape(12.dp),
-    fadingEdgeGradient: Brush = Brush.verticalGradient(
-        0f to Color.Transparent,
-        0.5f to Color.Black,
-        1f to Color.Transparent
-    ),
+    visibleItemsCount: Int = PickerDefaults.VisibleItemsCount,
+    colors: PickerColors = PickerDefaults.colors(),
+    textStyles: PickerTextStyles = PickerDefaults.textStyles(),
+    selectedItemBackgroundShape: Shape = PickerDefaults.SelectedItemBackgroundShape,
+    itemPadding: PaddingValues = PickerDefaults.ItemPadding,
+    fadingEdgeGradient: Brush = PickerDefaults.fadingEdgeGradient(),
     horizontalAlignment: Alignment.Horizontal = Alignment.CenterHorizontally,
     verticalAlignment: Alignment.Vertical = Alignment.CenterVertically,
-    dividerThickness: Dp = 1.dp,
-    dividerShape: Shape = RoundedCornerShape(10.dp),
-    spacingBetweenPickers: Dp = 20.dp,
+    dividerThickness: Dp = PickerDefaults.DividerThickness,
+    dividerShape: Shape = PickerDefaults.DividerShape,
+    spacingBetweenPickers: Dp = PickerDefaults.SpacingBetweenPickers,
     isDividerVisible: Boolean = true
 ) {
     Box(modifier = modifier) {
@@ -127,10 +119,8 @@ fun TimePicker(
                         items = periodItems,
                         visibleItemsCount = visibleItemsCount,
                         modifier = pickerModifier.weight(1f),
-                        textStyle = textStyle,
-                        selectedTextStyle = selectedTextStyle,
-                        dividerColor = dividerColor,
-                        selectedItemBackgroundColor = selectedItemBackgroundColor,
+                        colors = colors,
+                        textStyles = textStyles,
                         selectedItemBackgroundShape = selectedItemBackgroundShape,
                         itemPadding = itemPadding,
                         startIndex = periodStartIndex,
@@ -150,10 +140,8 @@ fun TimePicker(
                     items = hourItems,
                     startIndex = hourStartIndex,
                     visibleItemsCount = visibleItemsCount,
-                    textStyle = textStyle,
-                    selectedTextStyle = selectedTextStyle,
-                    dividerColor = dividerColor,
-                    selectedItemBackgroundColor = selectedItemBackgroundColor,
+                    colors = colors,
+                    textStyles = textStyles,
                     selectedItemBackgroundShape = selectedItemBackgroundShape,
                     itemPadding = itemPadding,
                     fadingEdgeGradient = fadingEdgeGradient,
@@ -170,10 +158,8 @@ fun TimePicker(
                     startIndex = minuteStartIndex,
                     visibleItemsCount = visibleItemsCount,
                     modifier = pickerModifier.weight(1f),
-                    textStyle = textStyle,
-                    selectedTextStyle = selectedTextStyle,
-                    dividerColor = dividerColor,
-                    selectedItemBackgroundColor = selectedItemBackgroundColor,
+                    colors = colors,
+                    textStyles = textStyles,
                     selectedItemBackgroundShape = selectedItemBackgroundShape,
                     itemPadding = itemPadding,
                     fadingEdgeGradient = fadingEdgeGradient,
@@ -218,9 +204,11 @@ fun TimePickerNoDividerPreview() {
 fun TimePickerCustomColorsPreview() {
     TimePicker(
         state = rememberTimePickerState(timeFormat = TimeFormat.HOUR_12),
-        textStyle = TextStyle(fontSize = 16.sp, color = Color.Gray),
-        selectedTextStyle = TextStyle(fontSize = 22.sp, color = Color(0xFF6200EE)),
-        dividerColor = Color(0xFF6200EE)
+        colors = PickerDefaults.colors(
+            textColor = Color.Gray,
+            selectedTextColor = Color(0xFF6200EE),
+            dividerColor = Color(0xFF6200EE)
+        )
     )
 }
 
@@ -229,8 +217,10 @@ fun TimePickerCustomColorsPreview() {
 fun TimePickerLargeTextPreview() {
     TimePicker(
         state = rememberTimePickerState(timeFormat = TimeFormat.HOUR_24),
-        textStyle = TextStyle(fontSize = 20.sp),
-        selectedTextStyle = TextStyle(fontSize = 28.sp),
+        textStyles = PickerDefaults.textStyles(
+            textStyle = androidx.compose.ui.text.TextStyle(fontSize = 20.sp),
+            selectedTextStyle = androidx.compose.ui.text.TextStyle(fontSize = 28.sp)
+        ),
         visibleItemsCount = 5
     )
 }

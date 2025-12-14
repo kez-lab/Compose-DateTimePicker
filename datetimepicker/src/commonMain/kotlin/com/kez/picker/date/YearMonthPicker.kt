@@ -6,8 +6,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.LocalContentColor
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -15,17 +13,19 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
-import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.kez.picker.Picker
+import com.kez.picker.PickerColors
+import com.kez.picker.PickerDefaults
+import com.kez.picker.PickerTextStyles
 import com.kez.picker.YearMonthPickerState
 import com.kez.picker.rememberYearMonthPickerState
 import com.kez.picker.util.MONTH_RANGE
 import com.kez.picker.util.YEAR_RANGE
 import com.kez.picker.util.currentDate
+import kotlinx.datetime.LocalDate
 import kotlinx.datetime.number
 
 /**
@@ -33,18 +33,15 @@ import kotlinx.datetime.number
  *
  * @param modifier The modifier to be applied to the component.
  * @param pickerModifier The modifier to be applied to each picker.
- * @param yearPickerState The state for the year picker.
- * @param monthPickerState The state for the month picker.
+ * @param state The state object to control the picker.
  * @param startLocalDate The initial date to display.
  * @param yearItems The list of year values to display.
  * @param monthItems The list of month values to display.
  * @param visibleItemsCount The number of items visible at once.
- * @param itemPadding The padding around each item.
- * @param textStyle The style of the text for unselected items.
- * @param selectedTextStyle The style of the text for the selected item.
- * @param dividerColor The color of the dividers.
- * @param selectedItemBackgroundColor The background color of each individual picker's selected item area.
+ * @param colors The colors used by the picker. See [PickerDefaults.colors].
+ * @param textStyles The text styles used by the picker. See [PickerDefaults.textStyles].
  * @param selectedItemBackgroundShape The shape of the selected item background.
+ * @param itemPadding The padding around each item.
  * @param fadingEdgeGradient The gradient to use for fading edges.
  * @param horizontalAlignment The horizontal alignment of items.
  * @param verticalAlignment The vertical alignment of the text within items.
@@ -58,26 +55,20 @@ fun YearMonthPicker(
     modifier: Modifier = Modifier,
     pickerModifier: Modifier = Modifier,
     state: YearMonthPickerState = rememberYearMonthPickerState(),
-    startLocalDate: kotlinx.datetime.LocalDate = currentDate(),
+    startLocalDate: LocalDate = currentDate(),
     yearItems: List<Int> = YEAR_RANGE,
     monthItems: List<Int> = MONTH_RANGE,
-    visibleItemsCount: Int = 3,
-    itemPadding: PaddingValues = PaddingValues(8.dp),
-    textStyle: TextStyle = TextStyle(fontSize = 16.sp),
-    selectedTextStyle: TextStyle = TextStyle(fontSize = 24.sp),
-    dividerColor: Color = LocalContentColor.current,
-    selectedItemBackgroundColor: Color = Color.Transparent,
-    selectedItemBackgroundShape: Shape = RoundedCornerShape(12.dp),
-    fadingEdgeGradient: Brush = Brush.verticalGradient(
-        0f to Color.Transparent,
-        0.5f to Color.Black,
-        1f to Color.Transparent
-    ),
+    visibleItemsCount: Int = PickerDefaults.VisibleItemsCount,
+    colors: PickerColors = PickerDefaults.colors(),
+    textStyles: PickerTextStyles = PickerDefaults.textStyles(),
+    selectedItemBackgroundShape: Shape = PickerDefaults.SelectedItemBackgroundShape,
+    itemPadding: PaddingValues = PickerDefaults.ItemPadding,
+    fadingEdgeGradient: Brush = PickerDefaults.fadingEdgeGradient(),
     horizontalAlignment: Alignment.Horizontal = Alignment.CenterHorizontally,
     verticalAlignment: Alignment.Vertical = Alignment.CenterVertically,
-    dividerThickness: Dp = 2.dp,
-    dividerShape: Shape = RoundedCornerShape(10.dp),
-    spacingBetweenPickers: Dp = 20.dp,
+    dividerThickness: Dp = PickerDefaults.DividerThickness,
+    dividerShape: Shape = PickerDefaults.DividerShape,
+    spacingBetweenPickers: Dp = PickerDefaults.SpacingBetweenPickers,
     isDividerVisible: Boolean = true
 ) {
     Box(modifier = modifier) {
@@ -107,10 +98,8 @@ fun YearMonthPicker(
                     items = yearItems,
                     startIndex = yearStartIndex,
                     visibleItemsCount = visibleItemsCount,
-                    textStyle = textStyle,
-                    selectedTextStyle = selectedTextStyle,
-                    dividerColor = dividerColor,
-                    selectedItemBackgroundColor = selectedItemBackgroundColor,
+                    colors = colors,
+                    textStyles = textStyles,
                     selectedItemBackgroundShape = selectedItemBackgroundShape,
                     itemPadding = itemPadding,
                     fadingEdgeGradient = fadingEdgeGradient,
@@ -126,10 +115,8 @@ fun YearMonthPicker(
                     startIndex = monthStartIndex,
                     visibleItemsCount = visibleItemsCount,
                     modifier = pickerModifier.weight(1f),
-                    textStyle = textStyle,
-                    selectedTextStyle = selectedTextStyle,
-                    dividerColor = dividerColor,
-                    selectedItemBackgroundColor = selectedItemBackgroundColor,
+                    colors = colors,
+                    textStyles = textStyles,
                     selectedItemBackgroundShape = selectedItemBackgroundShape,
                     itemPadding = itemPadding,
                     fadingEdgeGradient = fadingEdgeGradient,
@@ -162,9 +149,11 @@ fun YearMonthPickerNoDividerPreview() {
 @Composable
 fun YearMonthPickerCustomColorsPreview() {
     YearMonthPicker(
-        textStyle = TextStyle(fontSize = 16.sp, color = Color.Gray),
-        selectedTextStyle = TextStyle(fontSize = 24.sp, color = Color(0xFF03DAC5)),
-        dividerColor = Color(0xFF03DAC5)
+        colors = PickerDefaults.colors(
+            textColor = Color.Gray,
+            selectedTextColor = Color(0xFF03DAC5),
+            dividerColor = Color(0xFF03DAC5)
+        )
     )
 }
 
@@ -172,8 +161,10 @@ fun YearMonthPickerCustomColorsPreview() {
 @Composable
 fun YearMonthPickerLargeTextPreview() {
     YearMonthPicker(
-        textStyle = TextStyle(fontSize = 18.sp),
-        selectedTextStyle = TextStyle(fontSize = 28.sp),
+        textStyles = PickerDefaults.textStyles(
+            textStyle = androidx.compose.ui.text.TextStyle(fontSize = 18.sp),
+            selectedTextStyle = androidx.compose.ui.text.TextStyle(fontSize = 28.sp)
+        ),
         visibleItemsCount = 5
     )
 }

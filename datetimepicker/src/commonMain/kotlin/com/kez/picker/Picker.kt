@@ -12,10 +12,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.LocalContentColor
-import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -29,7 +26,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.graphics.BlendMode
 import androidx.compose.ui.graphics.Brush
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.CompositingStrategy
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.graphicsLayer
@@ -40,12 +36,10 @@ import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.role
 import androidx.compose.ui.semantics.selected
 import androidx.compose.ui.semantics.semantics
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
-import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.isSpecified
 import androidx.compose.ui.unit.lerp
 import androidx.compose.ui.unit.sp
@@ -63,16 +57,15 @@ private const val INFINITE_SCROLL_MULTIPLIER = 1000
 
 /**
  * A generic picker component that displays a list of items and allows the user to select one.
+ * Follows Material3 component design patterns.
  *
  * @param items The list of items to display.
- * @param modifier The modifier to be applied to the picker.
  * @param state The state of the picker.
+ * @param modifier The modifier to be applied to the picker.
  * @param startIndex The initial index to display.
- * @param visibleItemsCount The number of items visible at once.
- * @param textStyle The style of the text for unselected items.
- * @param selectedTextStyle The style of the text for the selected item.
- * @param dividerColor The color of the dividers.
- * @param selectedItemBackgroundColor The background color of the selected item area.
+ * @param visibleItemsCount The number of items visible at once. Must be a positive odd number.
+ * @param colors The colors used by the picker. See [PickerDefaults.colors].
+ * @param textStyles The text styles used by the picker. See [PickerDefaults.textStyles].
  * @param selectedItemBackgroundShape The shape of the background of the selected item area.
  * @param itemPadding The padding around each item.
  * @param fadingEdgeGradient The gradient to use for fading edges.
@@ -82,6 +75,7 @@ private const val INFINITE_SCROLL_MULTIPLIER = 1000
  * @param dividerShape The shape of the dividers.
  * @param isDividerVisible Whether the divider should be visible.
  * @param isInfinity Whether the picker should loop infinitely.
+ * @param content Optional custom content composable for rendering each item.
  */
 @Composable
 fun <T> Picker(
@@ -89,22 +83,16 @@ fun <T> Picker(
     state: PickerState<T>,
     modifier: Modifier = Modifier,
     startIndex: Int = 0,
-    visibleItemsCount: Int = 3,
-    textStyle: TextStyle = LocalTextStyle.current,
-    selectedTextStyle: TextStyle = LocalTextStyle.current,
-    dividerColor: Color = LocalContentColor.current,
-    selectedItemBackgroundColor: Color = Color.Transparent,
-    selectedItemBackgroundShape: Shape = RoundedCornerShape(12.dp),
-    itemPadding: PaddingValues = PaddingValues(8.dp),
-    fadingEdgeGradient: Brush = Brush.verticalGradient(
-        0f to Color.Transparent,
-        0.5f to Color.Black,
-        1f to Color.Transparent
-    ),
+    visibleItemsCount: Int = PickerDefaults.VisibleItemsCount,
+    colors: PickerColors = PickerDefaults.colors(),
+    textStyles: PickerTextStyles = PickerDefaults.textStyles(),
+    selectedItemBackgroundShape: Shape = PickerDefaults.SelectedItemBackgroundShape,
+    itemPadding: PaddingValues = PickerDefaults.ItemPadding,
+    fadingEdgeGradient: Brush = PickerDefaults.fadingEdgeGradient(),
     horizontalAlignment: Alignment.Horizontal = Alignment.CenterHorizontally,
     itemTextAlignment: Alignment.Vertical = Alignment.CenterVertically,
-    dividerThickness: Dp = 1.dp,
-    dividerShape: Shape = RoundedCornerShape(10.dp),
+    dividerThickness: Dp = PickerDefaults.DividerThickness,
+    dividerShape: Shape = PickerDefaults.DividerShape,
     isDividerVisible: Boolean = true,
     isInfinity: Boolean = true,
     content: @Composable ((T) -> Unit)? = null
@@ -148,6 +136,9 @@ fun <T> Picker(
     val listState = rememberLazyListState(initialFirstVisibleItemIndex = listStartIndex)
     val flingBehavior = rememberSnapFlingBehavior(lazyListState = listState)
 
+    val textStyle = textStyles.textStyle
+    val selectedTextStyle = textStyles.selectedTextStyle
+
     val selectedLineHeight = selectedTextStyle.lineHeight.takeIf { it.isSpecified } ?: 0.sp
     val unselectedLineHeight = textStyle.lineHeight.takeIf { it.isSpecified } ?: 0.sp
     val largestLineHeight =
@@ -165,6 +156,7 @@ fun <T> Picker(
                 itemPadding.calculateTopPadding() +
                 itemPadding.calculateBottomPadding()
     }
+
     LaunchedEffect(listState) {
         snapshotFlow { listState.firstVisibleItemIndex }
             .mapNotNull { index -> getItem(index + visibleItemsMiddle) }
@@ -177,7 +169,7 @@ fun <T> Picker(
             modifier = Modifier
                 .align(Alignment.Center)
                 .background(
-                    color = selectedItemBackgroundColor,
+                    color = colors.selectedItemBackgroundColor,
                     shape = selectedItemBackgroundShape
                 )
                 .fillMaxWidth()
@@ -185,24 +177,24 @@ fun <T> Picker(
         ) {
             if (isDividerVisible) {
                 HorizontalDivider(
-                    color = dividerColor,
+                    color = colors.dividerColor,
                     thickness = dividerThickness,
                     modifier = Modifier
                         .fillMaxWidth()
                         .background(
-                            color = dividerColor,
+                            color = colors.dividerColor,
                             shape = dividerShape
                         )
                         .align(Alignment.TopCenter)
                 )
 
                 HorizontalDivider(
-                    color = dividerColor,
+                    color = colors.dividerColor,
                     thickness = dividerThickness,
                     modifier = Modifier
                         .fillMaxWidth()
                         .background(
-                            color = dividerColor,
+                            color = colors.dividerColor,
                             shape = dividerShape
                         )
                         .align(Alignment.BottomCenter)
@@ -278,13 +270,6 @@ fun <T> Picker(
                         if (content != null) {
                             content(item)
                         } else {
-                            val baseColor = LocalContentColor.current
-                            val selectedColor =
-                                if (selectedTextStyle.color == Color.Unspecified) baseColor else selectedTextStyle.color
-
-                            val normalColor =
-                                if (textStyle.color == Color.Unspecified) baseColor.copy(alpha = 0.7f) else textStyle.color
-
                             Text(
                                 text = itemDescription,
                                 maxLines = 1,
@@ -296,8 +281,8 @@ fun <T> Picker(
                                         fraction
                                     ),
                                     color = lerp(
-                                        start = selectedColor,
-                                        stop = normalColor,
+                                        start = colors.selectedTextColor,
+                                        stop = colors.textColor,
                                         fraction = fraction
                                     ),
                                 ),
@@ -330,9 +315,7 @@ fun PickerPreview() {
     val state = rememberPickerState("Item 1")
     Picker(
         items = listOf("1", "2", "3"),
-        state = state,
-        textStyle = TextStyle(fontSize = 16.sp),
-        selectedTextStyle = TextStyle(fontSize = 24.sp)
+        state = state
     )
 }
 
@@ -342,9 +325,7 @@ fun PickerLongTextPreview() {
     val state = rememberPickerState("Long Item 1")
     Picker(
         items = listOf("Long Item 1", "Long Item 2", "Long Item 3"),
-        state = state,
-        textStyle = TextStyle(fontSize = 16.sp),
-        selectedTextStyle = TextStyle(fontSize = 24.sp)
+        state = state
     )
 }
 
@@ -356,9 +337,7 @@ fun PickerManyItemsPreview() {
     Picker(
         items = items,
         state = state,
-        startIndex = 49,
-        textStyle = TextStyle(fontSize = 16.sp),
-        selectedTextStyle = TextStyle(fontSize = 24.sp)
+        startIndex = 49
     )
 }
 
@@ -369,9 +348,7 @@ fun PickerNoDividerPreview() {
     Picker(
         items = listOf("Item 1", "Item 2", "Item 3"),
         state = state,
-        isDividerVisible = false,
-        textStyle = TextStyle(fontSize = 16.sp),
-        selectedTextStyle = TextStyle(fontSize = 24.sp)
+        isDividerVisible = false
     )
 }
 
@@ -382,9 +359,11 @@ fun PickerCustomColorsPreview() {
     Picker(
         items = listOf("Red", "Green", "Blue"),
         state = state,
-        textStyle = TextStyle(fontSize = 16.sp, color = Color.Gray),
-        selectedTextStyle = TextStyle(fontSize = 24.sp, color = Color.Blue),
-        dividerColor = Color.Blue
+        colors = PickerDefaults.colors(
+            dividerColor = androidx.compose.ui.graphics.Color.Blue,
+            selectedTextColor = androidx.compose.ui.graphics.Color.Blue,
+            textColor = androidx.compose.ui.graphics.Color.Gray
+        )
     )
 }
 
@@ -395,9 +374,7 @@ fun PickerBoundedPreview() {
     Picker(
         items = listOf("Item 1", "Item 2", "Item 3", "Item 4", "Item 5"),
         state = state,
-        isInfinity = false,
-        textStyle = TextStyle(fontSize = 16.sp),
-        selectedTextStyle = TextStyle(fontSize = 24.sp)
+        isInfinity = false
     )
 }
 
@@ -410,9 +387,7 @@ fun Picker5VisibleItemsPreview() {
         items = items,
         state = state,
         startIndex = 4,
-        visibleItemsCount = 5,
-        textStyle = TextStyle(fontSize = 16.sp),
-        selectedTextStyle = TextStyle(fontSize = 24.sp)
+        visibleItemsCount = 5
     )
 }
 
@@ -423,9 +398,11 @@ fun PickerSelectedBackgroundPreview() {
     Picker(
         items = listOf("Item 1", "Item 2", "Item 3"),
         state = state,
-        textStyle = TextStyle(fontSize = 16.sp, color = Color.Gray),
-        selectedTextStyle = TextStyle(fontSize = 24.sp, color = Color.Blue),
-        dividerColor = Color.Blue,
-        selectedItemBackgroundColor = Color.Blue.copy(alpha = 0.1f)
+        colors = PickerDefaults.colors(
+            dividerColor = androidx.compose.ui.graphics.Color.Blue,
+            selectedTextColor = androidx.compose.ui.graphics.Color.Blue,
+            textColor = androidx.compose.ui.graphics.Color.Gray,
+            selectedItemBackgroundColor = androidx.compose.ui.graphics.Color.Blue.copy(alpha = 0.1f)
+        )
     )
 }
