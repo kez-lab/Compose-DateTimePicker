@@ -104,10 +104,11 @@ fun YearMonthPicker(
                     itemPadding = itemPadding,
                     fadingEdgeGradient = fadingEdgeGradient,
                     horizontalAlignment = horizontalAlignment,
-                    itemTextAlignment = verticalAlignment,
+                    verticalAlignment = verticalAlignment,
                     dividerThickness = dividerThickness,
                     dividerShape = dividerShape,
                     isDividerVisible = isDividerVisible,
+                    pickerLabel = "Year"
                 )
                 Picker(
                     state = state.monthState,
@@ -121,10 +122,11 @@ fun YearMonthPicker(
                     itemPadding = itemPadding,
                     fadingEdgeGradient = fadingEdgeGradient,
                     horizontalAlignment = horizontalAlignment,
-                    itemTextAlignment = verticalAlignment,
+                    verticalAlignment = verticalAlignment,
                     dividerThickness = dividerThickness,
                     dividerShape = dividerShape,
                     isDividerVisible = isDividerVisible,
+                    pickerLabel = "Month"
                 )
             }
         }

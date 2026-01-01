@@ -31,11 +31,18 @@ import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.lerp
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.semantics.CollectionInfo
+import androidx.compose.ui.semantics.CollectionItemInfo
+import androidx.compose.ui.semantics.LiveRegionMode
 import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.collectionInfo
+import androidx.compose.ui.semantics.collectionItemInfo
 import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.liveRegion
 import androidx.compose.ui.semantics.role
 import androidx.compose.ui.semantics.selected
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.stateDescription
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
@@ -70,11 +77,12 @@ private const val INFINITE_SCROLL_MULTIPLIER = 1000
  * @param itemPadding The padding around each item.
  * @param fadingEdgeGradient The gradient to use for fading edges.
  * @param horizontalAlignment The horizontal alignment of items.
- * @param itemTextAlignment The vertical alignment of the text within items.
+ * @param verticalAlignment The vertical alignment of the text within items.
  * @param dividerThickness The thickness of the dividers.
  * @param dividerShape The shape of the dividers.
  * @param isDividerVisible Whether the divider should be visible.
  * @param isInfinity Whether the picker should loop infinitely.
+ * @param pickerLabel Accessibility label for the picker (e.g., "Hour", "Minute", "Year").
  * @param content Optional custom content composable for rendering each item.
  */
 @Composable
@@ -90,11 +98,12 @@ fun <T> Picker(
     itemPadding: PaddingValues = PickerDefaults.ItemPadding,
     fadingEdgeGradient: Brush = PickerDefaults.fadingEdgeGradient(),
     horizontalAlignment: Alignment.Horizontal = Alignment.CenterHorizontally,
-    itemTextAlignment: Alignment.Vertical = Alignment.CenterVertically,
+    verticalAlignment: Alignment.Vertical = Alignment.CenterVertically,
     dividerThickness: Dp = PickerDefaults.DividerThickness,
     dividerShape: Shape = PickerDefaults.DividerShape,
     isDividerVisible: Boolean = true,
     isInfinity: Boolean = true,
+    pickerLabel: String? = null,
     content: @Composable ((T) -> Unit)? = null
 ) {
     require(items.isNotEmpty()) { "Items list must not be empty" }
@@ -131,7 +140,11 @@ fun <T> Picker(
             }
         }
 
-    fun getItem(index: Int) = adjustedItems[index % adjustedItems.size]
+    fun getItem(index: Int): T? {
+        if (adjustedItems.isEmpty()) return null
+        val safeIndex = index.mod(adjustedItems.size)
+        return adjustedItems.getOrNull(safeIndex)
+    }
 
     val listState = rememberLazyListState(initialFirstVisibleItemIndex = listStartIndex)
     val flingBehavior = rememberSnapFlingBehavior(lazyListState = listState)
@@ -164,7 +177,17 @@ fun <T> Picker(
             .collect { item -> state.selectedItem = item }
     }
 
-    Box(modifier = modifier) {
+    Box(
+        modifier = modifier.semantics {
+            // Provide picker-level accessibility information
+            pickerLabel?.let { label ->
+                contentDescription = "$label picker, currently selected: ${state.selectedItem}"
+                stateDescription = "Selected: ${state.selectedItem}"
+                liveRegion = LiveRegionMode.Polite
+            }
+            collectionInfo = CollectionInfo(rowCount = items.size, columnCount = 1)
+        }
+    ) {
         Box(
             modifier = Modifier
                 .align(Alignment.Center)
@@ -234,6 +257,7 @@ fun <T> Picker(
                 val item = getItem(index)
                 val isSelected = item == state.selectedItem
                 val itemDescription = item?.toString() ?: ""
+                val itemIndex = if (isInfinity) index % items.size else (index - 1).coerceAtLeast(0)
 
                 Box(
                     modifier = Modifier
@@ -242,8 +266,19 @@ fun <T> Picker(
                         .semantics {
                             if (item != null) {
                                 role = Role.Button
-                                contentDescription = itemDescription
+                                // Enhanced content description with picker context
+                                contentDescription = if (pickerLabel != null) {
+                                    "$pickerLabel: $itemDescription${if (isSelected) ", selected" else ""}"
+                                } else {
+                                    "$itemDescription${if (isSelected) ", selected" else ""}"
+                                }
                                 selected = isSelected
+                                collectionItemInfo = CollectionItemInfo(
+                                    rowIndex = itemIndex,
+                                    rowSpan = 1,
+                                    columnIndex = 0,
+                                    columnSpan = 1
+                                )
                             }
                         }
                         .clickable(

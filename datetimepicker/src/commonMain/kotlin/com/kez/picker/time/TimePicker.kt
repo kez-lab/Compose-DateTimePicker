@@ -126,11 +126,12 @@ fun TimePicker(
                         startIndex = periodStartIndex,
                         fadingEdgeGradient = fadingEdgeGradient,
                         horizontalAlignment = horizontalAlignment,
-                        itemTextAlignment = verticalAlignment,
+                        verticalAlignment = verticalAlignment,
                         dividerThickness = dividerThickness,
                         dividerShape = dividerShape,
                         isDividerVisible = isDividerVisible,
-                        isInfinity = false
+                        isInfinity = false,
+                        pickerLabel = "Period"
                     )
                     Spacer(modifier = Modifier.width(spacingBetweenPickers))
                 }
@@ -146,10 +147,11 @@ fun TimePicker(
                     itemPadding = itemPadding,
                     fadingEdgeGradient = fadingEdgeGradient,
                     horizontalAlignment = horizontalAlignment,
-                    itemTextAlignment = verticalAlignment,
+                    verticalAlignment = verticalAlignment,
                     dividerThickness = dividerThickness,
                     dividerShape = dividerShape,
-                    isDividerVisible = isDividerVisible
+                    isDividerVisible = isDividerVisible,
+                    pickerLabel = "Hour"
                 )
                 Spacer(modifier = Modifier.width(spacingBetweenPickers))
                 Picker(
@@ -164,10 +166,11 @@ fun TimePicker(
                     itemPadding = itemPadding,
                     fadingEdgeGradient = fadingEdgeGradient,
                     horizontalAlignment = horizontalAlignment,
-                    itemTextAlignment = verticalAlignment,
+                    verticalAlignment = verticalAlignment,
                     dividerThickness = dividerThickness,
                     dividerShape = dividerShape,
-                    isDividerVisible = isDividerVisible
+                    isDividerVisible = isDividerVisible,
+                    pickerLabel = "Minute"
                 )
             }
         }

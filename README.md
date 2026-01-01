@@ -9,9 +9,12 @@ It provides consistent UI components across Android, iOS, Desktop (JVM), and Web
 
 *   **Multiplatform Support**: seamless integration for Android, iOS, Desktop (JVM), and Web (Wasm).
 *   **TimePicker**: Supports both 12-hour (AM/PM) and 24-hour formats.
+* **DatePicker**: A complete date picker for selecting year, month, and day with automatic day
+  validation.
 *   **YearMonthPicker**: A dedicated component for selecting years and months.
 *   **Customizable**: Extensible API allowing custom content rendering, styling, and configuration.
-*   **State Management**: simplified state handling with `rememberTimePickerState` and `rememberYearMonthPickerState`.
+* **State Management**: simplified state handling with `rememberTimePickerState`,
+  `rememberDatePickerState`, and `rememberYearMonthPickerState`.
 *   **Accessibility**: Built with accessibility in mind, supporting screen readers and navigation.
 
 ## Installation
@@ -92,6 +95,34 @@ fun TimePicker12hExample() {
 }
 ```
 
+### DatePicker
+
+Use `DatePicker` for selecting a complete date (year, month, and day). The component automatically
+adjusts the day when the selected month changes (e.g., Feb 30 → Feb 28).
+
+```kotlin
+import androidx.compose.runtime.Composable
+import com.kez.picker.date.DatePicker
+import com.kez.picker.rememberDatePickerState
+import com.kez.picker.util.currentDate
+
+@Composable
+fun DatePickerExample() {
+    val state = rememberDatePickerState(
+        initialYear = currentDate().year,
+        initialMonth = currentDate().monthNumber,
+        initialDay = currentDate().dayOfMonth
+    )
+
+    DatePicker(
+        state = state
+    )
+
+    // Access selected values
+    // state.selectedYear, state.selectedMonth, state.selectedDay
+}
+```
+
 ### YearMonthPicker
 
 Use `YearMonthPicker` for selecting a specific month in a year.
@@ -162,6 +193,23 @@ fun BottomSheetPickerExample() {
 | `textStyle` | Style for unselected items. | `16.sp` |
 | `selectedTextStyle` | Style for selected item. | `22.sp` |
 | `dividerColor` | Color of the selection dividers. | `LocalContentColor.current` |
+
+### DatePicker
+
+| Parameter           | Description                             | Default                     |
+|:--------------------|:----------------------------------------|:----------------------------|
+| `state`             | The state object to control the picker. | `rememberDatePickerState()` |
+| `startLocalDate`    | The initial date to set the picker to.  | `currentDate`               |
+| `yearItems`         | List of years available for selection.  | `1900..2100`                |
+| `monthItems`        | List of months available for selection. | `1..12`                     |
+| `visibleItemsCount` | Number of items visible in the list.    | `3`                         |
+
+**DatePickerState Properties:**
+
+- `selectedYear`: The currently selected year.
+- `selectedMonth`: The currently selected month (1-12).
+- `selectedDay`: The currently selected day (1-31, auto-adjusted based on month).
+- `maxDay`: The maximum valid day for the selected year and month.
 
 ### YearMonthPicker
 

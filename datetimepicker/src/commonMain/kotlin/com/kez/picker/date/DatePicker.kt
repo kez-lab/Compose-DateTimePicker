@@ -119,10 +119,11 @@ fun DatePicker(
                     itemPadding = itemPadding,
                     fadingEdgeGradient = fadingEdgeGradient,
                     horizontalAlignment = horizontalAlignment,
-                    itemTextAlignment = verticalAlignment,
+                    verticalAlignment = verticalAlignment,
                     dividerThickness = dividerThickness,
                     dividerShape = dividerShape,
                     isDividerVisible = isDividerVisible,
+                    pickerLabel = "Year"
                 )
 
                 // Month Picker
@@ -138,10 +139,11 @@ fun DatePicker(
                     itemPadding = itemPadding,
                     fadingEdgeGradient = fadingEdgeGradient,
                     horizontalAlignment = horizontalAlignment,
-                    itemTextAlignment = verticalAlignment,
+                    verticalAlignment = verticalAlignment,
                     dividerThickness = dividerThickness,
                     dividerShape = dividerShape,
                     isDividerVisible = isDividerVisible,
+                    pickerLabel = "Month"
                 )
 
                 // Day Picker
@@ -158,10 +160,11 @@ fun DatePicker(
                     isInfinity = false,
                     fadingEdgeGradient = fadingEdgeGradient,
                     horizontalAlignment = horizontalAlignment,
-                    itemTextAlignment = verticalAlignment,
+                    verticalAlignment = verticalAlignment,
                     dividerThickness = dividerThickness,
                     dividerShape = dividerShape,
                     isDividerVisible = isDividerVisible,
+                    pickerLabel = "Day"
                 )
             }
         }
