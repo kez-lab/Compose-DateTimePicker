@@ -114,9 +114,7 @@ fun DatePickerSampleScreen(
                         )
                         Spacer(modifier = Modifier.width(8.dp))
                         Text(
-                            text = "${state.selectedYear}-${
-                                state.selectedMonth.toString().padStart(2, '0')
-                            }-${state.selectedDay.toString().padStart(2, '0')}",
+                            text = state.selectedDate.toString(),
                             style = MaterialTheme.typography.headlineSmall,
                             color = MaterialTheme.colorScheme.onSecondaryContainer
                         )

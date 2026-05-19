@@ -2,9 +2,12 @@ package com.kez.picker.date
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Stable
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.Saver
+import androidx.compose.runtime.saveable.listSaver
+import androidx.compose.runtime.saveable.rememberSaveable
 import com.kez.picker.PickerState
 import com.kez.picker.util.currentDate
+import kotlinx.datetime.LocalDate
 import kotlinx.datetime.number
 
 /**
@@ -21,7 +24,7 @@ fun rememberDatePickerState(
     initialMonth: Int = currentDate().month.number,
     initialDay: Int = currentDate().day
 ): DatePickerState {
-    return remember(initialYear, initialMonth, initialDay) {
+    return rememberSaveable(initialYear, initialMonth, initialDay, saver = DatePickerState.Saver) {
         DatePickerState(initialYear, initialMonth, initialDay)
     }
 }
@@ -64,6 +67,12 @@ class DatePickerState(
      */
     val selectedDay: Int
         get() = dayState.selectedItem
+
+    /**
+     * The currently selected date.
+     */
+    val selectedDate: LocalDate
+        get() = LocalDate(selectedYear, selectedMonth, selectedDay.coerceIn(1, maxDay))
 
     /**
      * The currently valid maximum day for the selected year and month.
@@ -110,5 +119,21 @@ class DatePickerState(
 
     private fun isLeapYear(year: Int): Boolean {
         return (year % 4 == 0 && year % 100 != 0) || (year % 400 == 0)
+    }
+
+    companion object {
+        /**
+         * Saves and restores [DatePickerState] across configuration changes.
+         */
+        val Saver: Saver<DatePickerState, Any> = listSaver(
+            save = { listOf(it.selectedYear, it.selectedMonth, it.selectedDay) },
+            restore = {
+                DatePickerState(
+                    initialYear = it[0] as Int,
+                    initialMonth = it[1] as Int,
+                    initialDay = it[2] as Int
+                )
+            }
+        )
     }
 }

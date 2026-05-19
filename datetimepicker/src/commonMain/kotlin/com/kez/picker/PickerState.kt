@@ -5,12 +5,17 @@ import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.Saver
+import androidx.compose.runtime.saveable.listSaver
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import com.kez.picker.util.TimeFormat
 import com.kez.picker.util.TimePeriod
 import com.kez.picker.util.currentDate
 import com.kez.picker.util.currentHour
 import com.kez.picker.util.currentMinute
+import kotlinx.datetime.LocalDate
+import kotlinx.datetime.LocalTime
 import kotlinx.datetime.number
 
 /**
@@ -54,7 +59,7 @@ fun rememberYearMonthPickerState(
     initialYear: Int = currentDate().year,
     initialMonth: Int = currentDate().month.number
 ): YearMonthPickerState {
-    return remember(initialYear, initialMonth) {
+    return rememberSaveable(initialYear, initialMonth, saver = YearMonthPickerState.Saver) {
         YearMonthPickerState(initialYear, initialMonth)
     }
 }
@@ -76,6 +81,12 @@ class YearMonthPickerState(
     internal val yearState = PickerState(initialYear)
     internal val monthState = PickerState(initialMonth)
 
+    init {
+        require(initialMonth in 1..12) {
+            "initialMonth must be in range [1, 12], but was $initialMonth"
+        }
+    }
+
     /**
      * The currently selected year.
      */
@@ -87,6 +98,27 @@ class YearMonthPickerState(
      */
     val selectedMonth: Int
         get() = monthState.selectedItem
+
+    /**
+     * The selected year and month represented as the first day of that month.
+     */
+    val selectedMonthDate: LocalDate
+        get() = LocalDate(selectedYear, selectedMonth, 1)
+
+    companion object {
+        /**
+         * Saves and restores [YearMonthPickerState] across configuration changes.
+         */
+        val Saver: Saver<YearMonthPickerState, Any> = listSaver(
+            save = { listOf(it.selectedYear, it.selectedMonth) },
+            restore = {
+                YearMonthPickerState(
+                    initialYear = it[0] as Int,
+                    initialMonth = it[1] as Int
+                )
+            }
+        )
+    }
 }
 
 /**
@@ -107,20 +139,33 @@ fun rememberTimePickerState(
     timeFormat: TimeFormat = TimeFormat.HOUR_24
 ): TimePickerState {
     val adjustedHour = remember(initialHour, timeFormat) {
-        if (timeFormat == TimeFormat.HOUR_12) {
-            val h = initialHour % 12
-            if (h == 0) 12 else h
-        } else {
-            initialHour
-        }
+        initialHourForTimeFormat(initialHour, timeFormat)
     }
-    return remember(adjustedHour, initialMinute, initialPeriod, timeFormat) {
+    return rememberSaveable(
+        adjustedHour,
+        initialMinute,
+        initialPeriod,
+        timeFormat,
+        saver = TimePickerState.Saver
+    ) {
         TimePickerState(
             initialHour = adjustedHour,
             initialMinute = initialMinute,
             initialPeriod = initialPeriod,
             timeFormat = timeFormat,
         )
+    }
+}
+
+internal fun initialHourForTimeFormat(initialHour: Int, timeFormat: TimeFormat): Int {
+    require(initialHour in 0..23) {
+        "initialHour must be in range [0, 23], but was $initialHour"
+    }
+    return if (timeFormat == TimeFormat.HOUR_12) {
+        val hour = initialHour % 12
+        if (hour == 0) 12 else hour
+    } else {
+        initialHour
     }
 }
 
@@ -146,6 +191,17 @@ class TimePickerState(
     internal val minuteState = PickerState(initialMinute)
     internal val periodState = PickerState(initialPeriod)
 
+    init {
+        require(initialMinute in 0..59) {
+            "initialMinute must be in range [0, 59], but was $initialMinute"
+        }
+        val hourRange = if (timeFormat == TimeFormat.HOUR_12) 1..12 else 0..23
+        val hourRangeLabel = if (timeFormat == TimeFormat.HOUR_12) "1, 12" else "0, 23"
+        require(initialHour in hourRange) {
+            "initialHour must be in range [$hourRangeLabel], but was $initialHour"
+        }
+    }
+
     /**
      * The currently selected hour.
      * For 12-hour format: 1-12, for 24-hour format: 0-23.
@@ -165,4 +221,47 @@ class TimePickerState(
      */
     val selectedPeriod: TimePeriod
         get() = periodState.selectedItem
+
+    /**
+     * The selected hour converted to 24-hour clock time (0-23).
+     */
+    val selectedHourOfDay: Int
+        get() = when (timeFormat) {
+            TimeFormat.HOUR_24 -> selectedHour
+            TimeFormat.HOUR_12 -> when {
+                selectedPeriod == TimePeriod.AM && selectedHour == 12 -> 0
+                selectedPeriod == TimePeriod.PM && selectedHour != 12 -> selectedHour + 12
+                else -> selectedHour
+            }
+        }
+
+    /**
+     * The selected time represented as [LocalTime].
+     */
+    val selectedTime: LocalTime
+        get() = LocalTime(selectedHourOfDay, selectedMinute)
+
+    companion object {
+        /**
+         * Saves and restores [TimePickerState] across configuration changes.
+         */
+        val Saver: Saver<TimePickerState, Any> = listSaver(
+            save = {
+                listOf(
+                    it.selectedHour,
+                    it.selectedMinute,
+                    it.selectedPeriod.name,
+                    it.timeFormat.name
+                )
+            },
+            restore = {
+                TimePickerState(
+                    initialHour = it[0] as Int,
+                    initialMinute = it[1] as Int,
+                    initialPeriod = TimePeriod.valueOf(it[2] as String),
+                    timeFormat = TimeFormat.valueOf(it[3] as String)
+                )
+            }
+        )
+    }
 }

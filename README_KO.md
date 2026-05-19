@@ -23,7 +23,7 @@ Android, iOS, Desktop (JVM), Web (Wasm) 등 다양한 플랫폼에서 일관된 
 
 ```toml
 [versions]
-composeDateTimePicker = "0.5.0"
+composeDateTimePicker = "0.6.0"
 
 [libraries]
 compose-date-time-picker = { module = "io.github.kez-lab:compose-date-time-picker", version.ref = "composeDateTimePicker" }
@@ -33,7 +33,7 @@ compose-date-time-picker = { module = "io.github.kez-lab:compose-date-time-picke
 
 ```kotlin
 dependencies {
-    implementation("io.github.kez-lab:compose-date-time-picker:0.5.0")
+    implementation("io.github.kez-lab:compose-date-time-picker:0.6.0")
 }
 ```
 
@@ -64,6 +64,8 @@ fun TimePicker24hExample() {
     TimePicker(
         state = state
     )
+
+    // 앱 로직에 전달할 때는 state.selectedTime을 사용합니다.
 }
 ```
 
@@ -89,6 +91,8 @@ fun TimePicker12hExample() {
     TimePicker(
         state = state
     )
+
+    // state.selectedTime은 항상 kotlinx.datetime.LocalTime입니다.
 }
 ```
 
@@ -113,7 +117,7 @@ fun DatePickerExample() {
 
     DatePicker(state = state)
 
-    // state.selectedYear, state.selectedMonth, state.selectedDay
+    // 앱 로직에 전달할 때는 state.selectedDate를 사용합니다.
 }
 ```
 
@@ -138,6 +142,8 @@ fun YearMonthPickerExample() {
     YearMonthPicker(
         state = state
     )
+
+    // state.selectedMonthDate는 선택된 월의 1일을 나타냅니다.
 }
 ```
 
@@ -189,6 +195,16 @@ fun BottomSheetPickerExample() {
 | `textStyles` | 선택/비선택 아이템의 텍스트 스타일입니다. | `PickerDefaults.textStyles()` |
 | `isDividerVisible` | 선택 영역 구분선 표시 여부입니다. | `true` |
 
+**TimePickerState 속성:**
+
+- `selectedHour`: Picker에 표시되는 선택된 시간입니다.
+- `selectedMinute`: 현재 선택된 분입니다. (0-59)
+- `selectedPeriod`: 12시간 형식에서 선택된 오전/오후 값입니다.
+- `selectedHourOfDay`: 선택된 시간을 24시간 기준(0-23)으로 변환한 값입니다.
+- `selectedTime`: 선택된 값을 `kotlinx.datetime.LocalTime`으로 제공합니다.
+
+`rememberTimePickerState`는 saveable state를 사용합니다. Android에서는 플랫폼 saveable registry가 제공될 때 Activity 재생성 이후에도 선택값을 복원할 수 있습니다.
+
 ### DatePicker
 
 | 파라미터 | 설명 | 기본값 |
@@ -206,7 +222,10 @@ fun BottomSheetPickerExample() {
 - `selectedYear`: 현재 선택된 연도입니다.
 - `selectedMonth`: 현재 선택된 월입니다. (1-12)
 - `selectedDay`: 현재 선택된 일입니다. 선택된 월에 맞게 자동 보정됩니다.
+- `selectedDate`: 선택된 값을 `kotlinx.datetime.LocalDate`로 제공합니다.
 - `maxDay`: 현재 선택된 연도/월에서 선택 가능한 최대 일입니다.
+
+`rememberDatePickerState`는 saveable state를 사용합니다. Android에서는 플랫폼 saveable registry가 제공될 때 Activity 재생성 이후에도 선택값을 복원할 수 있습니다.
 
 ### YearMonthPicker
 
@@ -219,6 +238,14 @@ fun BottomSheetPickerExample() {
 | `visibleItemsCount` | 리스트에 표시될 아이템의 개수입니다. | `3` |
 | `colors` | 텍스트, 선택 텍스트, 구분선, 선택 영역 배경 색상입니다. | `PickerDefaults.colors()` |
 | `textStyles` | 선택/비선택 아이템의 텍스트 스타일입니다. | `PickerDefaults.textStyles()` |
+
+**YearMonthPickerState 속성:**
+
+- `selectedYear`: 현재 선택된 연도입니다.
+- `selectedMonth`: 현재 선택된 월입니다. (1-12)
+- `selectedMonthDate`: 선택된 연/월을 해당 월의 1일 `LocalDate`로 제공합니다.
+
+`rememberYearMonthPickerState`는 saveable state를 사용합니다. Android에서는 플랫폼 saveable registry가 제공될 때 Activity 재생성 이후에도 선택값을 복원할 수 있습니다.
 
 ## 라이선스
 

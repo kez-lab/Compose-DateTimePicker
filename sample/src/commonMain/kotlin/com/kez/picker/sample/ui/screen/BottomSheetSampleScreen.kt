@@ -29,6 +29,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -75,17 +76,11 @@ internal fun BottomSheetSampleScreen(
     )
 
     // Selected date/time text
-    var selectedDateText by remember {
+    var selectedDateText by rememberSaveable {
         mutableStateOf("${currentDate.year}년 ${getMonthName(currentDate.month.number)}")
     }
-    var selectedTimeText by remember {
-        mutableStateOf(
-            formatTime12(
-                timeState.selectedHour,
-                timeState.selectedMinute,
-                timeState.selectedPeriod
-            )
-        )
+    var selectedTimeText by rememberSaveable {
+        mutableStateOf(formatTime12(timeState.selectedTime))
     }
 
     // Bottom sheet state
@@ -269,9 +264,10 @@ internal fun BottomSheetSampleScreen(
 
                     Button(
                         onClick = {
-                            // Update selected date
-                            selectedDateText =
-                                "${yearMonthState.selectedYear}년 ${getMonthName(yearMonthState.selectedMonth)}"
+                            val selectedMonthDate = yearMonthState.selectedMonthDate
+                            selectedDateText = "${selectedMonthDate.year}년 ${
+                                getMonthName(selectedMonthDate.month.number)
+                            }"
                             scope.launch {
                                 dateSheetState.hide()
                                 showDateBottomSheet = false
@@ -337,12 +333,7 @@ internal fun BottomSheetSampleScreen(
 
                     Button(
                         onClick = {
-                            // Update selected time
-                            selectedTimeText = formatTime12(
-                                timeState.selectedHour,
-                                timeState.selectedMinute,
-                                timeState.selectedPeriod
-                            )
+                            selectedTimeText = formatTime12(timeState.selectedTime)
                             scope.launch {
                                 timeSheetState.hide()
                                 showTimeBottomSheet = false
