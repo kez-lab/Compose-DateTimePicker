@@ -35,6 +35,7 @@ kotlin {
     sourceSets {
         commonMain.dependencies {
             api(libs.compose.runtime)
+            api(libs.compose.runtime.saveable)
             api(libs.compose.foundation)
             api(libs.compose.ui)
             api(libs.kotlinx.datetime)

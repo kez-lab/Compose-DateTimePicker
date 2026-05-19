@@ -25,7 +25,7 @@ Add the dependency to your version catalog or build file.
 
 ```toml
 [versions]
-composeDateTimePicker = "0.5.0"
+composeDateTimePicker = "0.6.0"
 
 [libraries]
 compose-date-time-picker = { module = "io.github.kez-lab:compose-date-time-picker", version.ref = "composeDateTimePicker" }
@@ -35,7 +35,7 @@ compose-date-time-picker = { module = "io.github.kez-lab:compose-date-time-picke
 
 ```kotlin
 dependencies {
-    implementation("io.github.kez-lab:compose-date-time-picker:0.5.0")
+    implementation("io.github.kez-lab:compose-date-time-picker:0.6.0")
 }
 ```
 
@@ -66,6 +66,8 @@ fun TimePicker24hExample() {
     TimePicker(
         state = state
     )
+
+    // Use state.selectedTime when passing the result to app logic.
 }
 ```
 
@@ -91,6 +93,8 @@ fun TimePicker12hExample() {
     TimePicker(
         state = state
     )
+
+    // state.selectedTime is always a kotlinx.datetime.LocalTime.
 }
 ```
 
@@ -118,8 +122,7 @@ fun DatePickerExample() {
         state = state
     )
 
-    // Access selected values
-    // state.selectedYear, state.selectedMonth, state.selectedDay
+    // Use state.selectedDate when passing the result to app logic.
 }
 ```
 
@@ -144,6 +147,8 @@ fun YearMonthPickerExample() {
     YearMonthPicker(
         state = state
     )
+
+    // state.selectedMonthDate is the first day of the selected month.
 }
 ```
 
@@ -195,6 +200,16 @@ fun BottomSheetPickerExample() {
 | `textStyles` | Text styles for selected and unselected items. | `PickerDefaults.textStyles()` |
 | `isDividerVisible` | Whether selection dividers are visible. | `true` |
 
+**TimePickerState Properties:**
+
+- `selectedHour`: The selected hour shown by the picker.
+- `selectedMinute`: The selected minute (0-59).
+- `selectedPeriod`: The selected AM/PM period when using 12-hour format.
+- `selectedHourOfDay`: The selected hour converted to 24-hour clock time (0-23).
+- `selectedTime`: The selected value as `kotlinx.datetime.LocalTime`.
+
+`rememberTimePickerState` uses saveable state. On Android, selected values can be restored across Activity recreation when the platform saveable registry is available.
+
 ### DatePicker
 
 | Parameter           | Description                             | Default                     |
@@ -212,7 +227,10 @@ fun BottomSheetPickerExample() {
 - `selectedYear`: The currently selected year.
 - `selectedMonth`: The currently selected month (1-12).
 - `selectedDay`: The currently selected day (1-31, auto-adjusted based on month).
+- `selectedDate`: The selected value as `kotlinx.datetime.LocalDate`.
 - `maxDay`: The maximum valid day for the selected year and month.
+
+`rememberDatePickerState` uses saveable state. On Android, selected values can be restored across Activity recreation when the platform saveable registry is available.
 
 ### YearMonthPicker
 
@@ -225,6 +243,14 @@ fun BottomSheetPickerExample() {
 | `visibleItemsCount` | Number of items visible in the list. | `3` |
 | `colors` | Colors for text, selected text, dividers, and selected item background. | `PickerDefaults.colors()` |
 | `textStyles` | Text styles for selected and unselected items. | `PickerDefaults.textStyles()` |
+
+**YearMonthPickerState Properties:**
+
+- `selectedYear`: The currently selected year.
+- `selectedMonth`: The currently selected month (1-12).
+- `selectedMonthDate`: The selected year/month represented as the first day of that month.
+
+`rememberYearMonthPickerState` uses saveable state. On Android, selected values can be restored across Activity recreation when the platform saveable registry is available.
 
 ## License
 

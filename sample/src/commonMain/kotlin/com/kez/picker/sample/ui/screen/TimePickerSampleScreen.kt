@@ -85,21 +85,9 @@ internal fun TimePickerSampleScreen(
     val selectedTimeText by remember {
         derivedStateOf {
             if (selectedFormat == 0) {
-                val hour12 = timeState12.selectedHour // (1 ~ 12)
-                val minute = timeState12.selectedMinute
-                val isAm = timeState12.selectedPeriod == TimePeriod.AM
-
-                val hour24 = when {
-                    isAm && hour12 == 12 -> 0    // 12:xx AM (midnight) -> 0
-                    !isAm && hour12 != 12 -> hour12 + 12 // 1:xx PM (13) ~ 11:xx PM (23)
-                    else -> hour12               // 1:xx AM (1) ~ 11:xx AM (11), 12:xx PM (12)
-                }
-                val time = LocalTime(hour24, minute)
-                time.format(ktxTimeFormat12)
-
+                timeState12.selectedTime.format(ktxTimeFormat12)
             } else {
-                val time = LocalTime(timeState24.selectedHour, timeState24.selectedMinute)
-                time.format(ktxTimeFormat24)
+                timeState24.selectedTime.format(ktxTimeFormat24)
             }
         }
     }

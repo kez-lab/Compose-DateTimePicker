@@ -1,5 +1,7 @@
 package com.kez.picker.date
 
+import androidx.compose.runtime.saveable.SaverScope
+import kotlinx.datetime.LocalDate
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
@@ -82,6 +84,33 @@ class DatePickerStateTest {
         assertEquals(2025, state.selectedYear)
         assertEquals(6, state.selectedMonth)
         assertEquals(15, state.selectedDay)
+        assertEquals(LocalDate(2025, 6, 15), state.selectedDate)
+    }
+
+    @Test
+    fun testSelectedDate_UpdatesWhenInternalStateChanges() {
+        val state = DatePickerState(initialYear = 2025, initialMonth = 1, initialDay = 1)
+
+        state.yearState.selectedItem = 2026
+        state.monthState.selectedItem = 12
+        state.dayState.selectedItem = 25
+
+        assertEquals(LocalDate(2026, 12, 25), state.selectedDate)
+    }
+
+    @Test
+    fun testSaver_RoundTripsCurrentSelection() {
+        val state = DatePickerState(initialYear = 2025, initialMonth = 1, initialDay = 1)
+        state.yearState.selectedItem = 2026
+        state.monthState.selectedItem = 2
+        state.dayState.selectedItem = 30
+
+        val restored = state.saveAndRestore()
+
+        assertEquals(2026, restored.selectedYear)
+        assertEquals(2, restored.selectedMonth)
+        assertEquals(28, restored.selectedDay)
+        assertEquals(LocalDate(2026, 2, 28), restored.selectedDate)
     }
 
     @Test
@@ -113,5 +142,12 @@ class DatePickerStateTest {
             val state = DatePickerState(initialYear = year, initialMonth = 2, initialDay = 1)
             assertEquals(28, state.maxDay, "Year $year should not be a leap year with 28 days in Feb")
         }
+    }
+
+    private fun DatePickerState.saveAndRestore(): DatePickerState {
+        val saved = with(DatePickerState.Saver) {
+            SaverScope { true }.save(this@saveAndRestore)
+        }
+        return DatePickerState.Saver.restore(saved!!)!!
     }
 }

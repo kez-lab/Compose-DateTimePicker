@@ -1,7 +1,10 @@
 package com.kez.picker
 
+import androidx.compose.runtime.saveable.SaverScope
+import kotlinx.datetime.LocalDate
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertFailsWith
 import kotlin.test.assertNotEquals
 
 /**
@@ -26,6 +29,7 @@ class YearMonthPickerStateTest {
 
         assertEquals(2024, state.selectedYear)
         assertEquals(6, state.selectedMonth)
+        assertEquals(LocalDate(2024, 6, 1), state.selectedMonthDate)
     }
 
     @Test
@@ -91,6 +95,55 @@ class YearMonthPickerStateTest {
             )
             assertEquals(month, state.selectedMonth, "Month $month should be correctly stored")
         }
+    }
+
+    @Test
+    fun yearMonthPickerState_invalidMonth_throws() {
+        assertFailsWith<IllegalArgumentException> {
+            YearMonthPickerState(
+                initialYear = 2024,
+                initialMonth = 13
+            )
+        }
+    }
+
+    @Test
+    fun yearMonthPickerState_zeroMonth_throws() {
+        assertFailsWith<IllegalArgumentException> {
+            YearMonthPickerState(
+                initialYear = 2024,
+                initialMonth = 0
+            )
+        }
+    }
+
+    @Test
+    fun yearMonthPickerState_selectedMonthDate_updatesWhenInternalStateChanges() {
+        val state = YearMonthPickerState(
+            initialYear = 2024,
+            initialMonth = 1
+        )
+
+        state.yearState.selectedItem = 2026
+        state.monthState.selectedItem = 12
+
+        assertEquals(LocalDate(2026, 12, 1), state.selectedMonthDate)
+    }
+
+    @Test
+    fun yearMonthPickerState_saver_roundTripsCurrentSelection() {
+        val state = YearMonthPickerState(
+            initialYear = 2024,
+            initialMonth = 1
+        )
+        state.yearState.selectedItem = 2026
+        state.monthState.selectedItem = 12
+
+        val restored = state.saveAndRestore()
+
+        assertEquals(2026, restored.selectedYear)
+        assertEquals(12, restored.selectedMonth)
+        assertEquals(LocalDate(2026, 12, 1), restored.selectedMonthDate)
     }
 
     // ==================== State Independence Tests ====================
@@ -189,5 +242,12 @@ class YearMonthPickerStateTest {
 
         assertEquals(2024, state.selectedYear)
         assertEquals(1, state.selectedMonth)
+    }
+
+    private fun YearMonthPickerState.saveAndRestore(): YearMonthPickerState {
+        val saved = with(YearMonthPickerState.Saver) {
+            SaverScope { true }.save(this@saveAndRestore)
+        }
+        return YearMonthPickerState.Saver.restore(saved!!)!!
     }
 }

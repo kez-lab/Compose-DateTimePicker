@@ -1,6 +1,7 @@
 package com.kez.picker.sample
 
 import com.kez.picker.util.TimePeriod
+import kotlinx.datetime.LocalTime
 
 /**
  * 시간 형식화를 위한 확장 함수 - 12시간제
@@ -10,6 +11,13 @@ internal fun formatTime12(hour: Int?, minute: Int?, period: TimePeriod?): String
     val m = minute ?: 0
     val p = period ?: TimePeriod.AM
     return "${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')} $p"
+}
+
+internal fun formatTime12(time: LocalTime): String {
+    val period = if (time.hour >= 12) TimePeriod.PM else TimePeriod.AM
+    val hour = time.hour % 12
+    val displayHour = if (hour == 0) 12 else hour
+    return formatTime12(displayHour, time.minute, period)
 }
 
 /**
@@ -40,4 +48,4 @@ internal fun getMonthName(month: Int): String {
         12 -> "12월 (Dec)"
         else -> "알 수 없음"
     }
-} 
+}
