@@ -30,9 +30,9 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.PrimaryTabRow
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Tab
-import androidx.compose.material3.TabRow
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
@@ -49,6 +49,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.kez.picker.PickerDefaults
 import com.kez.picker.date.YearMonthPicker
 import com.kez.picker.rememberTimePickerState
 import com.kez.picker.rememberYearMonthPickerState
@@ -71,6 +72,10 @@ import kotlinx.datetime.number
 internal fun IntegratedPickerScreen(
     onBackPressed: () -> Unit = {},
 ) {
+    val currentDate = currentDate()
+    val currentHour = currentHour()
+    val currentMinute = currentMinute()
+
     val yearMonthState = rememberYearMonthPickerState(
         initialYear = currentDate.year,
         initialMonth = currentDate.month.number
@@ -109,7 +114,7 @@ internal fun IntegratedPickerScreen(
                         )
                     }
                 },
-                colors = TopAppBarDefaults.centerAlignedTopAppBarColors(containerColor = Color.Transparent)
+                colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.Transparent)
             )
         },
         containerColor = MaterialTheme.colorScheme.background
@@ -130,7 +135,7 @@ internal fun IntegratedPickerScreen(
                 colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
             ) {
                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                    TabRow(
+                    PrimaryTabRow(
                         selectedTabIndex = selectedTabIndex,
                         containerColor = MaterialTheme.colorScheme.surface,
                         contentColor = MaterialTheme.colorScheme.primary,
@@ -168,30 +173,38 @@ internal fun IntegratedPickerScreen(
                             if (tabIndex == 0) {
                                 YearMonthPicker(
                                     state = yearMonthState,
-                                    textStyle = TextStyle(
-                                        fontSize = 18.sp,
-                                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
+                                    textStyles = PickerDefaults.textStyles(
+                                        textStyle = TextStyle(
+                                            fontSize = 18.sp
+                                        ),
+                                        selectedTextStyle = TextStyle(
+                                            fontSize = 22.sp,
+                                            fontWeight = FontWeight.Bold
+                                        )
                                     ),
-                                    selectedTextStyle = TextStyle(
-                                        fontSize = 22.sp,
-                                        color = MaterialTheme.colorScheme.primary,
-                                        fontWeight = FontWeight.Bold
-                                    ),
-                                    dividerColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.2f)
+                                    colors = PickerDefaults.colors(
+                                        textColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f),
+                                        selectedTextColor = MaterialTheme.colorScheme.primary,
+                                        dividerColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.2f)
+                                    )
                                 )
                             } else {
                                 TimePicker(
                                     state = timeState,
-                                    textStyle = TextStyle(
-                                        fontSize = 18.sp,
-                                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
+                                    textStyles = PickerDefaults.textStyles(
+                                        textStyle = TextStyle(
+                                            fontSize = 18.sp
+                                        ),
+                                        selectedTextStyle = TextStyle(
+                                            fontSize = 22.sp,
+                                            fontWeight = FontWeight.Bold
+                                        )
                                     ),
-                                    selectedTextStyle = TextStyle(
-                                        fontSize = 22.sp,
-                                        color = MaterialTheme.colorScheme.primary,
-                                        fontWeight = FontWeight.Bold
-                                    ),
-                                    dividerColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.2f)
+                                    colors = PickerDefaults.colors(
+                                        textColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f),
+                                        selectedTextColor = MaterialTheme.colorScheme.primary,
+                                        dividerColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.2f)
+                                    )
                                 )
                             }
                         }

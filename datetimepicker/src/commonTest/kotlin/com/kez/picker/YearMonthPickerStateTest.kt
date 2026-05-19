@@ -1,0 +1,193 @@
+package com.kez.picker
+
+import kotlin.test.Test
+import kotlin.test.assertEquals
+import kotlin.test.assertNotEquals
+
+/**
+ * Unit tests for [YearMonthPickerState] class.
+ *
+ * Tests cover:
+ * - Initial value setting for year and month
+ * - Boundary conditions for months (1-12)
+ * - Various year values
+ * - State independence
+ */
+class YearMonthPickerStateTest {
+
+    // ==================== Initial Value Tests ====================
+
+    @Test
+    fun yearMonthPickerState_initialValues_areCorrect() {
+        val state = YearMonthPickerState(
+            initialYear = 2024,
+            initialMonth = 6
+        )
+
+        assertEquals(2024, state.selectedYear)
+        assertEquals(6, state.selectedMonth)
+    }
+
+    @Test
+    fun yearMonthPickerState_januaryFirstMonth_isCorrect() {
+        val state = YearMonthPickerState(
+            initialYear = 2024,
+            initialMonth = 1
+        )
+
+        assertEquals(1, state.selectedMonth)
+    }
+
+    @Test
+    fun yearMonthPickerState_decemberLastMonth_isCorrect() {
+        val state = YearMonthPickerState(
+            initialYear = 2024,
+            initialMonth = 12
+        )
+
+        assertEquals(12, state.selectedMonth)
+    }
+
+    // ==================== Year Boundary Tests ====================
+
+    @Test
+    fun yearMonthPickerState_year1900_isCorrect() {
+        val state = YearMonthPickerState(
+            initialYear = 1900,
+            initialMonth = 1
+        )
+
+        assertEquals(1900, state.selectedYear)
+    }
+
+    @Test
+    fun yearMonthPickerState_year2100_isCorrect() {
+        val state = YearMonthPickerState(
+            initialYear = 2100,
+            initialMonth = 12
+        )
+
+        assertEquals(2100, state.selectedYear)
+    }
+
+    @Test
+    fun yearMonthPickerState_currentYear_isCorrect() {
+        val state = YearMonthPickerState(
+            initialYear = 2025,
+            initialMonth = 1
+        )
+
+        assertEquals(2025, state.selectedYear)
+    }
+
+    // ==================== Month Boundary Tests ====================
+
+    @Test
+    fun yearMonthPickerState_allMonths_areValid() {
+        for (month in 1..12) {
+            val state = YearMonthPickerState(
+                initialYear = 2024,
+                initialMonth = month
+            )
+            assertEquals(month, state.selectedMonth, "Month $month should be correctly stored")
+        }
+    }
+
+    // ==================== State Independence Tests ====================
+
+    @Test
+    fun yearMonthPickerState_multipleInstances_areIndependent() {
+        val state1 = YearMonthPickerState(
+            initialYear = 2020,
+            initialMonth = 3
+        )
+
+        val state2 = YearMonthPickerState(
+            initialYear = 2024,
+            initialMonth = 9
+        )
+
+        assertEquals(2020, state1.selectedYear)
+        assertEquals(2024, state2.selectedYear)
+        assertEquals(3, state1.selectedMonth)
+        assertEquals(9, state2.selectedMonth)
+    }
+
+    @Test
+    fun yearMonthPickerState_sameValues_areEqual() {
+        val state1 = YearMonthPickerState(
+            initialYear = 2024,
+            initialMonth = 6
+        )
+
+        val state2 = YearMonthPickerState(
+            initialYear = 2024,
+            initialMonth = 6
+        )
+
+        assertEquals(state1.selectedYear, state2.selectedYear)
+        assertEquals(state1.selectedMonth, state2.selectedMonth)
+    }
+
+    @Test
+    fun yearMonthPickerState_differentValues_areNotEqual() {
+        val state1 = YearMonthPickerState(
+            initialYear = 2024,
+            initialMonth = 6
+        )
+
+        val state2 = YearMonthPickerState(
+            initialYear = 2025,
+            initialMonth = 7
+        )
+
+        assertNotEquals(state1.selectedYear, state2.selectedYear)
+        assertNotEquals(state1.selectedMonth, state2.selectedMonth)
+    }
+
+    // ==================== Special Date Tests ====================
+
+    @Test
+    fun yearMonthPickerState_leapYear_isCorrect() {
+        val state = YearMonthPickerState(
+            initialYear = 2024,
+            initialMonth = 2
+        )
+
+        assertEquals(2024, state.selectedYear)
+        assertEquals(2, state.selectedMonth)
+    }
+
+    @Test
+    fun yearMonthPickerState_centuryYear_isCorrect() {
+        val state = YearMonthPickerState(
+            initialYear = 2000,
+            initialMonth = 2
+        )
+
+        assertEquals(2000, state.selectedYear)
+        assertEquals(2, state.selectedMonth)
+    }
+
+    @Test
+    fun yearMonthPickerState_endOfYear_isCorrect() {
+        val state = YearMonthPickerState(
+            initialYear = 2024,
+            initialMonth = 12
+        )
+
+        assertEquals(2024, state.selectedYear)
+        assertEquals(12, state.selectedMonth)
+    }
+
+    @Test
+    fun yearMonthPickerState_startOfYear_isCorrect() {
+        val state = YearMonthPickerState(
+            initialYear = 2024,
+            initialMonth = 1
+        )
+
+        assertEquals(2024, state.selectedYear)
+        assertEquals(1, state.selectedMonth)
+    }
+}

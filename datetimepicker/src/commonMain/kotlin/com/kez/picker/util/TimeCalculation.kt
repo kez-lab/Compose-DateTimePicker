@@ -29,11 +29,12 @@ fun calculateTime(
         TimeFormat.HOUR_24 -> hour
     }
 
+    val now = currentDateTime()
     return LocalDateTime(
-        year = currentYear,
-        month = currentMonth,
-        day = currentDate.day,
+        year = now.year,
+        month = now.month,
+        day = now.date.day,
         hour = adjustHour.coerceIn(0, 23),
         minute = minute.coerceIn(0, 59)
     )
-} 
+}

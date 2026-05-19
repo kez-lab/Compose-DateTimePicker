@@ -12,7 +12,8 @@ permissions:
   contents: read
 
 env:
-  MODULE: ":datetimepicker"
+  LIBRARY_MODULE: ":datetimepicker"
+  SAMPLE_MODULE: ":sample"
 jobs:
 
   linux-builds:
@@ -26,14 +27,15 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - uses: gradle/wrapper-validation-action@v2
+      - uses: gradle/actions/wrapper-validation@v4
 
       - name: Set up JDK 17
         uses: actions/setup-java@v4
         with:
           java-version: '17'
           distribution: 'temurin'
-          cache: 'gradle'
+
+      - uses: gradle/actions/setup-gradle@v4
 
       # Android Set Up
       - name: Set up Android SDK
@@ -44,39 +46,42 @@ jobs:
         if: matrix.target == 'android'
         run: |
           sdkmanager "platform-tools" \
-                     "platforms;android-34" \
-                     "build-tools;34.0.0" || true
-          yes | sdkmanager --licenses || true
+                     "platforms;android-36" \
+                     "build-tools;36.0.0"
+          yes | sdkmanager --licenses
 
       # Android Build/Unit Test
       - name: Gradle Build • Android
         if: matrix.target == 'android'
-        uses: gradle/gradle-build-action@v3
-        with:
-          arguments: |
-            ${{ env.MODULE }}:clean
-            ${{ env.MODULE }}:assembleRelease
-            ${{ env.MODULE }}:testReleaseUnitTest
+        run: |
+          ./gradlew \
+            ${{ env.LIBRARY_MODULE }}:clean \
+            ${{ env.LIBRARY_MODULE }}:assembleRelease \
+            ${{ env.LIBRARY_MODULE }}:testReleaseUnitTest \
+            ${{ env.SAMPLE_MODULE }}:assembleDebug \
+            --no-daemon
 
       # Web(WASM) Build/Test
       - name: Gradle Build • Web (WASM)
         if: matrix.target == 'wasm'
-        uses: gradle/gradle-build-action@v3
-        with:
-          arguments: |
-            ${{ env.MODULE }}:clean
-            ${{ env.MODULE }}:wasmJsBrowserDistribution
-            ${{ env.MODULE }}:wasmJsTest
+        run: |
+          ./gradlew \
+            ${{ env.LIBRARY_MODULE }}:clean \
+            ${{ env.LIBRARY_MODULE }}:wasmJsBrowserDistribution \
+            ${{ env.LIBRARY_MODULE }}:wasmJsTest \
+            ${{ env.SAMPLE_MODULE }}:wasmJsBrowserDistribution \
+            --no-daemon
 
       # Desktop(JVM) Build/Test
       - name: Gradle Build • Desktop (JVM)
         if: matrix.target == 'desktop'
-        uses: gradle/gradle-build-action@v3
-        with:
-          arguments: |
-            ${{ env.MODULE }}:clean
-            ${{ env.MODULE }}:desktopJar
-            ${{ env.MODULE }}:desktopTest
+        run: |
+          ./gradlew \
+            ${{ env.LIBRARY_MODULE }}:clean \
+            ${{ env.LIBRARY_MODULE }}:desktopJar \
+            ${{ env.LIBRARY_MODULE }}:desktopTest \
+            ${{ env.SAMPLE_MODULE }}:compileKotlinDesktop \
+            --no-daemon
 
   ios-build-and-test:
     name: macOS • iOS Simulator Test
@@ -85,14 +90,15 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - uses: gradle/wrapper-validation-action@v2
+      - uses: gradle/actions/wrapper-validation@v4
 
       - name: Set up JDK 17
         uses: actions/setup-java@v4
         with:
           java-version: '17'
           distribution: 'temurin'
-          cache: 'gradle'
+
+      - uses: gradle/actions/setup-gradle@v4
 
       - name: Boot iOS Simulator (iPhone 15)
         run: |
@@ -104,8 +110,9 @@ jobs:
 
       # iOS Simulator Unit Test
       - name: Gradle Build & Test • iOS
-        uses: gradle/gradle-build-action@v3
-        with:
-          arguments: |
-            ${{ env.MODULE }}:clean
-            ${{ env.MODULE }}:iosSimulatorArm64Test
+        run: |
+          ./gradlew \
+            ${{ env.LIBRARY_MODULE }}:clean \
+            ${{ env.LIBRARY_MODULE }}:iosSimulatorArm64Test \
+            ${{ env.SAMPLE_MODULE }}:compileKotlinIosSimulatorArm64 \
+            --no-daemon

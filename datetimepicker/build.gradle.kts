@@ -34,14 +34,14 @@ kotlin {
 
     sourceSets {
         commonMain.dependencies {
-            implementation(libs.compose.runtime)
-            implementation(libs.compose.foundation)
+            api(libs.compose.runtime)
+            api(libs.compose.foundation)
+            api(libs.compose.ui)
+            api(libs.kotlinx.datetime)
+
             implementation(libs.compose.material3)
-            implementation(libs.compose.ui)
             implementation(libs.compose.ui.tooling.preview)
             implementation(libs.compose.components.resources)
-
-            implementation(libs.kotlinx.datetime)
             implementation(libs.kotlinx.coroutines.core)
         }
 

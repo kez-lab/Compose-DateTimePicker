@@ -25,6 +25,9 @@ fun <T> rememberPickerState(initialItem: T) = remember { PickerState(initialItem
 /**
  * State holder for the picker component.
  *
+ * The [selectedItem] property is read-only from external code.
+ * Item selection is managed internally by the [Picker] component through scrolling.
+ *
  * @param initialItem The initial selected item.
  */
 @Stable
@@ -33,8 +36,10 @@ class PickerState<T>(
 ) {
     /**
      * The currently selected item.
+     * This value is updated internally when the user scrolls the picker.
      */
-    var selectedItem by mutableStateOf(initialItem)
+    var selectedItem: T by mutableStateOf(initialItem)
+        internal set
 }
 
 /**
@@ -46,8 +51,8 @@ class PickerState<T>(
  */
 @Composable
 fun rememberYearMonthPickerState(
-    initialYear: Int = currentDate.year,
-    initialMonth: Int = currentDate.month.number
+    initialYear: Int = currentDate().year,
+    initialMonth: Int = currentDate().month.number
 ): YearMonthPickerState {
     return remember(initialYear, initialMonth) {
         YearMonthPickerState(initialYear, initialMonth)
@@ -58,6 +63,7 @@ fun rememberYearMonthPickerState(
  * State holder for the [com.kez.picker.date.YearMonthPicker].
  *
  * Manages the state of the year and month pickers.
+ * Internal picker states are not directly accessible to prevent inconsistent state modifications.
  *
  * @param initialYear The initial year to be selected.
  * @param initialMonth The initial month to be selected.
@@ -67,12 +73,18 @@ class YearMonthPickerState(
     initialYear: Int,
     initialMonth: Int
 ) {
-    val yearState = PickerState(initialYear)
-    val monthState = PickerState(initialMonth)
+    internal val yearState = PickerState(initialYear)
+    internal val monthState = PickerState(initialMonth)
 
+    /**
+     * The currently selected year.
+     */
     val selectedYear: Int
         get() = yearState.selectedItem
 
+    /**
+     * The currently selected month (1-12).
+     */
     val selectedMonth: Int
         get() = monthState.selectedItem
 }
@@ -89,8 +101,8 @@ class YearMonthPickerState(
  */
 @Composable
 fun rememberTimePickerState(
-    initialHour: Int = currentHour,
-    initialMinute: Int = currentMinute,
+    initialHour: Int = currentHour(),
+    initialMinute: Int = currentMinute(),
     initialPeriod: TimePeriod = if (initialHour >= 12) TimePeriod.PM else TimePeriod.AM,
     timeFormat: TimeFormat = TimeFormat.HOUR_24
 ): TimePickerState {
@@ -116,6 +128,7 @@ fun rememberTimePickerState(
  * State holder for the [TimePicker].
  *
  * Manages the state of the hour, minute, and period (AM/PM) pickers.
+ * Internal picker states are not directly accessible to prevent inconsistent state modifications.
  *
  * @param initialHour The initial hour to be selected.
  * @param initialMinute The initial minute to be selected.
@@ -129,16 +142,27 @@ class TimePickerState(
     initialPeriod: TimePeriod,
     val timeFormat: TimeFormat
 ) {
-    val hourState = PickerState(initialHour)
-    val minuteState = PickerState(initialMinute)
-    val periodState = PickerState(initialPeriod)
+    internal val hourState = PickerState(initialHour)
+    internal val minuteState = PickerState(initialMinute)
+    internal val periodState = PickerState(initialPeriod)
 
+    /**
+     * The currently selected hour.
+     * For 12-hour format: 1-12, for 24-hour format: 0-23.
+     */
     val selectedHour: Int
         get() = hourState.selectedItem
 
+    /**
+     * The currently selected minute (0-59).
+     */
     val selectedMinute: Int
         get() = minuteState.selectedItem
 
+    /**
+     * The currently selected period (AM/PM).
+     * Only relevant when using 12-hour format.
+     */
     val selectedPeriod: TimePeriod
         get() = periodState.selectedItem
 }

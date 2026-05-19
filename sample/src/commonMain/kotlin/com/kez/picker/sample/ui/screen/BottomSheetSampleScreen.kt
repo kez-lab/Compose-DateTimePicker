@@ -36,7 +36,7 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.navigation.NavController
+import com.kez.picker.PickerDefaults
 import com.kez.picker.date.YearMonthPicker
 import com.kez.picker.rememberTimePickerState
 import com.kez.picker.rememberYearMonthPickerState
@@ -60,11 +60,13 @@ import kotlinx.datetime.number
 internal fun BottomSheetSampleScreen(
     onBackPressed: () -> Unit = {},
 ) {
-    // Date/time state management
+    val currentDate = currentDate()
     val yearMonthState = rememberYearMonthPickerState(
         initialYear = currentDate.year,
-        initialMonth = currentDate.monthNumber
+        initialMonth = currentDate.month.number
     )
+    val currentHour = currentHour()
+    val currentMinute = currentMinute()
     val timeState = rememberTimePickerState(
         initialHour = currentHour,
         initialMinute = currentMinute,
@@ -246,16 +248,20 @@ internal fun BottomSheetSampleScreen(
                     ) {
                         YearMonthPicker(
                             state = yearMonthState,
-                            textStyle = TextStyle(
-                                fontSize = 18.sp,
-                                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
+                            textStyles = PickerDefaults.textStyles(
+                                textStyle = TextStyle(
+                                    fontSize = 18.sp
+                                ),
+                                selectedTextStyle = TextStyle(
+                                    fontSize = 22.sp,
+                                    fontWeight = FontWeight.Bold
+                                )
                             ),
-                            selectedTextStyle = TextStyle(
-                                fontSize = 22.sp,
-                                color = MaterialTheme.colorScheme.primary,
-                                fontWeight = FontWeight.Bold
-                            ),
-                            dividerColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.2f)
+                            colors = PickerDefaults.colors(
+                                textColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f),
+                                selectedTextColor = MaterialTheme.colorScheme.primary,
+                                dividerColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.2f)
+                            )
                         )
                     }
 
@@ -310,16 +316,20 @@ internal fun BottomSheetSampleScreen(
                     ) {
                         TimePicker(
                             state = timeState,
-                            textStyle = TextStyle(
-                                fontSize = 18.sp,
-                                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
+                            textStyles = PickerDefaults.textStyles(
+                                textStyle = TextStyle(
+                                    fontSize = 18.sp
+                                ),
+                                selectedTextStyle = TextStyle(
+                                    fontSize = 22.sp,
+                                    fontWeight = FontWeight.Bold
+                                )
                             ),
-                            selectedTextStyle = TextStyle(
-                                fontSize = 22.sp,
-                                color = MaterialTheme.colorScheme.primary,
-                                fontWeight = FontWeight.Bold
-                            ),
-                            dividerColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.2f)
+                            colors = PickerDefaults.colors(
+                                textColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f),
+                                selectedTextColor = MaterialTheme.colorScheme.primary,
+                                dividerColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.2f)
+                            )
                         )
                     }
 

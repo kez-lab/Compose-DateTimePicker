@@ -7,29 +7,26 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.key
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
-import androidx.compose.ui.unit.sp
 import com.kez.picker.Picker
 import com.kez.picker.PickerColors
 import com.kez.picker.PickerDefaults
 import com.kez.picker.PickerTextStyles
-import com.kez.picker.YearMonthPickerState
-import com.kez.picker.rememberYearMonthPickerState
 import com.kez.picker.util.MONTH_RANGE
 import com.kez.picker.util.YEAR_RANGE
 import com.kez.picker.util.currentDate
 import kotlinx.datetime.LocalDate
-import kotlinx.datetime.number
 
 /**
- * A year and month picker component.
+ * A date picker component that allows selecting year, month, and day.
  *
  * @param modifier The modifier to be applied to the component.
  * @param pickerModifier The modifier to be applied to each picker.
@@ -51,10 +48,10 @@ import kotlinx.datetime.number
  * @param isDividerVisible Whether the divider should be visible.
  */
 @Composable
-fun YearMonthPicker(
+fun DatePicker(
     modifier: Modifier = Modifier,
     pickerModifier: Modifier = Modifier,
-    state: YearMonthPickerState = rememberYearMonthPickerState(),
+    state: DatePickerState = rememberDatePickerState(),
     startLocalDate: LocalDate = currentDate(),
     yearItems: List<Int> = YEAR_RANGE,
     monthItems: List<Int> = MONTH_RANGE,
@@ -71,30 +68,35 @@ fun YearMonthPicker(
     spacingBetweenPickers: Dp = PickerDefaults.SpacingBetweenPickers,
     isDividerVisible: Boolean = true
 ) {
+    // Validate state whenever year or month changes to ensure day is within range
+    LaunchedEffect(state.selectedYear, state.selectedMonth) {
+        state.validate()
+    }
+
     Box(modifier = modifier) {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center,
             modifier = Modifier.fillMaxWidth()
         ) {
+            val yearStartIndex = remember(yearItems) { yearItems.startIndexOf(state.selectedYear) }
+            val monthStartIndex = remember(monthItems) { monthItems.startIndexOf(state.selectedMonth) }
 
-            val yearStartIndex = remember(yearItems) {
-                yearItems.startIndexOf(state.selectedYear)
-            }
-            val monthStartIndex = remember(monthItems) {
-                monthItems.startIndexOf(state.selectedMonth)
+            val maxDay = state.maxDay
+            val dayItems = (1..maxDay).toList()
+            val dayStartIndex = remember(dayItems, state.selectedDay) {
+                val index = dayItems.indexOf(state.selectedDay.coerceIn(1, maxDay))
+                if (index >= 0) index else 0
             }
 
             Row(
                 modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(
-                    spacingBetweenPickers,
-                    Alignment.CenterHorizontally
-                ),
+                horizontalArrangement = Arrangement.Center,
+                verticalAlignment = Alignment.CenterVertically
             ) {
                 Picker(
                     state = state.yearState,
-                    modifier = pickerModifier.weight(1f),
+                    modifier = pickerModifier.weight(1.2f), // Give Year slightly more width
                     items = yearItems,
                     startIndex = yearStartIndex,
                     visibleItemsCount = visibleItemsCount,
@@ -110,12 +112,13 @@ fun YearMonthPicker(
                     isDividerVisible = isDividerVisible,
                     pickerLabel = "Year"
                 )
+
                 Picker(
                     state = state.monthState,
                     items = monthItems,
                     startIndex = monthStartIndex,
                     visibleItemsCount = visibleItemsCount,
-                    modifier = pickerModifier.weight(1f),
+                    modifier = pickerModifier.weight(0.8f),
                     colors = colors,
                     textStyles = textStyles,
                     selectedItemBackgroundShape = selectedItemBackgroundShape,
@@ -128,6 +131,28 @@ fun YearMonthPicker(
                     isDividerVisible = isDividerVisible,
                     pickerLabel = "Month"
                 )
+
+                key(maxDay) {
+                    Picker(
+                        state = state.dayState,
+                        items = dayItems,
+                        startIndex = dayStartIndex,
+                        visibleItemsCount = visibleItemsCount,
+                        modifier = pickerModifier.weight(0.8f),
+                        colors = colors,
+                        textStyles = textStyles,
+                        selectedItemBackgroundShape = selectedItemBackgroundShape,
+                        itemPadding = itemPadding,
+                        isInfinity = false,
+                        fadingEdgeGradient = fadingEdgeGradient,
+                        horizontalAlignment = horizontalAlignment,
+                        verticalAlignment = verticalAlignment,
+                        dividerThickness = dividerThickness,
+                        dividerShape = dividerShape,
+                        isDividerVisible = isDividerVisible,
+                        pickerLabel = "Day"
+                    )
+                }
             }
         }
     }
@@ -136,40 +161,8 @@ fun YearMonthPicker(
 private fun <T> List<T>.startIndexOf(item: T): Int =
     indexOf(item).takeIf { it >= 0 } ?: 0
 
-@Preview(name = "Default", group = "YearMonthPicker - Basic", showBackground = true)
+@Preview(name = "Default", group = "DatePicker", showBackground = true)
 @Composable
-fun YearMonthPickerPreview() {
-    YearMonthPicker()
-}
-
-@Preview(name = "No Divider", group = "YearMonthPicker - Variations", showBackground = true)
-@Composable
-fun YearMonthPickerNoDividerPreview() {
-    YearMonthPicker(
-        isDividerVisible = false,
-    )
-}
-
-@Preview(name = "Custom Colors", group = "YearMonthPicker - Styles", showBackground = true)
-@Composable
-fun YearMonthPickerCustomColorsPreview() {
-    YearMonthPicker(
-        colors = PickerDefaults.colors(
-            textColor = Color.Gray,
-            selectedTextColor = Color(0xFF03DAC5),
-            dividerColor = Color(0xFF03DAC5)
-        )
-    )
-}
-
-@Preview(name = "Large Text", group = "YearMonthPicker - Styles", showBackground = true)
-@Composable
-fun YearMonthPickerLargeTextPreview() {
-    YearMonthPicker(
-        textStyles = PickerDefaults.textStyles(
-            textStyle = androidx.compose.ui.text.TextStyle(fontSize = 18.sp),
-            selectedTextStyle = androidx.compose.ui.text.TextStyle(fontSize = 28.sp)
-        ),
-        visibleItemsCount = 5
-    )
+fun DatePickerPreview() {
+    DatePicker()
 }

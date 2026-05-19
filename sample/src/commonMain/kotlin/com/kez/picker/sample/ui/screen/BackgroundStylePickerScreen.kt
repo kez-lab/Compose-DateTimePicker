@@ -30,6 +30,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.kez.picker.PickerDefaults
 import com.kez.picker.date.YearMonthPicker
 import com.kez.picker.rememberTimePickerState
 import com.kez.picker.rememberYearMonthPickerState
@@ -51,12 +52,13 @@ internal fun BackgroundStylePickerScreen(
     onBackPressed: () -> Unit = {},
 ) {
     val yearMonthState = rememberYearMonthPickerState(
-        initialYear = currentDate.year,
-        initialMonth = currentDate.monthNumber
+        initialYear = currentDate().year,
+        initialMonth = currentDate().month.number
     )
+    val currentHour = currentHour()
     val timeState = rememberTimePickerState(
         initialHour = currentHour,
-        initialMinute = currentMinute,
+        initialMinute = currentMinute(),
         initialPeriod = if (currentHour >= 12) TimePeriod.PM else TimePeriod.AM,
         timeFormat = TimeFormat.HOUR_12
     )
@@ -86,7 +88,7 @@ internal fun BackgroundStylePickerScreen(
                         )
                     }
                 },
-                colors = TopAppBarDefaults.centerAlignedTopAppBarColors(containerColor = Color.Transparent)
+                colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.Transparent)
             )
         },
         containerColor = MaterialTheme.colorScheme.background
@@ -124,17 +126,21 @@ internal fun BackgroundStylePickerScreen(
                 ) {
                     YearMonthPicker(
                         state = yearMonthState,
-                        textStyle = TextStyle(
-                            fontSize = 18.sp,
-                            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
-                        ),
-                        selectedTextStyle = TextStyle(
-                            fontSize = 22.sp,
-                            color = MaterialTheme.colorScheme.primary,
-                            fontWeight = FontWeight.Bold
+                        textStyles = PickerDefaults.textStyles(
+                            textStyle = TextStyle(
+                                fontSize = 18.sp
+                            ),
+                            selectedTextStyle = TextStyle(
+                                fontSize = 22.sp,
+                                fontWeight = FontWeight.Bold
+                            )
                         ),
                         isDividerVisible = false,
-                        selectedItemBackgroundColor = MaterialTheme.colorScheme.primaryContainer
+                        colors = PickerDefaults.colors(
+                            textColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f),
+                            selectedTextColor = MaterialTheme.colorScheme.primary,
+                            selectedItemBackgroundColor = MaterialTheme.colorScheme.primaryContainer
+                        )
                     )
                 }
             }
@@ -157,17 +163,21 @@ internal fun BackgroundStylePickerScreen(
                 ) {
                     TimePicker(
                         state = timeState,
-                        textStyle = TextStyle(
-                            fontSize = 18.sp,
-                            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
-                        ),
-                        selectedTextStyle = TextStyle(
-                            fontSize = 22.sp,
-                            color = MaterialTheme.colorScheme.primary,
-                            fontWeight = FontWeight.Bold
+                        textStyles = PickerDefaults.textStyles(
+                            textStyle = TextStyle(
+                                fontSize = 18.sp
+                            ),
+                            selectedTextStyle = TextStyle(
+                                fontSize = 22.sp,
+                                fontWeight = FontWeight.Bold
+                            )
                         ),
                         isDividerVisible = false,
-                        selectedItemBackgroundColor = MaterialTheme.colorScheme.primaryContainer
+                        colors = PickerDefaults.colors(
+                            textColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f),
+                            selectedTextColor = MaterialTheme.colorScheme.primary,
+                            selectedItemBackgroundColor = MaterialTheme.colorScheme.primaryContainer
+                        )
                     )
                 }
             }

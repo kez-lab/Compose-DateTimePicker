@@ -16,7 +16,7 @@ class TimeCalculationTest {
     private val testDate: LocalDate = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()).date
     private val currentYear: Int = testDate.year
     private val currentMonth: Int = testDate.month.number
-    private val currentDate: LocalDate = testDate
+    private val currentDay: Int = testDate.day
 
     // 24시간 형식에서 23:45 입력 시 동일한 시간이 반환되는지 확인
     @Test
@@ -30,7 +30,7 @@ class TimeCalculationTest {
         val expected = LocalDateTime(
             year = currentYear,
             month = currentMonth,
-            day = currentDate.day,
+            day = currentDay,
             hour = 23,
             minute = 45
         )
@@ -51,7 +51,7 @@ class TimeCalculationTest {
         val expected = LocalDateTime(
             year = currentYear,
             month = currentMonth,
-            day = currentDate.day,
+            day = currentDay,
             hour = 15,
             minute = 15
         )
@@ -72,7 +72,7 @@ class TimeCalculationTest {
         val expected = LocalDateTime(
             year = currentYear,
             month = currentMonth,
-            day = currentDate.day,
+            day = currentDay,
             hour = 0,
             minute = 0
         )
@@ -93,7 +93,7 @@ class TimeCalculationTest {
         val expected = LocalDateTime(
             year = currentYear,
             month = currentMonth,
-            day = currentDate.day,
+            day = currentDay,
             hour = 12,
             minute = 30
         )

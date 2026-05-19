@@ -17,9 +17,9 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.PrimaryTabRow
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Tab
-import androidx.compose.material3.TabRow
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.derivedStateOf
@@ -54,6 +54,9 @@ internal fun TimePickerSampleScreen(
     onBackPressed: () -> Unit = {},
 ) {
     var selectedFormat by remember { mutableIntStateOf(0) }
+    val currentHour = currentHour()
+    val currentMinute = currentMinute()
+
     val timeState12 = rememberTimePickerState(
         initialHour = currentHour,
         initialMinute = currentMinute,
@@ -148,7 +151,7 @@ internal fun TimePickerSampleScreen(
 
             Spacer(modifier = Modifier.height(24.dp))
 
-            TabRow(
+            PrimaryTabRow(
                 selectedTabIndex = selectedFormat,
                 modifier = Modifier.clip(RoundedCornerShape(16.dp))
             ) {
