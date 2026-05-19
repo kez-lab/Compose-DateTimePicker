@@ -1,8 +1,8 @@
 package com.kez.picker.date
 
-import com.kez.picker.DatePickerState
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertFailsWith
 
 class DatePickerStateTest {
 
@@ -60,6 +60,20 @@ class DatePickerStateTest {
         // Trying to set Feb 30 on leap year should be clamped to Feb 29
         val state = DatePickerState(initialYear = 2024, initialMonth = 2, initialDay = 30)
         assertEquals(29, state.selectedDay)
+    }
+
+    @Test
+    fun testInitialMonth_Throws_WhenOutOfRange() {
+        assertFailsWith<IllegalArgumentException> {
+            DatePickerState(initialYear = 2024, initialMonth = 13, initialDay = 1)
+        }
+    }
+
+    @Test
+    fun testInitialDay_Throws_WhenLessThanOne() {
+        assertFailsWith<IllegalArgumentException> {
+            DatePickerState(initialYear = 2024, initialMonth = 1, initialDay = 0)
+        }
     }
 
     @Test

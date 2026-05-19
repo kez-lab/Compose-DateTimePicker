@@ -68,7 +68,7 @@ internal fun YearMonthPickerSampleScreen(
                         Icon(FeatherIcons.ArrowLeft, contentDescription = "Back")
                     }
                 },
-                colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
+                colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = Color.Transparent
                 )
             )

@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.key
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -15,12 +16,10 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
-import com.kez.picker.DatePickerState
 import com.kez.picker.Picker
 import com.kez.picker.PickerColors
 import com.kez.picker.PickerDefaults
 import com.kez.picker.PickerTextStyles
-import com.kez.picker.rememberDatePickerState
 import com.kez.picker.util.MONTH_RANGE
 import com.kez.picker.util.YEAR_RANGE
 import com.kez.picker.util.currentDate
@@ -32,7 +31,7 @@ import kotlinx.datetime.LocalDate
  * @param modifier The modifier to be applied to the component.
  * @param pickerModifier The modifier to be applied to each picker.
  * @param state The state object to control the picker.
- * @param startLocalDate The initial date to display (relevant for initial index calculation if needed, though state handles values).
+ * @param startLocalDate Legacy initial date parameter. Prefer setting initial values in [state].
  * @param yearItems The list of year values to display.
  * @param monthItems The list of month values to display.
  * @param visibleItemsCount The number of items visible at once.
@@ -80,24 +79,13 @@ fun DatePicker(
             verticalArrangement = Arrangement.Center,
             modifier = Modifier.fillMaxWidth()
         ) {
+            val yearStartIndex = remember(yearItems) { yearItems.startIndexOf(state.selectedYear) }
+            val monthStartIndex = remember(monthItems) { monthItems.startIndexOf(state.selectedMonth) }
 
-            // Calculate initial indices based on startLocalDate logic if strictly needed,
-            // but usually we rely on the state's initial value. 
-            // However, Picker component uses `startIndex`. 
-            // We should sync them with state's initial values or just find index of state's current value.
-            
-            // To ensure 1:1 mapping with Picker's internal state on first render:
-            val yearStartIndex = remember { yearItems.indexOf(state.selectedYear) }
-            val monthStartIndex = remember { monthItems.indexOf(state.selectedMonth) }
-            // Day items change dynamically, so we can't fully pre-calculate a static list and index 
-            // without being careful.
-            
-            // Dynamic day items based on maxDay
             val maxDay = state.maxDay
             val dayItems = (1..maxDay).toList()
-            // Ensure selected day index is valid for the current dayItems
-            val dayStartIndex = remember(dayItems) { 
-                val index = dayItems.indexOf(state.selectedDay)
+            val dayStartIndex = remember(dayItems, state.selectedDay) {
+                val index = dayItems.indexOf(state.selectedDay.coerceIn(1, maxDay))
                 if (index >= 0) index else 0
             }
 
@@ -106,7 +94,6 @@ fun DatePicker(
                 horizontalArrangement = Arrangement.Center,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                // Year Picker
                 Picker(
                     state = state.yearState,
                     modifier = pickerModifier.weight(1.2f), // Give Year slightly more width
@@ -126,7 +113,6 @@ fun DatePicker(
                     pickerLabel = "Year"
                 )
 
-                // Month Picker
                 Picker(
                     state = state.monthState,
                     items = monthItems,
@@ -146,30 +132,34 @@ fun DatePicker(
                     pickerLabel = "Month"
                 )
 
-                // Day Picker
-                Picker(
-                    state = state.dayState,
-                    items = dayItems,
-                    startIndex = dayStartIndex,
-                    visibleItemsCount = visibleItemsCount,
-                    modifier = pickerModifier.weight(0.8f),
-                    colors = colors,
-                    textStyles = textStyles,
-                    selectedItemBackgroundShape = selectedItemBackgroundShape,
-                    itemPadding = itemPadding,
-                    isInfinity = false,
-                    fadingEdgeGradient = fadingEdgeGradient,
-                    horizontalAlignment = horizontalAlignment,
-                    verticalAlignment = verticalAlignment,
-                    dividerThickness = dividerThickness,
-                    dividerShape = dividerShape,
-                    isDividerVisible = isDividerVisible,
-                    pickerLabel = "Day"
-                )
+                key(maxDay) {
+                    Picker(
+                        state = state.dayState,
+                        items = dayItems,
+                        startIndex = dayStartIndex,
+                        visibleItemsCount = visibleItemsCount,
+                        modifier = pickerModifier.weight(0.8f),
+                        colors = colors,
+                        textStyles = textStyles,
+                        selectedItemBackgroundShape = selectedItemBackgroundShape,
+                        itemPadding = itemPadding,
+                        isInfinity = false,
+                        fadingEdgeGradient = fadingEdgeGradient,
+                        horizontalAlignment = horizontalAlignment,
+                        verticalAlignment = verticalAlignment,
+                        dividerThickness = dividerThickness,
+                        dividerShape = dividerShape,
+                        isDividerVisible = isDividerVisible,
+                        pickerLabel = "Day"
+                    )
+                }
             }
         }
     }
 }
+
+private fun <T> List<T>.startIndexOf(item: T): Int =
+    indexOf(item).takeIf { it >= 0 } ?: 0
 
 @Preview(name = "Default", group = "DatePicker", showBackground = true)
 @Composable

@@ -25,7 +25,7 @@ Add the dependency to your version catalog or build file.
 
 ```toml
 [versions]
-composeDateTimePicker = "0.4.0"
+composeDateTimePicker = "0.5.0"
 
 [libraries]
 compose-date-time-picker = { module = "io.github.kez-lab:compose-date-time-picker", version.ref = "composeDateTimePicker" }
@@ -35,7 +35,7 @@ compose-date-time-picker = { module = "io.github.kez-lab:compose-date-time-picke
 
 ```kotlin
 dependencies {
-    implementation("io.github.kez-lab:compose-date-time-picker:0.4.0")
+    implementation("io.github.kez-lab:compose-date-time-picker:0.5.0")
 }
 ```
 
@@ -58,8 +58,8 @@ import com.kez.picker.util.currentMinute
 @Composable
 fun TimePicker24hExample() {
     val state = rememberTimePickerState(
-        initialHour = currentHour,
-        initialMinute = currentMinute,
+        initialHour = currentHour(),
+        initialMinute = currentMinute(),
         timeFormat = TimeFormat.HOUR_24
     )
 
@@ -76,7 +76,6 @@ import androidx.compose.runtime.Composable
 import com.kez.picker.time.TimePicker
 import com.kez.picker.rememberTimePickerState
 import com.kez.picker.util.TimeFormat
-import com.kez.picker.util.TimePeriod
 import com.kez.picker.util.currentHour
 import com.kez.picker.util.currentMinute
 
@@ -84,8 +83,8 @@ import com.kez.picker.util.currentMinute
 fun TimePicker12hExample() {
     // Handling of 12-hour format conversion is now done internally by the state
     val state = rememberTimePickerState(
-        initialHour = currentHour,
-        initialMinute = currentMinute,
+        initialHour = currentHour(),
+        initialMinute = currentMinute(),
         timeFormat = TimeFormat.HOUR_12
     )
 
@@ -103,15 +102,16 @@ adjusts the day when the selected month changes (e.g., Feb 30 → Feb 28).
 ```kotlin
 import androidx.compose.runtime.Composable
 import com.kez.picker.date.DatePicker
-import com.kez.picker.rememberDatePickerState
+import com.kez.picker.date.rememberDatePickerState
 import com.kez.picker.util.currentDate
+import com.kez.picker.util.currentMonth
 
 @Composable
 fun DatePickerExample() {
     val state = rememberDatePickerState(
         initialYear = currentDate().year,
-        initialMonth = currentDate().monthNumber,
-        initialDay = currentDate().dayOfMonth
+        initialMonth = currentMonth(),
+        initialDay = currentDate().day
     )
 
     DatePicker(
@@ -132,12 +132,13 @@ import androidx.compose.runtime.Composable
 import com.kez.picker.date.YearMonthPicker
 import com.kez.picker.rememberYearMonthPickerState
 import com.kez.picker.util.currentDate
+import com.kez.picker.util.currentMonth
 
 @Composable
 fun YearMonthPickerExample() {
     val state = rememberYearMonthPickerState(
-        initialYear = currentDate.year,
-        initialMonth = currentDate.monthNumber
+        initialYear = currentDate().year,
+        initialMonth = currentMonth()
     )
 
     YearMonthPicker(
@@ -155,7 +156,6 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import com.kez.picker.time.TimePicker
 import com.kez.picker.rememberTimePickerState
-import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -163,7 +163,6 @@ fun BottomSheetPickerExample() {
     var showBottomSheet by remember { mutableStateOf(false) }
     val sheetState = rememberModalBottomSheetState()
     val state = rememberTimePickerState()
-    val scope = rememberCoroutineScope()
 
     Button(onClick = { showBottomSheet = true }) {
         Text("Select Time")
@@ -188,21 +187,25 @@ fun BottomSheetPickerExample() {
 | Parameter | Description | Default |
 | :--- | :--- | :--- |
 | `state` | The state object to control the picker. | `rememberTimePickerState()` |
-| `startTime` | The initial time to set the picker to. | `currentDateTime` |
+| `startTime` | Legacy initial time parameter. Prefer setting initial values in `rememberTimePickerState`. | `currentDateTime()` |
+| `minuteItems` | Minute values available for selection. | `0..59` |
+| `hourItems` | Hour values available for selection. | `0..23` or `1..12` |
 | `visibleItemsCount` | Number of items visible in the list. | `3` |
-| `textStyle` | Style for unselected items. | `16.sp` |
-| `selectedTextStyle` | Style for selected item. | `22.sp` |
-| `dividerColor` | Color of the selection dividers. | `LocalContentColor.current` |
+| `colors` | Colors for text, selected text, dividers, and selected item background. | `PickerDefaults.colors()` |
+| `textStyles` | Text styles for selected and unselected items. | `PickerDefaults.textStyles()` |
+| `isDividerVisible` | Whether selection dividers are visible. | `true` |
 
 ### DatePicker
 
 | Parameter           | Description                             | Default                     |
 |:--------------------|:----------------------------------------|:----------------------------|
 | `state`             | The state object to control the picker. | `rememberDatePickerState()` |
-| `startLocalDate`    | The initial date to set the picker to.  | `currentDate`               |
-| `yearItems`         | List of years available for selection.  | `1900..2100`                |
+| `startLocalDate`    | Legacy initial date parameter. Prefer setting initial values in `rememberDatePickerState`. | `currentDate()`             |
+| `yearItems`         | List of years available for selection.  | `1000..9999`                |
 | `monthItems`        | List of months available for selection. | `1..12`                     |
 | `visibleItemsCount` | Number of items visible in the list.    | `3`                         |
+| `colors`            | Colors for text, selected text, dividers, and selected item background. | `PickerDefaults.colors()` |
+| `textStyles`        | Text styles for selected and unselected items. | `PickerDefaults.textStyles()` |
 
 **DatePickerState Properties:**
 
@@ -216,10 +219,12 @@ fun BottomSheetPickerExample() {
 | Parameter | Description | Default |
 | :--- | :--- | :--- |
 | `state` | The state object to control the picker. | `rememberYearMonthPickerState()` |
-| `startLocalDate` | The initial date to set the picker to. | `currentDate` |
-| `yearItems` | List of years available for selection. | `1900..2100` |
+| `startLocalDate` | Legacy initial date parameter. Prefer setting initial values in `rememberYearMonthPickerState`. | `currentDate()` |
+| `yearItems` | List of years available for selection. | `1000..9999` |
 | `monthItems` | List of months available for selection. | `1..12` |
 | `visibleItemsCount` | Number of items visible in the list. | `3` |
+| `colors` | Colors for text, selected text, dividers, and selected item background. | `PickerDefaults.colors()` |
+| `textStyles` | Text styles for selected and unselected items. | `PickerDefaults.textStyles()` |
 
 ## License
 

@@ -38,7 +38,7 @@ import kotlinx.datetime.LocalDateTime
  * @param modifier The modifier to be applied to the component.
  * @param pickerModifier The modifier to be applied to each picker.
  * @param state The state object to control the picker.
- * @param startTime The initial time to display.
+ * @param startTime Legacy initial time parameter. Prefer setting initial values in [state].
  * @param minuteItems The list of minute values to display.
  * @param hourItems The list of hour values to display.
  * @param periodItems The list of period values to display.
@@ -87,25 +87,16 @@ fun TimePicker(
             modifier = Modifier.fillMaxWidth()
         ) {
 
-            val minuteStartIndex = remember {
-                minuteItems.indexOf(startTime.minute)
+            val minuteStartIndex = remember(minuteItems) {
+                minuteItems.startIndexOf(state.selectedMinute)
             }
 
-            val hourStartIndex = remember {
-                val startHour = when (state.timeFormat) {
-                    TimeFormat.HOUR_12 -> {
-                        val hour = startTime.hour % 12
-                        if (hour == 0) 12 else hour
-                    }
-
-                    TimeFormat.HOUR_24 -> startTime.hour
-                }
-                hourItems.indexOf(startHour)
+            val hourStartIndex = remember(hourItems) {
+                hourItems.startIndexOf(state.selectedHour)
             }
 
-            val periodStartIndex = remember {
-                val period = if (startTime.hour >= 12) TimePeriod.PM else TimePeriod.AM
-                periodItems.indexOf(period)
+            val periodStartIndex = remember(periodItems) {
+                periodItems.startIndexOf(state.selectedPeriod)
             }
 
             Row(
@@ -176,6 +167,9 @@ fun TimePicker(
         }
     }
 }
+
+private fun <T> List<T>.startIndexOf(item: T): Int =
+    indexOf(item).takeIf { it >= 0 } ?: 0
 
 @Preview(name = "24-Hour Format", group = "TimePicker - Formats", showBackground = true)
 @Composable

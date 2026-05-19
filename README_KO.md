@@ -9,9 +9,10 @@ Android, iOS, Desktop (JVM), Web (Wasm) 등 다양한 플랫폼에서 일관된 
 
 *   **멀티플랫폼 지원**: Android, iOS, Desktop (JVM), Web (Wasm) 환경을 지원하며 원활한 통합이 가능합니다.
 *   **TimePicker**: 12시간(오전/오후) 및 24시간 형식을 모두 지원합니다.
+*   **DatePicker**: 연도, 월, 일을 함께 선택하고 월/윤년에 맞춰 일을 자동 보정합니다.
 *   **YearMonthPicker**: 년도와 월을 선택할 수 있는 전용 컴포넌트를 제공합니다.
 *   **커스터마이징**: 커스텀 아이템 렌더링, 스타일링, 구성 변경이 가능한 유연한 API를 제공합니다.
-*   **상태 관리**: `rememberTimePickerState` 및 `rememberYearMonthPickerState`를 통해 간편하게 상태를 관리할 수 있습니다.
+*   **상태 관리**: `rememberTimePickerState`, `rememberDatePickerState`, `rememberYearMonthPickerState`를 통해 간편하게 상태를 관리할 수 있습니다.
 *   **접근성**: 스크린 리더 및 내비게이션 지원 등 접근성을 고려하여 설계되었습니다.
 
 ## 설치 방법
@@ -22,7 +23,7 @@ Android, iOS, Desktop (JVM), Web (Wasm) 등 다양한 플랫폼에서 일관된 
 
 ```toml
 [versions]
-composeDateTimePicker = "0.4.0"
+composeDateTimePicker = "0.5.0"
 
 [libraries]
 compose-date-time-picker = { module = "io.github.kez-lab:compose-date-time-picker", version.ref = "composeDateTimePicker" }
@@ -32,7 +33,7 @@ compose-date-time-picker = { module = "io.github.kez-lab:compose-date-time-picke
 
 ```kotlin
 dependencies {
-    implementation("io.github.kez-lab:compose-date-time-picker:0.4.0")
+    implementation("io.github.kez-lab:compose-date-time-picker:0.5.0")
 }
 ```
 
@@ -55,8 +56,8 @@ import com.kez.picker.util.currentMinute
 @Composable
 fun TimePicker24hExample() {
     val state = rememberTimePickerState(
-        initialHour = currentHour,
-        initialMinute = currentMinute,
+        initialHour = currentHour(),
+        initialMinute = currentMinute(),
         timeFormat = TimeFormat.HOUR_24
     )
 
@@ -73,7 +74,6 @@ import androidx.compose.runtime.Composable
 import com.kez.picker.time.TimePicker
 import com.kez.picker.rememberTimePickerState
 import com.kez.picker.util.TimeFormat
-import com.kez.picker.util.TimePeriod
 import com.kez.picker.util.currentHour
 import com.kez.picker.util.currentMinute
 
@@ -81,14 +81,39 @@ import com.kez.picker.util.currentMinute
 fun TimePicker12hExample() {
     // 12시간 형식 변환은 이제 state 내부에서 처리됩니다.
     val state = rememberTimePickerState(
-        initialHour = currentHour,
-        initialMinute = currentMinute,
+        initialHour = currentHour(),
+        initialMinute = currentMinute(),
         timeFormat = TimeFormat.HOUR_12
     )
 
     TimePicker(
         state = state
     )
+}
+```
+
+### DatePicker
+
+연도, 월, 일을 함께 선택할 때 `DatePicker`를 사용합니다. 선택된 월에 유효하지 않은 일이 있으면 자동으로 보정됩니다.
+
+```kotlin
+import androidx.compose.runtime.Composable
+import com.kez.picker.date.DatePicker
+import com.kez.picker.date.rememberDatePickerState
+import com.kez.picker.util.currentDate
+import com.kez.picker.util.currentMonth
+
+@Composable
+fun DatePickerExample() {
+    val state = rememberDatePickerState(
+        initialYear = currentDate().year,
+        initialMonth = currentMonth(),
+        initialDay = currentDate().day
+    )
+
+    DatePicker(state = state)
+
+    // state.selectedYear, state.selectedMonth, state.selectedDay
 }
 ```
 
@@ -101,12 +126,13 @@ import androidx.compose.runtime.Composable
 import com.kez.picker.date.YearMonthPicker
 import com.kez.picker.rememberYearMonthPickerState
 import com.kez.picker.util.currentDate
+import com.kez.picker.util.currentMonth
 
 @Composable
 fun YearMonthPickerExample() {
     val state = rememberYearMonthPickerState(
-        initialYear = currentDate.year,
-        initialMonth = currentDate.monthNumber
+        initialYear = currentDate().year,
+        initialMonth = currentMonth()
     )
 
     YearMonthPicker(
@@ -124,7 +150,6 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import com.kez.picker.time.TimePicker
 import com.kez.picker.rememberTimePickerState
-import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -132,7 +157,6 @@ fun BottomSheetPickerExample() {
     var showBottomSheet by remember { mutableStateOf(false) }
     val sheetState = rememberModalBottomSheetState()
     val state = rememberTimePickerState()
-    val scope = rememberCoroutineScope()
 
     Button(onClick = { showBottomSheet = true }) {
         Text("시간 선택")
@@ -157,21 +181,44 @@ fun BottomSheetPickerExample() {
 | 파라미터 | 설명 | 기본값 |
 | :--- | :--- | :--- |
 | `state` | Picker를 제어하기 위한 상태 객체입니다. | `rememberTimePickerState()` |
-| `startTime` | Picker에 설정될 초기 시간입니다. | `currentDateTime` |
+| `startTime` | 레거시 초기 시간 파라미터입니다. 초기값은 `rememberTimePickerState`에서 설정하는 방식을 권장합니다. | `currentDateTime()` |
+| `minuteItems` | 선택 가능한 분 목록입니다. | `0..59` |
+| `hourItems` | 선택 가능한 시간 목록입니다. | `0..23` 또는 `1..12` |
 | `visibleItemsCount` | 리스트에 표시될 아이템의 개수입니다. | `3` |
-| `textStyle` | 선택되지 않은 아이템의 텍스트 스타일입니다. | `16.sp` |
-| `selectedTextStyle` | 선택된 아이템의 텍스트 스타일입니다. | `22.sp` |
-| `dividerColor` | 구분선의 색상입니다. | `LocalContentColor.current` |
+| `colors` | 텍스트, 선택 텍스트, 구분선, 선택 영역 배경 색상입니다. | `PickerDefaults.colors()` |
+| `textStyles` | 선택/비선택 아이템의 텍스트 스타일입니다. | `PickerDefaults.textStyles()` |
+| `isDividerVisible` | 선택 영역 구분선 표시 여부입니다. | `true` |
+
+### DatePicker
+
+| 파라미터 | 설명 | 기본값 |
+| :--- | :--- | :--- |
+| `state` | Picker를 제어하기 위한 상태 객체입니다. | `rememberDatePickerState()` |
+| `startLocalDate` | 레거시 초기 날짜 파라미터입니다. 초기값은 `rememberDatePickerState`에서 설정하는 방식을 권장합니다. | `currentDate()` |
+| `yearItems` | 선택 가능한 연도 목록입니다. | `1000..9999` |
+| `monthItems` | 선택 가능한 월 목록입니다. | `1..12` |
+| `visibleItemsCount` | 리스트에 표시될 아이템의 개수입니다. | `3` |
+| `colors` | 텍스트, 선택 텍스트, 구분선, 선택 영역 배경 색상입니다. | `PickerDefaults.colors()` |
+| `textStyles` | 선택/비선택 아이템의 텍스트 스타일입니다. | `PickerDefaults.textStyles()` |
+
+**DatePickerState 속성:**
+
+- `selectedYear`: 현재 선택된 연도입니다.
+- `selectedMonth`: 현재 선택된 월입니다. (1-12)
+- `selectedDay`: 현재 선택된 일입니다. 선택된 월에 맞게 자동 보정됩니다.
+- `maxDay`: 현재 선택된 연도/월에서 선택 가능한 최대 일입니다.
 
 ### YearMonthPicker
 
 | 파라미터 | 설명 | 기본값 |
 | :--- | :--- | :--- |
 | `state` | Picker를 제어하기 위한 상태 객체입니다. | `rememberYearMonthPickerState()` |
-| `startLocalDate` | Picker에 설정될 초기 날짜입니다. | `currentDate` |
-| `yearItems` | 선택 가능한 연도 목록입니다. | `1900..2100` |
+| `startLocalDate` | 레거시 초기 날짜 파라미터입니다. 초기값은 `rememberYearMonthPickerState`에서 설정하는 방식을 권장합니다. | `currentDate()` |
+| `yearItems` | 선택 가능한 연도 목록입니다. | `1000..9999` |
 | `monthItems` | 선택 가능한 월 목록입니다. | `1..12` |
 | `visibleItemsCount` | 리스트에 표시될 아이템의 개수입니다. | `3` |
+| `colors` | 텍스트, 선택 텍스트, 구분선, 선택 영역 배경 색상입니다. | `PickerDefaults.colors()` |
+| `textStyles` | 선택/비선택 아이템의 텍스트 스타일입니다. | `PickerDefaults.textStyles()` |
 
 ## 라이선스
 

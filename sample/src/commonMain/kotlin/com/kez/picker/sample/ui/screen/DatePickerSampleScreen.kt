@@ -27,8 +27,9 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.kez.picker.PickerDefaults
 import com.kez.picker.date.DatePicker
-import com.kez.picker.rememberDatePickerState
+import com.kez.picker.date.rememberDatePickerState
 import compose.icons.FeatherIcons
 import compose.icons.feathericons.ArrowLeft
 import compose.icons.feathericons.Calendar
@@ -75,13 +76,17 @@ fun DatePickerSampleScreen(
                 DatePicker(
                     state = state,
                     visibleItemsCount = 3,
-                    textStyle = MaterialTheme.typography.bodyLarge,
-                    selectedTextStyle = TextStyle(
-                        fontSize = 22.sp,
-                        color = MaterialTheme.colorScheme.primary,
-                        fontWeight = FontWeight.Bold
+                    textStyles = PickerDefaults.textStyles(
+                        textStyle = MaterialTheme.typography.bodyLarge,
+                        selectedTextStyle = TextStyle(
+                            fontSize = 22.sp,
+                            fontWeight = FontWeight.Bold
+                        )
                     ),
-                    dividerColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.5f)
+                    colors = PickerDefaults.colors(
+                        selectedTextColor = MaterialTheme.colorScheme.primary,
+                        dividerColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.5f)
+                    )
                 )
             }
 

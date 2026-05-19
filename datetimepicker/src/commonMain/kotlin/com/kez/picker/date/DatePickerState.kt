@@ -1,8 +1,9 @@
-package com.kez.picker
+package com.kez.picker.date
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.remember
+import com.kez.picker.PickerState
 import com.kez.picker.util.currentDate
 import kotlinx.datetime.number
 
@@ -72,6 +73,12 @@ class DatePickerState(
         get() = daysInMonth(selectedYear, selectedMonth)
 
     init {
+        require(initialMonth in 1..12) {
+            "initialMonth must be in range [1, 12], but was $initialMonth"
+        }
+        require(initialDay >= 1) {
+            "initialDay must be greater than or equal to 1, but was $initialDay"
+        }
         val initialMaxDay = daysInMonth(initialYear, initialMonth)
         if (initialDay > initialMaxDay) {
             dayState.selectedItem = initialMaxDay

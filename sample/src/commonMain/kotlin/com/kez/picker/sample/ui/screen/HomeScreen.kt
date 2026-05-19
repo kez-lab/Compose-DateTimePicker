@@ -50,7 +50,7 @@ internal fun HomeScreen(navController: NavController) {
                         fontWeight = FontWeight.Bold
                     )
                 },
-                colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
+                colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = Color.Transparent
                 )
             )
@@ -82,15 +82,15 @@ internal fun HomeScreen(navController: NavController) {
                     title = "YearMonthPicker Sample",
                     description = "Standalone YearMonthPicker component",
                     icon = FeatherIcons.Calendar,
-                    onClick = { navController.navigate(Screen.DatePicker.route) }
+                    onClick = { navController.navigate(Screen.YearMonthPicker.route) }
                 )
             }
             item {
                 MenuListItem(
-                    title = "DayPicker Sample",
+                    title = "DatePicker Sample",
                     description = "Full DatePicker (Year, Month, Day)",
                     icon = FeatherIcons.Calendar,
-                    onClick = { navController.navigate(Screen.DayPicker.route) }
+                    onClick = { navController.navigate(Screen.DatePicker.route) }
                 )
             }
             item {

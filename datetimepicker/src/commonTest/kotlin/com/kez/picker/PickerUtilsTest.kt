@@ -123,9 +123,21 @@ class PickerUtilsTest {
     @Test
     fun startIndex_boundedMode_calculatesCorrectly() {
         val startIndex = 2
-        val expectedBoundedStart = startIndex + 1 // +1 for null padding
+        val expectedBoundedStart = startIndex
 
-        assertEquals(3, expectedBoundedStart)
+        assertEquals(2, expectedBoundedStart)
+    }
+
+    @Test
+    fun boundedMode_paddingMatchesVisibleItemsMiddle() {
+        val visibleItemsMiddle = 2 // for visibleItemsCount = 5
+        val items = listOf("A", "B", "C")
+        val adjustedItems = List(visibleItemsMiddle) { null } + items + List(visibleItemsMiddle) { null }
+
+        assertEquals(null, adjustedItems[0])
+        assertEquals(null, adjustedItems[1])
+        assertEquals("A", adjustedItems[visibleItemsMiddle])
+        assertEquals("C", adjustedItems[visibleItemsMiddle + items.lastIndex])
     }
 
     // ==================== Fraction Calculation Tests ====================

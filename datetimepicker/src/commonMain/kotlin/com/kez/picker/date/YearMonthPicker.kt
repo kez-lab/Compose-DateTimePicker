@@ -34,7 +34,7 @@ import kotlinx.datetime.number
  * @param modifier The modifier to be applied to the component.
  * @param pickerModifier The modifier to be applied to each picker.
  * @param state The state object to control the picker.
- * @param startLocalDate The initial date to display.
+ * @param startLocalDate Legacy initial date parameter. Prefer setting initial values in [state].
  * @param yearItems The list of year values to display.
  * @param monthItems The list of month values to display.
  * @param visibleItemsCount The number of items visible at once.
@@ -78,11 +78,11 @@ fun YearMonthPicker(
             modifier = Modifier.fillMaxWidth()
         ) {
 
-            val yearStartIndex = remember {
-                yearItems.indexOf(startLocalDate.year)
+            val yearStartIndex = remember(yearItems) {
+                yearItems.startIndexOf(state.selectedYear)
             }
-            val monthStartIndex = remember {
-                monthItems.indexOf(startLocalDate.month.number)
+            val monthStartIndex = remember(monthItems) {
+                monthItems.startIndexOf(state.selectedMonth)
             }
 
             Row(
@@ -132,6 +132,9 @@ fun YearMonthPicker(
         }
     }
 }
+
+private fun <T> List<T>.startIndexOf(item: T): Int =
+    indexOf(item).takeIf { it >= 0 } ?: 0
 
 @Preview(name = "Default", group = "YearMonthPicker - Basic", showBackground = true)
 @Composable

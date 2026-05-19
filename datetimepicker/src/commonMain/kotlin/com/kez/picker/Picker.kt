@@ -119,7 +119,7 @@ fun <T> Picker(
     val scope = rememberCoroutineScope()
 
     val adjustedItems = if (!isInfinity) {
-        listOf(null) + items + listOf(null)
+        List(visibleItemsMiddle) { null } + items + List(visibleItemsMiddle) { null }
     } else {
         items
     }
@@ -136,14 +136,18 @@ fun <T> Picker(
             if (isInfinity) {
                 listScrollMiddle - listScrollMiddle % adjustedItems.size - visibleItemsMiddle + startIndex
             } else {
-                startIndex + 1
+                startIndex
             }
         }
 
     fun getItem(index: Int): T? {
         if (adjustedItems.isEmpty()) return null
-        val safeIndex = index.mod(adjustedItems.size)
-        return adjustedItems.getOrNull(safeIndex)
+        return if (isInfinity) {
+            val safeIndex = index.mod(adjustedItems.size)
+            adjustedItems.getOrNull(safeIndex)
+        } else {
+            adjustedItems.getOrNull(index)
+        }
     }
 
     val listState = rememberLazyListState(initialFirstVisibleItemIndex = listStartIndex)
@@ -257,7 +261,11 @@ fun <T> Picker(
                 val item = getItem(index)
                 val isSelected = item == state.selectedItem
                 val itemDescription = item?.toString() ?: ""
-                val itemIndex = if (isInfinity) index % items.size else (index - 1).coerceAtLeast(0)
+                val itemIndex = if (isInfinity) {
+                    index % items.size
+                } else {
+                    (index - visibleItemsMiddle).coerceAtLeast(0)
+                }
 
                 Box(
                     modifier = Modifier
