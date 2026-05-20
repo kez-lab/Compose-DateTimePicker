@@ -142,6 +142,9 @@ Most logic lives in `commonMain`. Platform-specific code is minimal.
 # Run checks (tests + lint)
 ./gradlew :datetimepicker:check --no-daemon
 
+# Check PR diff whitespace/conflict markers (same hygiene gate as CI)
+git diff --check origin/main...HEAD
+
 # Check public Kotlin ABI against the committed reference dump.
 # Run this explicitly; do not assume :datetimepicker:check covers the ABI gate.
 ./gradlew :datetimepicker:checkLegacyAbi --no-daemon
@@ -250,7 +253,7 @@ Follow **Semantic Versioning**: MAJOR.MINOR.PATCH
 ## CI/CD
 
 GitHub Actions workflows:
-- **`integration-build-test.yml`**: Runs multiplatform library checks on pull requests to `main`; the dedicated macOS ABI job runs `checkLegacyAbi`, and the Android matrix runs the Gradle Managed Device `pixel2Api35DebugAndroidTest` gate for instrumented tests.
+- **`integration-build-test.yml`**: Runs repository hygiene and multiplatform library checks on pull requests to `main`; the hygiene job runs `git diff --check` on the PR diff, the dedicated macOS ABI job runs `checkLegacyAbi`, and the Android matrix runs the Gradle Managed Device `pixel2Api35DebugAndroidTest` gate for instrumented tests.
 - **`maven-central-deploy.yml`**: Publishes releases to Maven Central
 
 Build matrix: Ubuntu latest for Android/Desktop/Wasm and macOS 14 for iOS, using JDK 17 (Temurin)
