@@ -23,7 +23,7 @@ Android, iOS, Desktop (JVM), Web (Wasm) 등 다양한 플랫폼에서 일관된 
 
 ```toml
 [versions]
-composeDateTimePicker = "0.6.0"
+composeDateTimePicker = "0.4.0"
 
 [libraries]
 compose-date-time-picker = { module = "io.github.kez-lab:compose-date-time-picker", version.ref = "composeDateTimePicker" }
@@ -33,13 +33,17 @@ compose-date-time-picker = { module = "io.github.kez-lab:compose-date-time-picke
 
 ```kotlin
 dependencies {
-    implementation("io.github.kez-lab:compose-date-time-picker:0.6.0")
+    implementation("io.github.kez-lab:compose-date-time-picker:0.4.0")
 }
 ```
+
+> **릴리스 상태:** `0.4.0`이 현재 Maven Central/GitHub Releases에 공개된 최신 버전입니다. 이 README는 `main` 기준으로 유지되며 아직 릴리스되지 않은 `0.6.0` API 작업도 문서화하므로, 아래 사용법과 API 레퍼런스에는 `0.4.0`에 없는 API가 포함될 수 있습니다. 공개 버전 기준 API는 `0.4.0` release/tag 문서를 확인하세요. `main`을 로컬에서 테스트하려면 `./gradlew :datetimepicker:publishToMavenLocal`을 실행하고, 소비 프로젝트에 `mavenLocal()`을 추가한 뒤 `0.6.0`에 의존하세요.
 
 릴리스 노트와 업그레이드 영향은 영문 [CHANGELOG.md](CHANGELOG.md)를 참고하세요.
 
 ## 사용법
+
+> 아래 예제는 현재 `main` 브랜치 API를 기준으로 합니다. 위 설치 스니펫의 공개 `0.4.0` 의존성이 아니라, 아직 릴리스되지 않은 `0.6.0` API가 필요할 수 있습니다.
 
 ### TimePicker
 
@@ -182,6 +186,8 @@ fun BottomSheetPickerExample() {
 ```
 
 ## API 레퍼런스
+
+> 이 레퍼런스는 현재 `main` 브랜치 API를 설명합니다. 공개 `0.4.0` artifact에 의존하는 프로젝트에 예제를 복사하기 전에는 [CHANGELOG.md](CHANGELOG.md)와 `0.4.0` release/tag 문서를 확인하세요.
 
 접근성 label 파라미터는 semantics에 들어가는 picker column prefix를 바꿉니다. `*ItemContentDescription`
 파라미터는 화면에 보이는 텍스트를 바꾸지 않고 접근성 값 설명만 바꿉니다. 선택 상태는 고정된 영어 문구를

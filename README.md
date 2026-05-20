@@ -25,7 +25,7 @@ Add the dependency to your version catalog or build file.
 
 ```toml
 [versions]
-composeDateTimePicker = "0.6.0"
+composeDateTimePicker = "0.4.0"
 
 [libraries]
 compose-date-time-picker = { module = "io.github.kez-lab:compose-date-time-picker", version.ref = "composeDateTimePicker" }
@@ -35,13 +35,17 @@ compose-date-time-picker = { module = "io.github.kez-lab:compose-date-time-picke
 
 ```kotlin
 dependencies {
-    implementation("io.github.kez-lab:compose-date-time-picker:0.6.0")
+    implementation("io.github.kez-lab:compose-date-time-picker:0.4.0")
 }
 ```
+
+> **Release status:** `0.4.0` is the latest public Maven Central/GitHub Releases version. This README is maintained from `main` and documents unreleased `0.6.0` API work, so the Usage and API Reference sections may include APIs that are not available in `0.4.0`. For published APIs, use the `0.4.0` release/tag docs. To test `main` locally, run `./gradlew :datetimepicker:publishToMavenLocal`, add `mavenLocal()` to your consuming build, and depend on `0.6.0`.
 
 For release notes and upgrade-impact details, see [CHANGELOG.md](CHANGELOG.md).
 
 ## Usage
+
+> The examples below target the current `main` branch API. They may require unreleased `0.6.0` APIs rather than the public `0.4.0` dependency shown above.
 
 ### TimePicker
 
@@ -187,6 +191,8 @@ fun BottomSheetPickerExample() {
 ```
 
 ## API Reference
+
+> This reference describes the current `main` branch API. Check [CHANGELOG.md](CHANGELOG.md) and the `0.4.0` release/tag docs before copying API examples into a project that depends on the public `0.4.0` artifact.
 
 Accessibility label parameters customize the picker-column prefix used in semantics. `*ItemContentDescription`
 parameters customize the accessibility value text without changing the visual item text. Selection is exposed
