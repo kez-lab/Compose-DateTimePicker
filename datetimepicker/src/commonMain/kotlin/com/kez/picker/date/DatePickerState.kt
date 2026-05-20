@@ -2,6 +2,7 @@ package com.kez.picker.date
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Stable
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.Saver
 import androidx.compose.runtime.saveable.listSaver
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -12,6 +13,7 @@ import kotlinx.datetime.number
 
 /**
  * Creates and remembers a [DatePickerState].
+ * Initial date values are read when the state is first created.
  *
  * @param initialYear The initial year to be selected. Defaults to the current year.
  * @param initialMonth The initial month to be selected. Defaults to the current month.
@@ -24,9 +26,28 @@ fun rememberDatePickerState(
     initialMonth: Int = currentDate().month.number,
     initialDay: Int = currentDate().day
 ): DatePickerState {
-    return rememberSaveable(initialYear, initialMonth, initialDay, saver = DatePickerState.Saver) {
-        DatePickerState(initialYear, initialMonth, initialDay)
+    val rememberedInitialYear = remember { initialYear }
+    val rememberedInitialMonth = remember { initialMonth }
+    val rememberedInitialDay = remember { initialDay }
+    return rememberSaveable(saver = DatePickerState.Saver) {
+        DatePickerState(rememberedInitialYear, rememberedInitialMonth, rememberedInitialDay)
     }
+}
+
+/**
+ * Creates and remembers a [DatePickerState] from a [LocalDate].
+ *
+ * @param initialDate The initial date to be selected.
+ * @return A [DatePickerState] initialized with the year, month, and day from [initialDate].
+ * @throws IllegalArgumentException if [initialDate]'s year is outside the supported 1000..9999 range.
+ */
+@Composable
+fun rememberDatePickerState(initialDate: LocalDate): DatePickerState {
+    return rememberDatePickerState(
+        initialYear = initialDate.year,
+        initialMonth = initialDate.month.number,
+        initialDay = initialDate.day
+    )
 }
 
 /**

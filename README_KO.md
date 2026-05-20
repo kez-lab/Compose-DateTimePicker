@@ -47,17 +47,17 @@ dependencies {
 
 ```kotlin
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import com.kez.picker.time.TimePicker
 import com.kez.picker.rememberTimePickerState
 import com.kez.picker.util.TimeFormat
-import com.kez.picker.util.currentHour
-import com.kez.picker.util.currentMinute
+import com.kez.picker.util.currentDateTime
 
 @Composable
 fun TimePicker24hExample() {
+    val initialTime = remember { currentDateTime().time }
     val state = rememberTimePickerState(
-        initialHour = currentHour(),
-        initialMinute = currentMinute(),
+        initialTime = initialTime,
         timeFormat = TimeFormat.HOUR_24
     )
 
@@ -73,18 +73,18 @@ fun TimePicker24hExample() {
 
 ```kotlin
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import com.kez.picker.time.TimePicker
 import com.kez.picker.rememberTimePickerState
 import com.kez.picker.util.TimeFormat
-import com.kez.picker.util.currentHour
-import com.kez.picker.util.currentMinute
+import com.kez.picker.util.currentDateTime
 
 @Composable
 fun TimePicker12hExample() {
     // 12시간 형식 변환은 이제 state 내부에서 처리됩니다.
+    val initialTime = remember { currentDateTime().time }
     val state = rememberTimePickerState(
-        initialHour = currentHour(),
-        initialMinute = currentMinute(),
+        initialTime = initialTime,
         timeFormat = TimeFormat.HOUR_12
     )
 
@@ -102,17 +102,16 @@ fun TimePicker12hExample() {
 
 ```kotlin
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import com.kez.picker.date.DatePicker
 import com.kez.picker.date.rememberDatePickerState
 import com.kez.picker.util.currentDate
-import com.kez.picker.util.currentMonth
 
 @Composable
 fun DatePickerExample() {
+    val initialDate = remember { currentDate() }
     val state = rememberDatePickerState(
-        initialYear = currentDate().year,
-        initialMonth = currentMonth(),
-        initialDay = currentDate().day
+        initialDate = initialDate
     )
 
     DatePicker(state = state)
@@ -127,16 +126,16 @@ fun DatePickerExample() {
 
 ```kotlin
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import com.kez.picker.date.YearMonthPicker
 import com.kez.picker.rememberYearMonthPickerState
 import com.kez.picker.util.currentDate
-import com.kez.picker.util.currentMonth
 
 @Composable
 fun YearMonthPickerExample() {
+    val initialDate = remember { currentDate() }
     val state = rememberYearMonthPickerState(
-        initialYear = currentDate().year,
-        initialMonth = currentMonth()
+        initialDate = initialDate
     )
 
     YearMonthPicker(
@@ -187,7 +186,7 @@ fun BottomSheetPickerExample() {
 | 파라미터 | 설명 | 기본값 |
 | :--- | :--- | :--- |
 | `state` | Picker를 제어하기 위한 상태 객체입니다. | `rememberTimePickerState()` |
-| `startTime` | 레거시 초기 시간 파라미터입니다. 초기값은 `rememberTimePickerState`에서 설정하는 방식을 권장합니다. | `currentDateTime()` |
+| `startTime` | 레거시 호환성 파라미터입니다. `state`를 생략해도 `state`를 초기화하거나 갱신하지 않으므로 `rememberTimePickerState(initialTime = ...)` 또는 명시적인 초기값 파라미터를 사용하세요. | `currentDateTime()` |
 | `minuteItems` | 선택 가능한 분 목록입니다. 값은 `0..59` 범위여야 합니다. | `0..59` |
 | `hourItems` | 선택 가능한 시간 목록입니다. 24시간 형식에서는 `0..23`, 12시간 형식에서는 표시 시간 기준 `1..12` 범위여야 합니다. | `0..23` 또는 `1..12` |
 | `periodItems` | 12시간 형식에서 선택 가능한 오전/오후 목록입니다. `timeFormat`이 `HOUR_12`일 때 비어 있으면 안 됩니다. | `TimePeriod.entries` |
@@ -206,6 +205,8 @@ fun BottomSheetPickerExample() {
 
 `rememberTimePickerState`는 saveable state를 사용합니다. Android에서는 플랫폼 saveable registry가 제공될 때 Activity 재생성 이후에도 선택값을 복원할 수 있습니다.
 
+초기값은 `rememberTimePickerState(initialTime = LocalTime(...))` 또는 `initialHour`/`initialMinute` 파라미터로 설정합니다. 컴포넌트의 `startTime` 파라미터는 소스 호환성 때문에 남아 있지만 사용되지 않습니다.
+
 custom item 값이 유효 범위를 벗어나면 composition 중 `IllegalArgumentException`이 발생합니다. 현재 또는 복원된 선택값이 유효하지만 custom 목록에 없다면 picker는 해당 목록의 첫 번째 값에서 시작하고 state를 정상화합니다. 12시간 형식의 `hourItems`는 표시 시간 기준(`1..12`)입니다. 예를 들어 `initialHour = 13`은 `state.selectedHour == 1`, `PM`으로 변환됩니다.
 
 ### DatePicker
@@ -213,7 +214,7 @@ custom item 값이 유효 범위를 벗어나면 composition 중 `IllegalArgumen
 | 파라미터 | 설명 | 기본값 |
 | :--- | :--- | :--- |
 | `state` | Picker를 제어하기 위한 상태 객체입니다. | `rememberDatePickerState()` |
-| `startLocalDate` | 레거시 초기 날짜 파라미터입니다. 초기값은 `rememberDatePickerState`에서 설정하는 방식을 권장합니다. | `currentDate()` |
+| `startLocalDate` | 레거시 호환성 파라미터입니다. `state`를 생략해도 `state`를 초기화하거나 갱신하지 않으므로 `rememberDatePickerState(initialDate = ...)` 또는 명시적인 초기값 파라미터를 사용하세요. | `currentDate()` |
 | `yearItems` | 선택 가능한 연도 목록입니다. 값은 `1000..9999` 범위여야 합니다. | `1000..9999` |
 | `monthItems` | 선택 가능한 월 목록입니다. 값은 `1..12` 범위여야 합니다. | `1..12` |
 | `visibleItemsCount` | 리스트에 표시될 아이템의 개수입니다. | `3` |
@@ -230,6 +231,8 @@ custom item 값이 유효 범위를 벗어나면 composition 중 `IllegalArgumen
 
 `rememberDatePickerState`는 saveable state를 사용합니다. Android에서는 플랫폼 saveable registry가 제공될 때 Activity 재생성 이후에도 선택값을 복원할 수 있습니다.
 
+초기값은 `rememberDatePickerState(initialDate = LocalDate(...))` 또는 `initialYear`/`initialMonth`/`initialDay` 파라미터로 설정합니다. 초기 연도는 `1000..9999` 범위여야 합니다. 컴포넌트의 `startLocalDate` 파라미터는 소스 호환성 때문에 남아 있지만 사용되지 않습니다.
+
 custom item 값이 유효 범위를 벗어나면 composition 중 `IllegalArgumentException`이 발생합니다. 현재 또는 복원된 연도/월이 유효하지만 custom 목록에 없다면 picker는 해당 목록의 첫 번째 값에서 시작하고 state를 정상화합니다.
 
 ### YearMonthPicker
@@ -237,7 +240,7 @@ custom item 값이 유효 범위를 벗어나면 composition 중 `IllegalArgumen
 | 파라미터 | 설명 | 기본값 |
 | :--- | :--- | :--- |
 | `state` | Picker를 제어하기 위한 상태 객체입니다. | `rememberYearMonthPickerState()` |
-| `startLocalDate` | 레거시 초기 날짜 파라미터입니다. 초기값은 `rememberYearMonthPickerState`에서 설정하는 방식을 권장합니다. | `currentDate()` |
+| `startLocalDate` | 레거시 호환성 파라미터입니다. `state`를 생략해도 `state`를 초기화하거나 갱신하지 않으므로 `rememberYearMonthPickerState(initialDate = ...)` 또는 명시적인 초기값 파라미터를 사용하세요. | `currentDate()` |
 | `yearItems` | 선택 가능한 연도 목록입니다. 값은 `1000..9999` 범위여야 합니다. | `1000..9999` |
 | `monthItems` | 선택 가능한 월 목록입니다. 값은 `1..12` 범위여야 합니다. | `1..12` |
 | `visibleItemsCount` | 리스트에 표시될 아이템의 개수입니다. | `3` |
@@ -251,6 +254,8 @@ custom item 값이 유효 범위를 벗어나면 composition 중 `IllegalArgumen
 - `selectedMonthDate`: 선택된 연/월을 해당 월의 1일 `LocalDate`로 제공합니다.
 
 `rememberYearMonthPickerState`는 saveable state를 사용합니다. Android에서는 플랫폼 saveable registry가 제공될 때 Activity 재생성 이후에도 선택값을 복원할 수 있습니다.
+
+초기값은 `rememberYearMonthPickerState(initialDate = LocalDate(...))` 또는 `initialYear`/`initialMonth` 파라미터로 설정합니다. 초기 연도는 `1000..9999` 범위여야 합니다. 컴포넌트의 `startLocalDate` 파라미터는 소스 호환성 때문에 남아 있지만 사용되지 않습니다.
 
 custom item 값이 유효 범위를 벗어나면 composition 중 `IllegalArgumentException`이 발생합니다. 현재 또는 복원된 연도/월이 유효하지만 custom 목록에 없다면 picker는 해당 목록의 첫 번째 값에서 시작하고 state를 정상화합니다.
 
