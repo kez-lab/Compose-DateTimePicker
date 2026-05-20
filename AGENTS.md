@@ -121,6 +121,12 @@ Most logic lives in `commonMain`. Platform-specific code is minimal.
 ./gradlew :datetimepicker:testDebugUnitTest --no-daemon
 ./gradlew :datetimepicker:testReleaseUnitTest --no-daemon
 
+# Compile Android instrumented tests
+./gradlew :datetimepicker:assembleDebugAndroidTest --no-daemon
+
+# Run Android instrumented tests on a connected device or emulator
+./gradlew :datetimepicker:connectedDebugAndroidTest --no-daemon
+
 # Run checks (tests + lint)
 ./gradlew :datetimepicker:check --no-daemon
 
@@ -195,12 +201,14 @@ color = lerp(selectedTextStyle.color, textStyle.color, fraction)
 ## Testing Strategy
 
 **Current coverage** (estimated):
-- Unit tests: picker states, date validation, time calculation, and picker index utility behavior
-- Missing: UI interaction tests, screenshot tests, accessibility behavior tests, and sample smoke tests
+- Unit tests: picker states, date validation, time calculation, picker index utility behavior, and accessibility description formatting
+- Android instrumented tests: picker accessibility semantics for selected values, custom labels, state descriptions, and higher-level picker forwarding
+- Missing: broader UI interaction tests, screenshot tests, full TalkBack/readout validation, and sample smoke tests
 
 **When adding tests**:
 - Unit tests → `datetimepicker/src/commonTest/kotlin/`
-- Android UI tests → add `datetimepicker/src/androidInstrumentedTest/kotlin/` when instrumentation coverage is introduced
+- Android UI/instrumented tests → `datetimepicker/src/androidInstrumentedTest/kotlin/`
+- Use `:datetimepicker:assembleDebugAndroidTest` to verify Android test APK compilation/packaging in CI-friendly environments, and `:datetimepicker:connectedDebugAndroidTest` when a device or emulator is available.
 - Follow naming: `<ComponentName>Test.kt` or `<ComponentName>AndroidTest.kt`
 
 ## Code Style
