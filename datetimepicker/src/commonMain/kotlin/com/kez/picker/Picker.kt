@@ -186,14 +186,14 @@ fun <T> Picker(
             .collect { item -> state.selectedItem = item }
     }
 
-    val normalizedPickerLabel = pickerLabel.asAccessibilityLabelOrNull()
+    val normalizedPickerLabel = pickerLabel.asPickerAccessibilityLabelOrNull()
 
     Box(
         modifier = modifier.semantics {
             // Provide picker-level accessibility information
             normalizedPickerLabel?.let { label ->
                 val selectedItemDescription = itemContentDescription(state.selectedItem)
-                contentDescription = accessibilityDescription(label, selectedItemDescription)
+                contentDescription = pickerAccessibilityDescription(label, selectedItemDescription)
                 stateDescription = selectedItemDescription
                 liveRegion = LiveRegionMode.Polite
             }
@@ -285,7 +285,7 @@ fun <T> Picker(
                                 role = Role.Button
                                 // Enhanced content description with picker context
                                 contentDescription =
-                                    accessibilityDescription(normalizedPickerLabel, itemDescription)
+                                    pickerAccessibilityDescription(normalizedPickerLabel, itemDescription)
                                 selected = isSelected
                                 collectionItemInfo = CollectionItemInfo(
                                     rowIndex = itemIndex,
@@ -345,13 +345,14 @@ fun <T> Picker(
     }
 }
 
-private fun String?.asAccessibilityLabelOrNull(): String? =
+private fun String?.asPickerAccessibilityLabelOrNull(): String? =
     this?.trim()?.takeIf { it.isNotEmpty() }
 
-private fun accessibilityDescription(label: String?, value: String): String {
+internal fun pickerAccessibilityDescription(label: String?, value: String): String {
+    val normalizedLabel = label.asPickerAccessibilityLabelOrNull()
     return when {
-        label != null && value.isNotBlank() -> "$label: $value"
-        label != null -> label
+        normalizedLabel != null && value.isNotBlank() -> "$normalizedLabel: $value"
+        normalizedLabel != null -> normalizedLabel
         else -> value
     }
 }
