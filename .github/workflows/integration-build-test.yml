@@ -15,6 +15,18 @@ env:
   LIBRARY_MODULE: ":datetimepicker"
   SAMPLE_MODULE: ":sample"
 jobs:
+  repository-hygiene:
+    name: Linux • Repository hygiene
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Check PR diff whitespace
+        run: git diff --check "origin/${{ github.base_ref }}...HEAD"
+
   abi-check:
     name: macOS • Kotlin ABI Check
     runs-on: macos-14
