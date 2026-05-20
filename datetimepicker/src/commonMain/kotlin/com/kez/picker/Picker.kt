@@ -84,6 +84,7 @@ private const val INFINITE_SCROLL_MULTIPLIER = 1000
  * @param isDividerVisible Whether the divider should be visible.
  * @param isInfinity Whether the picker should loop infinitely.
  * @param pickerLabel Accessibility label for the picker (e.g., "Hour", "Minute", "Year").
+ * @param itemContentDescription Accessibility description for each item value.
  * @param content Optional custom content composable for rendering each item.
  */
 @Composable
@@ -105,6 +106,7 @@ fun <T> Picker(
     isDividerVisible: Boolean = true,
     isInfinity: Boolean = true,
     pickerLabel: String? = null,
+    itemContentDescription: (T) -> String = { it.toString() },
     content: @Composable ((T) -> Unit)? = null
 ) {
     require(items.isNotEmpty()) { "Items list must not be empty" }
@@ -184,12 +186,15 @@ fun <T> Picker(
             .collect { item -> state.selectedItem = item }
     }
 
+    val normalizedPickerLabel = pickerLabel.asAccessibilityLabelOrNull()
+
     Box(
         modifier = modifier.semantics {
             // Provide picker-level accessibility information
-            pickerLabel?.let { label ->
-                contentDescription = "$label picker, currently selected: ${state.selectedItem}"
-                stateDescription = "Selected: ${state.selectedItem}"
+            normalizedPickerLabel?.let { label ->
+                val selectedItemDescription = itemContentDescription(state.selectedItem)
+                contentDescription = accessibilityDescription(label, selectedItemDescription)
+                stateDescription = selectedItemDescription
                 liveRegion = LiveRegionMode.Polite
             }
             collectionInfo = CollectionInfo(rowCount = items.size, columnCount = 1)
@@ -263,7 +268,8 @@ fun <T> Picker(
 
                 val item = getItem(index)
                 val isSelected = item == state.selectedItem
-                val itemDescription = item?.toString() ?: ""
+                val itemText = item?.toString() ?: ""
+                val itemDescription = item?.let(itemContentDescription) ?: ""
                 val itemIndex = if (isInfinity) {
                     index % items.size
                 } else {
@@ -278,11 +284,8 @@ fun <T> Picker(
                             if (item != null) {
                                 role = Role.Button
                                 // Enhanced content description with picker context
-                                contentDescription = if (pickerLabel != null) {
-                                    "$pickerLabel: $itemDescription${if (isSelected) ", selected" else ""}"
-                                } else {
-                                    "$itemDescription${if (isSelected) ", selected" else ""}"
-                                }
+                                contentDescription =
+                                    accessibilityDescription(normalizedPickerLabel, itemDescription)
                                 selected = isSelected
                                 collectionItemInfo = CollectionItemInfo(
                                     rowIndex = itemIndex,
@@ -317,7 +320,7 @@ fun <T> Picker(
                             content(item)
                         } else {
                             Text(
-                                text = itemDescription,
+                                text = itemText,
                                 maxLines = 1,
                                 overflow = TextOverflow.Ellipsis,
                                 style = textStyle.copy(
@@ -339,6 +342,17 @@ fun <T> Picker(
                 }
             }
         }
+    }
+}
+
+private fun String?.asAccessibilityLabelOrNull(): String? =
+    this?.trim()?.takeIf { it.isNotEmpty() }
+
+private fun accessibilityDescription(label: String?, value: String): String {
+    return when {
+        label != null && value.isNotBlank() -> "$label: $value"
+        label != null -> label
+        else -> value
     }
 }
 

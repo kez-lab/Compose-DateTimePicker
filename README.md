@@ -186,6 +186,10 @@ fun BottomSheetPickerExample() {
 
 ## API Reference
 
+Accessibility label parameters customize the picker-column prefix used in semantics. `*ItemContentDescription`
+parameters customize the accessibility value text without changing the visual item text. Selection is exposed
+through Compose `selected` semantics rather than appended as a hardcoded English phrase.
+
 ### TimePicker
 
 | Parameter | Description | Default |
@@ -199,6 +203,12 @@ fun BottomSheetPickerExample() {
 | `colors` | Colors for text, selected text, dividers, and selected item background. | `PickerDefaults.colors()` |
 | `textStyles` | Text styles for selected and unselected items. | `PickerDefaults.textStyles()` |
 | `isDividerVisible` | Whether selection dividers are visible. | `true` |
+| `hourPickerLabel` | Accessibility label for the hour picker. Pass `null` to omit the picker label prefix. | `"Hour"` |
+| `minutePickerLabel` | Accessibility label for the minute picker. Pass `null` to omit the picker label prefix. | `"Minute"` |
+| `periodPickerLabel` | Accessibility label for the AM/PM picker in 12-hour time. Pass `null` to omit the picker label prefix. | `"AM/PM"` |
+| `hourItemContentDescription` | Accessibility description for each hour value. | `it.toString()` |
+| `minuteItemContentDescription` | Accessibility description for each minute value. | `it.toString()` |
+| `periodItemContentDescription` | Accessibility description for each AM/PM value in 12-hour time. | `it.name` |
 
 **TimePickerState Properties:**
 
@@ -225,6 +235,12 @@ Invalid custom item values throw `IllegalArgumentException` during composition. 
 | `visibleItemsCount` | Number of items visible in the list.    | `3`                         |
 | `colors`            | Colors for text, selected text, dividers, and selected item background. | `PickerDefaults.colors()` |
 | `textStyles`        | Text styles for selected and unselected items. | `PickerDefaults.textStyles()` |
+| `yearPickerLabel`   | Accessibility label for the year picker. Pass `null` to omit the picker label prefix. | `"Year"` |
+| `monthPickerLabel`  | Accessibility label for the month picker. Pass `null` to omit the picker label prefix. | `"Month"` |
+| `dayPickerLabel`    | Accessibility label for the day picker. Pass `null` to omit the picker label prefix. | `"Day"` |
+| `yearItemContentDescription` | Accessibility description for each year value. | `it.toString()` |
+| `monthItemContentDescription` | Accessibility description for each month value. | `it.toString()` |
+| `dayItemContentDescription` | Accessibility description for each day value. | `it.toString()` |
 
 **DatePickerState Properties:**
 
@@ -251,6 +267,10 @@ Invalid custom item values throw `IllegalArgumentException` during composition. 
 | `visibleItemsCount` | Number of items visible in the list. | `3` |
 | `colors` | Colors for text, selected text, dividers, and selected item background. | `PickerDefaults.colors()` |
 | `textStyles` | Text styles for selected and unselected items. | `PickerDefaults.textStyles()` |
+| `yearPickerLabel` | Accessibility label for the year picker. Pass `null` to omit the picker label prefix. | `"Year"` |
+| `monthPickerLabel` | Accessibility label for the month picker. Pass `null` to omit the picker label prefix. | `"Month"` |
+| `yearItemContentDescription` | Accessibility description for each year value. | `it.toString()` |
+| `monthItemContentDescription` | Accessibility description for each month value. | `it.toString()` |
 
 **YearMonthPickerState Properties:**
 

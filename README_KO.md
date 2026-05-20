@@ -181,6 +181,10 @@ fun BottomSheetPickerExample() {
 
 ## API 레퍼런스
 
+접근성 label 파라미터는 semantics에 들어가는 picker column prefix를 바꿉니다. `*ItemContentDescription`
+파라미터는 화면에 보이는 텍스트를 바꾸지 않고 접근성 값 설명만 바꿉니다. 선택 상태는 고정된 영어 문구를
+붙이지 않고 Compose `selected` semantics로 전달됩니다.
+
 ### TimePicker
 
 | 파라미터 | 설명 | 기본값 |
@@ -194,6 +198,12 @@ fun BottomSheetPickerExample() {
 | `colors` | 텍스트, 선택 텍스트, 구분선, 선택 영역 배경 색상입니다. | `PickerDefaults.colors()` |
 | `textStyles` | 선택/비선택 아이템의 텍스트 스타일입니다. | `PickerDefaults.textStyles()` |
 | `isDividerVisible` | 선택 영역 구분선 표시 여부입니다. | `true` |
+| `hourPickerLabel` | 시간 picker의 접근성 label입니다. `null`을 전달하면 picker label prefix를 생략합니다. | `"Hour"` |
+| `minutePickerLabel` | 분 picker의 접근성 label입니다. `null`을 전달하면 picker label prefix를 생략합니다. | `"Minute"` |
+| `periodPickerLabel` | 12시간 형식에서 오전/오후 picker의 접근성 label입니다. `null`을 전달하면 picker label prefix를 생략합니다. | `"AM/PM"` |
+| `hourItemContentDescription` | 각 시간 값의 접근성 설명입니다. | `it.toString()` |
+| `minuteItemContentDescription` | 각 분 값의 접근성 설명입니다. | `it.toString()` |
+| `periodItemContentDescription` | 12시간 형식에서 각 오전/오후 값의 접근성 설명입니다. | `it.name` |
 
 **TimePickerState 속성:**
 
@@ -220,6 +230,12 @@ custom item 값이 유효 범위를 벗어나면 composition 중 `IllegalArgumen
 | `visibleItemsCount` | 리스트에 표시될 아이템의 개수입니다. | `3` |
 | `colors` | 텍스트, 선택 텍스트, 구분선, 선택 영역 배경 색상입니다. | `PickerDefaults.colors()` |
 | `textStyles` | 선택/비선택 아이템의 텍스트 스타일입니다. | `PickerDefaults.textStyles()` |
+| `yearPickerLabel` | 연도 picker의 접근성 label입니다. `null`을 전달하면 picker label prefix를 생략합니다. | `"Year"` |
+| `monthPickerLabel` | 월 picker의 접근성 label입니다. `null`을 전달하면 picker label prefix를 생략합니다. | `"Month"` |
+| `dayPickerLabel` | 일 picker의 접근성 label입니다. `null`을 전달하면 picker label prefix를 생략합니다. | `"Day"` |
+| `yearItemContentDescription` | 각 연도 값의 접근성 설명입니다. | `it.toString()` |
+| `monthItemContentDescription` | 각 월 값의 접근성 설명입니다. | `it.toString()` |
+| `dayItemContentDescription` | 각 일 값의 접근성 설명입니다. | `it.toString()` |
 
 **DatePickerState 속성:**
 
@@ -246,6 +262,10 @@ custom item 값이 유효 범위를 벗어나면 composition 중 `IllegalArgumen
 | `visibleItemsCount` | 리스트에 표시될 아이템의 개수입니다. | `3` |
 | `colors` | 텍스트, 선택 텍스트, 구분선, 선택 영역 배경 색상입니다. | `PickerDefaults.colors()` |
 | `textStyles` | 선택/비선택 아이템의 텍스트 스타일입니다. | `PickerDefaults.textStyles()` |
+| `yearPickerLabel` | 연도 picker의 접근성 label입니다. `null`을 전달하면 picker label prefix를 생략합니다. | `"Year"` |
+| `monthPickerLabel` | 월 picker의 접근성 label입니다. `null`을 전달하면 picker label prefix를 생략합니다. | `"Month"` |
+| `yearItemContentDescription` | 각 연도 값의 접근성 설명입니다. | `it.toString()` |
+| `monthItemContentDescription` | 각 월 값의 접근성 설명입니다. | `it.toString()` |
 
 **YearMonthPickerState 속성:**
 

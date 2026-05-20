@@ -55,6 +55,12 @@ import kotlinx.datetime.LocalDateTime
  * @param dividerShape The shape of the dividers.
  * @param spacingBetweenPickers The spacing between the pickers.
  * @param isDividerVisible Whether the divider should be visible.
+ * @param hourPickerLabel Accessibility label for the hour picker. Pass null to omit the picker label prefix.
+ * @param minutePickerLabel Accessibility label for the minute picker. Pass null to omit the picker label prefix.
+ * @param periodPickerLabel Accessibility label for the AM/PM picker in [TimeFormat.HOUR_12]. Pass null to omit the picker label prefix.
+ * @param hourItemContentDescription Accessibility description for each hour value.
+ * @param minuteItemContentDescription Accessibility description for each minute value.
+ * @param periodItemContentDescription Accessibility description for each AM/PM value in [TimeFormat.HOUR_12].
  * @throws IllegalArgumentException if custom item lists are empty where required or contain values outside the supported ranges.
  */
 @Composable
@@ -81,7 +87,13 @@ fun TimePicker(
     dividerThickness: Dp = PickerDefaults.DividerThickness,
     dividerShape: Shape = PickerDefaults.DividerShape,
     spacingBetweenPickers: Dp = PickerDefaults.SpacingBetweenPickers,
-    isDividerVisible: Boolean = true
+    isDividerVisible: Boolean = true,
+    hourPickerLabel: String? = "Hour",
+    minutePickerLabel: String? = "Minute",
+    periodPickerLabel: String? = "AM/PM",
+    hourItemContentDescription: (Int) -> String = { it.toString() },
+    minuteItemContentDescription: (Int) -> String = { it.toString() },
+    periodItemContentDescription: (TimePeriod) -> String = { it.name }
 ) {
     validateTimePickerItems(
         state = state,
@@ -132,7 +144,8 @@ fun TimePicker(
                         dividerShape = dividerShape,
                         isDividerVisible = isDividerVisible,
                         isInfinity = false,
-                        pickerLabel = "Period"
+                        pickerLabel = periodPickerLabel,
+                        itemContentDescription = periodItemContentDescription
                     )
                     Spacer(modifier = Modifier.width(spacingBetweenPickers))
                 }
@@ -152,7 +165,8 @@ fun TimePicker(
                     dividerThickness = dividerThickness,
                     dividerShape = dividerShape,
                     isDividerVisible = isDividerVisible,
-                    pickerLabel = "Hour"
+                    pickerLabel = hourPickerLabel,
+                    itemContentDescription = hourItemContentDescription
                 )
                 Spacer(modifier = Modifier.width(spacingBetweenPickers))
                 Picker(
@@ -171,7 +185,8 @@ fun TimePicker(
                     dividerThickness = dividerThickness,
                     dividerShape = dividerShape,
                     isDividerVisible = isDividerVisible,
-                    pickerLabel = "Minute"
+                    pickerLabel = minutePickerLabel,
+                    itemContentDescription = minuteItemContentDescription
                 )
             }
         }
