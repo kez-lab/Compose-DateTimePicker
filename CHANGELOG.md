@@ -14,7 +14,10 @@ This project tracks notable user-facing and maintainer-facing changes here. The 
 
 ### Changed
 
-- Updated the sample app to show localized accessibility labels, programmatic selection buttons, and a `DatePicker` example that passes selectable year values through `yearItems = 2024..2026`.
+- Updated the sample app to show programmatic selection buttons, a `DatePicker` example that passes
+  selectable year values through `yearItems = 2024..2026`, and Korean localized picker accessibility
+  labels across the `TimePicker`, `BackgroundStyle`, `Integrated`, and `BottomSheet` samples.
+- Clarified README installation guidance to distinguish published `0.4.0` artifacts from unreleased `main`/`0.6.0` API documentation.
 - Made library `@Preview` composables private tooling code so preview functions do not appear in the supported public API surface.
 
 ### Compatibility Notes
@@ -25,5 +28,6 @@ This project tracks notable user-facing and maintainer-facing changes here. The 
 ### Maintenance
 
 - Added Android instrumented accessibility semantics coverage and a Gradle Managed Device CI gate.
+- Added Android state restoration coverage for `rememberTimePickerState`, `rememberDatePickerState`, and `rememberYearMonthPickerState`.
 - Added Kotlin ABI validation with committed Android, Desktop, and KLIB API dumps.
-- Pull requests now run Android build/unit, Desktop, Wasm, iOS simulator, Kotlin ABI, and Android managed-device instrumented test gates.
+- Pull requests now run Android build/unit, Desktop, Wasm, iOS simulator, Kotlin ABI, Android managed-device instrumented test, and PR diff hygiene checks.
