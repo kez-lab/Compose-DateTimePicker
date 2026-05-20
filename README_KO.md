@@ -116,15 +116,25 @@ import com.kez.picker.util.currentDate
 @Composable
 fun DatePickerExample() {
     val initialDate = remember { currentDate() }
+    val selectableYears = remember(initialDate.year) {
+        ((initialDate.year - 1)..(initialDate.year + 1)).toList()
+    }
     val state = rememberDatePickerState(
         initialDate = initialDate
     )
 
-    DatePicker(state = state)
+    DatePicker(
+        state = state,
+        yearItems = selectableYears
+    )
 
     // 앱 로직에 전달할 때는 state.selectedDate를 사용합니다.
 }
 ```
+
+`yearItems`나 `monthItems`를 제한할 때는 기억된 초기값 또는 복원된 state 값이 해당 목록 안에
+들어가도록 함께 설계하세요. composition 이후 외부 날짜가 바뀐다면 새 `initialDate` 인자에
+의존하지 말고 `state.selectDate(newDate)`를 호출하세요.
 
 ### YearMonthPicker
 

@@ -20,6 +20,7 @@ This project tracks notable user-facing and maintainer-facing changes here. The 
   samples.
 - Documented generic `Picker<T>` usage, initial `startIndex` alignment, and the regular `remember`
   behavior of `rememberPickerState`.
+- Clarified `DatePicker` README examples for custom year ranges and state synchronization after composition.
 - Clarified README installation guidance to distinguish published `0.4.0` artifacts from unreleased `main`/`0.6.0` API documentation.
 - Made library `@Preview` composables private tooling code so preview functions do not appear in the supported public API surface.
 
