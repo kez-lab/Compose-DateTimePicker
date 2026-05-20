@@ -50,6 +50,10 @@ import kotlinx.datetime.number
  * @param dividerShape The shape of the dividers.
  * @param spacingBetweenPickers The spacing between the pickers.
  * @param isDividerVisible Whether the divider should be visible.
+ * @param yearPickerLabel Accessibility label for the year picker. Pass null to omit the picker label prefix.
+ * @param monthPickerLabel Accessibility label for the month picker. Pass null to omit the picker label prefix.
+ * @param yearItemContentDescription Accessibility description for each year value.
+ * @param monthItemContentDescription Accessibility description for each month value.
  * @throws IllegalArgumentException if custom item lists are empty or contain values outside the supported ranges.
  */
 @Composable
@@ -72,7 +76,11 @@ fun YearMonthPicker(
     dividerThickness: Dp = PickerDefaults.DividerThickness,
     dividerShape: Shape = PickerDefaults.DividerShape,
     spacingBetweenPickers: Dp = PickerDefaults.SpacingBetweenPickers,
-    isDividerVisible: Boolean = true
+    isDividerVisible: Boolean = true,
+    yearPickerLabel: String? = "Year",
+    monthPickerLabel: String? = "Month",
+    yearItemContentDescription: (Int) -> String = { it.toString() },
+    monthItemContentDescription: (Int) -> String = { it.toString() }
 ) {
     validateYearMonthPickerItems(
         state = state,
@@ -117,7 +125,8 @@ fun YearMonthPicker(
                     dividerThickness = dividerThickness,
                     dividerShape = dividerShape,
                     isDividerVisible = isDividerVisible,
-                    pickerLabel = "Year"
+                    pickerLabel = yearPickerLabel,
+                    itemContentDescription = yearItemContentDescription
                 )
                 Picker(
                     state = state.monthState,
@@ -135,7 +144,8 @@ fun YearMonthPicker(
                     dividerThickness = dividerThickness,
                     dividerShape = dividerShape,
                     isDividerVisible = isDividerVisible,
-                    pickerLabel = "Month"
+                    pickerLabel = monthPickerLabel,
+                    itemContentDescription = monthItemContentDescription
                 )
             }
         }

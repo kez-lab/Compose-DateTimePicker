@@ -92,6 +92,7 @@ Most logic lives in `commonMain`. Platform-specific code is minimal.
 - When public validation rules change, update KDoc plus `README.md` and `README_KO.md` in the same PR, including failure mode and normalization behavior.
 - Do not repurpose legacy `startTime` or `startLocalDate` component parameters for new initialization behavior. Preserve source compatibility, document that they are compatibility no-ops, and prefer explicit `remember*State` overloads for initial values.
 - Treat `remember*State` initial parameters as first-composition defaults. Avoid resetting picker state from changing clock/date expressions during recomposition unless the API explicitly models a reset, and keep internal picker scroll state/effects keyed with state resets.
+- When higher-level components pass accessibility labels to `Picker`, expose those labels and item content descriptions as public parameters with sensible defaults so Android apps can localize TalkBack output. Update KDoc and both READMEs in the same PR.
 - Keep repository guidance up to date in this `AGENTS.md` when the maintainer gives durable process feedback.
 - Do not include local agent/tooling folders such as `.agents/` or `.claude/` in product PRs unless the change is explicitly about agent workflow assets.
 

@@ -47,6 +47,12 @@ import kotlinx.datetime.LocalDate
  * @param dividerShape The shape of the dividers.
  * @param spacingBetweenPickers The spacing between the pickers.
  * @param isDividerVisible Whether the divider should be visible.
+ * @param yearPickerLabel Accessibility label for the year picker. Pass null to omit the picker label prefix.
+ * @param monthPickerLabel Accessibility label for the month picker. Pass null to omit the picker label prefix.
+ * @param dayPickerLabel Accessibility label for the day picker. Pass null to omit the picker label prefix.
+ * @param yearItemContentDescription Accessibility description for each year value.
+ * @param monthItemContentDescription Accessibility description for each month value.
+ * @param dayItemContentDescription Accessibility description for each day value.
  * @throws IllegalArgumentException if custom item lists are empty or contain values outside the supported ranges.
  */
 @Composable
@@ -69,7 +75,13 @@ fun DatePicker(
     dividerThickness: Dp = PickerDefaults.DividerThickness,
     dividerShape: Shape = PickerDefaults.DividerShape,
     spacingBetweenPickers: Dp = PickerDefaults.SpacingBetweenPickers,
-    isDividerVisible: Boolean = true
+    isDividerVisible: Boolean = true,
+    yearPickerLabel: String? = "Year",
+    monthPickerLabel: String? = "Month",
+    dayPickerLabel: String? = "Day",
+    yearItemContentDescription: (Int) -> String = { it.toString() },
+    monthItemContentDescription: (Int) -> String = { it.toString() },
+    dayItemContentDescription: (Int) -> String = { it.toString() }
 ) {
     validateDatePickerItems(
         state = state,
@@ -119,7 +131,8 @@ fun DatePicker(
                     dividerThickness = dividerThickness,
                     dividerShape = dividerShape,
                     isDividerVisible = isDividerVisible,
-                    pickerLabel = "Year"
+                    pickerLabel = yearPickerLabel,
+                    itemContentDescription = yearItemContentDescription
                 )
 
                 Picker(
@@ -138,7 +151,8 @@ fun DatePicker(
                     dividerThickness = dividerThickness,
                     dividerShape = dividerShape,
                     isDividerVisible = isDividerVisible,
-                    pickerLabel = "Month"
+                    pickerLabel = monthPickerLabel,
+                    itemContentDescription = monthItemContentDescription
                 )
 
                 key(maxDay) {
@@ -159,7 +173,8 @@ fun DatePicker(
                         dividerThickness = dividerThickness,
                         dividerShape = dividerShape,
                         isDividerVisible = isDividerVisible,
-                        pickerLabel = "Day"
+                        pickerLabel = dayPickerLabel,
+                        itemContentDescription = dayItemContentDescription
                     )
                 }
             }
