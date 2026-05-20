@@ -10,7 +10,7 @@ This file provides guidance to Codex (Codex.ai/code) when working with code in t
 
 Compose-DateTimePicker is a Kotlin Multiplatform library providing date and time picker components for Compose. It targets Android, iOS, Desktop (JVM), and Web with a shared codebase, published to Maven Central as `io.github.kez-lab:compose-date-time-picker`.
 
-**Current version**: 0.6.0
+**Repository VERSION_NAME**: 0.6.0
 **License**: Apache 2.0
 
 ## Architecture
@@ -98,6 +98,8 @@ Most logic lives in `commonMain`. Platform-specific code is minimal.
 - Kotlin 2.2.21 ABI validation uses `checkLegacyAbi`/`updateLegacyAbi` in this repo. Re-check task names and dump format after Kotlin upgrades.
 - Treat `datetimepicker/api/` as committed release-gate data. Public API changes must include reviewed ABI dump updates, and reviewers should separate intended picker/state API changes from preview/generated resource churn.
 - Keep `@Preview` composables private tooling code so sample previews do not become part of the supported public API surface. Reject ABI dump changes that add `*Preview` symbols back to `datetimepicker/api/`. If accidental preview symbols are removed from ABI dumps, call out the compatibility impact in the PR and release notes.
+- Distinguish the latest public Maven Central/GitHub Release version from the repository `VERSION_NAME`. Before changing README install snippets, verify the public release and do not point copy-paste dependency examples at unpublished versions unless the docs explicitly mark them as unreleased/local-publish usage.
+- When README install snippets use the latest public release but Usage/API Reference examples target `main` or unreleased APIs, add visible release-status notes near Installation, Usage, and API Reference, including the `publishToMavenLocal` command for local testing.
 - Keep repository guidance up to date in this `AGENTS.md` when the maintainer gives durable process feedback.
 - Do not include local agent/tooling folders such as `.agents/` or `.claude/` in product PRs unless the change is explicitly about agent workflow assets.
 
