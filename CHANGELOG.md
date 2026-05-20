@@ -18,6 +18,8 @@ This project tracks notable user-facing and maintainer-facing changes here. The 
   selectable years from the current year and a nearby leap-day target, and Korean localized picker
   accessibility labels across the `TimePicker`, `BackgroundStyle`, `Integrated`, and `BottomSheet`
   samples.
+- Refined sample screens with shared result cards, picker panels, real reset/confirm actions, and
+  bottom-sheet draft state separate from committed selection values.
 - Documented generic `Picker<T>` usage, initial `startIndex` alignment, and the regular `remember`
   behavior of `rememberPickerState`.
 - Clarified `DatePicker` README examples for custom year ranges and state synchronization after composition.

@@ -12,19 +12,14 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
@@ -42,7 +37,8 @@ import com.kez.picker.time.TimePicker
 import com.kez.picker.util.TimeFormat
 import com.kez.picker.util.currentDateTime
 import compose.icons.FeatherIcons
-import compose.icons.feathericons.ArrowLeft
+import compose.icons.feathericons.Calendar
+import compose.icons.feathericons.Clock
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -68,22 +64,9 @@ internal fun BackgroundStylePickerScreen(
 
     Scaffold(
         topBar = {
-            CenterAlignedTopAppBar(
-                title = {
-                    Text(
-                        "Background Style Sample",
-                        fontWeight = FontWeight.Bold
-                    )
-                },
-                navigationIcon = {
-                    IconButton(onClick = { onBackPressed() }) {
-                        Icon(
-                            FeatherIcons.ArrowLeft,
-                            contentDescription = "Back"
-                        )
-                    }
-                },
-                colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.Transparent)
+            SampleTopAppBar(
+                title = "Background Style Sample",
+                onBackPressed = onBackPressed
             )
         },
         containerColor = MaterialTheme.colorScheme.background
@@ -96,17 +79,18 @@ internal fun BackgroundStylePickerScreen(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            Text(
-                text = "Background를 사용한 디자인",
-                fontSize = 20.sp,
-                fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colorScheme.primary
+            SelectedValueCard(
+                icon = FeatherIcons.Calendar,
+                label = "Selected month",
+                value = selectedDateText,
+                supportingText = "YearMonthPicker styled without dividers"
             )
 
-            Text(
-                text = "선택된 항목: $selectedDateText",
-                fontSize = 16.sp,
-                fontWeight = FontWeight.Medium
+            SelectedValueCard(
+                icon = FeatherIcons.Clock,
+                label = "Selected time",
+                value = selectedTimeText,
+                supportingText = "TimePicker using the same state/update pattern"
             )
 
             Card(
@@ -145,12 +129,6 @@ internal fun BackgroundStylePickerScreen(
                     )
                 }
             }
-
-            Text(
-                text = "선택된 시간: $selectedTimeText",
-                fontSize = 16.sp,
-                fontWeight = FontWeight.Medium
-            )
 
             Card(
                 modifier = Modifier.fillMaxWidth(),
@@ -194,12 +172,15 @@ internal fun BackgroundStylePickerScreen(
             Spacer(modifier = Modifier.weight(1f))
 
             Button(
-                onClick = { /* Selection complete logic */ },
+                onClick = {
+                    yearMonthState.selectDate(now.date)
+                    timeState.selectTime(now.time)
+                },
                 modifier = Modifier.fillMaxWidth().height(56.dp),
                 shape = RoundedCornerShape(12.dp),
                 colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
             ) {
-                Text("확인", fontSize = 16.sp, fontWeight = FontWeight.SemiBold)
+                Text("Reset to launch values", fontSize = 16.sp, fontWeight = FontWeight.SemiBold)
             }
         }
     }
