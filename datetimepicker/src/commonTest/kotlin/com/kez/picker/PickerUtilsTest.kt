@@ -152,4 +152,32 @@ class PickerUtilsTest {
             assertEquals(expected, result, 0.001f, "For input $input, expected $expected but got $result")
         }
     }
+
+    // ==================== Accessibility Description Tests ====================
+
+    @Test
+    fun pickerAccessibilityDescription_combinesNormalizedLabelAndValue() {
+        assertEquals("Hour: 10", pickerAccessibilityDescription("Hour", "10"))
+        assertEquals("Hour: 10", pickerAccessibilityDescription(" Hour ", "10"))
+        assertEquals("시: 10시", pickerAccessibilityDescription("시", "10시"))
+    }
+
+    @Test
+    fun pickerAccessibilityDescription_omitsBlankOrMissingLabel() {
+        assertEquals("10", pickerAccessibilityDescription(null, "10"))
+        assertEquals("10", pickerAccessibilityDescription("", "10"))
+        assertEquals("10", pickerAccessibilityDescription("   ", "10"))
+    }
+
+    @Test
+    fun pickerAccessibilityDescription_usesLabelWhenValueIsBlank() {
+        assertEquals("Hour", pickerAccessibilityDescription("Hour", ""))
+        assertEquals("Hour", pickerAccessibilityDescription("Hour", "   "))
+    }
+
+    @Test
+    fun pickerAccessibilityDescription_preservesValueWhitespaceWhenLabelIsMissing() {
+        assertEquals("", pickerAccessibilityDescription(null, ""))
+        assertEquals("   ", pickerAccessibilityDescription(null, "   "))
+    }
 }
