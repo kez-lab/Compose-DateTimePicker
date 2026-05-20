@@ -195,6 +195,42 @@ fun BottomSheetPickerExample() {
 accessibility action도 제공합니다. `previousItemActionLabel`과 `nextItemActionLabel`로 action label을
 현지화할 수 있고, `null`이나 blank를 전달하면 해당 action을 생략합니다.
 
+### Generic Picker
+
+단일 custom picker column이 필요하면 `Picker<T>`를 사용하세요.
+
+```kotlin
+import androidx.compose.runtime.Composable
+import com.kez.picker.Picker
+import com.kez.picker.rememberPickerState
+
+@Composable
+fun SizePickerExample() {
+    val items = listOf("Small", "Medium", "Large")
+    val initialItem = "Medium"
+    val startIndex = items.indexOf(initialItem)
+    require(startIndex >= 0) { "initialItem must exist in items." }
+
+    val state = rememberPickerState(initialItem)
+
+    Picker(
+        items = items,
+        state = state,
+        startIndex = startIndex,
+        isInfinity = false,
+        pickerLabel = "Size",
+        itemContentDescription = { it }
+    )
+}
+```
+
+`rememberPickerState`는 `rememberSaveable`이 아니라 일반 `remember`를 사용합니다. 임의의 `T` 값이
+saveable하다고 보장할 수 없기 때문입니다. generic picker 선택값을 Android Activity 재생성 후에도
+유지해야 한다면 앱 state에 saveable한 표현을 보관하고, picker state가 처음 만들어질 때 그 값을
+전달하며, `Picker`에도 같은 값에 맞는 `startIndex`를 전달하세요. composition 이후 앱 값이 바뀐다면
+`initialItem` 인자만 바꾸어도 이미 기억된 `PickerState`는 갱신되지 않으므로 `state.selectItem(newValue)`로
+기존 picker를 동기화하세요.
+
 ### 프로그래밍 방식 선택
 
 `remember*State`로 picker state를 만들고 picker에 전달한 뒤, 이벤트 핸들러나

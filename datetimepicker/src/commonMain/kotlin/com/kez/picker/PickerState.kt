@@ -9,6 +9,7 @@ import androidx.compose.runtime.saveable.Saver
 import androidx.compose.runtime.saveable.listSaver
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import com.kez.picker.date.DatePickerState
 import com.kez.picker.util.TimeFormat
 import com.kez.picker.util.TimePeriod
 import com.kez.picker.util.currentDate
@@ -20,6 +21,11 @@ import kotlinx.datetime.number
 
 /**
  * Remember a [PickerState] with the given initial item.
+ *
+ * This uses [remember] instead of [rememberSaveable] because arbitrary [T] values are not
+ * guaranteed to be saveable. Higher-level picker states such as [TimePickerState],
+ * [DatePickerState], and [YearMonthPickerState] provide saveable state for their supported value
+ * types.
  *
  * @param initialItem The initial selected item.
  * @return A [PickerState] with the given initial item.

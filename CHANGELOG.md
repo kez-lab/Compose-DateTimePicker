@@ -17,6 +17,8 @@ This project tracks notable user-facing and maintainer-facing changes here. The 
 - Updated the sample app to show programmatic selection buttons, a `DatePicker` example that passes
   selectable year values through `yearItems = 2024..2026`, and Korean localized picker accessibility
   labels across the `TimePicker`, `BackgroundStyle`, `Integrated`, and `BottomSheet` samples.
+- Documented generic `Picker<T>` usage, initial `startIndex` alignment, and the regular `remember`
+  behavior of `rememberPickerState`.
 - Clarified README installation guidance to distinguish published `0.4.0` artifacts from unreleased `main`/`0.6.0` API documentation.
 - Made library `@Preview` composables private tooling code so preview functions do not appear in the supported public API surface.
 

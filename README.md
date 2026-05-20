@@ -200,6 +200,42 @@ through Compose `selected` semantics rather than appended as a hardcoded English
 custom accessibility actions for selecting the previous or next item. Use `previousItemActionLabel` and
 `nextItemActionLabel` to localize those action labels, or pass `null`/blank to omit an action.
 
+### Generic Picker
+
+Use `Picker<T>` when you need a single custom picker column.
+
+```kotlin
+import androidx.compose.runtime.Composable
+import com.kez.picker.Picker
+import com.kez.picker.rememberPickerState
+
+@Composable
+fun SizePickerExample() {
+    val items = listOf("Small", "Medium", "Large")
+    val initialItem = "Medium"
+    val startIndex = items.indexOf(initialItem)
+    require(startIndex >= 0) { "initialItem must exist in items." }
+
+    val state = rememberPickerState(initialItem)
+
+    Picker(
+        items = items,
+        state = state,
+        startIndex = startIndex,
+        isInfinity = false,
+        pickerLabel = "Size",
+        itemContentDescription = { it }
+    )
+}
+```
+
+`rememberPickerState` uses regular `remember`, not `rememberSaveable`, because arbitrary `T` values
+may not be saveable. If a generic picker selection must survive Android Activity recreation, keep a
+saveable representation in your app state, pass it when the picker state is first created, and pass
+a matching `startIndex` to `Picker`. If the app value changes after composition, synchronize the
+existing picker with `state.selectItem(newValue)`; changing the `initialItem` argument alone does not
+update an already remembered `PickerState`.
+
 ### Programmatic Selection
 
 Create picker state with `remember*State`, pass it to the picker, then call the public selection method
