@@ -172,6 +172,53 @@ class YearMonthPickerStateTest {
     }
 
     @Test
+    fun yearMonthPickerState_selectYearMonth_updatesSelection() {
+        val state = YearMonthPickerState(
+            initialYear = 2024,
+            initialMonth = 1
+        )
+
+        state.selectYearMonth(year = 2026, month = 12)
+
+        assertEquals(2026, state.selectedYear)
+        assertEquals(12, state.selectedMonth)
+        assertEquals(LocalDate(2026, 12, 1), state.selectedMonthDate)
+        assertEquals(1, state.yearState.selectionRequestVersion)
+        assertEquals(1, state.monthState.selectionRequestVersion)
+    }
+
+    @Test
+    fun yearMonthPickerState_selectDate_updatesYearAndMonth() {
+        val state = YearMonthPickerState(
+            initialYear = 2024,
+            initialMonth = 1
+        )
+
+        state.selectDate(LocalDate(2026, 5, 20))
+
+        assertEquals(2026, state.selectedYear)
+        assertEquals(5, state.selectedMonth)
+        assertEquals(LocalDate(2026, 5, 1), state.selectedMonthDate)
+        assertEquals(1, state.yearState.selectionRequestVersion)
+        assertEquals(1, state.monthState.selectionRequestVersion)
+    }
+
+    @Test
+    fun yearMonthPickerState_selectYearMonth_rejectsInvalidValues() {
+        val state = YearMonthPickerState(
+            initialYear = 2024,
+            initialMonth = 1
+        )
+
+        assertFailsWith<IllegalArgumentException> {
+            state.selectYearMonth(year = 999, month = 1)
+        }
+        assertFailsWith<IllegalArgumentException> {
+            state.selectYearMonth(year = 2024, month = 13)
+        }
+    }
+
+    @Test
     fun yearMonthPickerState_saver_roundTripsCurrentSelection() {
         val state = YearMonthPickerState(
             initialYear = 2024,

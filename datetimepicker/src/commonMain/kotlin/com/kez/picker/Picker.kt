@@ -183,7 +183,64 @@ fun <T> Picker(
         snapshotFlow { listState.firstVisibleItemIndex }
             .mapNotNull { index -> getItem(index + visibleItemsMiddle) }
             .distinctUntilChanged()
-            .collect { item -> state.selectedItem = item }
+            .collect { item -> state.updateSelectedItemFromScroll(item) }
+    }
+
+    LaunchedEffect(
+        listState,
+        items,
+        visibleItemsMiddle,
+        visibleItemsCount,
+        isInfinity,
+        listScrollCount,
+        state.selectionRequestVersion
+    ) {
+        val selectionRequest = state.activeSelectionRequest ?: return@LaunchedEffect
+        val requestedItem = selectionRequest.item
+
+        val currentCenterIndex = listState.firstVisibleItemIndex + visibleItemsMiddle
+        val currentCenteredItem = getItem(currentCenterIndex)
+        if (currentCenteredItem == requestedItem) {
+            currentCenteredItem?.let {
+                state.completeSelectionRequest(selectionRequest.version, it)
+            } ?: state.clearSelectionRequest(selectionRequest.version)
+            return@LaunchedEffect
+        }
+
+        val selectedItemIndex = items.indexOf(requestedItem)
+        if (selectedItemIndex < 0) {
+            currentCenteredItem?.let {
+                state.completeSelectionRequest(selectionRequest.version, it)
+            } ?: state.clearSelectionRequest(selectionRequest.version)
+            return@LaunchedEffect
+        }
+
+        val maxFirstVisibleIndex = (listScrollCount - visibleItemsCount).coerceAtLeast(0)
+        val targetFirstVisibleIndex = if (isInfinity) {
+            val itemCount = items.size
+            val currentCycleStart = currentCenterIndex - currentCenterIndex.mod(itemCount)
+            val targetFirstVisibleIndex = listOf(
+                currentCycleStart - itemCount + selectedItemIndex,
+                currentCycleStart + selectedItemIndex,
+                currentCycleStart + itemCount + selectedItemIndex
+            )
+                .map { targetCenterIndex -> targetCenterIndex - visibleItemsMiddle }
+                .filter { it in 0..maxFirstVisibleIndex }
+                .minByOrNull { abs((it + visibleItemsMiddle) - currentCenterIndex) }
+
+            targetFirstVisibleIndex
+                ?: (listScrollMiddle - listScrollMiddle % itemCount - visibleItemsMiddle + selectedItemIndex)
+        } else {
+            selectedItemIndex
+        }.coerceIn(0, maxFirstVisibleIndex)
+
+        if (targetFirstVisibleIndex != listState.firstVisibleItemIndex) {
+            listState.scrollToItem(targetFirstVisibleIndex)
+        }
+        val settledCenteredItem = getItem(listState.firstVisibleItemIndex + visibleItemsMiddle)
+        settledCenteredItem?.let {
+            state.completeSelectionRequest(selectionRequest.version, it)
+        } ?: state.clearSelectionRequest(selectionRequest.version)
     }
 
     val normalizedPickerLabel = pickerLabel.asPickerAccessibilityLabelOrNull()

@@ -8,11 +8,13 @@ import androidx.compose.ui.test.isSelected
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.performClick
 import com.kez.picker.date.DatePicker
+import com.kez.picker.date.DatePickerState
 import com.kez.picker.date.YearMonthPicker
 import com.kez.picker.date.rememberDatePickerState
 import com.kez.picker.time.TimePicker
 import com.kez.picker.util.TimeFormat
 import com.kez.picker.util.TimePeriod
+import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalTime
 import org.junit.Rule
 import org.junit.Test
@@ -74,6 +76,111 @@ class PickerAccessibilitySemanticsAndroidTest {
         composeRule
             .onNode(hasContentDescription("Day: 2 day") and isSelected())
             .assertIsSelected()
+    }
+
+    @Test
+    fun picker_updatesAccessibilitySemanticsWhenSelectionChangesProgrammatically() {
+        lateinit var state: PickerState<Int>
+
+        composeRule.setContent {
+            state = rememberPickerState(1)
+
+            Picker(
+                items = (1..30).toList(),
+                state = state,
+                visibleItemsCount = 3,
+                isInfinity = false,
+                pickerLabel = "Value",
+                itemContentDescription = { "$it" }
+            )
+        }
+
+        composeRule.runOnIdle {
+            state.selectItem(30)
+        }
+
+        waitUntilSelectedItem("Value: 30")
+
+        composeRule
+            .onNode(hasContentDescription("Value: 30") and hasStateDescription("30"))
+            .assertExists()
+
+        composeRule
+            .onNode(hasContentDescription("Value: 30") and isSelected())
+            .assertIsSelected()
+    }
+
+    @Test
+    fun timePicker_updatesChildPickerSemanticsWhenSelectionChangesProgrammatically() {
+        lateinit var state: TimePickerState
+
+        composeRule.setContent {
+            state = rememberTimePickerState(
+                initialTime = LocalTime(hour = 1, minute = 0),
+                timeFormat = TimeFormat.HOUR_12
+            )
+
+            TimePicker(
+                state = state,
+                hourItems = listOf(1, 2, 3),
+                minuteItems = listOf(0, 30),
+                periodItems = listOf(TimePeriod.AM, TimePeriod.PM),
+                visibleItemsCount = 3,
+                hourPickerLabel = "시간",
+                minutePickerLabel = "분",
+                periodPickerLabel = "오전/오후",
+                hourItemContentDescription = { "${it}시" },
+                minuteItemContentDescription = { "${it}분" },
+                periodItemContentDescription = {
+                    when (it) {
+                        TimePeriod.AM -> "오전"
+                        TimePeriod.PM -> "오후"
+                    }
+                }
+            )
+        }
+
+        composeRule.runOnIdle {
+            state.selectTime(LocalTime(hour = 14, minute = 30))
+        }
+
+        waitUntilSelectedItem("시간: 2시")
+        waitUntilSelectedItem("분: 30분")
+        waitUntilSelectedItem("오전/오후: 오후")
+    }
+
+    @Test
+    fun datePicker_updatesChildPickerSemanticsWhenSelectionChangesProgrammatically() {
+        lateinit var state: DatePickerState
+
+        composeRule.setContent {
+            state = rememberDatePickerState(
+                initialYear = 2026,
+                initialMonth = 1,
+                initialDay = 1
+            )
+
+            DatePicker(
+                state = state,
+                yearItems = listOf(2026, 2027),
+                monthItems = listOf(1, 5),
+                visibleItemsCount = 3,
+                yearPickerLabel = "연도",
+                monthPickerLabel = "월",
+                dayPickerLabel = "일",
+                yearItemContentDescription = { "${it}년" },
+                monthItemContentDescription = { "${it}월" },
+                dayItemContentDescription = { "${it}일" }
+            )
+        }
+
+        composeRule.runOnIdle {
+            state.selectDate(LocalDate(2027, 5, 20))
+        }
+
+        waitUntilSelectedItem("연도: 2027년")
+        waitUntilSelectedItem("월: 5월")
+        waitUntilSelectedItem("일: 20일")
     }
 
     @Test
@@ -217,6 +324,15 @@ class PickerAccessibilitySemanticsAndroidTest {
         composeRule
             .onNode(hasContentDescription("월: 5월") and hasStateDescription("5월"))
             .assertExists()
+    }
+
+    private fun waitUntilSelectedItem(contentDescription: String) {
+        composeRule.waitUntil(timeoutMillis = 5_000) {
+            composeRule
+                .onAllNodes(hasContentDescription(contentDescription) and isSelected())
+                .fetchSemanticsNodes()
+                .isNotEmpty()
+        }
     }
 }
 

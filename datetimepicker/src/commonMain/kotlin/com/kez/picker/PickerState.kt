@@ -30,8 +30,8 @@ fun <T> rememberPickerState(initialItem: T) = remember { PickerState(initialItem
 /**
  * State holder for the picker component.
  *
- * The [selectedItem] property is read-only from external code.
- * Item selection is managed internally by the [Picker] component through scrolling.
+ * The [selectedItem] property is read-only from external code. Use [selectItem] to change the
+ * selection programmatically, or let [Picker] update it when the user scrolls.
  *
  * @param initialItem The initial selected item.
  */
@@ -45,7 +45,50 @@ class PickerState<T>(
      */
     var selectedItem: T by mutableStateOf(initialItem)
         internal set
+
+    internal var selectionRequestVersion: Int by mutableStateOf(0)
+        private set
+
+    internal var activeSelectionRequest: PickerSelectionRequest<T>? by mutableStateOf(null)
+        private set
+
+    /**
+     * Programmatically selects [item].
+     *
+     * When this state is used by [Picker], the picker scroll position is synchronized to the selected item
+     * if that item exists in the current item list. If [item] is not present in the current list, [Picker]
+     * normalizes the state back to the currently centered item.
+     */
+    fun selectItem(item: T) {
+        selectedItem = item
+        selectionRequestVersion += 1
+        activeSelectionRequest = PickerSelectionRequest(selectionRequestVersion, item)
+    }
+
+    internal fun updateSelectedItemFromScroll(item: T) {
+        if (activeSelectionRequest == null) {
+            selectedItem = item
+        }
+    }
+
+    internal fun completeSelectionRequest(requestVersion: Int, settledItem: T) {
+        if (activeSelectionRequest?.version == requestVersion) {
+            selectedItem = settledItem
+            activeSelectionRequest = null
+        }
+    }
+
+    internal fun clearSelectionRequest(requestVersion: Int) {
+        if (activeSelectionRequest?.version == requestVersion) {
+            activeSelectionRequest = null
+        }
+    }
 }
+
+internal data class PickerSelectionRequest<T>(
+    val version: Int,
+    val item: T
+)
 
 /**
  * Creates and remembers a [YearMonthPickerState].
@@ -128,6 +171,37 @@ class YearMonthPickerState(
      */
     val selectedMonthDate: LocalDate
         get() = LocalDate(selectedYear, selectedMonth, 1)
+
+    /**
+     * Programmatically selects [year] and [month].
+     *
+     * The child pickers scroll to the requested values when the current item lists contain them. If a
+     * requested value is not present in a custom item list, that child picker normalizes back to its
+     * currently centered item.
+     *
+     * @throws IllegalArgumentException if [year] or [month] is outside the supported range.
+     */
+    fun selectYearMonth(year: Int, month: Int) {
+        require(year in 1000..9999) {
+            "year must be in range [1000, 9999], but was $year"
+        }
+        require(month in 1..12) {
+            "month must be in range [1, 12], but was $month"
+        }
+        yearState.selectItem(year)
+        monthState.selectItem(month)
+    }
+
+    /**
+     * Programmatically selects the year and month from [date].
+     *
+     * The day value is ignored because [com.kez.picker.date.YearMonthPicker] only selects year and month.
+     *
+     * @throws IllegalArgumentException if [date]'s year is outside the supported range.
+     */
+    fun selectDate(date: LocalDate) {
+        selectYearMonth(date.year, date.month.number)
+    }
 
     companion object {
         /**
@@ -304,6 +378,20 @@ class TimePickerState(
      */
     val selectedTime: LocalTime
         get() = LocalTime(selectedHourOfDay, selectedMinute)
+
+    /**
+     * Programmatically selects [time].
+     *
+     * The hour is converted to the current [timeFormat]. In 12-hour mode, the AM/PM period is derived from
+     * [time]. In 24-hour mode, [selectedPeriod] is still updated for consistency but is not displayed by
+     * [com.kez.picker.time.TimePicker]. The child pickers scroll to the requested values when the current
+     * item lists contain them; otherwise that child picker normalizes back to its currently centered item.
+     */
+    fun selectTime(time: LocalTime) {
+        hourState.selectItem(initialHourForTimeFormat(time.hour, timeFormat))
+        minuteState.selectItem(time.minute)
+        periodState.selectItem(if (time.hour >= 12) TimePeriod.PM else TimePeriod.AM)
+    }
 
     companion object {
         /**

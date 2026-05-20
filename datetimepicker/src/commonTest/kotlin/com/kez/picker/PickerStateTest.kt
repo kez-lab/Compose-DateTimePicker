@@ -27,6 +27,25 @@ class PickerStateTest {
     }
 
     @Test
+    fun pickerState_selectItem_updatesSelectedItem() {
+        val state = PickerState("Initial")
+
+        state.selectItem("Updated")
+
+        assertEquals("Updated", state.selectedItem)
+    }
+
+    @Test
+    fun pickerState_selectItem_recordsProgrammaticSelectionRequest() {
+        val state = PickerState("Initial")
+
+        state.selectItem("Updated")
+
+        assertEquals(1, state.selectionRequestVersion)
+        assertEquals("Updated", state.activeSelectionRequest?.item)
+    }
+
+    @Test
     fun pickerState_nullableInitialValue_isCorrect() {
         val state = PickerState<String?>(null)
         assertEquals(null, state.selectedItem)
