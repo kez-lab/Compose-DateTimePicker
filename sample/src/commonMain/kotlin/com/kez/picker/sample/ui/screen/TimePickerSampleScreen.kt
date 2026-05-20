@@ -40,9 +40,9 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.kez.picker.rememberTimePickerState
+import com.kez.picker.sample.getTimePeriodContentDescription
 import com.kez.picker.time.TimePicker
 import com.kez.picker.util.TimeFormat
-import com.kez.picker.util.TimePeriod
 import com.kez.picker.util.currentDateTime
 import compose.icons.FeatherIcons
 import compose.icons.feathericons.ArrowLeft
@@ -74,7 +74,7 @@ internal fun TimePickerSampleScreen(
         char(':')
         minute(padding = Padding.ZERO)
         char(' ')
-        amPmMarker(am = TimePeriod.AM.name, pm = TimePeriod.PM.name)
+        amPmMarker(am = "오전", pm = "오후")
     }
 
     val ktxTimeFormat24 = LocalTime.Format {
@@ -193,12 +193,12 @@ internal fun TimePickerSampleScreen(
             if (selectedFormat == 0) {
                 TimePicker(
                     state = timeState12,
-                    hourPickerLabel = "시",
+                    hourPickerLabel = "시간",
                     minutePickerLabel = "분",
                     periodPickerLabel = "오전/오후",
                     hourItemContentDescription = { "${it}시" },
                     minuteItemContentDescription = { "${it}분" },
-                    periodItemContentDescription = { it.name },
+                    periodItemContentDescription = { getTimePeriodContentDescription(it) },
                     previousItemActionLabel = "이전 항목 선택",
                     nextItemActionLabel = "다음 항목 선택"
                 )
@@ -206,7 +206,7 @@ internal fun TimePickerSampleScreen(
                 TimePicker(
                     state = timeState24,
                     visibleItemsCount = 5,
-                    hourPickerLabel = "시",
+                    hourPickerLabel = "시간",
                     minutePickerLabel = "분",
                     hourItemContentDescription = { "${it}시" },
                     minuteItemContentDescription = { "${it}분" },

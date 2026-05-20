@@ -10,7 +10,7 @@ internal fun formatTime12(hour: Int?, minute: Int?, period: TimePeriod?): String
     val h = hour ?: 12
     val m = minute ?: 0
     val p = period ?: TimePeriod.AM
-    return "${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')} $p"
+    return "${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')} ${getTimePeriodContentDescription(p)}"
 }
 
 internal fun formatTime12(time: LocalTime): String {
@@ -54,5 +54,12 @@ internal fun getMonthContentDescription(month: Int): String {
     return when (month) {
         in 1..12 -> "${month}월"
         else -> "알 수 없음"
+    }
+}
+
+internal fun getTimePeriodContentDescription(period: TimePeriod): String {
+    return when (period) {
+        TimePeriod.AM -> "오전"
+        TimePeriod.PM -> "오후"
     }
 }
