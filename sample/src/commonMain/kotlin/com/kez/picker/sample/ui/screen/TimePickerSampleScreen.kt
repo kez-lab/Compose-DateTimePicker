@@ -150,12 +150,22 @@ internal fun TimePickerSampleScreen(
             Spacer(modifier = Modifier.height(32.dp))
             if (selectedFormat == 0) {
                 TimePicker(
-                    state = timeState12
+                    state = timeState12,
+                    hourPickerLabel = "시",
+                    minutePickerLabel = "분",
+                    periodPickerLabel = "오전/오후",
+                    hourItemContentDescription = { "${it}시" },
+                    minuteItemContentDescription = { "${it}분" },
+                    periodItemContentDescription = { it.name }
                 )
             } else {
                 TimePicker(
                     state = timeState24,
-                    visibleItemsCount = 5
+                    visibleItemsCount = 5,
+                    hourPickerLabel = "시",
+                    minutePickerLabel = "분",
+                    hourItemContentDescription = { "${it}시" },
+                    minuteItemContentDescription = { "${it}분" }
                 )
             }
         }

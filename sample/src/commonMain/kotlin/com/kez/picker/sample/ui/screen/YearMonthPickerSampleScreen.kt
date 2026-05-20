@@ -32,6 +32,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.kez.picker.date.YearMonthPicker
 import com.kez.picker.rememberYearMonthPickerState
+import com.kez.picker.sample.getMonthContentDescription
 import com.kez.picker.sample.getMonthName
 import com.kez.picker.util.currentDate
 import compose.icons.FeatherIcons
@@ -110,7 +111,11 @@ internal fun YearMonthPickerSampleScreen(
 
             YearMonthPicker(
                 modifier = Modifier.padding(horizontal = 12.dp),
-                state = state
+                state = state,
+                yearPickerLabel = "연도",
+                monthPickerLabel = "월",
+                yearItemContentDescription = { "${it}년" },
+                monthItemContentDescription = { getMonthContentDescription(it) }
             )
 
             Spacer(modifier = Modifier.height(16.dp))

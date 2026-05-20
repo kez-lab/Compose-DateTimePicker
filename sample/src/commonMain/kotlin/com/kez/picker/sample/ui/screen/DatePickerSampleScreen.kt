@@ -30,6 +30,7 @@ import androidx.compose.ui.unit.sp
 import com.kez.picker.PickerDefaults
 import com.kez.picker.date.DatePicker
 import com.kez.picker.date.rememberDatePickerState
+import com.kez.picker.sample.getMonthContentDescription
 import compose.icons.FeatherIcons
 import compose.icons.feathericons.ArrowLeft
 import compose.icons.feathericons.Calendar
@@ -86,7 +87,13 @@ fun DatePickerSampleScreen(
                     colors = PickerDefaults.colors(
                         selectedTextColor = MaterialTheme.colorScheme.primary,
                         dividerColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.5f)
-                    )
+                    ),
+                    yearPickerLabel = "연도",
+                    monthPickerLabel = "월",
+                    dayPickerLabel = "일",
+                    yearItemContentDescription = { "${it}년" },
+                    monthItemContentDescription = { getMonthContentDescription(it) },
+                    dayItemContentDescription = { "${it}일" }
                 )
             }
 
