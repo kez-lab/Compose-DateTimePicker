@@ -33,5 +33,6 @@ This project tracks notable user-facing and maintainer-facing changes here. The 
 - Extended Android accessibility action coverage for `TimePicker`, `DatePicker`, and `YearMonthPicker`
   child picker state updates.
 - Added Android state restoration coverage for `rememberTimePickerState`, `rememberDatePickerState`, and `rememberYearMonthPickerState`.
+- Added `TimePickerState.Saver` edge-case coverage for 12-hour midnight and noon restoration.
 - Added Kotlin ABI validation with committed Android, Desktop, and KLIB API dumps.
 - Pull requests now run Android build/unit, Desktop, Wasm, iOS simulator, Kotlin ABI, Android managed-device instrumented test, and PR diff hygiene checks.
