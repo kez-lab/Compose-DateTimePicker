@@ -241,7 +241,7 @@ private fun List<Int>.invalidValuesFor(range: IntRange): List<Int> =
 
 @Preview(name = "24-Hour Format", group = "TimePicker - Formats", showBackground = true)
 @Composable
-fun TimePickerPreview24Hour() {
+private fun TimePickerPreview24Hour() {
     TimePicker(
         state = rememberTimePickerState(timeFormat = TimeFormat.HOUR_24)
     )
@@ -249,7 +249,7 @@ fun TimePickerPreview24Hour() {
 
 @Preview(name = "12-Hour Format with AM/PM", group = "TimePicker - Formats", showBackground = true)
 @Composable
-fun TimePickerPreview12Hour() {
+private fun TimePickerPreview12Hour() {
     TimePicker(
         state = rememberTimePickerState(timeFormat = TimeFormat.HOUR_12)
     )
@@ -257,7 +257,7 @@ fun TimePickerPreview12Hour() {
 
 @Preview(name = "No Divider", group = "TimePicker - Styles", showBackground = true)
 @Composable
-fun TimePickerNoDividerPreview() {
+private fun TimePickerNoDividerPreview() {
     TimePicker(
         state = rememberTimePickerState(timeFormat = TimeFormat.HOUR_24),
         isDividerVisible = false
@@ -266,7 +266,7 @@ fun TimePickerNoDividerPreview() {
 
 @Preview(name = "Custom Colors", group = "TimePicker - Styles", showBackground = true)
 @Composable
-fun TimePickerCustomColorsPreview() {
+private fun TimePickerCustomColorsPreview() {
     TimePicker(
         state = rememberTimePickerState(timeFormat = TimeFormat.HOUR_12),
         colors = PickerDefaults.colors(
@@ -279,7 +279,7 @@ fun TimePickerCustomColorsPreview() {
 
 @Preview(name = "Large Text Size", group = "TimePicker - Styles", showBackground = true)
 @Composable
-fun TimePickerLargeTextPreview() {
+private fun TimePickerLargeTextPreview() {
     TimePicker(
         state = rememberTimePickerState(timeFormat = TimeFormat.HOUR_24),
         textStyles = PickerDefaults.textStyles(

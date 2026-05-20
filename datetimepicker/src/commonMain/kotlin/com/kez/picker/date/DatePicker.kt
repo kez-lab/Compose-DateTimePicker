@@ -222,6 +222,6 @@ private fun List<Int>.invalidValuesFor(range: IntRange): List<Int> =
 
 @Preview(name = "Default", group = "DatePicker", showBackground = true)
 @Composable
-fun DatePickerPreview() {
+private fun DatePickerPreview() {
     DatePicker()
 }
