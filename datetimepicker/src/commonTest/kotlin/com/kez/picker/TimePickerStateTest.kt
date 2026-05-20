@@ -627,6 +627,37 @@ class TimePickerStateTest {
     }
 
     @Test
+    fun timePickerState_saver_roundTrips12HourMidnightAndNoon() {
+        val midnight = TimePickerState(
+            initialHour = 12,
+            initialMinute = 5,
+            initialPeriod = TimePeriod.AM,
+            timeFormat = TimeFormat.HOUR_12
+        ).saveAndRestore()
+
+        assertEquals(12, midnight.selectedHour)
+        assertEquals(5, midnight.selectedMinute)
+        assertEquals(TimePeriod.AM, midnight.selectedPeriod)
+        assertEquals(TimeFormat.HOUR_12, midnight.timeFormat)
+        assertEquals(0, midnight.selectedHourOfDay)
+        assertEquals(LocalTime(0, 5), midnight.selectedTime)
+
+        val noon = TimePickerState(
+            initialHour = 12,
+            initialMinute = 15,
+            initialPeriod = TimePeriod.PM,
+            timeFormat = TimeFormat.HOUR_12
+        ).saveAndRestore()
+
+        assertEquals(12, noon.selectedHour)
+        assertEquals(15, noon.selectedMinute)
+        assertEquals(TimePeriod.PM, noon.selectedPeriod)
+        assertEquals(TimeFormat.HOUR_12, noon.timeFormat)
+        assertEquals(12, noon.selectedHourOfDay)
+        assertEquals(LocalTime(12, 15), noon.selectedTime)
+    }
+
+    @Test
     fun initialHourForTimeFormat_converts24HourInputFor12HourMode() {
         assertEquals(12, initialHourForTimeFormat(0, TimeFormat.HOUR_12))
         assertEquals(12, initialHourForTimeFormat(12, TimeFormat.HOUR_12))
