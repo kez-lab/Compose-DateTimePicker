@@ -57,6 +57,12 @@ kotlin {
             implementation(libs.androidx.ui.tooling.preview)
         }
 
+        val androidInstrumentedTest by getting {
+            dependencies {
+                implementation(libs.androidx.uitest.junit4)
+            }
+        }
+
         iosMain.dependencies {
 
         }
@@ -71,6 +77,10 @@ kotlin {
             }
         }
     }
+}
+
+dependencies {
+    debugImplementation(libs.androidx.uitest.testManifest)
 }
 
 android {

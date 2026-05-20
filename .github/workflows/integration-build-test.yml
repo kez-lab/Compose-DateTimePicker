@@ -58,6 +58,7 @@ jobs:
             ${{ env.LIBRARY_MODULE }}:clean \
             ${{ env.LIBRARY_MODULE }}:assembleRelease \
             ${{ env.LIBRARY_MODULE }}:testReleaseUnitTest \
+            ${{ env.LIBRARY_MODULE }}:assembleDebugAndroidTest \
             ${{ env.SAMPLE_MODULE }}:assembleDebug \
             --no-daemon
 
