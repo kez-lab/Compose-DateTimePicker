@@ -35,7 +35,9 @@ import com.kez.picker.date.YearMonthPicker
 import com.kez.picker.rememberTimePickerState
 import com.kez.picker.rememberYearMonthPickerState
 import com.kez.picker.sample.formatTime12
+import com.kez.picker.sample.getMonthContentDescription
 import com.kez.picker.sample.getMonthName
+import com.kez.picker.sample.getTimePeriodContentDescription
 import com.kez.picker.time.TimePicker
 import com.kez.picker.util.TimeFormat
 import com.kez.picker.util.currentDateTime
@@ -119,6 +121,12 @@ internal fun BackgroundStylePickerScreen(
                 ) {
                     YearMonthPicker(
                         state = yearMonthState,
+                        yearPickerLabel = "연도",
+                        monthPickerLabel = "월",
+                        yearItemContentDescription = { "${it}년" },
+                        monthItemContentDescription = { getMonthContentDescription(it) },
+                        previousItemActionLabel = "이전 항목 선택",
+                        nextItemActionLabel = "다음 항목 선택",
                         textStyles = PickerDefaults.textStyles(
                             textStyle = TextStyle(
                                 fontSize = 18.sp
@@ -156,6 +164,14 @@ internal fun BackgroundStylePickerScreen(
                 ) {
                     TimePicker(
                         state = timeState,
+                        hourPickerLabel = "시간",
+                        minutePickerLabel = "분",
+                        periodPickerLabel = "오전/오후",
+                        hourItemContentDescription = { "${it}시" },
+                        minuteItemContentDescription = { "${it}분" },
+                        periodItemContentDescription = { getTimePeriodContentDescription(it) },
+                        previousItemActionLabel = "이전 항목 선택",
+                        nextItemActionLabel = "다음 항목 선택",
                         textStyles = PickerDefaults.textStyles(
                             textStyle = TextStyle(
                                 fontSize = 18.sp
