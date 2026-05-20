@@ -48,6 +48,35 @@ class PickerStateRestorationAndroidTest {
     }
 
     @Test
+    fun rememberTimePickerState_restoresNoonAfterSaveRestore() {
+        lateinit var state: TimePickerState
+        val restorationTester = StateRestorationTester(composeRule)
+
+        restorationTester.setContent {
+            state = rememberTimePickerState(
+                initialTime = LocalTime(1, 0),
+                timeFormat = TimeFormat.HOUR_12
+            )
+        }
+
+        composeRule.runOnIdle {
+            state.selectTime(LocalTime(12, 15))
+            assertEquals(LocalTime(12, 15), state.selectedTime)
+        }
+
+        restorationTester.emulateSavedInstanceStateRestore()
+
+        composeRule.runOnIdle {
+            assertEquals(LocalTime(12, 15), state.selectedTime)
+            assertEquals(TimeFormat.HOUR_12, state.timeFormat)
+            assertEquals(12, state.selectedHour)
+            assertEquals(12, state.selectedHourOfDay)
+            assertEquals(15, state.selectedMinute)
+            assertEquals(TimePeriod.PM, state.selectedPeriod)
+        }
+    }
+
+    @Test
     fun timePicker_restoresSelectionIntoRenderedSemanticsAfterSaveRestore() {
         lateinit var state: TimePickerState
         val restorationTester = StateRestorationTester(composeRule)
