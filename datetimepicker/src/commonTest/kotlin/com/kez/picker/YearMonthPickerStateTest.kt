@@ -1,6 +1,7 @@
 package com.kez.picker
 
 import androidx.compose.runtime.saveable.SaverScope
+import com.kez.picker.date.validateYearMonthPickerItems
 import kotlinx.datetime.LocalDate
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -75,6 +76,46 @@ class YearMonthPickerStateTest {
     }
 
     @Test
+    fun yearMonthPickerState_minimumYear_isCorrect() {
+        val state = YearMonthPickerState(
+            initialYear = 1000,
+            initialMonth = 1
+        )
+
+        assertEquals(1000, state.selectedYear)
+    }
+
+    @Test
+    fun yearMonthPickerState_maximumYear_isCorrect() {
+        val state = YearMonthPickerState(
+            initialYear = 9999,
+            initialMonth = 12
+        )
+
+        assertEquals(9999, state.selectedYear)
+    }
+
+    @Test
+    fun yearMonthPickerState_yearBelowRange_throws() {
+        assertFailsWith<IllegalArgumentException> {
+            YearMonthPickerState(
+                initialYear = 999,
+                initialMonth = 1
+            )
+        }
+    }
+
+    @Test
+    fun yearMonthPickerState_yearAboveRange_throws() {
+        assertFailsWith<IllegalArgumentException> {
+            YearMonthPickerState(
+                initialYear = 10000,
+                initialMonth = 1
+            )
+        }
+    }
+
+    @Test
     fun yearMonthPickerState_currentYear_isCorrect() {
         val state = YearMonthPickerState(
             initialYear = 2025,
@@ -144,6 +185,94 @@ class YearMonthPickerStateTest {
         assertEquals(2026, restored.selectedYear)
         assertEquals(12, restored.selectedMonth)
         assertEquals(LocalDate(2026, 12, 1), restored.selectedMonthDate)
+    }
+
+    @Test
+    fun validateYearMonthPickerItems_allowsCurrentSelection() {
+        val state = YearMonthPickerState(
+            initialYear = 2024,
+            initialMonth = 6
+        )
+
+        validateYearMonthPickerItems(
+            state = state,
+            yearItems = (2020..2030).toList(),
+            monthItems = listOf(3, 6, 9, 12)
+        )
+    }
+
+    @Test
+    fun validateYearMonthPickerItems_allowsYearItemsMissingCurrentSelection() {
+        val state = YearMonthPickerState(
+            initialYear = 2024,
+            initialMonth = 6
+        )
+
+        validateYearMonthPickerItems(
+            state = state,
+            yearItems = (2025..2030).toList(),
+            monthItems = listOf(3, 6, 9, 12)
+        )
+    }
+
+    @Test
+    fun validateYearMonthPickerItems_throwsWhenMonthItemsContainInvalidValue() {
+        val state = YearMonthPickerState(
+            initialYear = 2024,
+            initialMonth = 6
+        )
+
+        assertFailsWith<IllegalArgumentException> {
+            validateYearMonthPickerItems(
+                state = state,
+                yearItems = (2020..2030).toList(),
+                monthItems = listOf(0, 6, 13)
+            )
+        }
+    }
+
+    @Test
+    fun validateYearMonthPickerItems_allowsMonthItemsMissingCurrentSelection() {
+        val state = YearMonthPickerState(
+            initialYear = 2024,
+            initialMonth = 6
+        )
+
+        validateYearMonthPickerItems(
+            state = state,
+            yearItems = (2020..2030).toList(),
+            monthItems = listOf(3, 9, 12)
+        )
+    }
+
+    @Test
+    fun validateYearMonthPickerItems_allowsBoundaryValues() {
+        val state = YearMonthPickerState(
+            initialYear = 2024,
+            initialMonth = 6
+        )
+
+        validateYearMonthPickerItems(
+            state = state,
+            yearItems = listOf(1000, 9999),
+            monthItems = listOf(1, 12)
+        )
+    }
+
+    @Test
+    fun validateYearMonthPickerItems_throwsWhenYearItemsContainInvalidValue() {
+        val state = YearMonthPickerState(
+            initialYear = 2024,
+            initialMonth = 6
+        )
+
+        assertFailsWith<IllegalArgumentException> {
+            validateYearMonthPickerItems(
+                state = state,
+                yearItems = listOf(999, 2024, 10000),
+                monthItems = listOf(3, 6, 9, 12)
+            )
+        }
     }
 
     // ==================== State Independence Tests ====================

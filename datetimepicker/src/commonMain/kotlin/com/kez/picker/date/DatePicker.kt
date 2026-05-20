@@ -32,8 +32,8 @@ import kotlinx.datetime.LocalDate
  * @param pickerModifier The modifier to be applied to each picker.
  * @param state The state object to control the picker.
  * @param startLocalDate Legacy initial date parameter. Prefer setting initial values in [state].
- * @param yearItems The list of year values to display.
- * @param monthItems The list of month values to display.
+ * @param yearItems The list of year values to display. Must contain values in 1000..9999.
+ * @param monthItems The list of month values to display. Must contain values in 1..12.
  * @param visibleItemsCount The number of items visible at once.
  * @param colors The colors used by the picker. See [PickerDefaults.colors].
  * @param textStyles The text styles used by the picker. See [PickerDefaults.textStyles].
@@ -46,6 +46,7 @@ import kotlinx.datetime.LocalDate
  * @param dividerShape The shape of the dividers.
  * @param spacingBetweenPickers The spacing between the pickers.
  * @param isDividerVisible Whether the divider should be visible.
+ * @throws IllegalArgumentException if custom item lists are empty or contain values outside the supported ranges.
  */
 @Composable
 fun DatePicker(
@@ -68,6 +69,12 @@ fun DatePicker(
     spacingBetweenPickers: Dp = PickerDefaults.SpacingBetweenPickers,
     isDividerVisible: Boolean = true
 ) {
+    validateDatePickerItems(
+        state = state,
+        yearItems = yearItems,
+        monthItems = monthItems
+    )
+
     // Validate state whenever year or month changes to ensure day is within range
     LaunchedEffect(state.selectedYear, state.selectedMonth) {
         state.validate()
@@ -160,6 +167,31 @@ fun DatePicker(
 
 private fun <T> List<T>.startIndexOf(item: T): Int =
     indexOf(item).takeIf { it >= 0 } ?: 0
+
+internal fun validateDatePickerItems(
+    state: DatePickerState,
+    yearItems: List<Int>,
+    monthItems: List<Int>
+) {
+    val yearRange = 1000..9999
+    val monthRange = 1..12
+    val invalidYears = yearItems.invalidValuesFor(yearRange)
+    val invalidMonths = monthItems.invalidValuesFor(monthRange)
+
+    require(yearItems.isNotEmpty()) { "DatePicker yearItems must not be empty." }
+    require(monthItems.isNotEmpty()) { "DatePicker monthItems must not be empty." }
+    require(invalidYears.isEmpty()) {
+        "DatePicker yearItems must contain only values in range [1000, 9999]. " +
+                "Invalid values: $invalidYears"
+    }
+    require(invalidMonths.isEmpty()) {
+        "DatePicker monthItems must contain only values in range [1, 12]. " +
+                "Invalid values: $invalidMonths"
+    }
+}
+
+private fun List<Int>.invalidValuesFor(range: IntRange): List<Int> =
+    filterNot { it in range }.distinct()
 
 @Preview(name = "Default", group = "DatePicker", showBackground = true)
 @Composable

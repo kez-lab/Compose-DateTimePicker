@@ -36,9 +36,10 @@ fun rememberDatePickerState(
  * Automatically adjusts the selected day if it exceeds the maximum valid day for the new year/month.
  * Internal picker states are not directly accessible to prevent inconsistent state modifications.
  *
- * @param initialYear The initial year to be selected.
+ * @param initialYear The initial year to be selected. Must be in 1000..9999.
  * @param initialMonth The initial month to be selected.
  * @param initialDay The initial day to be selected.
+ * @throws IllegalArgumentException if [initialYear], [initialMonth], or [initialDay] is outside the supported range.
  */
 @Stable
 class DatePickerState(
@@ -82,6 +83,9 @@ class DatePickerState(
         get() = daysInMonth(selectedYear, selectedMonth)
 
     init {
+        require(initialYear in 1000..9999) {
+            "initialYear must be in range [1000, 9999], but was $initialYear"
+        }
         require(initialMonth in 1..12) {
             "initialMonth must be in range [1, 12], but was $initialMonth"
         }

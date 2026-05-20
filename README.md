@@ -193,8 +193,9 @@ fun BottomSheetPickerExample() {
 | :--- | :--- | :--- |
 | `state` | The state object to control the picker. | `rememberTimePickerState()` |
 | `startTime` | Legacy initial time parameter. Prefer setting initial values in `rememberTimePickerState`. | `currentDateTime()` |
-| `minuteItems` | Minute values available for selection. | `0..59` |
-| `hourItems` | Hour values available for selection. | `0..23` or `1..12` |
+| `minuteItems` | Minute values available for selection. Values must be in `0..59`. | `0..59` |
+| `hourItems` | Hour values available for selection. Values must be in `0..23` for 24-hour time or display-hour `1..12` for 12-hour time. | `0..23` or `1..12` |
+| `periodItems` | AM/PM values available in 12-hour time. Must not be empty when `timeFormat` is `HOUR_12`. | `TimePeriod.entries` |
 | `visibleItemsCount` | Number of items visible in the list. | `3` |
 | `colors` | Colors for text, selected text, dividers, and selected item background. | `PickerDefaults.colors()` |
 | `textStyles` | Text styles for selected and unselected items. | `PickerDefaults.textStyles()` |
@@ -210,14 +211,16 @@ fun BottomSheetPickerExample() {
 
 `rememberTimePickerState` uses saveable state. On Android, selected values can be restored across Activity recreation when the platform saveable registry is available.
 
+Invalid custom item values throw `IllegalArgumentException` during composition. If the current or restored selection is valid but not present in a custom list, the picker starts from the first item in that list and normalizes the state. In 12-hour mode, `hourItems` uses display-hour values (`1..12`): `initialHour = 13` becomes `state.selectedHour == 1` with `PM`.
+
 ### DatePicker
 
 | Parameter           | Description                             | Default                     |
 |:--------------------|:----------------------------------------|:----------------------------|
 | `state`             | The state object to control the picker. | `rememberDatePickerState()` |
 | `startLocalDate`    | Legacy initial date parameter. Prefer setting initial values in `rememberDatePickerState`. | `currentDate()`             |
-| `yearItems`         | List of years available for selection.  | `1000..9999`                |
-| `monthItems`        | List of months available for selection. | `1..12`                     |
+| `yearItems`         | List of years available for selection. Values must be in `1000..9999`. | `1000..9999`                |
+| `monthItems`        | List of months available for selection. Values must be in `1..12`. | `1..12`                     |
 | `visibleItemsCount` | Number of items visible in the list.    | `3`                         |
 | `colors`            | Colors for text, selected text, dividers, and selected item background. | `PickerDefaults.colors()` |
 | `textStyles`        | Text styles for selected and unselected items. | `PickerDefaults.textStyles()` |
@@ -232,14 +235,16 @@ fun BottomSheetPickerExample() {
 
 `rememberDatePickerState` uses saveable state. On Android, selected values can be restored across Activity recreation when the platform saveable registry is available.
 
+Invalid custom item values throw `IllegalArgumentException` during composition. If the current or restored year/month is valid but not present in a custom list, the picker starts from the first item in that list and normalizes the state.
+
 ### YearMonthPicker
 
 | Parameter | Description | Default |
 | :--- | :--- | :--- |
 | `state` | The state object to control the picker. | `rememberYearMonthPickerState()` |
 | `startLocalDate` | Legacy initial date parameter. Prefer setting initial values in `rememberYearMonthPickerState`. | `currentDate()` |
-| `yearItems` | List of years available for selection. | `1000..9999` |
-| `monthItems` | List of months available for selection. | `1..12` |
+| `yearItems` | List of years available for selection. Values must be in `1000..9999`. | `1000..9999` |
+| `monthItems` | List of months available for selection. Values must be in `1..12`. | `1..12` |
 | `visibleItemsCount` | Number of items visible in the list. | `3` |
 | `colors` | Colors for text, selected text, dividers, and selected item background. | `PickerDefaults.colors()` |
 | `textStyles` | Text styles for selected and unselected items. | `PickerDefaults.textStyles()` |
@@ -251,6 +256,8 @@ fun BottomSheetPickerExample() {
 - `selectedMonthDate`: The selected year/month represented as the first day of that month.
 
 `rememberYearMonthPickerState` uses saveable state. On Android, selected values can be restored across Activity recreation when the platform saveable registry is available.
+
+Invalid custom item values throw `IllegalArgumentException` during composition. If the current or restored year/month is valid but not present in a custom list, the picker starts from the first item in that list and normalizes the state.
 
 ## License
 

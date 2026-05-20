@@ -39,9 +39,9 @@ import kotlinx.datetime.LocalDateTime
  * @param pickerModifier The modifier to be applied to each picker.
  * @param state The state object to control the picker.
  * @param startTime Legacy initial time parameter. Prefer setting initial values in [state].
- * @param minuteItems The list of minute values to display.
- * @param hourItems The list of hour values to display.
- * @param periodItems The list of period values to display.
+ * @param minuteItems The list of minute values to display. Must contain values in 0..59.
+ * @param hourItems The list of hour values to display. Must contain display-hour values in 1..12 for [TimeFormat.HOUR_12] or 0..23 for [TimeFormat.HOUR_24].
+ * @param periodItems The list of period values to display in [TimeFormat.HOUR_12]. Must not be empty when the picker uses 12-hour time.
  * @param visibleItemsCount The number of items visible at once.
  * @param colors The colors used by the picker. See [PickerDefaults.colors].
  * @param textStyles The text styles used by the picker. See [PickerDefaults.textStyles].
@@ -54,6 +54,7 @@ import kotlinx.datetime.LocalDateTime
  * @param dividerShape The shape of the dividers.
  * @param spacingBetweenPickers The spacing between the pickers.
  * @param isDividerVisible Whether the divider should be visible.
+ * @throws IllegalArgumentException if custom item lists are empty where required or contain values outside the supported ranges.
  */
 @Composable
 fun TimePicker(
@@ -80,6 +81,13 @@ fun TimePicker(
     spacingBetweenPickers: Dp = PickerDefaults.SpacingBetweenPickers,
     isDividerVisible: Boolean = true
 ) {
+    validateTimePickerItems(
+        state = state,
+        minuteItems = minuteItems,
+        hourItems = hourItems,
+        periodItems = periodItems
+    )
+
     Box(modifier = modifier) {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
@@ -170,6 +178,39 @@ fun TimePicker(
 
 private fun <T> List<T>.startIndexOf(item: T): Int =
     indexOf(item).takeIf { it >= 0 } ?: 0
+
+internal fun validateTimePickerItems(
+    state: TimePickerState,
+    minuteItems: List<Int>,
+    hourItems: List<Int>,
+    periodItems: List<TimePeriod>
+) {
+    val minuteRange = 0..59
+    val invalidMinutes = minuteItems.invalidValuesFor(minuteRange)
+    require(minuteItems.isNotEmpty()) { "TimePicker minuteItems must not be empty." }
+    require(invalidMinutes.isEmpty()) {
+        "TimePicker minuteItems must contain only values in range [0, 59]. " +
+                "Invalid values: $invalidMinutes"
+    }
+
+    val hourRange = if (state.timeFormat == TimeFormat.HOUR_12) 1..12 else 0..23
+    val hourRangeLabel = if (state.timeFormat == TimeFormat.HOUR_12) "1, 12" else "0, 23"
+    val invalidHours = hourItems.invalidValuesFor(hourRange)
+    require(hourItems.isNotEmpty()) { "TimePicker hourItems must not be empty." }
+    require(invalidHours.isEmpty()) {
+        "TimePicker hourItems must contain only values in range [$hourRangeLabel] " +
+                "for timeFormat=${state.timeFormat}. Invalid values: $invalidHours"
+    }
+
+    if (state.timeFormat == TimeFormat.HOUR_12) {
+        require(periodItems.isNotEmpty()) {
+            "TimePicker periodItems must not be empty for timeFormat=${TimeFormat.HOUR_12}."
+        }
+    }
+}
+
+private fun List<Int>.invalidValuesFor(range: IntRange): List<Int> =
+    filterNot { it in range }.distinct()
 
 @Preview(name = "24-Hour Format", group = "TimePicker - Formats", showBackground = true)
 @Composable
