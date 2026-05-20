@@ -95,6 +95,8 @@ Most logic lives in `commonMain`. Platform-specific code is minimal.
 - When adding public state mutation APIs, keep logical state and picker scroll position synchronized, and document behavior when custom item lists do not contain the requested value.
 - During programmatic selection sync, do not let intermediate `LazyListState` scroll positions overwrite the requested state value before the picker settles.
 - When higher-level components pass accessibility labels to `Picker`, expose those labels and item content descriptions as public parameters with sensible defaults so Android apps can localize TalkBack output. Update KDoc and both READMEs in the same PR.
+- Kotlin 2.2.21 ABI validation uses `checkLegacyAbi`/`updateLegacyAbi` in this repo. Re-check task names and dump format after Kotlin upgrades.
+- Treat `datetimepicker/api/` as committed release-gate data. Public API changes must include reviewed ABI dump updates, and reviewers should separate intended picker/state API changes from preview/generated resource churn.
 - Keep repository guidance up to date in this `AGENTS.md` when the maintainer gives durable process feedback.
 - Do not include local agent/tooling folders such as `.agents/` or `.claude/` in product PRs unless the change is explicitly about agent workflow assets.
 
@@ -136,6 +138,13 @@ Most logic lives in `commonMain`. Platform-specific code is minimal.
 
 # Run checks (tests + lint)
 ./gradlew :datetimepicker:check --no-daemon
+
+# Check public Kotlin ABI against the committed reference dump.
+# Run this explicitly; do not assume :datetimepicker:check covers the ABI gate.
+./gradlew :datetimepicker:checkLegacyAbi --no-daemon
+
+# Update the Kotlin ABI reference dump after an intentional public API change
+./gradlew :datetimepicker:updateLegacyAbi --no-daemon
 
 # Verify sample app compilation
 ./gradlew :sample:compileKotlinDesktop --no-daemon
@@ -216,6 +225,7 @@ color = lerp(selectedTextStyle.color, textStyle.color, fraction)
 - Unit tests → `datetimepicker/src/commonTest/kotlin/`
 - Android UI/instrumented tests → `datetimepicker/src/androidInstrumentedTest/kotlin/`
 - Use `:datetimepicker:assembleDebugAndroidTest` to verify Android test APK compilation/packaging. Use `:datetimepicker:pixel2Api35DebugAndroidTest -Pandroid.testoptions.manageddevices.emulator.gpu=swiftshader_indirect` for the Gradle Managed Device path used by CI; it requires Android Emulator, the API 35 AOSP ATD x86_64 system image, and local virtualization/KVM. Use `:datetimepicker:connectedDebugAndroidTest` when a local device or emulator is already available. If managed-device prerequisites are unavailable locally, run `assembleDebugAndroidTest` or a managed-device `--dry-run` and rely on CI for the actual emulator run.
+- Public Kotlin API/ABI changes → run `:datetimepicker:checkLegacyAbi`. If the API change is intentional and SemVer-appropriate, run `:datetimepicker:updateLegacyAbi`, commit the updated `datetimepicker/api/` dumps, and review preview/generated resource changes separately from supported picker/state API changes.
 - Follow naming: `<ComponentName>Test.kt` or `<ComponentName>AndroidTest.kt`
 
 ## Code Style
@@ -237,7 +247,7 @@ Follow **Semantic Versioning**: MAJOR.MINOR.PATCH
 ## CI/CD
 
 GitHub Actions workflows:
-- **`integration-build-test.yml`**: Runs multiplatform library checks on pull requests to `main`; the Android matrix also runs the Gradle Managed Device `pixel2Api35DebugAndroidTest` gate for instrumented tests.
+- **`integration-build-test.yml`**: Runs multiplatform library checks on pull requests to `main`; the dedicated macOS ABI job runs `checkLegacyAbi`, and the Android matrix runs the Gradle Managed Device `pixel2Api35DebugAndroidTest` gate for instrumented tests.
 - **`maven-central-deploy.yml`**: Publishes releases to Maven Central
 
 Build matrix: Ubuntu latest for Android/Desktop/Wasm and macOS 14 for iOS, using JDK 17 (Temurin)
