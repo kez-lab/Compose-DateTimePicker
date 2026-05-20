@@ -1,6 +1,9 @@
 package com.kez.picker.sample.ui.screen
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -11,9 +14,11 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -34,6 +39,7 @@ import com.kez.picker.sample.getMonthContentDescription
 import compose.icons.FeatherIcons
 import compose.icons.feathericons.ArrowLeft
 import compose.icons.feathericons.Calendar
+import kotlinx.datetime.LocalDate
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -63,10 +69,12 @@ fun DatePickerSampleScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(paddingValues)
+                .verticalScroll(rememberScrollState())
                 .padding(16.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             val state = rememberDatePickerState()
+            val demoDate = LocalDate(2026, 5, 20)
 
             Box(
                 modifier = Modifier
@@ -95,6 +103,32 @@ fun DatePickerSampleScreen(
                     monthItemContentDescription = { getMonthContentDescription(it) },
                     dayItemContentDescription = { "${it}일" }
                 )
+            }
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            Column(
+                modifier = Modifier.fillMaxWidth(),
+                verticalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                Button(
+                    onClick = { state.selectDate(demoDate) },
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Icon(
+                        imageVector = FeatherIcons.Calendar,
+                        contentDescription = null
+                    )
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text("Set 2026-05-20")
+                }
+
+                OutlinedButton(
+                    onClick = { state.selectDate(LocalDate(2024, 2, 29)) },
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Text("Set 2024-02-29")
+                }
             }
 
             Spacer(modifier = Modifier.height(32.dp))

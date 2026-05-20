@@ -1,6 +1,8 @@
 package com.kez.picker.sample.ui.screen
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -9,7 +11,9 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CenterAlignedTopAppBar
@@ -17,6 +21,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.PrimaryTabRow
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Tab
@@ -62,6 +67,7 @@ internal fun TimePickerSampleScreen(
     val timeState24 = rememberTimePickerState(
         initialTime = currentTime
     )
+    val demoTime = LocalTime(hour = 9, minute = 30)
 
     val ktxTimeFormat12 = LocalTime.Format {
         amPmHour(padding = Padding.ZERO)
@@ -100,7 +106,11 @@ internal fun TimePickerSampleScreen(
         }
     ) {
         Column(
-            modifier = Modifier.fillMaxSize().padding(it).padding(16.dp),
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(it)
+                .verticalScroll(rememberScrollState())
+                .padding(16.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Card(
@@ -129,6 +139,38 @@ internal fun TimePickerSampleScreen(
                         fontWeight = FontWeight.Medium,
                         color = MaterialTheme.colorScheme.onSurface
                     )
+                }
+            }
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            Column(
+                modifier = Modifier.fillMaxWidth(),
+                verticalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                Button(
+                    onClick = {
+                        val now = currentDateTime().time
+                        timeState12.selectTime(now)
+                        timeState24.selectTime(now)
+                    },
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Icon(
+                        imageVector = FeatherIcons.Clock,
+                        contentDescription = null
+                    )
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text("Set now")
+                }
+                OutlinedButton(
+                    onClick = {
+                        timeState12.selectTime(demoTime)
+                        timeState24.selectTime(demoTime)
+                    },
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Text("Set 09:30")
                 }
             }
 
