@@ -30,6 +30,8 @@ This project tracks notable user-facing and maintainer-facing changes here. The 
 ### Maintenance
 
 - Added Android instrumented accessibility semantics coverage and a Gradle Managed Device CI gate.
+- Extended Android accessibility action coverage for `TimePicker`, `DatePicker`, and `YearMonthPicker`
+  child picker state updates.
 - Added Android state restoration coverage for `rememberTimePickerState`, `rememberDatePickerState`, and `rememberYearMonthPickerState`.
 - Added Kotlin ABI validation with committed Android, Desktop, and KLIB API dumps.
 - Pull requests now run Android build/unit, Desktop, Wasm, iOS simulator, Kotlin ABI, Android managed-device instrumented test, and PR diff hygiene checks.

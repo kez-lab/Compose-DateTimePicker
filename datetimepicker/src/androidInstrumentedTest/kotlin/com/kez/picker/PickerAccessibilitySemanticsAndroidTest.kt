@@ -18,6 +18,7 @@ import com.kez.picker.util.TimeFormat
 import com.kez.picker.util.TimePeriod
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalTime
+import kotlinx.datetime.Month
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Rule
@@ -653,6 +654,71 @@ class PickerAccessibilitySemanticsAndroidTest {
     }
 
     @Test
+    fun timePicker_customAccessibilityActionsUpdateChildStates() {
+        lateinit var state: TimePickerState
+
+        composeRule.setContent {
+            state = rememberTimePickerState(
+                initialTime = LocalTime(hour = 10, minute = 5),
+                timeFormat = TimeFormat.HOUR_12
+            )
+
+            TimePicker(
+                state = state,
+                hourItems = listOf(10, 11),
+                minuteItems = listOf(5, 10),
+                periodItems = listOf(TimePeriod.AM, TimePeriod.PM),
+                visibleItemsCount = 3,
+                hourPickerLabel = "시간",
+                minutePickerLabel = "분",
+                periodPickerLabel = "오전/오후",
+                hourItemContentDescription = { "${it}시" },
+                minuteItemContentDescription = { "${it}분" },
+                periodItemContentDescription = {
+                    when (it) {
+                        TimePeriod.AM -> "오전"
+                        TimePeriod.PM -> "오후"
+                    }
+                },
+                previousItemActionLabel = PREVIOUS_VALUE_ACTION_LABEL,
+                nextItemActionLabel = NEXT_VALUE_ACTION_LABEL
+            )
+        }
+
+        performCustomAccessibilityAction(
+            contentDescription = "시간: 10시",
+            actionLabel = NEXT_VALUE_ACTION_LABEL
+        )
+        waitUntilSelectedItem("시간: 11시")
+
+        performCustomAccessibilityAction(
+            contentDescription = "분: 5분",
+            actionLabel = NEXT_VALUE_ACTION_LABEL
+        )
+        waitUntilSelectedItem("분: 10분")
+
+        performCustomAccessibilityAction(
+            contentDescription = "오전/오후: 오전",
+            actionLabel = NEXT_VALUE_ACTION_LABEL
+        )
+        waitUntilSelectedItem("오전/오후: 오후")
+
+        composeRule.runOnIdle {
+            assertEquals(TimePeriod.PM, state.selectedPeriod)
+        }
+
+        performCustomAccessibilityAction(
+            contentDescription = "오전/오후: 오후",
+            actionLabel = PREVIOUS_VALUE_ACTION_LABEL
+        )
+        waitUntilSelectedItem("오전/오후: 오전")
+
+        composeRule.runOnIdle {
+            assertEquals(LocalTime(hour = 11, minute = 10), state.selectedTime)
+        }
+    }
+
+    @Test
     fun timePicker_forwardsCustomPeriodAccessibilityDescriptionIn12HourMode() {
         composeRule.setContent {
             val state = rememberTimePickerState(
@@ -718,6 +784,71 @@ class PickerAccessibilitySemanticsAndroidTest {
     }
 
     @Test
+    fun datePicker_customAccessibilityActionsUpdateChildStatesAndClampDay() {
+        lateinit var state: DatePickerState
+
+        composeRule.setContent {
+            state = rememberDatePickerState(
+                initialYear = 2026,
+                initialMonth = 1,
+                initialDay = 31
+            )
+
+            DatePicker(
+                state = state,
+                yearItems = listOf(2026, 2027),
+                monthItems = listOf(1, 2),
+                visibleItemsCount = 3,
+                yearPickerLabel = "연도",
+                monthPickerLabel = "월",
+                dayPickerLabel = "일",
+                yearItemContentDescription = { "${it}년" },
+                monthItemContentDescription = { "${it}월" },
+                dayItemContentDescription = { "${it}일" },
+                previousItemActionLabel = PREVIOUS_VALUE_ACTION_LABEL,
+                nextItemActionLabel = NEXT_VALUE_ACTION_LABEL
+            )
+        }
+
+        performCustomAccessibilityAction(
+            contentDescription = "연도: 2026년",
+            actionLabel = NEXT_VALUE_ACTION_LABEL
+        )
+        waitUntilSelectedItem("연도: 2027년")
+
+        performCustomAccessibilityAction(
+            contentDescription = "월: 1월",
+            actionLabel = NEXT_VALUE_ACTION_LABEL
+        )
+        waitUntilSelectedItem("월: 2월")
+        waitUntilSelectedItem("일: 28일")
+
+        composeRule.runOnIdle {
+            assertEquals(2027, state.selectedYear)
+            assertEquals(2, state.selectedMonth)
+            assertEquals(28, state.selectedDay)
+            assertEquals(
+                LocalDate(year = 2027, month = Month.FEBRUARY, day = 28),
+                state.selectedDate
+            )
+        }
+
+        performCustomAccessibilityAction(
+            contentDescription = "일: 28일",
+            actionLabel = PREVIOUS_VALUE_ACTION_LABEL
+        )
+        waitUntilSelectedItem("일: 27일")
+
+        composeRule.runOnIdle {
+            assertEquals(27, state.selectedDay)
+            assertEquals(
+                LocalDate(year = 2027, month = Month.FEBRUARY, day = 27),
+                state.selectedDate
+            )
+        }
+    }
+
+    @Test
     fun yearMonthPicker_forwardsCustomAccessibilityDescriptionsToChildPickers() {
         composeRule.setContent {
             val state = rememberYearMonthPickerState(
@@ -744,6 +875,56 @@ class PickerAccessibilitySemanticsAndroidTest {
         composeRule
             .onNode(hasContentDescription("월: 5월") and hasStateDescription("5월"))
             .assertExists()
+    }
+
+    @Test
+    fun yearMonthPicker_customAccessibilityActionsUpdateChildStates() {
+        lateinit var state: YearMonthPickerState
+
+        composeRule.setContent {
+            state = rememberYearMonthPickerState(
+                initialYear = 2026,
+                initialMonth = 5
+            )
+
+            YearMonthPicker(
+                state = state,
+                yearItems = listOf(2026, 2027),
+                monthItems = listOf(5, 6),
+                visibleItemsCount = 3,
+                yearPickerLabel = "연도",
+                monthPickerLabel = "월",
+                yearItemContentDescription = { "${it}년" },
+                monthItemContentDescription = { "${it}월" },
+                previousItemActionLabel = PREVIOUS_VALUE_ACTION_LABEL,
+                nextItemActionLabel = NEXT_VALUE_ACTION_LABEL
+            )
+        }
+
+        performCustomAccessibilityAction(
+            contentDescription = "연도: 2026년",
+            actionLabel = NEXT_VALUE_ACTION_LABEL
+        )
+        waitUntilSelectedItem("연도: 2027년")
+
+        performCustomAccessibilityAction(
+            contentDescription = "월: 5월",
+            actionLabel = NEXT_VALUE_ACTION_LABEL
+        )
+        waitUntilSelectedItem("월: 6월")
+
+        performCustomAccessibilityAction(
+            contentDescription = "월: 6월",
+            actionLabel = PREVIOUS_VALUE_ACTION_LABEL
+        )
+        waitUntilSelectedItem("월: 5월")
+
+        composeRule.runOnIdle {
+            assertEquals(
+                LocalDate(year = 2027, month = Month.MAY, day = 1),
+                state.selectedMonthDate
+            )
+        }
     }
 
     private fun waitUntilSelectedItem(contentDescription: String) {
