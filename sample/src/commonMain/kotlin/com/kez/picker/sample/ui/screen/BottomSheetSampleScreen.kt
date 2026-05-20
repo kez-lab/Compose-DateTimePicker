@@ -14,11 +14,9 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Scaffold
@@ -26,6 +24,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -50,10 +49,10 @@ import com.kez.picker.util.TimeFormat
 import com.kez.picker.util.currentDate
 import com.kez.picker.util.currentDateTime
 import compose.icons.FeatherIcons
-import compose.icons.feathericons.ArrowLeft
 import compose.icons.feathericons.Calendar
 import compose.icons.feathericons.Clock
 import kotlinx.coroutines.launch
+import kotlinx.datetime.LocalTime
 import kotlinx.datetime.number
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -71,12 +70,16 @@ internal fun BottomSheetSampleScreen(
         timeFormat = TimeFormat.HOUR_12
     )
 
-    // Selected date/time text
-    var selectedDateText by rememberSaveable {
-        mutableStateOf("${currentDate.year}년 ${getMonthName(currentDate.month.number)}")
+    var selectedYear by rememberSaveable { mutableIntStateOf(currentDate.year) }
+    var selectedMonth by rememberSaveable { mutableIntStateOf(currentDate.month.number) }
+    var selectedHour by rememberSaveable { mutableIntStateOf(currentTime.hour) }
+    var selectedMinute by rememberSaveable { mutableIntStateOf(currentTime.minute) }
+
+    val selectedDateText = remember(selectedYear, selectedMonth) {
+        "${selectedYear}년 ${getMonthName(selectedMonth)}"
     }
-    var selectedTimeText by rememberSaveable {
-        mutableStateOf(formatTime12(timeState.selectedTime))
+    val selectedTimeText = remember(selectedHour, selectedMinute) {
+        formatTime12(LocalTime(selectedHour, selectedMinute))
     }
 
     // Bottom sheet state
@@ -88,13 +91,9 @@ internal fun BottomSheetSampleScreen(
 
     Scaffold(
         topBar = {
-            CenterAlignedTopAppBar(
-                title = { Text("BottomSheet Sample", fontWeight = FontWeight.Bold) },
-                navigationIcon = {
-                    IconButton(onClick = { onBackPressed() }) {
-                        Icon(FeatherIcons.ArrowLeft, contentDescription = "Back")
-                    }
-                }
+            SampleTopAppBar(
+                title = "BottomSheet Sample",
+                onBackPressed = onBackPressed
             )
         }
     ) { innerPadding ->
@@ -182,7 +181,13 @@ internal fun BottomSheetSampleScreen(
 
             // Date selection button
             Button(
-                onClick = { showDateBottomSheet = true },
+                onClick = {
+                    yearMonthState.selectYearMonth(
+                        year = selectedYear,
+                        month = selectedMonth
+                    )
+                    showDateBottomSheet = true
+                },
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(56.dp),
@@ -201,7 +206,10 @@ internal fun BottomSheetSampleScreen(
 
             // Time selection button
             Button(
-                onClick = { showTimeBottomSheet = true },
+                onClick = {
+                    timeState.selectTime(LocalTime(selectedHour, selectedMinute))
+                    showTimeBottomSheet = true
+                },
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(56.dp),
@@ -267,9 +275,8 @@ internal fun BottomSheetSampleScreen(
                     Button(
                         onClick = {
                             val selectedMonthDate = yearMonthState.selectedMonthDate
-                            selectedDateText = "${selectedMonthDate.year}년 ${
-                                getMonthName(selectedMonthDate.month.number)
-                            }"
+                            selectedYear = selectedMonthDate.year
+                            selectedMonth = selectedMonthDate.month.number
                             scope.launch {
                                 dateSheetState.hide()
                                 showDateBottomSheet = false
@@ -343,7 +350,8 @@ internal fun BottomSheetSampleScreen(
 
                     Button(
                         onClick = {
-                            selectedTimeText = formatTime12(timeState.selectedTime)
+                            selectedHour = timeState.selectedTime.hour
+                            selectedMinute = timeState.selectedTime.minute
                             scope.launch {
                                 timeSheetState.hide()
                                 showTimeBottomSheet = false

@@ -1,34 +1,24 @@
 package com.kez.picker.sample.ui.screen
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -39,7 +29,6 @@ import com.kez.picker.date.rememberDatePickerState
 import com.kez.picker.sample.getMonthContentDescription
 import com.kez.picker.util.currentDate
 import compose.icons.FeatherIcons
-import compose.icons.feathericons.ArrowLeft
 import compose.icons.feathericons.Calendar
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.Month
@@ -51,20 +40,9 @@ fun DatePickerSampleScreen(
 ) {
     Scaffold(
         topBar = {
-            TopAppBar(
-                title = { Text("DatePicker Sample") },
-                navigationIcon = {
-                    IconButton(onClick = onBackPressed) {
-                        Icon(
-                            imageVector = FeatherIcons.ArrowLeft,
-                            contentDescription = "Back"
-                        )
-                    }
-                },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.primaryContainer,
-                    titleContentColor = MaterialTheme.colorScheme.onPrimaryContainer
-                )
+            SampleTopAppBar(
+                title = "DatePicker Sample",
+                onBackPressed = onBackPressed
             )
         }
     ) { paddingValues ->
@@ -89,12 +67,39 @@ fun DatePickerSampleScreen(
             }
             val state = rememberDatePickerState(initialDate = today)
 
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .clip(RoundedCornerShape(16.dp))
-                    .padding(24.dp)
-            ) {
+            SelectedValueCard(
+                icon = FeatherIcons.Calendar,
+                label = "Selected date",
+                value = state.selectedDate.toString(),
+                supportingText = "Selectable years: ${allowedYears.joinToString()}"
+            )
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            SampleActionRow {
+                Button(
+                    onClick = { state.selectDate(today) },
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Icon(
+                        imageVector = FeatherIcons.Calendar,
+                        contentDescription = null
+                    )
+                    IconTextGap()
+                    Text("Set $today")
+                }
+
+                OutlinedButton(
+                    onClick = { state.selectDate(leapDate) },
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Text("Set $leapDate")
+                }
+            }
+
+            Spacer(modifier = Modifier.height(24.dp))
+
+            PickerPanel {
                 DatePicker(
                     state = state,
                     yearItems = allowedYears,
@@ -119,69 +124,6 @@ fun DatePickerSampleScreen(
                     previousItemActionLabel = "이전 항목 선택",
                     nextItemActionLabel = "다음 항목 선택"
                 )
-            }
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-            Column(
-                modifier = Modifier.fillMaxWidth(),
-                verticalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                Button(
-                    onClick = { state.selectDate(today) },
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    Icon(
-                        imageVector = FeatherIcons.Calendar,
-                        contentDescription = null
-                    )
-                    Spacer(modifier = Modifier.width(8.dp))
-                    Text("Set $today")
-                }
-
-                OutlinedButton(
-                    onClick = { state.selectDate(leapDate) },
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    Text("Set $leapDate")
-                }
-            }
-
-            Spacer(modifier = Modifier.height(32.dp))
-
-            // Display Selected Value
-            Box(
-                modifier = Modifier
-                    .clip(RoundedCornerShape(8.dp))
-                    .background(MaterialTheme.colorScheme.secondaryContainer)
-                    .padding(16.dp)
-            ) {
-                Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                    Text(
-                        text = "Selected Date",
-                        style = MaterialTheme.typography.labelLarge,
-                        color = MaterialTheme.colorScheme.onSecondaryContainer
-                    )
-                    Text(
-                        text = "Selectable years: ${allowedYears.joinToString()}",
-                        style = MaterialTheme.typography.labelMedium,
-                        color = MaterialTheme.colorScheme.onSecondaryContainer
-                    )
-                    Spacer(modifier = Modifier.height(8.dp))
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        Icon(
-                            imageVector = FeatherIcons.Calendar,
-                            contentDescription = null,
-                            tint = MaterialTheme.colorScheme.onSecondaryContainer
-                        )
-                        Spacer(modifier = Modifier.width(8.dp))
-                        Text(
-                            text = state.selectedDate.toString(),
-                            style = MaterialTheme.typography.headlineSmall,
-                            color = MaterialTheme.colorScheme.onSecondaryContainer
-                        )
-                    }
-                }
             }
         }
     }

@@ -1,6 +1,7 @@
 package com.kez.picker.sample.ui.screen
 
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -59,12 +60,14 @@ internal fun HomeScreen(navController: NavController) {
         LazyColumn(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(innerPadding).padding(16.dp)
+                .padding(innerPadding)
+                .padding(16.dp),
+            verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
             item {
                 MenuListItem(
                     title = "Integrated Sample",
-                    description = "Date and time picker combined",
+                    description = "Tabs with shared date and time state",
                     icon = FeatherIcons.CheckCircle,
                     onClick = { navController.navigate(Screen.Integrated.route) }
                 )
@@ -72,7 +75,7 @@ internal fun HomeScreen(navController: NavController) {
             item {
                 MenuListItem(
                     title = "TimePicker Sample",
-                    description = "Standalone TimePicker component",
+                    description = "12-hour and 24-hour state updates",
                     icon = FeatherIcons.Clock,
                     onClick = { navController.navigate(Screen.TimePicker.route) }
                 )
@@ -80,7 +83,7 @@ internal fun HomeScreen(navController: NavController) {
             item {
                 MenuListItem(
                     title = "YearMonthPicker Sample",
-                    description = "Standalone YearMonthPicker component",
+                    description = "Month selection with programmatic reset",
                     icon = FeatherIcons.Calendar,
                     onClick = { navController.navigate(Screen.YearMonthPicker.route) }
                 )
@@ -88,7 +91,7 @@ internal fun HomeScreen(navController: NavController) {
             item {
                 MenuListItem(
                     title = "DatePicker Sample",
-                    description = "Full DatePicker (Year, Month, Day)",
+                    description = "Custom year range and leap-day target",
                     icon = FeatherIcons.Calendar,
                     onClick = { navController.navigate(Screen.DatePicker.route) }
                 )
@@ -96,7 +99,7 @@ internal fun HomeScreen(navController: NavController) {
             item {
                 MenuListItem(
                     title = "BottomSheet Sample",
-                    description = "Date/time selection in bottom sheet",
+                    description = "Committed value plus draft sheet state",
                     icon = FeatherIcons.Layers,
                     onClick = { navController.navigate(Screen.BottomSheet.route) }
                 )
@@ -104,7 +107,7 @@ internal fun HomeScreen(navController: NavController) {
             item {
                 MenuListItem(
                     title = "Background Style",
-                    description = "Picker with background design",
+                    description = "Divider-free picker styling",
                     icon = FeatherIcons.Square,
                     onClick = { navController.navigate(Screen.BackgroundStyle.route) }
                 )
@@ -124,10 +127,12 @@ internal fun MenuListItem(
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(vertical = 8.dp)
             .clickable(onClick = onClick),
         shape = RoundedCornerShape(16.dp),
-        elevation = CardDefaults.cardElevation(2.dp)
+        elevation = CardDefaults.cardElevation(1.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.surface
+        )
     ) {
         Row(
             modifier = Modifier.padding(16.dp),
@@ -146,7 +151,11 @@ internal fun MenuListItem(
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.Bold
                 )
-                Text(description, style = MaterialTheme.typography.bodyMedium, color = Color.Gray)
+                Text(
+                    description,
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
             }
             Icon(FeatherIcons.ArrowRight, contentDescription = "Navigate")
         }

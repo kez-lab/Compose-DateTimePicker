@@ -24,17 +24,14 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.PrimaryTabRow
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Tab
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
@@ -43,7 +40,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
@@ -61,7 +57,6 @@ import com.kez.picker.time.TimePicker
 import com.kez.picker.util.TimeFormat
 import com.kez.picker.util.currentDateTime
 import compose.icons.FeatherIcons
-import compose.icons.feathericons.ArrowLeft
 import compose.icons.feathericons.Calendar
 import compose.icons.feathericons.Clock
 import kotlinx.datetime.number
@@ -95,22 +90,9 @@ internal fun IntegratedPickerScreen(
 
     Scaffold(
         topBar = {
-            CenterAlignedTopAppBar(
-                title = {
-                    Text(
-                        "Integrated Sample",
-                        fontWeight = FontWeight.Bold
-                    )
-                },
-                navigationIcon = {
-                    IconButton(onClick = { onBackPressed() }) {
-                        Icon(
-                            FeatherIcons.ArrowLeft,
-                            contentDescription = "Back"
-                        )
-                    }
-                },
-                colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.Transparent)
+            SampleTopAppBar(
+                title = "Integrated Sample",
+                onBackPressed = onBackPressed
             )
         },
         containerColor = MaterialTheme.colorScheme.background
@@ -223,12 +205,15 @@ internal fun IntegratedPickerScreen(
             }
             Spacer(modifier = Modifier.weight(1f))
             Button(
-                onClick = { /* Selection complete logic (sample app demo) */ },
+                onClick = {
+                    yearMonthState.selectDate(currentDate)
+                    timeState.selectTime(currentTime)
+                },
                 modifier = Modifier.fillMaxWidth().height(56.dp),
                 shape = RoundedCornerShape(12.dp),
                 colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
             ) {
-                Text("Confirm Selection", fontSize = 16.sp, fontWeight = FontWeight.SemiBold)
+                Text("Reset to launch selection", fontSize = 16.sp, fontWeight = FontWeight.SemiBold)
             }
         }
     }
