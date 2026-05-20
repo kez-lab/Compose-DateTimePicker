@@ -49,3 +49,10 @@ internal fun getMonthName(month: Int): String {
         else -> "알 수 없음"
     }
 }
+
+internal fun getMonthContentDescription(month: Int): String {
+    return when (month) {
+        in 1..12 -> "${month}월"
+        else -> "알 수 없음"
+    }
+}
