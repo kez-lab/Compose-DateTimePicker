@@ -47,6 +47,16 @@ object PickerDefaults {
     val SelectedItemBackgroundShape: Shape = RoundedCornerShape(12.dp)
 
     /**
+     * Default accessibility action label for selecting the previous picker item.
+     */
+    const val PreviousItemActionLabel: String = "Select previous item"
+
+    /**
+     * Default accessibility action label for selecting the next picker item.
+     */
+    const val NextItemActionLabel: String = "Select next item"
+
+    /**
      * Default shape for the dividers.
      */
     val DividerShape: Shape = RoundedCornerShape(10.dp)

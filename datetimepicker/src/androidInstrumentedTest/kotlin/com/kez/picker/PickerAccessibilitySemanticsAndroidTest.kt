@@ -1,6 +1,8 @@
 package com.kez.picker
 
+import androidx.compose.ui.semantics.SemanticsActions
 import androidx.compose.ui.semantics.SemanticsProperties
+import androidx.compose.ui.semantics.getOrNull
 import androidx.compose.ui.test.SemanticsMatcher
 import androidx.compose.ui.test.assertIsSelected
 import androidx.compose.ui.test.hasContentDescription
@@ -17,8 +19,12 @@ import com.kez.picker.util.TimePeriod
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalTime
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertTrue
 import org.junit.Rule
 import org.junit.Test
+
+private const val PREVIOUS_VALUE_ACTION_LABEL = "Previous value"
+private const val NEXT_VALUE_ACTION_LABEL = "Next value"
 
 class PickerAccessibilitySemanticsAndroidTest {
 
@@ -77,6 +83,192 @@ class PickerAccessibilitySemanticsAndroidTest {
         composeRule
             .onNode(hasContentDescription("Day: 2 day") and isSelected())
             .assertIsSelected()
+    }
+
+    @Test
+    fun picker_customAccessibilityActionsSelectAdjacentItems() {
+        lateinit var state: PickerState<Int>
+
+        composeRule.setContent {
+            state = rememberPickerState(2)
+
+            Picker(
+                items = listOf(1, 2, 3),
+                state = state,
+                startIndex = 1,
+                visibleItemsCount = 3,
+                isInfinity = false,
+                pickerLabel = "Value",
+                itemContentDescription = { "$it" },
+                previousItemActionLabel = PREVIOUS_VALUE_ACTION_LABEL,
+                nextItemActionLabel = NEXT_VALUE_ACTION_LABEL
+            )
+        }
+
+        composeRule
+            .onNode(
+                hasContentDescription("Value: 2") and
+                        hasCustomAccessibilityAction(PREVIOUS_VALUE_ACTION_LABEL) and
+                        hasCustomAccessibilityAction(NEXT_VALUE_ACTION_LABEL)
+            )
+            .assertExists()
+
+        performCustomAccessibilityAction(
+            contentDescription = "Value: 2",
+            actionLabel = NEXT_VALUE_ACTION_LABEL
+        )
+        waitUntilSelectedItem("Value: 3")
+
+        composeRule.runOnIdle {
+            assertEquals(3, state.selectedItem)
+        }
+
+        performCustomAccessibilityAction(
+            contentDescription = "Value: 3",
+            actionLabel = PREVIOUS_VALUE_ACTION_LABEL
+        )
+        waitUntilSelectedItem("Value: 2")
+
+        composeRule.runOnIdle {
+            assertEquals(2, state.selectedItem)
+        }
+    }
+
+    @Test
+    fun picker_customAccessibilityActionsRespectBoundedEdges() {
+        composeRule.setContent {
+            val state = rememberPickerState(1)
+
+            Picker(
+                items = listOf(1, 2, 3),
+                state = state,
+                visibleItemsCount = 3,
+                isInfinity = false,
+                pickerLabel = "Value",
+                itemContentDescription = { "$it" },
+                previousItemActionLabel = PREVIOUS_VALUE_ACTION_LABEL,
+                nextItemActionLabel = NEXT_VALUE_ACTION_LABEL
+            )
+        }
+
+        assertNoCustomAccessibilityAction("Value: 1", PREVIOUS_VALUE_ACTION_LABEL)
+        assertCustomAccessibilityAction("Value: 1", NEXT_VALUE_ACTION_LABEL)
+
+        performCustomAccessibilityAction(
+            contentDescription = "Value: 1",
+            actionLabel = NEXT_VALUE_ACTION_LABEL
+        )
+        waitUntilSelectedItem("Value: 2")
+
+        performCustomAccessibilityAction(
+            contentDescription = "Value: 2",
+            actionLabel = NEXT_VALUE_ACTION_LABEL
+        )
+        waitUntilSelectedItem("Value: 3")
+
+        assertCustomAccessibilityAction("Value: 3", PREVIOUS_VALUE_ACTION_LABEL)
+        assertNoCustomAccessibilityAction("Value: 3", NEXT_VALUE_ACTION_LABEL)
+    }
+
+    @Test
+    fun picker_customAccessibilityActionsWrapInInfiniteMode() {
+        composeRule.setContent {
+            val state = rememberPickerState(1)
+
+            Picker(
+                items = listOf(1, 2, 3),
+                state = state,
+                visibleItemsCount = 3,
+                isInfinity = true,
+                pickerLabel = "Value",
+                itemContentDescription = { "$it" },
+                previousItemActionLabel = PREVIOUS_VALUE_ACTION_LABEL,
+                nextItemActionLabel = NEXT_VALUE_ACTION_LABEL
+            )
+        }
+
+        performCustomAccessibilityAction(
+            contentDescription = "Value: 1",
+            actionLabel = PREVIOUS_VALUE_ACTION_LABEL
+        )
+        waitUntilSelectedItem("Value: 3")
+
+        performCustomAccessibilityAction(
+            contentDescription = "Value: 3",
+            actionLabel = NEXT_VALUE_ACTION_LABEL
+        )
+        waitUntilSelectedItem("Value: 1")
+    }
+
+    @Test
+    fun picker_omitsCustomAccessibilityActionsForSingleItemInfinitePicker() {
+        composeRule.setContent {
+            val state = rememberPickerState(1)
+
+            Picker(
+                items = listOf(1),
+                state = state,
+                visibleItemsCount = 3,
+                isInfinity = true,
+                pickerLabel = "Value",
+                itemContentDescription = { "$it" },
+                previousItemActionLabel = PREVIOUS_VALUE_ACTION_LABEL,
+                nextItemActionLabel = NEXT_VALUE_ACTION_LABEL
+            )
+        }
+
+        assertNoCustomAccessibilityAction("Value: 1", PREVIOUS_VALUE_ACTION_LABEL)
+        assertNoCustomAccessibilityAction("Value: 1", NEXT_VALUE_ACTION_LABEL)
+    }
+
+    @Test
+    fun picker_exposesCustomAccessibilityActionsWhenDuplicateSelectedValuesAreNotFirst() {
+        composeRule.setContent {
+            val state = rememberPickerState(1)
+
+            Picker(
+                items = listOf(1, 1, 2),
+                state = state,
+                startIndex = 1,
+                visibleItemsCount = 3,
+                isInfinity = false,
+                pickerLabel = "Value",
+                itemContentDescription = { "$it" },
+                previousItemActionLabel = PREVIOUS_VALUE_ACTION_LABEL,
+                nextItemActionLabel = NEXT_VALUE_ACTION_LABEL
+            )
+        }
+
+        assertCustomAccessibilityAction("Value: 1", PREVIOUS_VALUE_ACTION_LABEL)
+        assertCustomAccessibilityAction("Value: 1", NEXT_VALUE_ACTION_LABEL)
+    }
+
+    @Test
+    fun picker_customAccessibilityActionsUseValueDescriptionWhenLabelIsOmitted() {
+        composeRule.setContent {
+            val state = rememberPickerState(2)
+
+            Picker(
+                items = listOf(1, 2, 3),
+                state = state,
+                startIndex = 1,
+                visibleItemsCount = 3,
+                isInfinity = false,
+                pickerLabel = null,
+                itemContentDescription = { "$it item" },
+                previousItemActionLabel = PREVIOUS_VALUE_ACTION_LABEL,
+                nextItemActionLabel = NEXT_VALUE_ACTION_LABEL
+            )
+        }
+
+        composeRule
+            .onNode(
+                hasContentDescription("2 item") and
+                        hasStateDescription("2 item") and
+                        hasCustomAccessibilityAction(PREVIOUS_VALUE_ACTION_LABEL) and
+                        hasCustomAccessibilityAction(NEXT_VALUE_ACTION_LABEL)
+            )
+            .assertExists()
     }
 
     @Test
@@ -425,6 +617,42 @@ class PickerAccessibilitySemanticsAndroidTest {
     }
 
     @Test
+    fun timePicker_forwardsCustomAccessibilityActionLabelsToChildPickers() {
+        composeRule.setContent {
+            val state = rememberTimePickerState(
+                initialTime = LocalTime(hour = 10, minute = 5),
+                timeFormat = TimeFormat.HOUR_24
+            )
+
+            TimePicker(
+                state = state,
+                hourItems = listOf(10, 11),
+                minuteItems = listOf(5, 10),
+                visibleItemsCount = 3,
+                hourPickerLabel = "시간",
+                minutePickerLabel = "분",
+                hourItemContentDescription = { "${it}시" },
+                minuteItemContentDescription = { "${it}분" },
+                previousItemActionLabel = "이전 항목 선택",
+                nextItemActionLabel = "다음 항목 선택"
+            )
+        }
+
+        composeRule
+            .onNode(
+                hasContentDescription("시간: 10시") and
+                        hasCustomAccessibilityAction("다음 항목 선택")
+            )
+            .assertExists()
+        composeRule
+            .onNode(
+                hasContentDescription("분: 5분") and
+                        hasCustomAccessibilityAction("다음 항목 선택")
+            )
+            .assertExists()
+    }
+
+    @Test
     fun timePicker_forwardsCustomPeriodAccessibilityDescriptionIn12HourMode() {
         composeRule.setContent {
             val state = rememberTimePickerState(
@@ -526,7 +754,51 @@ class PickerAccessibilitySemanticsAndroidTest {
                 .isNotEmpty()
         }
     }
+
+    private fun performCustomAccessibilityAction(
+        contentDescription: String,
+        actionLabel: String
+    ) {
+        val action = composeRule
+            .onNode(
+                hasContentDescription(contentDescription) and
+                        hasCustomAccessibilityAction(actionLabel)
+            )
+            .fetchSemanticsNode()
+            .config[SemanticsActions.CustomActions]
+            .first { it.label == actionLabel }
+
+        composeRule.runOnIdle {
+            assertTrue(action.action())
+        }
+    }
+
+    private fun assertCustomAccessibilityAction(
+        contentDescription: String,
+        actionLabel: String
+    ) {
+        composeRule
+            .onNode(hasContentDescription(contentDescription) and hasCustomAccessibilityAction(actionLabel))
+            .assertExists()
+    }
+
+    private fun assertNoCustomAccessibilityAction(
+        contentDescription: String,
+        actionLabel: String
+    ) {
+        val nodes = composeRule
+            .onAllNodes(hasContentDescription(contentDescription) and hasCustomAccessibilityAction(actionLabel))
+            .fetchSemanticsNodes()
+
+        assertTrue(nodes.isEmpty())
+    }
 }
 
 private fun hasStateDescription(value: String): SemanticsMatcher =
     SemanticsMatcher.expectValue(SemanticsProperties.StateDescription, value)
+
+private fun hasCustomAccessibilityAction(label: String): SemanticsMatcher =
+    SemanticsMatcher("has custom accessibility action '$label'") { node ->
+        node.config.getOrNull(SemanticsActions.CustomActions)
+            ?.any { action -> action.label == label } == true
+    }

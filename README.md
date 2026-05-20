@@ -188,7 +188,9 @@ fun BottomSheetPickerExample() {
 
 Accessibility label parameters customize the picker-column prefix used in semantics. `*ItemContentDescription`
 parameters customize the accessibility value text without changing the visual item text. Selection is exposed
-through Compose `selected` semantics rather than appended as a hardcoded English phrase.
+through Compose `selected` semantics rather than appended as a hardcoded English phrase. Pickers also expose
+custom accessibility actions for selecting the previous or next item. Use `previousItemActionLabel` and
+`nextItemActionLabel` to localize those action labels, or pass `null`/blank to omit an action.
 
 ### Programmatic Selection
 
@@ -249,6 +251,8 @@ item.
 | `hourItemContentDescription` | Accessibility description for each hour value. | `it.toString()` |
 | `minuteItemContentDescription` | Accessibility description for each minute value. | `it.toString()` |
 | `periodItemContentDescription` | Accessibility description for each AM/PM value in 12-hour time. | `it.name` |
+| `previousItemActionLabel` | Accessibility action label used by child pickers to select the previous item. Pass `null` or blank to omit it. | `"Select previous item"` |
+| `nextItemActionLabel` | Accessibility action label used by child pickers to select the next item. Pass `null` or blank to omit it. | `"Select next item"` |
 
 **TimePickerState Properties:**
 
@@ -283,6 +287,8 @@ Invalid custom item values throw `IllegalArgumentException` during composition. 
 | `yearItemContentDescription` | Accessibility description for each year value. | `it.toString()` |
 | `monthItemContentDescription` | Accessibility description for each month value. | `it.toString()` |
 | `dayItemContentDescription` | Accessibility description for each day value. | `it.toString()` |
+| `previousItemActionLabel` | Accessibility action label used by child pickers to select the previous item. Pass `null` or blank to omit it. | `"Select previous item"` |
+| `nextItemActionLabel` | Accessibility action label used by child pickers to select the next item. Pass `null` or blank to omit it. | `"Select next item"` |
 
 **DatePickerState Properties:**
 
@@ -315,6 +321,8 @@ Invalid custom item values throw `IllegalArgumentException` during composition. 
 | `monthPickerLabel` | Accessibility label for the month picker. Pass `null` to omit the picker label prefix. | `"Month"` |
 | `yearItemContentDescription` | Accessibility description for each year value. | `it.toString()` |
 | `monthItemContentDescription` | Accessibility description for each month value. | `it.toString()` |
+| `previousItemActionLabel` | Accessibility action label used by child pickers to select the previous item. Pass `null` or blank to omit it. | `"Select previous item"` |
+| `nextItemActionLabel` | Accessibility action label used by child pickers to select the next item. Pass `null` or blank to omit it. | `"Select next item"` |
 
 **YearMonthPickerState Properties:**
 

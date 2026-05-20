@@ -149,7 +149,9 @@ internal fun YearMonthPickerSampleScreen(
                 yearPickerLabel = "연도",
                 monthPickerLabel = "월",
                 yearItemContentDescription = { "${it}년" },
-                monthItemContentDescription = { getMonthContentDescription(it) }
+                monthItemContentDescription = { getMonthContentDescription(it) },
+                previousItemActionLabel = "이전 항목 선택",
+                nextItemActionLabel = "다음 항목 선택"
             )
 
             Spacer(modifier = Modifier.height(16.dp))

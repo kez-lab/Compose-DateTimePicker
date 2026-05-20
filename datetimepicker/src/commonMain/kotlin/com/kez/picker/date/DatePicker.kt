@@ -53,6 +53,8 @@ import kotlinx.datetime.LocalDate
  * @param yearItemContentDescription Accessibility description for each year value.
  * @param monthItemContentDescription Accessibility description for each month value.
  * @param dayItemContentDescription Accessibility description for each day value.
+ * @param previousItemActionLabel Accessibility action label used by child pickers to select the previous item. Pass null or blank to omit the action.
+ * @param nextItemActionLabel Accessibility action label used by child pickers to select the next item. Pass null or blank to omit the action.
  * @throws IllegalArgumentException if custom item lists are empty or contain values outside the supported ranges.
  */
 @Composable
@@ -81,7 +83,9 @@ fun DatePicker(
     dayPickerLabel: String? = "Day",
     yearItemContentDescription: (Int) -> String = { it.toString() },
     monthItemContentDescription: (Int) -> String = { it.toString() },
-    dayItemContentDescription: (Int) -> String = { it.toString() }
+    dayItemContentDescription: (Int) -> String = { it.toString() },
+    previousItemActionLabel: String? = PickerDefaults.PreviousItemActionLabel,
+    nextItemActionLabel: String? = PickerDefaults.NextItemActionLabel
 ) {
     validateDatePickerItems(
         state = state,
@@ -132,7 +136,9 @@ fun DatePicker(
                     dividerShape = dividerShape,
                     isDividerVisible = isDividerVisible,
                     pickerLabel = yearPickerLabel,
-                    itemContentDescription = yearItemContentDescription
+                    itemContentDescription = yearItemContentDescription,
+                    previousItemActionLabel = previousItemActionLabel,
+                    nextItemActionLabel = nextItemActionLabel
                 )
 
                 Picker(
@@ -152,7 +158,9 @@ fun DatePicker(
                     dividerShape = dividerShape,
                     isDividerVisible = isDividerVisible,
                     pickerLabel = monthPickerLabel,
-                    itemContentDescription = monthItemContentDescription
+                    itemContentDescription = monthItemContentDescription,
+                    previousItemActionLabel = previousItemActionLabel,
+                    nextItemActionLabel = nextItemActionLabel
                 )
 
                 key(maxDay) {
@@ -174,7 +182,9 @@ fun DatePicker(
                         dividerShape = dividerShape,
                         isDividerVisible = isDividerVisible,
                         pickerLabel = dayPickerLabel,
-                        itemContentDescription = dayItemContentDescription
+                        itemContentDescription = dayItemContentDescription,
+                        previousItemActionLabel = previousItemActionLabel,
+                        nextItemActionLabel = nextItemActionLabel
                     )
                 }
             }

@@ -198,7 +198,9 @@ internal fun TimePickerSampleScreen(
                     periodPickerLabel = "오전/오후",
                     hourItemContentDescription = { "${it}시" },
                     minuteItemContentDescription = { "${it}분" },
-                    periodItemContentDescription = { it.name }
+                    periodItemContentDescription = { it.name },
+                    previousItemActionLabel = "이전 항목 선택",
+                    nextItemActionLabel = "다음 항목 선택"
                 )
             } else {
                 TimePicker(
@@ -207,7 +209,9 @@ internal fun TimePickerSampleScreen(
                     hourPickerLabel = "시",
                     minutePickerLabel = "분",
                     hourItemContentDescription = { "${it}시" },
-                    minuteItemContentDescription = { "${it}분" }
+                    minuteItemContentDescription = { "${it}분" },
+                    previousItemActionLabel = "이전 항목 선택",
+                    nextItemActionLabel = "다음 항목 선택"
                 )
             }
         }

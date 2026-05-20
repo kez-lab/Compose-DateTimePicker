@@ -101,7 +101,9 @@ fun DatePickerSampleScreen(
                     dayPickerLabel = "일",
                     yearItemContentDescription = { "${it}년" },
                     monthItemContentDescription = { getMonthContentDescription(it) },
-                    dayItemContentDescription = { "${it}일" }
+                    dayItemContentDescription = { "${it}일" },
+                    previousItemActionLabel = "이전 항목 선택",
+                    nextItemActionLabel = "다음 항목 선택"
                 )
             }
 

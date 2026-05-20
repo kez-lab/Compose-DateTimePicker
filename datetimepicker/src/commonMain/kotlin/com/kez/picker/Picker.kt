@@ -34,11 +34,13 @@ import androidx.compose.ui.graphics.lerp
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.semantics.CollectionInfo
 import androidx.compose.ui.semantics.CollectionItemInfo
+import androidx.compose.ui.semantics.CustomAccessibilityAction
 import androidx.compose.ui.semantics.LiveRegionMode
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.collectionInfo
 import androidx.compose.ui.semantics.collectionItemInfo
 import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.customActions
 import androidx.compose.ui.semantics.liveRegion
 import androidx.compose.ui.semantics.role
 import androidx.compose.ui.semantics.selected
@@ -85,6 +87,8 @@ private const val INFINITE_SCROLL_MULTIPLIER = 1000
  * @param isInfinity Whether the picker should loop infinitely.
  * @param pickerLabel Accessibility label for the picker (e.g., "Hour", "Minute", "Year").
  * @param itemContentDescription Accessibility description for each item value.
+ * @param previousItemActionLabel Accessibility action label for selecting the previous item. Pass null or blank to omit the action.
+ * @param nextItemActionLabel Accessibility action label for selecting the next item. Pass null or blank to omit the action.
  * @param content Optional custom content composable for rendering each item.
  */
 @Composable
@@ -107,6 +111,8 @@ fun <T> Picker(
     isInfinity: Boolean = true,
     pickerLabel: String? = null,
     itemContentDescription: (T) -> String = { it.toString() },
+    previousItemActionLabel: String? = PickerDefaults.PreviousItemActionLabel,
+    nextItemActionLabel: String? = PickerDefaults.NextItemActionLabel,
     content: @Composable ((T) -> Unit)? = null
 ) {
     require(items.isNotEmpty()) { "Items list must not be empty" }
@@ -244,17 +250,69 @@ fun <T> Picker(
     }
 
     val normalizedPickerLabel = pickerLabel.asPickerAccessibilityLabelOrNull()
+    val normalizedPreviousItemActionLabel = previousItemActionLabel.asPickerAccessibilityLabelOrNull()
+    val normalizedNextItemActionLabel = nextItemActionLabel.asPickerAccessibilityLabelOrNull()
+    val selectedItemDescription = itemContentDescription(state.selectedItem)
+    val pickerDescription = pickerAccessibilityDescription(normalizedPickerLabel, selectedItemDescription)
+    val hasPickerDescription = pickerDescription.isNotBlank()
+
+    fun adjacentFirstVisibleItemIndex(offset: Int): Int? {
+        if (items.size <= 1) return null
+
+        val maxFirstVisibleIndex = (listScrollCount - visibleItemsCount).coerceAtLeast(0)
+        val targetFirstVisibleIndex = listState.firstVisibleItemIndex + offset
+
+        return if (isInfinity) {
+            when {
+                targetFirstVisibleIndex < 0 -> maxFirstVisibleIndex
+                targetFirstVisibleIndex > maxFirstVisibleIndex -> 0
+                else -> targetFirstVisibleIndex
+            }
+        } else {
+            targetFirstVisibleIndex.takeIf { it in 0..maxFirstVisibleIndex }
+        }
+    }
+
+    fun selectAdjacentItem(offset: Int): Boolean {
+        val targetFirstVisibleIndex = adjacentFirstVisibleItemIndex(offset) ?: return false
+
+        scope.launch {
+            listState.animateScrollToItem(targetFirstVisibleIndex)
+        }
+        return true
+    }
+
+    val accessibilityActions = buildList {
+        if (normalizedPreviousItemActionLabel != null && adjacentFirstVisibleItemIndex(offset = -1) != null) {
+            add(
+                CustomAccessibilityAction(
+                    label = normalizedPreviousItemActionLabel,
+                    action = { selectAdjacentItem(offset = -1) }
+                )
+            )
+        }
+        if (normalizedNextItemActionLabel != null && adjacentFirstVisibleItemIndex(offset = 1) != null) {
+            add(
+                CustomAccessibilityAction(
+                    label = normalizedNextItemActionLabel,
+                    action = { selectAdjacentItem(offset = 1) }
+                )
+            )
+        }
+    }
 
     Box(
         modifier = modifier.semantics {
             // Provide picker-level accessibility information
-            normalizedPickerLabel?.let { label ->
-                val selectedItemDescription = itemContentDescription(state.selectedItem)
-                contentDescription = pickerAccessibilityDescription(label, selectedItemDescription)
+            if (hasPickerDescription) {
+                contentDescription = pickerDescription
                 stateDescription = selectedItemDescription
                 liveRegion = LiveRegionMode.Polite
             }
             collectionInfo = CollectionInfo(rowCount = items.size, columnCount = 1)
+            if (hasPickerDescription && accessibilityActions.isNotEmpty()) {
+                customActions = accessibilityActions
+            }
         }
     ) {
         Box(

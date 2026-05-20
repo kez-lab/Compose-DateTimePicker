@@ -54,6 +54,8 @@ import kotlinx.datetime.number
  * @param monthPickerLabel Accessibility label for the month picker. Pass null to omit the picker label prefix.
  * @param yearItemContentDescription Accessibility description for each year value.
  * @param monthItemContentDescription Accessibility description for each month value.
+ * @param previousItemActionLabel Accessibility action label used by child pickers to select the previous item. Pass null or blank to omit the action.
+ * @param nextItemActionLabel Accessibility action label used by child pickers to select the next item. Pass null or blank to omit the action.
  * @throws IllegalArgumentException if custom item lists are empty or contain values outside the supported ranges.
  */
 @Composable
@@ -80,7 +82,9 @@ fun YearMonthPicker(
     yearPickerLabel: String? = "Year",
     monthPickerLabel: String? = "Month",
     yearItemContentDescription: (Int) -> String = { it.toString() },
-    monthItemContentDescription: (Int) -> String = { it.toString() }
+    monthItemContentDescription: (Int) -> String = { it.toString() },
+    previousItemActionLabel: String? = PickerDefaults.PreviousItemActionLabel,
+    nextItemActionLabel: String? = PickerDefaults.NextItemActionLabel
 ) {
     validateYearMonthPickerItems(
         state = state,
@@ -126,7 +130,9 @@ fun YearMonthPicker(
                     dividerShape = dividerShape,
                     isDividerVisible = isDividerVisible,
                     pickerLabel = yearPickerLabel,
-                    itemContentDescription = yearItemContentDescription
+                    itemContentDescription = yearItemContentDescription,
+                    previousItemActionLabel = previousItemActionLabel,
+                    nextItemActionLabel = nextItemActionLabel
                 )
                 Picker(
                     state = state.monthState,
@@ -145,7 +151,9 @@ fun YearMonthPicker(
                     dividerShape = dividerShape,
                     isDividerVisible = isDividerVisible,
                     pickerLabel = monthPickerLabel,
-                    itemContentDescription = monthItemContentDescription
+                    itemContentDescription = monthItemContentDescription,
+                    previousItemActionLabel = previousItemActionLabel,
+                    nextItemActionLabel = nextItemActionLabel
                 )
             }
         }
