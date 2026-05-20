@@ -539,6 +539,56 @@ class TimePickerStateTest {
     }
 
     @Test
+    fun timePickerState_selectTime_updates24HourSelection() {
+        val state = TimePickerState(
+            initialHour = 8,
+            initialMinute = 0,
+            initialPeriod = TimePeriod.AM,
+            timeFormat = TimeFormat.HOUR_24
+        )
+
+        state.selectTime(LocalTime(21, 45))
+
+        assertEquals(21, state.selectedHour)
+        assertEquals(45, state.selectedMinute)
+        assertEquals(TimePeriod.PM, state.selectedPeriod)
+        assertEquals(LocalTime(21, 45), state.selectedTime)
+        assertEquals(1, state.hourState.selectionRequestVersion)
+        assertEquals(1, state.minuteState.selectionRequestVersion)
+        assertEquals(1, state.periodState.selectionRequestVersion)
+    }
+
+    @Test
+    fun timePickerState_selectTime_updates12HourSelection() {
+        val state = TimePickerState(
+            initialHour = 8,
+            initialMinute = 0,
+            initialPeriod = TimePeriod.AM,
+            timeFormat = TimeFormat.HOUR_12
+        )
+
+        state.selectTime(LocalTime(0, 30))
+
+        assertEquals(12, state.selectedHour)
+        assertEquals(30, state.selectedMinute)
+        assertEquals(TimePeriod.AM, state.selectedPeriod)
+        assertEquals(LocalTime(0, 30), state.selectedTime)
+        assertEquals(1, state.hourState.selectionRequestVersion)
+        assertEquals(1, state.minuteState.selectionRequestVersion)
+        assertEquals(1, state.periodState.selectionRequestVersion)
+
+        state.selectTime(LocalTime(13, 5))
+
+        assertEquals(1, state.selectedHour)
+        assertEquals(5, state.selectedMinute)
+        assertEquals(TimePeriod.PM, state.selectedPeriod)
+        assertEquals(LocalTime(13, 5), state.selectedTime)
+        assertEquals(2, state.hourState.selectionRequestVersion)
+        assertEquals(2, state.minuteState.selectionRequestVersion)
+        assertEquals(2, state.periodState.selectionRequestVersion)
+    }
+
+    @Test
     fun timePickerState_selectedTime_updatesWhenInternalStateChanges() {
         val state = TimePickerState(
             initialHour = 12,

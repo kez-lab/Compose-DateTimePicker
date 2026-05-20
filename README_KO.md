@@ -217,6 +217,8 @@ fun BottomSheetPickerExample() {
 
 초기값은 `rememberTimePickerState(initialTime = LocalTime(...))` 또는 `initialHour`/`initialMinute` 파라미터로 설정합니다. 컴포넌트의 `startTime` 파라미터는 소스 호환성 때문에 남아 있지만 사용되지 않습니다.
 
+State 생성 이후 선택값을 바꾸려면 이벤트 핸들러나 `LaunchedEffect(externalTime)`에서 `state.selectTime(LocalTime(...))`을 호출합니다. 현재 `hourItems`, `minuteItems`, 그리고 12시간 형식에서는 `periodItems`에 요청한 값이 포함되어 있으면 Picker의 스크롤 위치가 동기화됩니다. custom list에 요청한 값이 없다면 해당 child Picker는 현재 가운데에 보이는 item으로 정상화됩니다.
+
 custom item 값이 유효 범위를 벗어나면 composition 중 `IllegalArgumentException`이 발생합니다. 현재 또는 복원된 선택값이 유효하지만 custom 목록에 없다면 picker는 해당 목록의 첫 번째 값에서 시작하고 state를 정상화합니다. 12시간 형식의 `hourItems`는 표시 시간 기준(`1..12`)입니다. 예를 들어 `initialHour = 13`은 `state.selectedHour == 1`, `PM`으로 변환됩니다.
 
 ### DatePicker
@@ -249,6 +251,8 @@ custom item 값이 유효 범위를 벗어나면 composition 중 `IllegalArgumen
 
 초기값은 `rememberDatePickerState(initialDate = LocalDate(...))` 또는 `initialYear`/`initialMonth`/`initialDay` 파라미터로 설정합니다. 초기 연도는 `1000..9999` 범위여야 합니다. 컴포넌트의 `startLocalDate` 파라미터는 소스 호환성 때문에 남아 있지만 사용되지 않습니다.
 
+State 생성 이후 선택값을 바꾸려면 이벤트 핸들러나 `LaunchedEffect(externalDate)`에서 `state.selectDate(LocalDate(...))`를 호출합니다. 현재 연도, 월, 일 item list에 요청한 값이 포함되어 있으면 Picker의 스크롤 위치가 동기화됩니다. custom list에 요청한 값이 없다면 해당 child Picker는 현재 가운데에 보이는 item으로 정상화됩니다.
+
 custom item 값이 유효 범위를 벗어나면 composition 중 `IllegalArgumentException`이 발생합니다. 현재 또는 복원된 연도/월이 유효하지만 custom 목록에 없다면 picker는 해당 목록의 첫 번째 값에서 시작하고 state를 정상화합니다.
 
 ### YearMonthPicker
@@ -276,6 +280,8 @@ custom item 값이 유효 범위를 벗어나면 composition 중 `IllegalArgumen
 `rememberYearMonthPickerState`는 saveable state를 사용합니다. Android에서는 플랫폼 saveable registry가 제공될 때 Activity 재생성 이후에도 선택값을 복원할 수 있습니다.
 
 초기값은 `rememberYearMonthPickerState(initialDate = LocalDate(...))` 또는 `initialYear`/`initialMonth` 파라미터로 설정합니다. 초기 연도는 `1000..9999` 범위여야 합니다. 컴포넌트의 `startLocalDate` 파라미터는 소스 호환성 때문에 남아 있지만 사용되지 않습니다.
+
+State 생성 이후 선택값을 바꾸려면 이벤트 핸들러나 `LaunchedEffect(externalDate)`에서 `state.selectYearMonth(year, month)` 또는 `state.selectDate(LocalDate(...))`를 호출합니다. 현재 연도와 월 item list에 요청한 값이 포함되어 있으면 Picker의 스크롤 위치가 동기화됩니다. custom list에 요청한 값이 없다면 해당 child Picker는 현재 가운데에 보이는 item으로 정상화됩니다.
 
 custom item 값이 유효 범위를 벗어나면 composition 중 `IllegalArgumentException`이 발생합니다. 현재 또는 복원된 연도/월이 유효하지만 custom 목록에 없다면 picker는 해당 목록의 첫 번째 값에서 시작하고 state를 정상화합니다.
 

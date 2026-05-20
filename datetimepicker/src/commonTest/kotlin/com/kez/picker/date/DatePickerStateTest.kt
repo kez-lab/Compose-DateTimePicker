@@ -109,6 +109,33 @@ class DatePickerStateTest {
     }
 
     @Test
+    fun datePickerState_selectDate_updatesSelection() {
+        val state = DatePickerState(initialYear = 2025, initialMonth = 1, initialDay = 1)
+
+        state.selectDate(LocalDate(2026, 5, 20))
+
+        assertEquals(2026, state.selectedYear)
+        assertEquals(5, state.selectedMonth)
+        assertEquals(20, state.selectedDay)
+        assertEquals(LocalDate(2026, 5, 20), state.selectedDate)
+        assertEquals(1, state.yearState.selectionRequestVersion)
+        assertEquals(1, state.monthState.selectionRequestVersion)
+        assertEquals(1, state.dayState.selectionRequestVersion)
+    }
+
+    @Test
+    fun datePickerState_selectDate_throwsWhenYearOutOfRange() {
+        val state = DatePickerState(initialYear = 2025, initialMonth = 1, initialDay = 1)
+
+        assertFailsWith<IllegalArgumentException> {
+            state.selectDate(LocalDate(999, 1, 1))
+        }
+        assertFailsWith<IllegalArgumentException> {
+            state.selectDate(LocalDate(10000, 1, 1))
+        }
+    }
+
+    @Test
     fun testSaver_RoundTripsCurrentSelection() {
         val state = DatePickerState(initialYear = 2025, initialMonth = 1, initialDay = 1)
         state.yearState.selectedItem = 2026

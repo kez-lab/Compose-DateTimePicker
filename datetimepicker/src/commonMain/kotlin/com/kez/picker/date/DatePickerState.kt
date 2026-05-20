@@ -97,6 +97,24 @@ class DatePickerState(
         get() = LocalDate(selectedYear, selectedMonth, selectedDay.coerceIn(1, maxDay))
 
     /**
+     * Programmatically selects [date].
+     *
+     * The child pickers scroll to the requested values when the current item lists contain them. If a
+     * requested value is not present in a custom item list, that child picker normalizes back to its
+     * currently centered item.
+     *
+     * @throws IllegalArgumentException if [date]'s year is outside the supported range.
+     */
+    fun selectDate(date: LocalDate) {
+        require(date.year in 1000..9999) {
+            "date.year must be in range [1000, 9999], but was ${date.year}"
+        }
+        yearState.selectItem(date.year)
+        monthState.selectItem(date.month.number)
+        dayState.selectItem(date.day)
+    }
+
+    /**
      * The currently valid maximum day for the selected year and month.
      * Calculated dynamically based on the selected year and month.
      */

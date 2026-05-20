@@ -222,6 +222,8 @@ through Compose `selected` semantics rather than appended as a hardcoded English
 
 For initial values, use either `rememberTimePickerState(initialTime = LocalTime(...))` or the explicit `initialHour`/`initialMinute` parameters. The `startTime` component parameter is retained only for source compatibility and is not used.
 
+To change the selection after state creation, call `state.selectTime(LocalTime(...))` from an event handler or a `LaunchedEffect(externalTime)`. The picker scroll position is synchronized when the current `hourItems`, `minuteItems`, and in 12-hour mode `periodItems`, contain the requested values. If a requested value is missing from a custom list, that child picker normalizes back to its currently centered item.
+
 Invalid custom item values throw `IllegalArgumentException` during composition. If the current or restored selection is valid but not present in a custom list, the picker starts from the first item in that list and normalizes the state. In 12-hour mode, `hourItems` uses display-hour values (`1..12`): `initialHour = 13` becomes `state.selectedHour == 1` with `PM`.
 
 ### DatePicker
@@ -254,6 +256,8 @@ Invalid custom item values throw `IllegalArgumentException` during composition. 
 
 For initial values, use either `rememberDatePickerState(initialDate = LocalDate(...))` or the explicit `initialYear`/`initialMonth`/`initialDay` parameters. Initial years must be in `1000..9999`. The `startLocalDate` component parameter is retained only for source compatibility and is not used.
 
+To change the selection after state creation, call `state.selectDate(LocalDate(...))` from an event handler or a `LaunchedEffect(externalDate)`. The picker scroll position is synchronized when the current year, month, and day item lists contain the requested values. If a requested value is missing from a custom list, that child picker normalizes back to its currently centered item.
+
 Invalid custom item values throw `IllegalArgumentException` during composition. If the current or restored year/month is valid but not present in a custom list, the picker starts from the first item in that list and normalizes the state.
 
 ### YearMonthPicker
@@ -281,6 +285,8 @@ Invalid custom item values throw `IllegalArgumentException` during composition. 
 `rememberYearMonthPickerState` uses saveable state. On Android, selected values can be restored across Activity recreation when the platform saveable registry is available.
 
 For initial values, use either `rememberYearMonthPickerState(initialDate = LocalDate(...))` or the explicit `initialYear`/`initialMonth` parameters. Initial years must be in `1000..9999`. The `startLocalDate` component parameter is retained only for source compatibility and is not used.
+
+To change the selection after state creation, call `state.selectYearMonth(year, month)` or `state.selectDate(LocalDate(...))` from an event handler or a `LaunchedEffect(externalDate)`. The picker scroll position is synchronized when the current year and month item lists contain the requested values. If a requested value is missing from a custom list, that child picker normalizes back to its currently centered item.
 
 Invalid custom item values throw `IllegalArgumentException` during composition. If the current or restored year/month is valid but not present in a custom list, the picker starts from the first item in that list and normalizes the state.
 
