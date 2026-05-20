@@ -37,6 +37,8 @@ dependencies {
 }
 ```
 
+릴리스 노트와 업그레이드 영향은 영문 [CHANGELOG.md](CHANGELOG.md)를 참고하세요.
+
 ## 사용법
 
 ### TimePicker
