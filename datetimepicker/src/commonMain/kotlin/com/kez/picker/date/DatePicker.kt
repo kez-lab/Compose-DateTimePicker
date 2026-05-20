@@ -31,7 +31,8 @@ import kotlinx.datetime.LocalDate
  * @param modifier The modifier to be applied to the component.
  * @param pickerModifier The modifier to be applied to each picker.
  * @param state The state object to control the picker.
- * @param startLocalDate Legacy initial date parameter. Prefer setting initial values in [state].
+ * @param startLocalDate Legacy compatibility parameter. It does not initialize or update [state],
+ * even when [state] is omitted; prefer [rememberDatePickerState] with initial values.
  * @param yearItems The list of year values to display. Must contain values in 1000..9999.
  * @param monthItems The list of month values to display. Must contain values in 1..12.
  * @param visibleItemsCount The number of items visible at once.
@@ -53,6 +54,7 @@ fun DatePicker(
     modifier: Modifier = Modifier,
     pickerModifier: Modifier = Modifier,
     state: DatePickerState = rememberDatePickerState(),
+    @Suppress("UNUSED_PARAMETER")
     startLocalDate: LocalDate = currentDate(),
     yearItems: List<Int> = YEAR_RANGE,
     monthItems: List<Int> = MONTH_RANGE,

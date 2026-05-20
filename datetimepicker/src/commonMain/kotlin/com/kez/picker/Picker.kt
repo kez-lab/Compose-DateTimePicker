@@ -18,6 +18,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.key
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.snapshotFlow
@@ -115,7 +116,7 @@ fun <T> Picker(
     }
 
     val density = LocalDensity.current
-    val visibleItemsMiddle = remember { visibleItemsCount / 2 }
+    val visibleItemsMiddle = remember(visibleItemsCount) { visibleItemsCount / 2 }
     val scope = rememberCoroutineScope()
 
     val adjustedItems = if (!isInfinity) {
@@ -150,7 +151,9 @@ fun <T> Picker(
         }
     }
 
-    val listState = rememberLazyListState(initialFirstVisibleItemIndex = listStartIndex)
+    val listState = key(state, listStartIndex, listScrollCount) {
+        rememberLazyListState(initialFirstVisibleItemIndex = listStartIndex)
+    }
     val flingBehavior = rememberSnapFlingBehavior(lazyListState = listState)
 
     val textStyle = textStyles.textStyle
@@ -174,7 +177,7 @@ fun <T> Picker(
                 itemPadding.calculateBottomPadding()
     }
 
-    LaunchedEffect(listState) {
+    LaunchedEffect(listState, adjustedItems, visibleItemsMiddle, state) {
         snapshotFlow { listState.firstVisibleItemIndex }
             .mapNotNull { index -> getItem(index + visibleItemsMiddle) }
             .distinctUntilChanged()

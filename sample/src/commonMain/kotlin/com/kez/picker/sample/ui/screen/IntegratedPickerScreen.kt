@@ -57,10 +57,7 @@ import com.kez.picker.sample.formatTime12
 import com.kez.picker.sample.getMonthName
 import com.kez.picker.time.TimePicker
 import com.kez.picker.util.TimeFormat
-import com.kez.picker.util.TimePeriod
-import com.kez.picker.util.currentDate
-import com.kez.picker.util.currentHour
-import com.kez.picker.util.currentMinute
+import com.kez.picker.util.currentDateTime
 import compose.icons.FeatherIcons
 import compose.icons.feathericons.ArrowLeft
 import compose.icons.feathericons.Calendar
@@ -72,18 +69,15 @@ import kotlinx.datetime.number
 internal fun IntegratedPickerScreen(
     onBackPressed: () -> Unit = {},
 ) {
-    val currentDate = currentDate()
-    val currentHour = currentHour()
-    val currentMinute = currentMinute()
+    val now = remember { currentDateTime() }
+    val currentDate = now.date
+    val currentTime = now.time
 
     val yearMonthState = rememberYearMonthPickerState(
-        initialYear = currentDate.year,
-        initialMonth = currentDate.month.number
+        initialDate = currentDate
     )
     val timeState = rememberTimePickerState(
-        initialHour = currentHour,
-        initialMinute = currentMinute,
-        initialPeriod = if (currentHour >= 12) TimePeriod.PM else TimePeriod.AM,
+        initialTime = currentTime,
         timeFormat = TimeFormat.HOUR_12
     )
 

@@ -38,7 +38,8 @@ import kotlinx.datetime.LocalDateTime
  * @param modifier The modifier to be applied to the component.
  * @param pickerModifier The modifier to be applied to each picker.
  * @param state The state object to control the picker.
- * @param startTime Legacy initial time parameter. Prefer setting initial values in [state].
+ * @param startTime Legacy compatibility parameter. It does not initialize or update [state],
+ * even when [state] is omitted; prefer [rememberTimePickerState] with initial values.
  * @param minuteItems The list of minute values to display. Must contain values in 0..59.
  * @param hourItems The list of hour values to display. Must contain display-hour values in 1..12 for [TimeFormat.HOUR_12] or 0..23 for [TimeFormat.HOUR_24].
  * @param periodItems The list of period values to display in [TimeFormat.HOUR_12]. Must not be empty when the picker uses 12-hour time.
@@ -61,6 +62,7 @@ fun TimePicker(
     modifier: Modifier = Modifier,
     pickerModifier: Modifier = Modifier,
     state: TimePickerState = rememberTimePickerState(),
+    @Suppress("UNUSED_PARAMETER")
     startTime: LocalDateTime = currentDateTime(),
     minuteItems: List<Int> = MINUTE_RANGE,
     hourItems: List<Int> = when (state.timeFormat) {

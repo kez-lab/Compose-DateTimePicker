@@ -38,28 +38,21 @@ import com.kez.picker.sample.formatTime12
 import com.kez.picker.sample.getMonthName
 import com.kez.picker.time.TimePicker
 import com.kez.picker.util.TimeFormat
-import com.kez.picker.util.TimePeriod
-import com.kez.picker.util.currentDate
-import com.kez.picker.util.currentHour
-import com.kez.picker.util.currentMinute
+import com.kez.picker.util.currentDateTime
 import compose.icons.FeatherIcons
 import compose.icons.feathericons.ArrowLeft
-import kotlinx.datetime.number
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 internal fun BackgroundStylePickerScreen(
     onBackPressed: () -> Unit = {},
 ) {
+    val now = remember { currentDateTime() }
     val yearMonthState = rememberYearMonthPickerState(
-        initialYear = currentDate().year,
-        initialMonth = currentDate().month.number
+        initialDate = now.date
     )
-    val currentHour = currentHour()
     val timeState = rememberTimePickerState(
-        initialHour = currentHour,
-        initialMinute = currentMinute(),
-        initialPeriod = if (currentHour >= 12) TimePeriod.PM else TimePeriod.AM,
+        initialTime = now.time,
         timeFormat = TimeFormat.HOUR_12
     )
 

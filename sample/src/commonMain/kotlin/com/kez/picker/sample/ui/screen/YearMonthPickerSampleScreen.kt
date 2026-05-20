@@ -37,17 +37,15 @@ import com.kez.picker.util.currentDate
 import compose.icons.FeatherIcons
 import compose.icons.feathericons.ArrowLeft
 import compose.icons.feathericons.Calendar
-import kotlinx.datetime.number
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 internal fun YearMonthPickerSampleScreen(
     onBackPressed: () -> Unit = {},
 ) {
-    val currentDate = currentDate()
+    val currentDate = remember { currentDate() }
     val state = rememberYearMonthPickerState(
-        initialYear = currentDate.year,
-        initialMonth = currentDate.month.number
+        initialDate = currentDate
     )
 
     // Calculate selected date text

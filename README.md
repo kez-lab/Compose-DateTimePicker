@@ -49,17 +49,17 @@ Use `TimePicker` for time selection. It supports both 12-hour and 24-hour format
 
 ```kotlin
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import com.kez.picker.time.TimePicker
 import com.kez.picker.rememberTimePickerState
 import com.kez.picker.util.TimeFormat
-import com.kez.picker.util.currentHour
-import com.kez.picker.util.currentMinute
+import com.kez.picker.util.currentDateTime
 
 @Composable
 fun TimePicker24hExample() {
+    val initialTime = remember { currentDateTime().time }
     val state = rememberTimePickerState(
-        initialHour = currentHour(),
-        initialMinute = currentMinute(),
+        initialTime = initialTime,
         timeFormat = TimeFormat.HOUR_24
     )
 
@@ -75,18 +75,18 @@ fun TimePicker24hExample() {
 
 ```kotlin
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import com.kez.picker.time.TimePicker
 import com.kez.picker.rememberTimePickerState
 import com.kez.picker.util.TimeFormat
-import com.kez.picker.util.currentHour
-import com.kez.picker.util.currentMinute
+import com.kez.picker.util.currentDateTime
 
 @Composable
 fun TimePicker12hExample() {
     // Handling of 12-hour format conversion is now done internally by the state
+    val initialTime = remember { currentDateTime().time }
     val state = rememberTimePickerState(
-        initialHour = currentHour(),
-        initialMinute = currentMinute(),
+        initialTime = initialTime,
         timeFormat = TimeFormat.HOUR_12
     )
 
@@ -105,17 +105,16 @@ adjusts the day when the selected month changes (e.g., Feb 30 → Feb 28).
 
 ```kotlin
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import com.kez.picker.date.DatePicker
 import com.kez.picker.date.rememberDatePickerState
 import com.kez.picker.util.currentDate
-import com.kez.picker.util.currentMonth
 
 @Composable
 fun DatePickerExample() {
+    val initialDate = remember { currentDate() }
     val state = rememberDatePickerState(
-        initialYear = currentDate().year,
-        initialMonth = currentMonth(),
-        initialDay = currentDate().day
+        initialDate = initialDate
     )
 
     DatePicker(
@@ -132,16 +131,16 @@ Use `YearMonthPicker` for selecting a specific month in a year.
 
 ```kotlin
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import com.kez.picker.date.YearMonthPicker
 import com.kez.picker.rememberYearMonthPickerState
 import com.kez.picker.util.currentDate
-import com.kez.picker.util.currentMonth
 
 @Composable
 fun YearMonthPickerExample() {
+    val initialDate = remember { currentDate() }
     val state = rememberYearMonthPickerState(
-        initialYear = currentDate().year,
-        initialMonth = currentMonth()
+        initialDate = initialDate
     )
 
     YearMonthPicker(
@@ -192,7 +191,7 @@ fun BottomSheetPickerExample() {
 | Parameter | Description | Default |
 | :--- | :--- | :--- |
 | `state` | The state object to control the picker. | `rememberTimePickerState()` |
-| `startTime` | Legacy initial time parameter. Prefer setting initial values in `rememberTimePickerState`. | `currentDateTime()` |
+| `startTime` | Legacy compatibility parameter. It does not initialize or update `state`, even when `state` is omitted; use `rememberTimePickerState(initialTime = ...)` or explicit initial values instead. | `currentDateTime()` |
 | `minuteItems` | Minute values available for selection. Values must be in `0..59`. | `0..59` |
 | `hourItems` | Hour values available for selection. Values must be in `0..23` for 24-hour time or display-hour `1..12` for 12-hour time. | `0..23` or `1..12` |
 | `periodItems` | AM/PM values available in 12-hour time. Must not be empty when `timeFormat` is `HOUR_12`. | `TimePeriod.entries` |
@@ -211,6 +210,8 @@ fun BottomSheetPickerExample() {
 
 `rememberTimePickerState` uses saveable state. On Android, selected values can be restored across Activity recreation when the platform saveable registry is available.
 
+For initial values, use either `rememberTimePickerState(initialTime = LocalTime(...))` or the explicit `initialHour`/`initialMinute` parameters. The `startTime` component parameter is retained only for source compatibility and is not used.
+
 Invalid custom item values throw `IllegalArgumentException` during composition. If the current or restored selection is valid but not present in a custom list, the picker starts from the first item in that list and normalizes the state. In 12-hour mode, `hourItems` uses display-hour values (`1..12`): `initialHour = 13` becomes `state.selectedHour == 1` with `PM`.
 
 ### DatePicker
@@ -218,7 +219,7 @@ Invalid custom item values throw `IllegalArgumentException` during composition. 
 | Parameter           | Description                             | Default                     |
 |:--------------------|:----------------------------------------|:----------------------------|
 | `state`             | The state object to control the picker. | `rememberDatePickerState()` |
-| `startLocalDate`    | Legacy initial date parameter. Prefer setting initial values in `rememberDatePickerState`. | `currentDate()`             |
+| `startLocalDate`    | Legacy compatibility parameter. It does not initialize or update `state`, even when `state` is omitted; use `rememberDatePickerState(initialDate = ...)` or explicit initial values instead. | `currentDate()`             |
 | `yearItems`         | List of years available for selection. Values must be in `1000..9999`. | `1000..9999`                |
 | `monthItems`        | List of months available for selection. Values must be in `1..12`. | `1..12`                     |
 | `visibleItemsCount` | Number of items visible in the list.    | `3`                         |
@@ -235,6 +236,8 @@ Invalid custom item values throw `IllegalArgumentException` during composition. 
 
 `rememberDatePickerState` uses saveable state. On Android, selected values can be restored across Activity recreation when the platform saveable registry is available.
 
+For initial values, use either `rememberDatePickerState(initialDate = LocalDate(...))` or the explicit `initialYear`/`initialMonth`/`initialDay` parameters. Initial years must be in `1000..9999`. The `startLocalDate` component parameter is retained only for source compatibility and is not used.
+
 Invalid custom item values throw `IllegalArgumentException` during composition. If the current or restored year/month is valid but not present in a custom list, the picker starts from the first item in that list and normalizes the state.
 
 ### YearMonthPicker
@@ -242,7 +245,7 @@ Invalid custom item values throw `IllegalArgumentException` during composition. 
 | Parameter | Description | Default |
 | :--- | :--- | :--- |
 | `state` | The state object to control the picker. | `rememberYearMonthPickerState()` |
-| `startLocalDate` | Legacy initial date parameter. Prefer setting initial values in `rememberYearMonthPickerState`. | `currentDate()` |
+| `startLocalDate` | Legacy compatibility parameter. It does not initialize or update `state`, even when `state` is omitted; use `rememberYearMonthPickerState(initialDate = ...)` or explicit initial values instead. | `currentDate()` |
 | `yearItems` | List of years available for selection. Values must be in `1000..9999`. | `1000..9999` |
 | `monthItems` | List of months available for selection. Values must be in `1..12`. | `1..12` |
 | `visibleItemsCount` | Number of items visible in the list. | `3` |
@@ -256,6 +259,8 @@ Invalid custom item values throw `IllegalArgumentException` during composition. 
 - `selectedMonthDate`: The selected year/month represented as the first day of that month.
 
 `rememberYearMonthPickerState` uses saveable state. On Android, selected values can be restored across Activity recreation when the platform saveable registry is available.
+
+For initial values, use either `rememberYearMonthPickerState(initialDate = LocalDate(...))` or the explicit `initialYear`/`initialMonth` parameters. Initial years must be in `1000..9999`. The `startLocalDate` component parameter is retained only for source compatibility and is not used.
 
 Invalid custom item values throw `IllegalArgumentException` during composition. If the current or restored year/month is valid but not present in a custom list, the picker starts from the first item in that list and normalizes the state.
 

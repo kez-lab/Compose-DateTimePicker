@@ -38,8 +38,7 @@ import com.kez.picker.rememberTimePickerState
 import com.kez.picker.time.TimePicker
 import com.kez.picker.util.TimeFormat
 import com.kez.picker.util.TimePeriod
-import com.kez.picker.util.currentHour
-import com.kez.picker.util.currentMinute
+import com.kez.picker.util.currentDateTime
 import compose.icons.FeatherIcons
 import compose.icons.feathericons.ArrowLeft
 import compose.icons.feathericons.Clock
@@ -54,18 +53,14 @@ internal fun TimePickerSampleScreen(
     onBackPressed: () -> Unit = {},
 ) {
     var selectedFormat by remember { mutableIntStateOf(0) }
-    val currentHour = currentHour()
-    val currentMinute = currentMinute()
+    val currentTime = remember { currentDateTime().time }
 
     val timeState12 = rememberTimePickerState(
-        initialHour = currentHour,
-        initialMinute = currentMinute,
-        initialPeriod = if (currentHour >= 12) TimePeriod.PM else TimePeriod.AM,
+        initialTime = currentTime,
         timeFormat = TimeFormat.HOUR_12
     )
     val timeState24 = rememberTimePickerState(
-        initialHour = currentHour,
-        initialMinute = currentMinute
+        initialTime = currentTime
     )
 
     val ktxTimeFormat12 = LocalTime.Format {
