@@ -39,6 +39,8 @@ dependencies {
 }
 ```
 
+For release notes and upgrade-impact details, see [CHANGELOG.md](CHANGELOG.md).
+
 ## Usage
 
 ### TimePicker
