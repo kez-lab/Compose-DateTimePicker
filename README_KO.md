@@ -183,7 +183,9 @@ fun BottomSheetPickerExample() {
 
 접근성 label 파라미터는 semantics에 들어가는 picker column prefix를 바꿉니다. `*ItemContentDescription`
 파라미터는 화면에 보이는 텍스트를 바꾸지 않고 접근성 값 설명만 바꿉니다. 선택 상태는 고정된 영어 문구를
-붙이지 않고 Compose `selected` semantics로 전달됩니다.
+붙이지 않고 Compose `selected` semantics로 전달됩니다. Picker는 이전/다음 item을 선택하는 custom
+accessibility action도 제공합니다. `previousItemActionLabel`과 `nextItemActionLabel`로 action label을
+현지화할 수 있고, `null`이나 blank를 전달하면 해당 action을 생략합니다.
 
 ### 프로그래밍 방식 선택
 
@@ -243,6 +245,8 @@ fun ProgrammaticTimePickerExample() {
 | `hourItemContentDescription` | 각 시간 값의 접근성 설명입니다. | `it.toString()` |
 | `minuteItemContentDescription` | 각 분 값의 접근성 설명입니다. | `it.toString()` |
 | `periodItemContentDescription` | 12시간 형식에서 각 오전/오후 값의 접근성 설명입니다. | `it.name` |
+| `previousItemActionLabel` | child picker가 이전 item을 선택할 때 쓰는 접근성 action label입니다. `null` 또는 blank를 전달하면 생략합니다. | `"Select previous item"` |
+| `nextItemActionLabel` | child picker가 다음 item을 선택할 때 쓰는 접근성 action label입니다. `null` 또는 blank를 전달하면 생략합니다. | `"Select next item"` |
 
 **TimePickerState 속성:**
 
@@ -277,6 +281,8 @@ custom item 값이 유효 범위를 벗어나면 composition 중 `IllegalArgumen
 | `yearItemContentDescription` | 각 연도 값의 접근성 설명입니다. | `it.toString()` |
 | `monthItemContentDescription` | 각 월 값의 접근성 설명입니다. | `it.toString()` |
 | `dayItemContentDescription` | 각 일 값의 접근성 설명입니다. | `it.toString()` |
+| `previousItemActionLabel` | child picker가 이전 item을 선택할 때 쓰는 접근성 action label입니다. `null` 또는 blank를 전달하면 생략합니다. | `"Select previous item"` |
+| `nextItemActionLabel` | child picker가 다음 item을 선택할 때 쓰는 접근성 action label입니다. `null` 또는 blank를 전달하면 생략합니다. | `"Select next item"` |
 
 **DatePickerState 속성:**
 
@@ -309,6 +315,8 @@ custom item 값이 유효 범위를 벗어나면 composition 중 `IllegalArgumen
 | `monthPickerLabel` | 월 picker의 접근성 label입니다. `null`을 전달하면 picker label prefix를 생략합니다. | `"Month"` |
 | `yearItemContentDescription` | 각 연도 값의 접근성 설명입니다. | `it.toString()` |
 | `monthItemContentDescription` | 각 월 값의 접근성 설명입니다. | `it.toString()` |
+| `previousItemActionLabel` | child picker가 이전 item을 선택할 때 쓰는 접근성 action label입니다. `null` 또는 blank를 전달하면 생략합니다. | `"Select previous item"` |
+| `nextItemActionLabel` | child picker가 다음 item을 선택할 때 쓰는 접근성 action label입니다. `null` 또는 blank를 전달하면 생략합니다. | `"Select next item"` |
 
 **YearMonthPickerState 속성:**
 
