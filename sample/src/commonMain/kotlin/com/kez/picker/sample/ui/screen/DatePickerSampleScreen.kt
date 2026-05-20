@@ -25,6 +25,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -73,8 +74,9 @@ fun DatePickerSampleScreen(
                 .padding(16.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            val state = rememberDatePickerState()
             val demoDate = LocalDate(2026, 5, 20)
+            val allowedYears = remember { (2024..2026).toList() }
+            val state = rememberDatePickerState(initialDate = demoDate)
 
             Box(
                 modifier = Modifier
@@ -84,6 +86,7 @@ fun DatePickerSampleScreen(
             ) {
                 DatePicker(
                     state = state,
+                    yearItems = allowedYears,
                     visibleItemsCount = 3,
                     textStyles = PickerDefaults.textStyles(
                         textStyle = MaterialTheme.typography.bodyLarge,
@@ -146,6 +149,11 @@ fun DatePickerSampleScreen(
                     Text(
                         text = "Selected Date",
                         style = MaterialTheme.typography.labelLarge,
+                        color = MaterialTheme.colorScheme.onSecondaryContainer
+                    )
+                    Text(
+                        text = "Selectable years: ${allowedYears.joinToString()}",
+                        style = MaterialTheme.typography.labelMedium,
                         color = MaterialTheme.colorScheme.onSecondaryContainer
                     )
                     Spacer(modifier = Modifier.height(8.dp))
