@@ -37,10 +37,12 @@ import com.kez.picker.PickerDefaults
 import com.kez.picker.date.DatePicker
 import com.kez.picker.date.rememberDatePickerState
 import com.kez.picker.sample.getMonthContentDescription
+import com.kez.picker.util.currentDate
 import compose.icons.FeatherIcons
 import compose.icons.feathericons.ArrowLeft
 import compose.icons.feathericons.Calendar
 import kotlinx.datetime.LocalDate
+import kotlinx.datetime.Month
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -74,9 +76,18 @@ fun DatePickerSampleScreen(
                 .padding(16.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            val demoDate = LocalDate(2026, 5, 20)
-            val allowedYears = remember { (2024..2026).toList() }
-            val state = rememberDatePickerState(initialDate = demoDate)
+            val today = remember { currentDate() }
+            val leapDate = remember(today.year) {
+                LocalDate(
+                    year = nearestLeapYearFrom(year = today.year),
+                    month = Month.FEBRUARY,
+                    day = 29
+                )
+            }
+            val allowedYears = remember(today.year, leapDate.year) {
+                ((today.year - 1)..leapDate.year).toList()
+            }
+            val state = rememberDatePickerState(initialDate = today)
 
             Box(
                 modifier = Modifier
@@ -117,7 +128,7 @@ fun DatePickerSampleScreen(
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
                 Button(
-                    onClick = { state.selectDate(demoDate) },
+                    onClick = { state.selectDate(today) },
                     modifier = Modifier.fillMaxWidth()
                 ) {
                     Icon(
@@ -125,14 +136,14 @@ fun DatePickerSampleScreen(
                         contentDescription = null
                     )
                     Spacer(modifier = Modifier.width(8.dp))
-                    Text("Set 2026-05-20")
+                    Text("Set $today")
                 }
 
                 OutlinedButton(
-                    onClick = { state.selectDate(LocalDate(2024, 2, 29)) },
+                    onClick = { state.selectDate(leapDate) },
                     modifier = Modifier.fillMaxWidth()
                 ) {
-                    Text("Set 2024-02-29")
+                    Text("Set $leapDate")
                 }
             }
 
@@ -175,3 +186,14 @@ fun DatePickerSampleScreen(
         }
     }
 }
+
+private fun nearestLeapYearFrom(year: Int): Int {
+    var candidateYear = year
+    while (!candidateYear.isLeapYear()) {
+        candidateYear += 1
+    }
+    return candidateYear
+}
+
+private fun Int.isLeapYear(): Boolean =
+    this % 4 == 0 && (this % 100 != 0 || this % 400 == 0)
