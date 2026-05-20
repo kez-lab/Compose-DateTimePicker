@@ -97,6 +97,7 @@ Most logic lives in `commonMain`. Platform-specific code is minimal.
 - When higher-level components pass accessibility labels to `Picker`, expose those labels and item content descriptions as public parameters with sensible defaults so Android apps can localize TalkBack output. Update KDoc and both READMEs in the same PR.
 - Kotlin 2.2.21 ABI validation uses `checkLegacyAbi`/`updateLegacyAbi` in this repo. Re-check task names and dump format after Kotlin upgrades.
 - Treat `datetimepicker/api/` as committed release-gate data. Public API changes must include reviewed ABI dump updates, and reviewers should separate intended picker/state API changes from preview/generated resource churn.
+- Keep `@Preview` composables private tooling code so sample previews do not become part of the supported public API surface. Reject ABI dump changes that add `*Preview` symbols back to `datetimepicker/api/`. If accidental preview symbols are removed from ABI dumps, call out the compatibility impact in the PR and release notes.
 - Keep repository guidance up to date in this `AGENTS.md` when the maintainer gives durable process feedback.
 - Do not include local agent/tooling folders such as `.agents/` or `.claude/` in product PRs unless the change is explicitly about agent workflow assets.
 

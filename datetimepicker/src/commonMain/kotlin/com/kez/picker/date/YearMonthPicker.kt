@@ -190,13 +190,13 @@ private fun List<Int>.invalidValuesFor(range: IntRange): List<Int> =
 
 @Preview(name = "Default", group = "YearMonthPicker - Basic", showBackground = true)
 @Composable
-fun YearMonthPickerPreview() {
+private fun YearMonthPickerPreview() {
     YearMonthPicker()
 }
 
 @Preview(name = "No Divider", group = "YearMonthPicker - Variations", showBackground = true)
 @Composable
-fun YearMonthPickerNoDividerPreview() {
+private fun YearMonthPickerNoDividerPreview() {
     YearMonthPicker(
         isDividerVisible = false,
     )
@@ -204,7 +204,7 @@ fun YearMonthPickerNoDividerPreview() {
 
 @Preview(name = "Custom Colors", group = "YearMonthPicker - Styles", showBackground = true)
 @Composable
-fun YearMonthPickerCustomColorsPreview() {
+private fun YearMonthPickerCustomColorsPreview() {
     YearMonthPicker(
         colors = PickerDefaults.colors(
             textColor = Color.Gray,
@@ -216,7 +216,7 @@ fun YearMonthPickerCustomColorsPreview() {
 
 @Preview(name = "Large Text", group = "YearMonthPicker - Styles", showBackground = true)
 @Composable
-fun YearMonthPickerLargeTextPreview() {
+private fun YearMonthPickerLargeTextPreview() {
     YearMonthPicker(
         textStyles = PickerDefaults.textStyles(
             textStyle = androidx.compose.ui.text.TextStyle(fontSize = 18.sp),

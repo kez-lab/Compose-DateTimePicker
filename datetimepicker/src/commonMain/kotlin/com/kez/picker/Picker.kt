@@ -487,7 +487,7 @@ private fun Modifier.fadingEdge(brush: Brush) = this
 
 @Preview(name = "Basic Picker", group = "Picker - Basic", showBackground = true)
 @Composable
-fun PickerPreview() {
+private fun PickerPreview() {
     val state = rememberPickerState("Item 1")
     Picker(
         items = listOf("1", "2", "3"),
@@ -497,7 +497,7 @@ fun PickerPreview() {
 
 @Preview(name = "Long Text Items", group = "Picker - Variations", showBackground = true)
 @Composable
-fun PickerLongTextPreview() {
+private fun PickerLongTextPreview() {
     val state = rememberPickerState("Long Item 1")
     Picker(
         items = listOf("Long Item 1", "Long Item 2", "Long Item 3"),
@@ -507,7 +507,7 @@ fun PickerLongTextPreview() {
 
 @Preview(name = "Many Items", group = "Picker - Variations", showBackground = true)
 @Composable
-fun PickerManyItemsPreview() {
+private fun PickerManyItemsPreview() {
     val items = (1..100).map { "Item $it" }
     val state = rememberPickerState("Item 50")
     Picker(
@@ -519,7 +519,7 @@ fun PickerManyItemsPreview() {
 
 @Preview(name = "No Divider", group = "Picker - Variations", showBackground = true)
 @Composable
-fun PickerNoDividerPreview() {
+private fun PickerNoDividerPreview() {
     val state = rememberPickerState("Item 2")
     Picker(
         items = listOf("Item 1", "Item 2", "Item 3"),
@@ -530,7 +530,7 @@ fun PickerNoDividerPreview() {
 
 @Preview(name = "Custom Colors", group = "Picker - Styles", showBackground = true)
 @Composable
-fun PickerCustomColorsPreview() {
+private fun PickerCustomColorsPreview() {
     val state = rememberPickerState("Blue")
     Picker(
         items = listOf("Red", "Green", "Blue"),
@@ -545,7 +545,7 @@ fun PickerCustomColorsPreview() {
 
 @Preview(name = "Bounded Scroll", group = "Picker - Variations", showBackground = true)
 @Composable
-fun PickerBoundedPreview() {
+private fun PickerBoundedPreview() {
     val state = rememberPickerState("Item 2")
     Picker(
         items = listOf("Item 1", "Item 2", "Item 3", "Item 4", "Item 5"),
@@ -556,7 +556,7 @@ fun PickerBoundedPreview() {
 
 @Preview(name = "5 Visible Items", group = "Picker - Styles", showBackground = true)
 @Composable
-fun Picker5VisibleItemsPreview() {
+private fun Picker5VisibleItemsPreview() {
     val items = (1..10).map { "Item $it" }
     val state = rememberPickerState("Item 5")
     Picker(
@@ -569,7 +569,7 @@ fun Picker5VisibleItemsPreview() {
 
 @Preview(name = "Selected Background", group = "Picker - Styles", showBackground = true)
 @Composable
-fun PickerSelectedBackgroundPreview() {
+private fun PickerSelectedBackgroundPreview() {
     val state = rememberPickerState("Item 2")
     Picker(
         items = listOf("Item 1", "Item 2", "Item 3"),
