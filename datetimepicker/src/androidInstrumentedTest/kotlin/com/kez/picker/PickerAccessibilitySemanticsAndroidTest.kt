@@ -16,6 +16,7 @@ import com.kez.picker.util.TimeFormat
 import com.kez.picker.util.TimePeriod
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalTime
+import org.junit.Assert.assertEquals
 import org.junit.Rule
 import org.junit.Test
 
@@ -111,6 +112,49 @@ class PickerAccessibilitySemanticsAndroidTest {
     }
 
     @Test
+    fun picker_normalizesMissingProgrammaticSelectionToCenteredItem() {
+        lateinit var state: PickerState<Int>
+
+        composeRule.setContent {
+            state = rememberPickerState(2)
+
+            Picker(
+                items = listOf(1, 2, 3),
+                state = state,
+                startIndex = 1,
+                visibleItemsCount = 3,
+                isInfinity = false,
+                pickerLabel = "Value",
+                itemContentDescription = { "$it" }
+            )
+        }
+
+        composeRule.runOnIdle {
+            state.selectItem(3)
+        }
+
+        waitUntilSelectedItem("Value: 3")
+
+        composeRule.runOnIdle {
+            state.selectItem(99)
+        }
+
+        composeRule.waitForIdle()
+
+        composeRule
+            .onNode(hasContentDescription("Value: 3") and hasStateDescription("3"))
+            .assertExists()
+
+        composeRule
+            .onNode(hasContentDescription("Value: 3") and isSelected())
+            .assertIsSelected()
+
+        composeRule.runOnIdle {
+            assertEquals(3, state.selectedItem)
+        }
+    }
+
+    @Test
     fun timePicker_updatesChildPickerSemanticsWhenSelectionChangesProgrammatically() {
         lateinit var state: TimePickerState
 
@@ -147,6 +191,154 @@ class PickerAccessibilitySemanticsAndroidTest {
         waitUntilSelectedItem("시간: 2시")
         waitUntilSelectedItem("분: 30분")
         waitUntilSelectedItem("오전/오후: 오후")
+    }
+
+    @Test
+    fun timePicker_normalizesMissingProgrammaticChildValuesIndependently() {
+        lateinit var state: TimePickerState
+
+        composeRule.setContent {
+            state = rememberTimePickerState(
+                initialTime = LocalTime(hour = 3, minute = 15),
+                timeFormat = TimeFormat.HOUR_12
+            )
+
+            TimePicker(
+                state = state,
+                hourItems = listOf(1, 2, 3, 4, 5),
+                minuteItems = listOf(0, 15, 45),
+                periodItems = listOf(TimePeriod.AM),
+                visibleItemsCount = 3,
+                hourPickerLabel = "Hour",
+                minutePickerLabel = "Minute",
+                periodPickerLabel = "Period",
+                hourItemContentDescription = { "$it" },
+                minuteItemContentDescription = { "$it" },
+                periodItemContentDescription = { it.name }
+            )
+        }
+
+        composeRule.runOnIdle {
+            state.selectTime(LocalTime(hour = 20, minute = 30))
+        }
+
+        composeRule.waitForIdle()
+
+        composeRule
+            .onNode(hasContentDescription("Hour: 3") and hasStateDescription("3"))
+            .assertExists()
+        composeRule
+            .onNode(hasContentDescription("Minute: 15") and hasStateDescription("15"))
+            .assertExists()
+        composeRule
+            .onNode(hasContentDescription("Period: AM") and hasStateDescription("AM"))
+            .assertExists()
+
+        waitUntilSelectedItem("Hour: 3")
+        waitUntilSelectedItem("Minute: 15")
+        waitUntilSelectedItem("Period: AM")
+
+        composeRule.runOnIdle {
+            assertEquals(3, state.selectedHour)
+            assertEquals(15, state.selectedMinute)
+            assertEquals(TimePeriod.AM, state.selectedPeriod)
+        }
+    }
+
+    @Test
+    fun datePicker_normalizesMissingProgrammaticChildValueIndependently() {
+        lateinit var state: DatePickerState
+
+        composeRule.setContent {
+            state = rememberDatePickerState(
+                initialYear = 2026,
+                initialMonth = 5,
+                initialDay = 20
+            )
+
+            DatePicker(
+                state = state,
+                yearItems = listOf(2026, 2027),
+                monthItems = listOf(1, 5, 12),
+                visibleItemsCount = 3,
+                yearPickerLabel = "Year",
+                monthPickerLabel = "Month",
+                dayPickerLabel = "Day",
+                yearItemContentDescription = { "$it" },
+                monthItemContentDescription = { "$it" },
+                dayItemContentDescription = { "$it" }
+            )
+        }
+
+        composeRule.runOnIdle {
+            state.selectDate(LocalDate(2027, 6, 20))
+        }
+
+        waitUntilSelectedItem("Year: 2027")
+        composeRule.waitForIdle()
+
+        composeRule
+            .onNode(hasContentDescription("Year: 2027") and hasStateDescription("2027"))
+            .assertExists()
+        composeRule
+            .onNode(hasContentDescription("Month: 5") and hasStateDescription("5"))
+            .assertExists()
+        composeRule
+            .onNode(hasContentDescription("Day: 20") and hasStateDescription("20"))
+            .assertExists()
+
+        waitUntilSelectedItem("Month: 5")
+        waitUntilSelectedItem("Day: 20")
+
+        composeRule.runOnIdle {
+            assertEquals(2027, state.selectedYear)
+            assertEquals(5, state.selectedMonth)
+            assertEquals(20, state.selectedDay)
+        }
+    }
+
+    @Test
+    fun yearMonthPicker_normalizesMissingProgrammaticChildValueIndependently() {
+        lateinit var state: YearMonthPickerState
+
+        composeRule.setContent {
+            state = rememberYearMonthPickerState(
+                initialYear = 2026,
+                initialMonth = 5
+            )
+
+            YearMonthPicker(
+                state = state,
+                yearItems = listOf(2026, 2027),
+                monthItems = listOf(1, 5, 12),
+                visibleItemsCount = 3,
+                yearPickerLabel = "Year",
+                monthPickerLabel = "Month",
+                yearItemContentDescription = { "$it" },
+                monthItemContentDescription = { "$it" }
+            )
+        }
+
+        composeRule.runOnIdle {
+            state.selectYearMonth(year = 2027, month = 6)
+        }
+
+        waitUntilSelectedItem("Year: 2027")
+        composeRule.waitForIdle()
+
+        composeRule
+            .onNode(hasContentDescription("Year: 2027") and hasStateDescription("2027"))
+            .assertExists()
+        composeRule
+            .onNode(hasContentDescription("Month: 5") and hasStateDescription("5"))
+            .assertExists()
+
+        waitUntilSelectedItem("Month: 5")
+
+        composeRule.runOnIdle {
+            assertEquals(2027, state.selectedYear)
+            assertEquals(5, state.selectedMonth)
+        }
     }
 
     @Test
