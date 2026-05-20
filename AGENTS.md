@@ -88,6 +88,8 @@ Most logic lives in `commonMain`. Platform-specific code is minimal.
 - After a substantial implementation step, run a six-agent feedback loop when the maintainer asks for autonomous improvement work: collect feedback, fix actionable issues, verify again, then open or update the PR.
 - Merge PRs only after relevant local verification and GitHub Actions checks pass.
 - Keep improving toward Android developer ergonomics first: state APIs, sample usability, documentation clarity, accessibility, and predictable behavior in real app lifecycles.
+- When public picker APIs accept custom item lists, validate value ranges before composing the underlying `Picker`. Prefer normalizing a valid-but-missing current state value through existing picker behavior over crashing during composition.
+- When public validation rules change, update KDoc plus `README.md` and `README_KO.md` in the same PR, including failure mode and normalization behavior.
 - Keep repository guidance up to date in this `AGENTS.md` when the maintainer gives durable process feedback.
 - Do not include local agent/tooling folders such as `.agents/` or `.claude/` in product PRs unless the change is explicitly about agent workflow assets.
 

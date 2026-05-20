@@ -188,8 +188,9 @@ fun BottomSheetPickerExample() {
 | :--- | :--- | :--- |
 | `state` | Picker를 제어하기 위한 상태 객체입니다. | `rememberTimePickerState()` |
 | `startTime` | 레거시 초기 시간 파라미터입니다. 초기값은 `rememberTimePickerState`에서 설정하는 방식을 권장합니다. | `currentDateTime()` |
-| `minuteItems` | 선택 가능한 분 목록입니다. | `0..59` |
-| `hourItems` | 선택 가능한 시간 목록입니다. | `0..23` 또는 `1..12` |
+| `minuteItems` | 선택 가능한 분 목록입니다. 값은 `0..59` 범위여야 합니다. | `0..59` |
+| `hourItems` | 선택 가능한 시간 목록입니다. 24시간 형식에서는 `0..23`, 12시간 형식에서는 표시 시간 기준 `1..12` 범위여야 합니다. | `0..23` 또는 `1..12` |
+| `periodItems` | 12시간 형식에서 선택 가능한 오전/오후 목록입니다. `timeFormat`이 `HOUR_12`일 때 비어 있으면 안 됩니다. | `TimePeriod.entries` |
 | `visibleItemsCount` | 리스트에 표시될 아이템의 개수입니다. | `3` |
 | `colors` | 텍스트, 선택 텍스트, 구분선, 선택 영역 배경 색상입니다. | `PickerDefaults.colors()` |
 | `textStyles` | 선택/비선택 아이템의 텍스트 스타일입니다. | `PickerDefaults.textStyles()` |
@@ -205,14 +206,16 @@ fun BottomSheetPickerExample() {
 
 `rememberTimePickerState`는 saveable state를 사용합니다. Android에서는 플랫폼 saveable registry가 제공될 때 Activity 재생성 이후에도 선택값을 복원할 수 있습니다.
 
+custom item 값이 유효 범위를 벗어나면 composition 중 `IllegalArgumentException`이 발생합니다. 현재 또는 복원된 선택값이 유효하지만 custom 목록에 없다면 picker는 해당 목록의 첫 번째 값에서 시작하고 state를 정상화합니다. 12시간 형식의 `hourItems`는 표시 시간 기준(`1..12`)입니다. 예를 들어 `initialHour = 13`은 `state.selectedHour == 1`, `PM`으로 변환됩니다.
+
 ### DatePicker
 
 | 파라미터 | 설명 | 기본값 |
 | :--- | :--- | :--- |
 | `state` | Picker를 제어하기 위한 상태 객체입니다. | `rememberDatePickerState()` |
 | `startLocalDate` | 레거시 초기 날짜 파라미터입니다. 초기값은 `rememberDatePickerState`에서 설정하는 방식을 권장합니다. | `currentDate()` |
-| `yearItems` | 선택 가능한 연도 목록입니다. | `1000..9999` |
-| `monthItems` | 선택 가능한 월 목록입니다. | `1..12` |
+| `yearItems` | 선택 가능한 연도 목록입니다. 값은 `1000..9999` 범위여야 합니다. | `1000..9999` |
+| `monthItems` | 선택 가능한 월 목록입니다. 값은 `1..12` 범위여야 합니다. | `1..12` |
 | `visibleItemsCount` | 리스트에 표시될 아이템의 개수입니다. | `3` |
 | `colors` | 텍스트, 선택 텍스트, 구분선, 선택 영역 배경 색상입니다. | `PickerDefaults.colors()` |
 | `textStyles` | 선택/비선택 아이템의 텍스트 스타일입니다. | `PickerDefaults.textStyles()` |
@@ -227,14 +230,16 @@ fun BottomSheetPickerExample() {
 
 `rememberDatePickerState`는 saveable state를 사용합니다. Android에서는 플랫폼 saveable registry가 제공될 때 Activity 재생성 이후에도 선택값을 복원할 수 있습니다.
 
+custom item 값이 유효 범위를 벗어나면 composition 중 `IllegalArgumentException`이 발생합니다. 현재 또는 복원된 연도/월이 유효하지만 custom 목록에 없다면 picker는 해당 목록의 첫 번째 값에서 시작하고 state를 정상화합니다.
+
 ### YearMonthPicker
 
 | 파라미터 | 설명 | 기본값 |
 | :--- | :--- | :--- |
 | `state` | Picker를 제어하기 위한 상태 객체입니다. | `rememberYearMonthPickerState()` |
 | `startLocalDate` | 레거시 초기 날짜 파라미터입니다. 초기값은 `rememberYearMonthPickerState`에서 설정하는 방식을 권장합니다. | `currentDate()` |
-| `yearItems` | 선택 가능한 연도 목록입니다. | `1000..9999` |
-| `monthItems` | 선택 가능한 월 목록입니다. | `1..12` |
+| `yearItems` | 선택 가능한 연도 목록입니다. 값은 `1000..9999` 범위여야 합니다. | `1000..9999` |
+| `monthItems` | 선택 가능한 월 목록입니다. 값은 `1..12` 범위여야 합니다. | `1..12` |
 | `visibleItemsCount` | 리스트에 표시될 아이템의 개수입니다. | `3` |
 | `colors` | 텍스트, 선택 텍스트, 구분선, 선택 영역 배경 색상입니다. | `PickerDefaults.colors()` |
 | `textStyles` | 선택/비선택 아이템의 텍스트 스타일입니다. | `PickerDefaults.textStyles()` |
@@ -246,6 +251,8 @@ fun BottomSheetPickerExample() {
 - `selectedMonthDate`: 선택된 연/월을 해당 월의 1일 `LocalDate`로 제공합니다.
 
 `rememberYearMonthPickerState`는 saveable state를 사용합니다. Android에서는 플랫폼 saveable registry가 제공될 때 Activity 재생성 이후에도 선택값을 복원할 수 있습니다.
+
+custom item 값이 유효 범위를 벗어나면 composition 중 `IllegalArgumentException`이 발생합니다. 현재 또는 복원된 연도/월이 유효하지만 custom 목록에 없다면 picker는 해당 목록의 첫 번째 값에서 시작하고 state를 정상화합니다.
 
 ## 라이선스
 
