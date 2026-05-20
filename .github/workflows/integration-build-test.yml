@@ -19,7 +19,7 @@ jobs:
   linux-builds:
     name: Linux • ${{ matrix.target }}
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 45
     strategy:
       fail-fast: false
       matrix:
@@ -46,9 +46,19 @@ jobs:
         if: matrix.target == 'android'
         run: |
           sdkmanager "platform-tools" \
+                     "emulator" \
+                     "platforms;android-35" \
                      "platforms;android-36" \
-                     "build-tools;36.0.0"
+                     "build-tools;36.0.0" \
+                     "system-images;android-35;aosp_atd;x86_64"
           yes | sdkmanager --licenses
+
+      - name: Enable KVM permissions
+        if: matrix.target == 'android'
+        run: |
+          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+          sudo udevadm control --reload-rules
+          sudo udevadm trigger --name-match=kvm
 
       # Android Build/Unit Test
       - name: Gradle Build • Android
@@ -58,9 +68,29 @@ jobs:
             ${{ env.LIBRARY_MODULE }}:clean \
             ${{ env.LIBRARY_MODULE }}:assembleRelease \
             ${{ env.LIBRARY_MODULE }}:testReleaseUnitTest \
-            ${{ env.LIBRARY_MODULE }}:assembleDebugAndroidTest \
             ${{ env.SAMPLE_MODULE }}:assembleDebug \
             --no-daemon
+
+      # Android Managed Device Instrumented Test
+      - name: Gradle Instrumented Test • Android managed device
+        if: matrix.target == 'android'
+        run: |
+          ./gradlew \
+            ${{ env.LIBRARY_MODULE }}:pixel2Api35DebugAndroidTest \
+            -Pandroid.testoptions.manageddevices.emulator.gpu=swiftshader_indirect \
+            --stacktrace \
+            --no-daemon
+
+      - name: Upload Android instrumented test reports
+        if: matrix.target == 'android' && always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: android-instrumented-test-reports
+          path: |
+            datetimepicker/build/reports/androidTests/**
+            datetimepicker/build/outputs/androidTest-results/**
+            datetimepicker/build/outputs/managed_device_android_test_additional_output/**
+          if-no-files-found: ignore
 
       # Web(WASM) Build/Test
       - name: Gradle Build • Web (WASM)

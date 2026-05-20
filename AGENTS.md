@@ -126,7 +126,12 @@ Most logic lives in `commonMain`. Platform-specific code is minimal.
 # Compile Android instrumented tests
 ./gradlew :datetimepicker:assembleDebugAndroidTest --no-daemon
 
-# Run Android instrumented tests on a connected device or emulator
+# Run Android instrumented tests on the Gradle Managed Device target used by CI
+./gradlew :datetimepicker:pixel2Api35DebugAndroidTest \
+  -Pandroid.testoptions.manageddevices.emulator.gpu=swiftshader_indirect \
+  --no-daemon
+
+# Run Android instrumented tests on an already connected local device or emulator
 ./gradlew :datetimepicker:connectedDebugAndroidTest --no-daemon
 
 # Run checks (tests + lint)
@@ -210,7 +215,7 @@ color = lerp(selectedTextStyle.color, textStyle.color, fraction)
 **When adding tests**:
 - Unit tests → `datetimepicker/src/commonTest/kotlin/`
 - Android UI/instrumented tests → `datetimepicker/src/androidInstrumentedTest/kotlin/`
-- Use `:datetimepicker:assembleDebugAndroidTest` to verify Android test APK compilation/packaging in CI-friendly environments, and `:datetimepicker:connectedDebugAndroidTest` when a device or emulator is available.
+- Use `:datetimepicker:assembleDebugAndroidTest` to verify Android test APK compilation/packaging. Use `:datetimepicker:pixel2Api35DebugAndroidTest -Pandroid.testoptions.manageddevices.emulator.gpu=swiftshader_indirect` for the Gradle Managed Device path used by CI; it requires Android Emulator, the API 35 AOSP ATD x86_64 system image, and local virtualization/KVM. Use `:datetimepicker:connectedDebugAndroidTest` when a local device or emulator is already available. If managed-device prerequisites are unavailable locally, run `assembleDebugAndroidTest` or a managed-device `--dry-run` and rely on CI for the actual emulator run.
 - Follow naming: `<ComponentName>Test.kt` or `<ComponentName>AndroidTest.kt`
 
 ## Code Style
@@ -232,7 +237,7 @@ Follow **Semantic Versioning**: MAJOR.MINOR.PATCH
 ## CI/CD
 
 GitHub Actions workflows:
-- **`integration-build-test.yml`**: Runs multiplatform library checks on pull requests to `main`
+- **`integration-build-test.yml`**: Runs multiplatform library checks on pull requests to `main`; the Android matrix also runs the Gradle Managed Device `pixel2Api35DebugAndroidTest` gate for instrumented tests.
 - **`maven-central-deploy.yml`**: Publishes releases to Maven Central
 
 Build matrix: Ubuntu latest for Android/Desktop/Wasm and macOS 14 for iOS, using JDK 17 (Temurin)
