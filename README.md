@@ -167,36 +167,98 @@ fun YearMonthPickerExample() {
 
 ### BottomSheet Integration
 
-The pickers work seamlessly within a `ModalBottomSheet` or other dialog components.
+The pickers work seamlessly within a `ModalBottomSheet` or other dialog components. Keep the
+committed value separate from the temporary sheet state so dismissing the sheet does not accidentally
+change app state.
 
 ```kotlin
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
-import com.kez.picker.time.TimePicker
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.Button
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.Text
+import androidx.compose.material3.rememberModalBottomSheetState
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberSaveable
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 import com.kez.picker.rememberTimePickerState
+import com.kez.picker.time.TimePicker
+import kotlinx.datetime.LocalTime
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun BottomSheetPickerExample() {
+    var committedHour by rememberSaveable { mutableIntStateOf(9) }
+    var committedMinute by rememberSaveable { mutableIntStateOf(30) }
     var showBottomSheet by remember { mutableStateOf(false) }
     val sheetState = rememberModalBottomSheetState()
-    val state = rememberTimePickerState()
+    val committedTime = LocalTime(committedHour, committedMinute)
 
-    Button(onClick = { showBottomSheet = true }) {
-        Text("Select Time")
+    Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+        Text("Selected time: $committedTime")
+
+        Button(onClick = { showBottomSheet = true }) {
+            Text("Select Time")
+        }
     }
 
     if (showBottomSheet) {
+        val draftState = rememberTimePickerState(initialTime = committedTime)
+
         ModalBottomSheet(
             onDismissRequest = { showBottomSheet = false },
             sheetState = sheetState
         ) {
-            TimePicker(state = state)
-            // Add confirmation buttons logic here
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(24.dp),
+                verticalArrangement = Arrangement.spacedBy(16.dp)
+            ) {
+                TimePicker(state = draftState)
+
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    OutlinedButton(
+                        onClick = { showBottomSheet = false },
+                        modifier = Modifier.weight(1f)
+                    ) {
+                        Text("Cancel")
+                    }
+
+                    Button(
+                        onClick = {
+                            val selected = draftState.selectedTime
+                            committedHour = selected.hour
+                            committedMinute = selected.minute
+                            showBottomSheet = false
+                        },
+                        modifier = Modifier.weight(1f)
+                    ) {
+                        Text("Apply")
+                    }
+                }
+            }
         }
     }
 }
 ```
+
+The example stores hour and minute separately because primitive values work with `rememberSaveable`;
+`LocalTime` is recreated as a derived value before creating the draft picker state.
 
 ## API Reference
 
