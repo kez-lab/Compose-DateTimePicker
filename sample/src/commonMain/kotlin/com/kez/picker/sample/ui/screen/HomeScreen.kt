@@ -26,6 +26,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -70,6 +71,7 @@ internal fun HomeScreen(navController: NavController) {
                     title = "Integrated Sample",
                     description = "Tabs with shared date and time state",
                     icon = FeatherIcons.CheckCircle,
+                    modifier = Modifier.testTag("sample-menu-integrated"),
                     onClick = { navController.navigate(Screen.Integrated.route) }
                 )
             }
@@ -78,6 +80,7 @@ internal fun HomeScreen(navController: NavController) {
                     title = "TimePicker Sample",
                     description = "12-hour and 24-hour state updates",
                     icon = FeatherIcons.Clock,
+                    modifier = Modifier.testTag("sample-menu-time-picker"),
                     onClick = { navController.navigate(Screen.TimePicker.route) }
                 )
             }
@@ -86,6 +89,7 @@ internal fun HomeScreen(navController: NavController) {
                     title = "YearMonthPicker Sample",
                     description = "Month selection with programmatic reset",
                     icon = FeatherIcons.Calendar,
+                    modifier = Modifier.testTag("sample-menu-year-month-picker"),
                     onClick = { navController.navigate(Screen.YearMonthPicker.route) }
                 )
             }
@@ -94,6 +98,7 @@ internal fun HomeScreen(navController: NavController) {
                     title = "DatePicker Sample",
                     description = "Custom year range and leap-day target",
                     icon = FeatherIcons.Calendar,
+                    modifier = Modifier.testTag("sample-menu-date-picker"),
                     onClick = { navController.navigate(Screen.DatePicker.route) }
                 )
             }
@@ -102,6 +107,7 @@ internal fun HomeScreen(navController: NavController) {
                     title = "BottomSheet Sample",
                     description = "Committed value plus draft sheet state",
                     icon = FeatherIcons.Layers,
+                    modifier = Modifier.testTag("sample-menu-bottom-sheet"),
                     onClick = { navController.navigate(Screen.BottomSheet.route) }
                 )
             }
@@ -110,6 +116,7 @@ internal fun HomeScreen(navController: NavController) {
                     title = "Background Style",
                     description = "Divider-free picker styling",
                     icon = FeatherIcons.Square,
+                    modifier = Modifier.testTag("sample-menu-background-style"),
                     onClick = { navController.navigate(Screen.BackgroundStyle.route) }
                 )
             }
@@ -123,10 +130,11 @@ internal fun MenuListItem(
     title: String,
     description: String,
     icon: ImageVector,
+    modifier: Modifier = Modifier,
     onClick: () -> Unit
 ) {
     Card(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             .clickable(
                 role = Role.Button,
