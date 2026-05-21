@@ -4,7 +4,9 @@ import androidx.compose.ui.test.junit4.StateRestorationTester
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.hasContentDescription
 import androidx.compose.ui.test.isSelected
+import com.kez.picker.date.DatePicker
 import com.kez.picker.date.DatePickerState
+import com.kez.picker.date.YearMonthPicker
 import com.kez.picker.date.rememberDatePickerState
 import com.kez.picker.time.TimePicker
 import com.kez.picker.util.TimeFormat
@@ -149,6 +151,51 @@ class PickerStateRestorationAndroidTest {
     }
 
     @Test
+    fun datePicker_restoresSelectionIntoRenderedSemanticsAfterSaveRestore() {
+        lateinit var state: DatePickerState
+        val restorationTester = StateRestorationTester(composeRule)
+
+        restorationTester.setContent {
+            state = rememberDatePickerState(initialDate = LocalDate(2024, 1, 31))
+
+            DatePicker(
+                state = state,
+                yearItems = listOf(2024, 2026),
+                monthItems = listOf(1, 2),
+                visibleItemsCount = 3,
+                yearPickerLabel = "Year",
+                monthPickerLabel = "Month",
+                dayPickerLabel = "Day",
+                yearItemContentDescription = { "$it year" },
+                monthItemContentDescription = { "$it month" },
+                dayItemContentDescription = { "$it day" }
+            )
+        }
+
+        composeRule.runOnIdle {
+            state.selectDate(LocalDate(2026, 2, 28))
+            assertEquals(LocalDate(2026, 2, 28), state.selectedDate)
+        }
+
+        restorationTester.emulateSavedInstanceStateRestore()
+        composeRule.waitForIdle()
+
+        composeRule
+            .onNode(hasContentDescription("Year: 2026 year") and isSelected())
+            .assertExists()
+        composeRule
+            .onNode(hasContentDescription("Month: 2 month") and isSelected())
+            .assertExists()
+        composeRule
+            .onNode(hasContentDescription("Day: 28 day") and isSelected())
+            .assertExists()
+
+        composeRule.runOnIdle {
+            assertEquals(LocalDate(2026, 2, 28), state.selectedDate)
+        }
+    }
+
+    @Test
     fun rememberYearMonthPickerState_restoresProgrammaticSelectionAfterSaveRestore() {
         lateinit var state: YearMonthPickerState
         val restorationTester = StateRestorationTester(composeRule)
@@ -166,6 +213,46 @@ class PickerStateRestorationAndroidTest {
         composeRule.runOnIdle {
             assertEquals(2027, state.selectedYear)
             assertEquals(12, state.selectedMonth)
+            assertEquals(LocalDate(2027, 12, 1), state.selectedMonthDate)
+        }
+    }
+
+    @Test
+    fun yearMonthPicker_restoresSelectionIntoRenderedSemanticsAfterSaveRestore() {
+        lateinit var state: YearMonthPickerState
+        val restorationTester = StateRestorationTester(composeRule)
+
+        restorationTester.setContent {
+            state = rememberYearMonthPickerState(initialDate = LocalDate(2024, 5, 20))
+
+            YearMonthPicker(
+                state = state,
+                yearItems = listOf(2024, 2027),
+                monthItems = listOf(5, 12),
+                visibleItemsCount = 3,
+                yearPickerLabel = "Year",
+                monthPickerLabel = "Month",
+                yearItemContentDescription = { "$it year" },
+                monthItemContentDescription = { "$it month" }
+            )
+        }
+
+        composeRule.runOnIdle {
+            state.selectYearMonth(year = 2027, month = 12)
+            assertEquals(LocalDate(2027, 12, 1), state.selectedMonthDate)
+        }
+
+        restorationTester.emulateSavedInstanceStateRestore()
+        composeRule.waitForIdle()
+
+        composeRule
+            .onNode(hasContentDescription("Year: 2027 year") and isSelected())
+            .assertExists()
+        composeRule
+            .onNode(hasContentDescription("Month: 12 month") and isSelected())
+            .assertExists()
+
+        composeRule.runOnIdle {
             assertEquals(LocalDate(2027, 12, 1), state.selectedMonthDate)
         }
     }
