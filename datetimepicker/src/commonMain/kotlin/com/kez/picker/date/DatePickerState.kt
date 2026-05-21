@@ -58,9 +58,11 @@ fun rememberDatePickerState(initialDate: LocalDate): DatePickerState {
  * Internal picker states are not directly accessible to prevent inconsistent state modifications.
  *
  * @param initialYear The initial year to be selected. Must be in 1000..9999.
- * @param initialMonth The initial month to be selected.
- * @param initialDay The initial day to be selected.
- * @throws IllegalArgumentException if [initialYear], [initialMonth], or [initialDay] is outside the supported range.
+ * @param initialMonth The initial month to be selected. Must be in 1..12.
+ * @param initialDay The initial day to be selected. Must be at least 1. Values greater than the
+ * maximum valid day for [initialYear] and [initialMonth] are clamped to that maximum.
+ * @throws IllegalArgumentException if [initialYear] or [initialMonth] is outside the supported
+ * range, or if [initialDay] is less than 1.
  */
 @Stable
 class DatePickerState(

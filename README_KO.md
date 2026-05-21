@@ -410,7 +410,10 @@ custom item 값이 유효 범위를 벗어나면 composition 중 `IllegalArgumen
 
 `rememberDatePickerState`는 saveable state를 사용합니다. Android에서는 플랫폼 saveable registry가 제공될 때 Activity 재생성 이후에도 선택값을 복원할 수 있습니다.
 
-초기값은 `rememberDatePickerState(initialDate = LocalDate(...))` 또는 `initialYear`/`initialMonth`/`initialDay` 파라미터로 설정합니다. 초기 연도는 `1000..9999` 범위여야 합니다. 컴포넌트의 `startLocalDate` 파라미터는 소스 호환성 때문에 남아 있지만 사용되지 않습니다.
+초기값은 `rememberDatePickerState(initialDate = LocalDate(...))` 또는
+`initialYear`/`initialMonth`/`initialDay` 파라미터로 설정합니다. 초기 연도는 `1000..9999`,
+월은 `1..12` 범위여야 하고 일은 최소 `1`이어야 합니다. `initialDay`가 초기 연/월의 최대 일수보다
+크면 그 최대 일수로 보정됩니다. 컴포넌트의 `startLocalDate` 파라미터는 소스 호환성 때문에 남아 있지만 사용되지 않습니다.
 
 상태 생성 이후 선택값을 바꾸려면 `state.selectDate(LocalDate(...))`를 호출합니다.
 
