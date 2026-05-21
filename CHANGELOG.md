@@ -21,6 +21,7 @@ This project tracks notable user-facing and maintainer-facing changes here. The 
 - Refined sample screens with shared result cards, picker panels, real reset/confirm actions, and
   bottom-sheet draft state separate from committed selection values.
 - Improved sample accessibility semantics for selected-value cards and home-screen navigation items.
+- Removed the redundant Android sample `MaterialTheme` wrapper so the sample entry point uses the shared `AppTheme`.
 - Documented generic `Picker<T>` usage, initial `startIndex` alignment, and the regular `remember`
   behavior of `rememberPickerState`.
 - Clarified `DatePicker` README examples for custom year ranges and state synchronization after composition.
