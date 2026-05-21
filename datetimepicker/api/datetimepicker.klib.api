@@ -65,6 +65,7 @@ final class com.kez.picker.date/DatePickerState { // com.kez.picker.date/DatePic
         final fun <get-selectedYear>(): kotlin/Int // com.kez.picker.date/DatePickerState.selectedYear.<get-selectedYear>|<get-selectedYear>(){}[0]
 
     final fun selectDate(kotlinx.datetime/LocalDate) // com.kez.picker.date/DatePickerState.selectDate|selectDate(kotlinx.datetime.LocalDate){}[0]
+    final fun selectDate(kotlinx.datetime/LocalDate, com.kez.picker/DatePickerItems) // com.kez.picker.date/DatePickerState.selectDate|selectDate(kotlinx.datetime.LocalDate;com.kez.picker.DatePickerItems){}[0]
 
     final object Companion { // com.kez.picker.date/DatePickerState.Companion|null[0]
         final val Saver // com.kez.picker.date/DatePickerState.Companion.Saver|{}Saver[0]
@@ -106,8 +107,11 @@ final class com.kez.picker.date/YearMonthPickerState { // com.kez.picker.date/Ye
         final fun <get-selectedYearMonth>(): com.kez.picker.date/YearMonth // com.kez.picker.date/YearMonthPickerState.selectedYearMonth.<get-selectedYearMonth>|<get-selectedYearMonth>(){}[0]
 
     final fun selectDate(kotlinx.datetime/LocalDate) // com.kez.picker.date/YearMonthPickerState.selectDate|selectDate(kotlinx.datetime.LocalDate){}[0]
+    final fun selectDate(kotlinx.datetime/LocalDate, com.kez.picker/YearMonthPickerItems) // com.kez.picker.date/YearMonthPickerState.selectDate|selectDate(kotlinx.datetime.LocalDate;com.kez.picker.YearMonthPickerItems){}[0]
     final fun selectYearMonth(com.kez.picker.date/YearMonth) // com.kez.picker.date/YearMonthPickerState.selectYearMonth|selectYearMonth(com.kez.picker.date.YearMonth){}[0]
+    final fun selectYearMonth(com.kez.picker.date/YearMonth, com.kez.picker/YearMonthPickerItems) // com.kez.picker.date/YearMonthPickerState.selectYearMonth|selectYearMonth(com.kez.picker.date.YearMonth;com.kez.picker.YearMonthPickerItems){}[0]
     final fun selectYearMonth(kotlin/Int, kotlin/Int) // com.kez.picker.date/YearMonthPickerState.selectYearMonth|selectYearMonth(kotlin.Int;kotlin.Int){}[0]
+    final fun selectYearMonth(kotlin/Int, kotlin/Int, com.kez.picker/YearMonthPickerItems) // com.kez.picker.date/YearMonthPickerState.selectYearMonth|selectYearMonth(kotlin.Int;kotlin.Int;com.kez.picker.YearMonthPickerItems){}[0]
 
     final object Companion { // com.kez.picker.date/YearMonthPickerState.Companion|null[0]
         final val Saver // com.kez.picker.date/YearMonthPickerState.Companion.Saver|{}Saver[0]
@@ -132,6 +136,7 @@ final class com.kez.picker.time/TimePickerState { // com.kez.picker.time/TimePic
         final fun <get-timeFormat>(): com.kez.picker.util/TimeFormat // com.kez.picker.time/TimePickerState.timeFormat.<get-timeFormat>|<get-timeFormat>(){}[0]
 
     final fun selectTime(kotlinx.datetime/LocalTime) // com.kez.picker.time/TimePickerState.selectTime|selectTime(kotlinx.datetime.LocalTime){}[0]
+    final fun selectTime(kotlinx.datetime/LocalTime, com.kez.picker/TimePickerItems) // com.kez.picker.time/TimePickerState.selectTime|selectTime(kotlinx.datetime.LocalTime;com.kez.picker.TimePickerItems){}[0]
 
     final object Companion { // com.kez.picker.time/TimePickerState.Companion|null[0]
         final val Saver // com.kez.picker.time/TimePickerState.Companion.Saver|{}Saver[0]
@@ -168,6 +173,7 @@ final class com.kez.picker/DatePickerItems { // com.kez.picker/DatePickerItems|n
     final val yearItems // com.kez.picker/DatePickerItems.yearItems|{}yearItems[0]
         final fun <get-yearItems>(): kotlin.collections/List<kotlin/Int> // com.kez.picker/DatePickerItems.yearItems.<get-yearItems>|<get-yearItems>(){}[0]
 
+    final fun coerceDate(kotlinx.datetime/LocalDate): kotlinx.datetime/LocalDate // com.kez.picker/DatePickerItems.coerceDate|coerceDate(kotlinx.datetime.LocalDate){}[0]
     final fun component1(): kotlin.collections/List<kotlin/Int> // com.kez.picker/DatePickerItems.component1|component1(){}[0]
     final fun component2(): kotlin.collections/List<kotlin/Int> // com.kez.picker/DatePickerItems.component2|component2(){}[0]
     final fun component3(): kotlin.collections/List<kotlin/Int> // com.kez.picker/DatePickerItems.component3|component3(){}[0]
@@ -289,6 +295,7 @@ final class com.kez.picker/TimePickerItems { // com.kez.picker/TimePickerItems|n
     final val periodItems // com.kez.picker/TimePickerItems.periodItems|{}periodItems[0]
         final fun <get-periodItems>(): kotlin.collections/List<com.kez.picker.util/TimePeriod> // com.kez.picker/TimePickerItems.periodItems.<get-periodItems>|<get-periodItems>(){}[0]
 
+    final fun coerceTime(kotlinx.datetime/LocalTime, com.kez.picker.util/TimeFormat = ...): kotlinx.datetime/LocalTime // com.kez.picker/TimePickerItems.coerceTime|coerceTime(kotlinx.datetime.LocalTime;com.kez.picker.util.TimeFormat){}[0]
     final fun component1(): kotlin.collections/List<kotlin/Int> // com.kez.picker/TimePickerItems.component1|component1(){}[0]
     final fun component2(): kotlin.collections/List<kotlin/Int> // com.kez.picker/TimePickerItems.component2|component2(){}[0]
     final fun component3(): kotlin.collections/List<kotlin/Int> // com.kez.picker/TimePickerItems.component3|component3(){}[0]
@@ -323,6 +330,8 @@ final class com.kez.picker/YearMonthPickerItems { // com.kez.picker/YearMonthPic
     final val yearItems // com.kez.picker/YearMonthPickerItems.yearItems|{}yearItems[0]
         final fun <get-yearItems>(): kotlin.collections/List<kotlin/Int> // com.kez.picker/YearMonthPickerItems.yearItems.<get-yearItems>|<get-yearItems>(){}[0]
 
+    final fun coerceDate(kotlinx.datetime/LocalDate): kotlinx.datetime/LocalDate // com.kez.picker/YearMonthPickerItems.coerceDate|coerceDate(kotlinx.datetime.LocalDate){}[0]
+    final fun coerceYearMonth(com.kez.picker.date/YearMonth): com.kez.picker.date/YearMonth // com.kez.picker/YearMonthPickerItems.coerceYearMonth|coerceYearMonth(com.kez.picker.date.YearMonth){}[0]
     final fun component1(): kotlin.collections/List<kotlin/Int> // com.kez.picker/YearMonthPickerItems.component1|component1(){}[0]
     final fun component2(): kotlin.collections/List<kotlin/Int> // com.kez.picker/YearMonthPickerItems.component2|component2(){}[0]
     final fun copy(kotlin.collections/List<kotlin/Int> = ..., kotlin.collections/List<kotlin/Int> = ...): com.kez.picker/YearMonthPickerItems // com.kez.picker/YearMonthPickerItems.copy|copy(kotlin.collections.List<kotlin.Int>;kotlin.collections.List<kotlin.Int>){}[0]

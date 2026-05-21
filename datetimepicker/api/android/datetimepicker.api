@@ -17,6 +17,7 @@ public final class com/kez/picker/DatePickerAccessibility {
 public final class com/kez/picker/DatePickerItems {
 	public static final field $stable I
 	public fun <init> (Ljava/util/List;Ljava/util/List;Ljava/util/List;)V
+	public final fun coerceDate (Lkotlinx/datetime/LocalDate;)Lkotlinx/datetime/LocalDate;
 	public final fun component1 ()Ljava/util/List;
 	public final fun component2 ()Ljava/util/List;
 	public final fun component3 ()Ljava/util/List;
@@ -168,6 +169,8 @@ public final class com/kez/picker/TimePickerAccessibility {
 public final class com/kez/picker/TimePickerItems {
 	public static final field $stable I
 	public fun <init> (Ljava/util/List;Ljava/util/List;Ljava/util/List;Ljava/util/List;)V
+	public final fun coerceTime (Lkotlinx/datetime/LocalTime;Lcom/kez/picker/util/TimeFormat;)Lkotlinx/datetime/LocalTime;
+	public static synthetic fun coerceTime$default (Lcom/kez/picker/TimePickerItems;Lkotlinx/datetime/LocalTime;Lcom/kez/picker/util/TimeFormat;ILjava/lang/Object;)Lkotlinx/datetime/LocalTime;
 	public final fun component1 ()Ljava/util/List;
 	public final fun component2 ()Ljava/util/List;
 	public final fun component3 ()Ljava/util/List;
@@ -200,6 +203,8 @@ public final class com/kez/picker/YearMonthPickerAccessibility {
 public final class com/kez/picker/YearMonthPickerItems {
 	public static final field $stable I
 	public fun <init> (Ljava/util/List;Ljava/util/List;)V
+	public final fun coerceDate (Lkotlinx/datetime/LocalDate;)Lkotlinx/datetime/LocalDate;
+	public final fun coerceYearMonth (Lcom/kez/picker/date/YearMonth;)Lcom/kez/picker/date/YearMonth;
 	public final fun component1 ()Ljava/util/List;
 	public final fun component2 ()Ljava/util/List;
 	public final fun copy (Ljava/util/List;Ljava/util/List;)Lcom/kez/picker/YearMonthPickerItems;
@@ -225,6 +230,7 @@ public final class com/kez/picker/date/DatePickerState {
 	public final fun getSelectedMonth ()I
 	public final fun getSelectedYear ()I
 	public final fun selectDate (Lkotlinx/datetime/LocalDate;)V
+	public final fun selectDate (Lkotlinx/datetime/LocalDate;Lcom/kez/picker/DatePickerItems;)V
 }
 
 public final class com/kez/picker/date/DatePickerState$Companion {
@@ -270,8 +276,11 @@ public final class com/kez/picker/date/YearMonthPickerState {
 	public final fun getSelectedYear ()I
 	public final fun getSelectedYearMonth ()Lcom/kez/picker/date/YearMonth;
 	public final fun selectDate (Lkotlinx/datetime/LocalDate;)V
+	public final fun selectDate (Lkotlinx/datetime/LocalDate;Lcom/kez/picker/YearMonthPickerItems;)V
 	public final fun selectYearMonth (II)V
+	public final fun selectYearMonth (IILcom/kez/picker/YearMonthPickerItems;)V
 	public final fun selectYearMonth (Lcom/kez/picker/date/YearMonth;)V
+	public final fun selectYearMonth (Lcom/kez/picker/date/YearMonth;Lcom/kez/picker/YearMonthPickerItems;)V
 }
 
 public final class com/kez/picker/date/YearMonthPickerState$Companion {
@@ -338,6 +347,7 @@ public final class com/kez/picker/time/TimePickerState {
 	public final fun getSelectedTime ()Lkotlinx/datetime/LocalTime;
 	public final fun getTimeFormat ()Lcom/kez/picker/util/TimeFormat;
 	public final fun selectTime (Lkotlinx/datetime/LocalTime;)V
+	public final fun selectTime (Lkotlinx/datetime/LocalTime;Lcom/kez/picker/TimePickerItems;)V
 }
 
 public final class com/kez/picker/time/TimePickerState$Companion {
