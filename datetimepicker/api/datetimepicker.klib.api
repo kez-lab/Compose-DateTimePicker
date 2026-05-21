@@ -159,8 +159,10 @@ final class com.kez.picker/DatePickerAccessibility { // com.kez.picker/DatePicke
 }
 
 final class com.kez.picker/DatePickerItems { // com.kez.picker/DatePickerItems|null[0]
-    constructor <init>(kotlin.collections/List<kotlin/Int>, kotlin.collections/List<kotlin/Int>) // com.kez.picker/DatePickerItems.<init>|<init>(kotlin.collections.List<kotlin.Int>;kotlin.collections.List<kotlin.Int>){}[0]
+    constructor <init>(kotlin.collections/List<kotlin/Int>, kotlin.collections/List<kotlin/Int>, kotlin.collections/List<kotlin/Int>) // com.kez.picker/DatePickerItems.<init>|<init>(kotlin.collections.List<kotlin.Int>;kotlin.collections.List<kotlin.Int>;kotlin.collections.List<kotlin.Int>){}[0]
 
+    final val dayItems // com.kez.picker/DatePickerItems.dayItems|{}dayItems[0]
+        final fun <get-dayItems>(): kotlin.collections/List<kotlin/Int> // com.kez.picker/DatePickerItems.dayItems.<get-dayItems>|<get-dayItems>(){}[0]
     final val monthItems // com.kez.picker/DatePickerItems.monthItems|{}monthItems[0]
         final fun <get-monthItems>(): kotlin.collections/List<kotlin/Int> // com.kez.picker/DatePickerItems.monthItems.<get-monthItems>|<get-monthItems>(){}[0]
     final val yearItems // com.kez.picker/DatePickerItems.yearItems|{}yearItems[0]
@@ -168,7 +170,8 @@ final class com.kez.picker/DatePickerItems { // com.kez.picker/DatePickerItems|n
 
     final fun component1(): kotlin.collections/List<kotlin/Int> // com.kez.picker/DatePickerItems.component1|component1(){}[0]
     final fun component2(): kotlin.collections/List<kotlin/Int> // com.kez.picker/DatePickerItems.component2|component2(){}[0]
-    final fun copy(kotlin.collections/List<kotlin/Int> = ..., kotlin.collections/List<kotlin/Int> = ...): com.kez.picker/DatePickerItems // com.kez.picker/DatePickerItems.copy|copy(kotlin.collections.List<kotlin.Int>;kotlin.collections.List<kotlin.Int>){}[0]
+    final fun component3(): kotlin.collections/List<kotlin/Int> // com.kez.picker/DatePickerItems.component3|component3(){}[0]
+    final fun copy(kotlin.collections/List<kotlin/Int> = ..., kotlin.collections/List<kotlin/Int> = ..., kotlin.collections/List<kotlin/Int> = ...): com.kez.picker/DatePickerItems // com.kez.picker/DatePickerItems.copy|copy(kotlin.collections.List<kotlin.Int>;kotlin.collections.List<kotlin.Int>;kotlin.collections.List<kotlin.Int>){}[0]
     final fun equals(kotlin/Any?): kotlin/Boolean // com.kez.picker/DatePickerItems.equals|equals(kotlin.Any?){}[0]
     final fun hashCode(): kotlin/Int // com.kez.picker/DatePickerItems.hashCode|hashCode(){}[0]
     final fun toString(): kotlin/String // com.kez.picker/DatePickerItems.toString|toString(){}[0]
@@ -365,7 +368,7 @@ final object com.kez.picker/PickerDefaults { // com.kez.picker/PickerDefaults|nu
     final fun <#A1: kotlin/Any> accessibility(kotlin/String? = ..., kotlin/Function1<#A1, kotlin/String> = ..., kotlin/String? = ..., kotlin/String? = ...): com.kez.picker/PickerAccessibility<#A1> // com.kez.picker/PickerDefaults.accessibility|accessibility(kotlin.String?;kotlin.Function1<0:0,kotlin.String>;kotlin.String?;kotlin.String?){0§<kotlin.Any>}[0]
     final fun colors(androidx.compose.ui.graphics/Color, androidx.compose.ui.graphics/Color, androidx.compose.ui.graphics/Color, androidx.compose.ui.graphics/Color, androidx.compose.runtime/Composer?, kotlin/Int, kotlin/Int): com.kez.picker/PickerColors // com.kez.picker/PickerDefaults.colors|colors(androidx.compose.ui.graphics.Color;androidx.compose.ui.graphics.Color;androidx.compose.ui.graphics.Color;androidx.compose.ui.graphics.Color;androidx.compose.runtime.Composer?;kotlin.Int;kotlin.Int){}[0]
     final fun datePickerAccessibility(kotlin/String? = ..., kotlin/String? = ..., kotlin/String? = ..., kotlin/Function1<kotlin/Int, kotlin/String> = ..., kotlin/Function1<kotlin/Int, kotlin/String> = ..., kotlin/Function1<kotlin/Int, kotlin/String> = ..., kotlin/String? = ..., kotlin/String? = ...): com.kez.picker/DatePickerAccessibility // com.kez.picker/PickerDefaults.datePickerAccessibility|datePickerAccessibility(kotlin.String?;kotlin.String?;kotlin.String?;kotlin.Function1<kotlin.Int,kotlin.String>;kotlin.Function1<kotlin.Int,kotlin.String>;kotlin.Function1<kotlin.Int,kotlin.String>;kotlin.String?;kotlin.String?){}[0]
-    final fun datePickerItems(kotlin.collections/List<kotlin/Int> = ..., kotlin.collections/List<kotlin/Int> = ...): com.kez.picker/DatePickerItems // com.kez.picker/PickerDefaults.datePickerItems|datePickerItems(kotlin.collections.List<kotlin.Int>;kotlin.collections.List<kotlin.Int>){}[0]
+    final fun datePickerItems(kotlin.collections/List<kotlin/Int> = ..., kotlin.collections/List<kotlin/Int> = ..., kotlin.collections/List<kotlin/Int> = ...): com.kez.picker/DatePickerItems // com.kez.picker/PickerDefaults.datePickerItems|datePickerItems(kotlin.collections.List<kotlin.Int>;kotlin.collections.List<kotlin.Int>;kotlin.collections.List<kotlin.Int>){}[0]
     final fun fadingEdgeGradient(): androidx.compose.ui.graphics/Brush // com.kez.picker/PickerDefaults.fadingEdgeGradient|fadingEdgeGradient(){}[0]
     final fun style(kotlin/Int, com.kez.picker/PickerColors?, com.kez.picker/PickerTextStyles?, androidx.compose.ui.graphics/Shape?, androidx.compose.foundation.layout/PaddingValues?, androidx.compose.ui.graphics/Brush?, androidx.compose.ui/Alignment.Horizontal?, androidx.compose.ui/Alignment.Vertical?, androidx.compose.ui.unit/Dp, androidx.compose.ui.graphics/Shape?, kotlin/Boolean, androidx.compose.runtime/Composer?, kotlin/Int, kotlin/Int, kotlin/Int): com.kez.picker/PickerStyle // com.kez.picker/PickerDefaults.style|style(kotlin.Int;com.kez.picker.PickerColors?;com.kez.picker.PickerTextStyles?;androidx.compose.ui.graphics.Shape?;androidx.compose.foundation.layout.PaddingValues?;androidx.compose.ui.graphics.Brush?;androidx.compose.ui.Alignment.Horizontal?;androidx.compose.ui.Alignment.Vertical?;androidx.compose.ui.unit.Dp;androidx.compose.ui.graphics.Shape?;kotlin.Boolean;androidx.compose.runtime.Composer?;kotlin.Int;kotlin.Int;kotlin.Int){}[0]
     final fun textStyles(androidx.compose.ui.text/TextStyle?, androidx.compose.ui.text/TextStyle?, androidx.compose.runtime/Composer?, kotlin/Int, kotlin/Int): com.kez.picker/PickerTextStyles // com.kez.picker/PickerDefaults.textStyles|textStyles(androidx.compose.ui.text.TextStyle?;androidx.compose.ui.text.TextStyle?;androidx.compose.runtime.Composer?;kotlin.Int;kotlin.Int){}[0]
@@ -395,6 +398,8 @@ final val com.kez.picker.resources/com_kez_picker_resources_Res_font$stableprop 
 final val com.kez.picker.resources/com_kez_picker_resources_Res_plurals$stableprop // com.kez.picker.resources/com_kez_picker_resources_Res_plurals$stableprop|#static{}com_kez_picker_resources_Res_plurals$stableprop[0]
 final val com.kez.picker.resources/com_kez_picker_resources_Res_string$stableprop // com.kez.picker.resources/com_kez_picker_resources_Res_string$stableprop|#static{}com_kez_picker_resources_Res_string$stableprop[0]
 final val com.kez.picker.time/com_kez_picker_time_TimePickerState$stableprop // com.kez.picker.time/com_kez_picker_time_TimePickerState$stableprop|#static{}com_kez_picker_time_TimePickerState$stableprop[0]
+final val com.kez.picker.util/DAY_RANGE // com.kez.picker.util/DAY_RANGE|{}DAY_RANGE[0]
+    final fun <get-DAY_RANGE>(): kotlin.collections/List<kotlin/Int> // com.kez.picker.util/DAY_RANGE.<get-DAY_RANGE>|<get-DAY_RANGE>(){}[0]
 final val com.kez.picker.util/HOUR12_RANGE // com.kez.picker.util/HOUR12_RANGE|{}HOUR12_RANGE[0]
     final fun <get-HOUR12_RANGE>(): kotlin.collections/List<kotlin/Int> // com.kez.picker.util/HOUR12_RANGE.<get-HOUR12_RANGE>|<get-HOUR12_RANGE>(){}[0]
 final val com.kez.picker.util/HOUR24_RANGE // com.kez.picker.util/HOUR24_RANGE|{}HOUR24_RANGE[0]
