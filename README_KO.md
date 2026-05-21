@@ -11,7 +11,7 @@ Android, iOS, Desktop (JVM), Web (Wasm) 등 다양한 플랫폼에서 일관된 
 *   **TimePicker**: 12시간(오전/오후) 및 24시간 형식을 모두 지원합니다.
 *   **DatePicker**: 연도, 월, 일을 함께 선택하고 월/윤년에 맞춰 일을 자동 보정합니다.
 *   **YearMonthPicker**: 년도와 월을 선택할 수 있는 전용 컴포넌트를 제공합니다.
-*   **커스터마이징**: 커스텀 아이템 렌더링, 스타일링, 구성 변경이 가능한 유연한 API를 제공합니다.
+*   **커스터마이징**: 재사용 가능한 시각 설정을 위한 `PickerStyle` API를 제공합니다.
 *   **상태 관리**: `rememberTimePickerState`, `rememberDatePickerState`, `rememberYearMonthPickerState`를 통해 간편하게 상태를 관리할 수 있습니다.
 *   **접근성**: 스크린 리더 및 내비게이션 지원 등 접근성을 고려하여 설계되었습니다.
 
@@ -305,6 +305,9 @@ fun SizePickerExample() {
 없어야 하며, `selectedItem`은 반드시 `items` 안에 있어야 합니다. `T`가 saveable하지 않다면 앱 state에는
 saveable한 key를 저장한 뒤 렌더링 전에 그 key를 item으로 매핑하세요.
 
+`style = PickerDefaults.style(...)`로 visible item count, 색상, 텍스트 스타일, divider, item padding,
+선택 영역 배경, fading edge 동작을 하나의 재사용 가능한 객체로 커스터마이즈하세요.
+
 ### 프로그래밍 방식 선택
 
 `remember*State`로 picker state를 만들고 picker에 전달한 뒤, 이벤트 핸들러나
@@ -354,10 +357,8 @@ fun ProgrammaticTimePickerExample() {
 | `minuteItems` | 선택 가능한 분 목록입니다. 값은 `0..59` 범위여야 합니다. | `0..59` |
 | `hourItems` | 선택 가능한 시간 목록입니다. 24시간 형식에서는 `0..23`, 12시간 형식에서는 표시 시간 기준 `1..12` 범위여야 합니다. | `0..23` 또는 `1..12` |
 | `periodItems` | 12시간 형식에서 선택 가능한 오전/오후 목록입니다. `timeFormat`이 `HOUR_12`일 때 비어 있으면 안 됩니다. | `TimePeriod.entries` |
-| `visibleItemsCount` | 리스트에 표시될 아이템의 개수입니다. | `3` |
-| `colors` | 텍스트, 선택 텍스트, 구분선, 선택 영역 배경 색상입니다. | `PickerDefaults.colors()` |
-| `textStyles` | 선택/비선택 아이템의 텍스트 스타일입니다. | `PickerDefaults.textStyles()` |
-| `isDividerVisible` | 선택 영역 구분선 표시 여부입니다. | `true` |
+| `style` | 각 picker column의 시각/레이아웃 스타일입니다. | `PickerDefaults.style()` |
+| `spacingBetweenPickers` | picker column 사이의 가로 간격입니다. | `0.dp` |
 | `hourPickerLabel` | 시간 picker의 접근성 label입니다. `null`을 전달하면 picker label prefix를 생략합니다. | `"Hour"` |
 | `minutePickerLabel` | 분 picker의 접근성 label입니다. `null`을 전달하면 picker label prefix를 생략합니다. | `"Minute"` |
 | `periodPickerLabel` | 12시간 형식에서 오전/오후 picker의 접근성 label입니다. `null`을 전달하면 picker label prefix를 생략합니다. | `"AM/PM"` |
@@ -390,9 +391,8 @@ custom item 값이 유효 범위를 벗어나거나, 중복이 있거나, 필수
 | `state` | Picker를 제어하기 위한 상태 객체입니다. | `rememberDatePickerState()` |
 | `yearItems` | 선택 가능한 연도 목록입니다. 값은 `1000..9999` 범위여야 합니다. | `1000..9999` |
 | `monthItems` | 선택 가능한 월 목록입니다. 값은 `1..12` 범위여야 합니다. | `1..12` |
-| `visibleItemsCount` | 리스트에 표시될 아이템의 개수입니다. | `3` |
-| `colors` | 텍스트, 선택 텍스트, 구분선, 선택 영역 배경 색상입니다. | `PickerDefaults.colors()` |
-| `textStyles` | 선택/비선택 아이템의 텍스트 스타일입니다. | `PickerDefaults.textStyles()` |
+| `style` | 각 picker column의 시각/레이아웃 스타일입니다. | `PickerDefaults.style()` |
+| `spacingBetweenPickers` | picker column 사이의 가로 간격입니다. | `0.dp` |
 | `yearPickerLabel` | 연도 picker의 접근성 label입니다. `null`을 전달하면 picker label prefix를 생략합니다. | `"Year"` |
 | `monthPickerLabel` | 월 picker의 접근성 label입니다. `null`을 전달하면 picker label prefix를 생략합니다. | `"Month"` |
 | `dayPickerLabel` | 일 picker의 접근성 label입니다. `null`을 전달하면 picker label prefix를 생략합니다. | `"Day"` |
@@ -428,9 +428,8 @@ custom item 값이 유효 범위를 벗어나거나, 중복이 있거나, 목록
 | `state` | Picker를 제어하기 위한 상태 객체입니다. | `rememberYearMonthPickerState()` |
 | `yearItems` | 선택 가능한 연도 목록입니다. 값은 `1000..9999` 범위여야 합니다. | `1000..9999` |
 | `monthItems` | 선택 가능한 월 목록입니다. 값은 `1..12` 범위여야 합니다. | `1..12` |
-| `visibleItemsCount` | 리스트에 표시될 아이템의 개수입니다. | `3` |
-| `colors` | 텍스트, 선택 텍스트, 구분선, 선택 영역 배경 색상입니다. | `PickerDefaults.colors()` |
-| `textStyles` | 선택/비선택 아이템의 텍스트 스타일입니다. | `PickerDefaults.textStyles()` |
+| `style` | 각 picker column의 시각/레이아웃 스타일입니다. | `PickerDefaults.style()` |
+| `spacingBetweenPickers` | picker column 사이의 가로 간격입니다. | `0.dp` |
 | `yearPickerLabel` | 연도 picker의 접근성 label입니다. `null`을 전달하면 picker label prefix를 생략합니다. | `"Year"` |
 | `monthPickerLabel` | 월 picker의 접근성 label입니다. `null`을 전달하면 picker label prefix를 생략합니다. | `"Month"` |
 | `yearItemContentDescription` | 각 연도 값의 접근성 설명입니다. | `it.toString()` |

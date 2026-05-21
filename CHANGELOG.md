@@ -34,6 +34,7 @@ This project tracks notable user-facing and maintainer-facing changes here. The 
 - Removed `startTime` from `TimePicker` and `startLocalDate` from `DatePicker`/`YearMonthPicker`; initial values now belong to `remember*State` APIs.
 - Reworked `TimePickerState`, `DatePickerState`, and `YearMonthPickerState` so they own only logical values instead of exposing or coordinating child picker states.
 - Moved state APIs into the component packages: `TimePickerState` and `rememberTimePickerState` are now in `com.kez.picker.time`, and `YearMonthPickerState` and `rememberYearMonthPickerState` are now in `com.kez.picker.date`.
+- Added `PickerStyle` and `PickerDefaults.style(...)` so repeated picker visual/layout configuration can be passed as one reusable object.
 - Custom item lists are now strict: required lists must be non-empty and distinct, values must be in range, and the current selected value must be present before composition proceeds.
 
 ### Compatibility Notes
@@ -46,6 +47,9 @@ This project tracks notable user-facing and maintainer-facing changes here. The 
 - State API package moves are breaking 0.x import changes. Replace root imports such as
   `com.kez.picker.rememberTimePickerState` and `com.kez.picker.TimePickerState` with
   `com.kez.picker.time.*`; replace root year-month state imports with `com.kez.picker.date.*`.
+- Picker visual parameters such as `visibleItemsCount`, `colors`, `textStyles`,
+  `selectedItemBackgroundShape`, `itemPadding`, `fadingEdgeGradient`, divider configuration, and item
+  alignment moved under `style = PickerDefaults.style(...)`.
 
 ### Maintenance
 
