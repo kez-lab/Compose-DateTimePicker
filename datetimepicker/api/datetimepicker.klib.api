@@ -52,6 +52,7 @@ final class <#A: kotlin/Any> com.kez.picker/PickerAccessibility { // com.kez.pic
 
 final class com.kez.picker.date/DatePickerState { // com.kez.picker.date/DatePickerState|null[0]
     constructor <init>(kotlin/Int, kotlin/Int, kotlin/Int) // com.kez.picker.date/DatePickerState.<init>|<init>(kotlin.Int;kotlin.Int;kotlin.Int){}[0]
+    constructor <init>(kotlinx.datetime/LocalDate) // com.kez.picker.date/DatePickerState.<init>|<init>(kotlinx.datetime.LocalDate){}[0]
 
     final val maxDay // com.kez.picker.date/DatePickerState.maxDay|{}maxDay[0]
         final fun <get-maxDay>(): kotlin/Int // com.kez.picker.date/DatePickerState.maxDay.<get-maxDay>|<get-maxDay>(){}[0]
@@ -95,7 +96,9 @@ final class com.kez.picker.date/YearMonth { // com.kez.picker.date/YearMonth|nul
 }
 
 final class com.kez.picker.date/YearMonthPickerState { // com.kez.picker.date/YearMonthPickerState|null[0]
+    constructor <init>(com.kez.picker.date/YearMonth) // com.kez.picker.date/YearMonthPickerState.<init>|<init>(com.kez.picker.date.YearMonth){}[0]
     constructor <init>(kotlin/Int, kotlin/Int) // com.kez.picker.date/YearMonthPickerState.<init>|<init>(kotlin.Int;kotlin.Int){}[0]
+    constructor <init>(kotlinx.datetime/LocalDate) // com.kez.picker.date/YearMonthPickerState.<init>|<init>(kotlinx.datetime.LocalDate){}[0]
 
     final val selectedMonth // com.kez.picker.date/YearMonthPickerState.selectedMonth|{}selectedMonth[0]
         final fun <get-selectedMonth>(): kotlin/Int // com.kez.picker.date/YearMonthPickerState.selectedMonth.<get-selectedMonth>|<get-selectedMonth>(){}[0]
@@ -121,6 +124,7 @@ final class com.kez.picker.date/YearMonthPickerState { // com.kez.picker.date/Ye
 
 final class com.kez.picker.time/TimePickerState { // com.kez.picker.time/TimePickerState|null[0]
     constructor <init>(kotlin/Int, kotlin/Int, com.kez.picker.util/TimePeriod, com.kez.picker.util/TimeFormat) // com.kez.picker.time/TimePickerState.<init>|<init>(kotlin.Int;kotlin.Int;com.kez.picker.util.TimePeriod;com.kez.picker.util.TimeFormat){}[0]
+    constructor <init>(kotlinx.datetime/LocalTime, com.kez.picker.util/TimeFormat = ...) // com.kez.picker.time/TimePickerState.<init>|<init>(kotlinx.datetime.LocalTime;com.kez.picker.util.TimeFormat){}[0]
 
     final val selectedHour // com.kez.picker.time/TimePickerState.selectedHour|{}selectedHour[0]
         final fun <get-selectedHour>(): kotlin/Int // com.kez.picker.time/TimePickerState.selectedHour.<get-selectedHour>|<get-selectedHour>(){}[0]
