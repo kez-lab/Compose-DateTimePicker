@@ -284,7 +284,7 @@ class TimePickerStateTest {
     }
 
     @Test
-    fun validateTimePickerItems_allowsMinuteItemsMissingCurrentSelection() {
+    fun validateTimePickerItems_throwsWhenMinuteItemsMissingCurrentSelection() {
         val state = TimePickerState(
             initialHour = 14,
             initialMinute = 30,
@@ -292,16 +292,18 @@ class TimePickerStateTest {
             timeFormat = TimeFormat.HOUR_24
         )
 
-        validateTimePickerItems(
-            state = state,
-            minuteItems = listOf(0, 15, 45),
-            hourItems = (9..18).toList(),
-            periodItems = emptyList()
-        )
+        assertFailsWith<IllegalArgumentException> {
+            validateTimePickerItems(
+                state = state,
+                minuteItems = listOf(0, 15, 45),
+                hourItems = (9..18).toList(),
+                periodItems = emptyList()
+            )
+        }
     }
 
     @Test
-    fun validateTimePickerItems_allowsHourItemsMissingCurrentSelection() {
+    fun validateTimePickerItems_throwsWhenHourItemsMissingCurrentSelection() {
         val state = TimePickerState(
             initialHour = 14,
             initialMinute = 30,
@@ -309,12 +311,14 @@ class TimePickerStateTest {
             timeFormat = TimeFormat.HOUR_24
         )
 
-        validateTimePickerItems(
-            state = state,
-            minuteItems = listOf(0, 15, 30, 45),
-            hourItems = listOf(9, 10, 11, 12, 13),
-            periodItems = emptyList()
-        )
+        assertFailsWith<IllegalArgumentException> {
+            validateTimePickerItems(
+                state = state,
+                minuteItems = listOf(0, 15, 30, 45),
+                hourItems = listOf(9, 10, 11, 12, 13),
+                periodItems = emptyList()
+            )
+        }
     }
 
     @Test
@@ -463,7 +467,7 @@ class TimePickerStateTest {
     }
 
     @Test
-    fun validateTimePickerItems_allowsPeriodItemsMissingCurrentSelection() {
+    fun validateTimePickerItems_throwsWhenPeriodItemsMissingCurrentSelection() {
         val state = TimePickerState(
             initialHour = 11,
             initialMinute = 30,
@@ -471,12 +475,14 @@ class TimePickerStateTest {
             timeFormat = TimeFormat.HOUR_12
         )
 
-        validateTimePickerItems(
-            state = state,
-            minuteItems = (0..59).toList(),
-            hourItems = (1..12).toList(),
-            periodItems = listOf(TimePeriod.AM)
-        )
+        assertFailsWith<IllegalArgumentException> {
+            validateTimePickerItems(
+                state = state,
+                minuteItems = (0..59).toList(),
+                hourItems = (1..12).toList(),
+                periodItems = listOf(TimePeriod.AM)
+            )
+        }
     }
 
     // ==================== State Independence Tests ====================
@@ -553,9 +559,6 @@ class TimePickerStateTest {
         assertEquals(45, state.selectedMinute)
         assertEquals(TimePeriod.PM, state.selectedPeriod)
         assertEquals(LocalTime(21, 45), state.selectedTime)
-        assertEquals(1, state.hourState.selectionRequestVersion)
-        assertEquals(1, state.minuteState.selectionRequestVersion)
-        assertEquals(1, state.periodState.selectionRequestVersion)
     }
 
     @Test
@@ -573,9 +576,6 @@ class TimePickerStateTest {
         assertEquals(30, state.selectedMinute)
         assertEquals(TimePeriod.AM, state.selectedPeriod)
         assertEquals(LocalTime(0, 30), state.selectedTime)
-        assertEquals(1, state.hourState.selectionRequestVersion)
-        assertEquals(1, state.minuteState.selectionRequestVersion)
-        assertEquals(1, state.periodState.selectionRequestVersion)
 
         state.selectTime(LocalTime(13, 5))
 
@@ -583,13 +583,10 @@ class TimePickerStateTest {
         assertEquals(5, state.selectedMinute)
         assertEquals(TimePeriod.PM, state.selectedPeriod)
         assertEquals(LocalTime(13, 5), state.selectedTime)
-        assertEquals(2, state.hourState.selectionRequestVersion)
-        assertEquals(2, state.minuteState.selectionRequestVersion)
-        assertEquals(2, state.periodState.selectionRequestVersion)
     }
 
     @Test
-    fun timePickerState_selectedTime_updatesWhenInternalStateChanges() {
+    fun timePickerState_selectedTime_updatesWhenSelectionChanges() {
         val state = TimePickerState(
             initialHour = 12,
             initialMinute = 0,
@@ -597,9 +594,7 @@ class TimePickerStateTest {
             timeFormat = TimeFormat.HOUR_12
         )
 
-        state.hourState.selectedItem = 11
-        state.minuteState.selectedItem = 30
-        state.periodState.selectedItem = TimePeriod.PM
+        state.selectTime(LocalTime(23, 30))
 
         assertEquals(23, state.selectedHourOfDay)
         assertEquals(LocalTime(23, 30), state.selectedTime)
@@ -613,9 +608,7 @@ class TimePickerStateTest {
             initialPeriod = TimePeriod.AM,
             timeFormat = TimeFormat.HOUR_12
         )
-        state.hourState.selectedItem = 7
-        state.minuteState.selectedItem = 45
-        state.periodState.selectedItem = TimePeriod.PM
+        state.selectTime(LocalTime(19, 45))
 
         val restored = state.saveAndRestore()
 

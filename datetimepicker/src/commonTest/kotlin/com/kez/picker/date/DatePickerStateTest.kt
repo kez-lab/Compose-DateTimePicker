@@ -98,12 +98,10 @@ class DatePickerStateTest {
     }
 
     @Test
-    fun testSelectedDate_UpdatesWhenInternalStateChanges() {
+    fun testSelectedDate_UpdatesWhenDateSelectionChanges() {
         val state = DatePickerState(initialYear = 2025, initialMonth = 1, initialDay = 1)
 
-        state.yearState.selectedItem = 2026
-        state.monthState.selectedItem = 12
-        state.dayState.selectedItem = 25
+        state.selectDate(LocalDate(2026, 12, 25))
 
         assertEquals(LocalDate(2026, 12, 25), state.selectedDate)
     }
@@ -118,9 +116,6 @@ class DatePickerStateTest {
         assertEquals(5, state.selectedMonth)
         assertEquals(20, state.selectedDay)
         assertEquals(LocalDate(2026, 5, 20), state.selectedDate)
-        assertEquals(1, state.yearState.selectionRequestVersion)
-        assertEquals(1, state.monthState.selectionRequestVersion)
-        assertEquals(1, state.dayState.selectionRequestVersion)
     }
 
     @Test
@@ -138,9 +133,7 @@ class DatePickerStateTest {
     @Test
     fun testSaver_RoundTripsCurrentSelection() {
         val state = DatePickerState(initialYear = 2025, initialMonth = 1, initialDay = 1)
-        state.yearState.selectedItem = 2026
-        state.monthState.selectedItem = 2
-        state.dayState.selectedItem = 30
+        state.selectDate(LocalDate(2026, 2, 28))
 
         val restored = state.saveAndRestore()
 
@@ -162,14 +155,16 @@ class DatePickerStateTest {
     }
 
     @Test
-    fun testValidateDatePickerItems_AllowsYearItemsMissingCurrentSelection() {
+    fun testValidateDatePickerItems_ThrowsWhenYearItemsMissingCurrentSelection() {
         val state = DatePickerState(initialYear = 2025, initialMonth = 6, initialDay = 15)
 
-        validateDatePickerItems(
-            state = state,
-            yearItems = (2026..2030).toList(),
-            monthItems = listOf(3, 6, 9, 12)
-        )
+        assertFailsWith<IllegalArgumentException> {
+            validateDatePickerItems(
+                state = state,
+                yearItems = (2026..2030).toList(),
+                monthItems = listOf(3, 6, 9, 12)
+            )
+        }
     }
 
     @Test
@@ -186,19 +181,21 @@ class DatePickerStateTest {
     }
 
     @Test
-    fun testValidateDatePickerItems_AllowsMonthItemsMissingCurrentSelection() {
+    fun testValidateDatePickerItems_ThrowsWhenMonthItemsMissingCurrentSelection() {
         val state = DatePickerState(initialYear = 2025, initialMonth = 6, initialDay = 15)
 
-        validateDatePickerItems(
-            state = state,
-            yearItems = (2020..2030).toList(),
-            monthItems = listOf(3, 9, 12)
-        )
+        assertFailsWith<IllegalArgumentException> {
+            validateDatePickerItems(
+                state = state,
+                yearItems = (2020..2030).toList(),
+                monthItems = listOf(3, 9, 12)
+            )
+        }
     }
 
     @Test
     fun testValidateDatePickerItems_AllowsBoundaryValues() {
-        val state = DatePickerState(initialYear = 2025, initialMonth = 6, initialDay = 15)
+        val state = DatePickerState(initialYear = 1000, initialMonth = 1, initialDay = 15)
 
         validateDatePickerItems(
             state = state,

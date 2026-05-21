@@ -7,9 +7,7 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.key
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
@@ -22,8 +20,6 @@ import com.kez.picker.PickerDefaults
 import com.kez.picker.PickerTextStyles
 import com.kez.picker.util.MONTH_RANGE
 import com.kez.picker.util.YEAR_RANGE
-import com.kez.picker.util.currentDate
-import kotlinx.datetime.LocalDate
 
 /**
  * A date picker component that allows selecting year, month, and day.
@@ -31,10 +27,8 @@ import kotlinx.datetime.LocalDate
  * @param modifier The modifier to be applied to the component.
  * @param pickerModifier The modifier to be applied to each picker.
  * @param state The state object to control the picker.
- * @param startLocalDate Legacy compatibility parameter. It does not initialize or update [state],
- * even when [state] is omitted; prefer [rememberDatePickerState] with initial values.
- * @param yearItems The list of year values to display. Must contain values in 1000..9999.
- * @param monthItems The list of month values to display. Must contain values in 1..12.
+ * @param yearItems The list of year values to display. Must be non-empty, distinct, contain values in 1000..9999, and contain [DatePickerState.selectedYear].
+ * @param monthItems The list of month values to display. Must be non-empty, distinct, contain values in 1..12, and contain [DatePickerState.selectedMonth].
  * @param visibleItemsCount The number of items visible at once.
  * @param colors The colors used by the picker. See [PickerDefaults.colors].
  * @param textStyles The text styles used by the picker. See [PickerDefaults.textStyles].
@@ -55,15 +49,13 @@ import kotlinx.datetime.LocalDate
  * @param dayItemContentDescription Accessibility description for each day value.
  * @param previousItemActionLabel Accessibility action label used by child pickers to select the previous item. Pass null or blank to omit the action.
  * @param nextItemActionLabel Accessibility action label used by child pickers to select the next item. Pass null or blank to omit the action.
- * @throws IllegalArgumentException if custom item lists are empty or contain values outside the supported ranges.
+ * @throws IllegalArgumentException if custom item lists are empty, contain duplicates, contain values outside the supported ranges, or omit the current selected year/month.
  */
 @Composable
 fun DatePicker(
     modifier: Modifier = Modifier,
     pickerModifier: Modifier = Modifier,
     state: DatePickerState = rememberDatePickerState(),
-    @Suppress("UNUSED_PARAMETER")
-    startLocalDate: LocalDate = currentDate(),
     yearItems: List<Int> = YEAR_RANGE,
     monthItems: List<Int> = MONTH_RANGE,
     visibleItemsCount: Int = PickerDefaults.VisibleItemsCount,
@@ -93,26 +85,14 @@ fun DatePicker(
         monthItems = monthItems
     )
 
-    // Validate state whenever year or month changes to ensure day is within range
-    LaunchedEffect(state.selectedYear, state.selectedMonth) {
-        state.validate()
-    }
-
     Box(modifier = modifier) {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center,
             modifier = Modifier.fillMaxWidth()
         ) {
-            val yearStartIndex = remember(yearItems) { yearItems.startIndexOf(state.selectedYear) }
-            val monthStartIndex = remember(monthItems) { monthItems.startIndexOf(state.selectedMonth) }
-
             val maxDay = state.maxDay
             val dayItems = (1..maxDay).toList()
-            val dayStartIndex = remember(dayItems, state.selectedDay) {
-                val index = dayItems.indexOf(state.selectedDay.coerceIn(1, maxDay))
-                if (index >= 0) index else 0
-            }
 
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -120,10 +100,10 @@ fun DatePicker(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Picker(
-                    state = state.yearState,
-                    modifier = pickerModifier.weight(1.2f), // Give Year slightly more width
                     items = yearItems,
-                    startIndex = yearStartIndex,
+                    selectedItem = state.selectedYear,
+                    onSelectedItemChange = state::selectYear,
+                    modifier = pickerModifier.weight(1.2f), // Give Year slightly more width
                     visibleItemsCount = visibleItemsCount,
                     colors = colors,
                     textStyles = textStyles,
@@ -142,9 +122,9 @@ fun DatePicker(
                 )
 
                 Picker(
-                    state = state.monthState,
                     items = monthItems,
-                    startIndex = monthStartIndex,
+                    selectedItem = state.selectedMonth,
+                    onSelectedItemChange = state::selectMonth,
                     visibleItemsCount = visibleItemsCount,
                     modifier = pickerModifier.weight(0.8f),
                     colors = colors,
@@ -165,9 +145,9 @@ fun DatePicker(
 
                 key(maxDay) {
                     Picker(
-                        state = state.dayState,
                         items = dayItems,
-                        startIndex = dayStartIndex,
+                        selectedItem = state.selectedDay,
+                        onSelectedItemChange = state::selectDay,
                         visibleItemsCount = visibleItemsCount,
                         modifier = pickerModifier.weight(0.8f),
                         colors = colors,
@@ -192,9 +172,6 @@ fun DatePicker(
     }
 }
 
-private fun <T> List<T>.startIndexOf(item: T): Int =
-    indexOf(item).takeIf { it >= 0 } ?: 0
-
 internal fun validateDatePickerItems(
     state: DatePickerState,
     yearItems: List<Int>,
@@ -207,6 +184,12 @@ internal fun validateDatePickerItems(
 
     require(yearItems.isNotEmpty()) { "DatePicker yearItems must not be empty." }
     require(monthItems.isNotEmpty()) { "DatePicker monthItems must not be empty." }
+    require(yearItems.distinct().size == yearItems.size) {
+        "DatePicker yearItems must not contain duplicate values."
+    }
+    require(monthItems.distinct().size == monthItems.size) {
+        "DatePicker monthItems must not contain duplicate values."
+    }
     require(invalidYears.isEmpty()) {
         "DatePicker yearItems must contain only values in range [1000, 9999]. " +
                 "Invalid values: $invalidYears"
@@ -214,6 +197,12 @@ internal fun validateDatePickerItems(
     require(invalidMonths.isEmpty()) {
         "DatePicker monthItems must contain only values in range [1, 12]. " +
                 "Invalid values: $invalidMonths"
+    }
+    require(state.selectedYear in yearItems) {
+        "DatePicker yearItems must contain state.selectedYear=${state.selectedYear}."
+    }
+    require(state.selectedMonth in monthItems) {
+        "DatePicker monthItems must contain state.selectedMonth=${state.selectedMonth}."
     }
 }
 

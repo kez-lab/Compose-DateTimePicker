@@ -9,128 +9,53 @@ import androidx.compose.runtime.saveable.Saver
 import androidx.compose.runtime.saveable.listSaver
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
-import com.kez.picker.date.DatePickerState
 import com.kez.picker.util.TimeFormat
 import com.kez.picker.util.TimePeriod
 import com.kez.picker.util.currentDate
-import com.kez.picker.util.currentHour
-import com.kez.picker.util.currentMinute
+import com.kez.picker.util.currentDateTime
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalTime
 import kotlinx.datetime.number
 
 /**
- * Remember a [PickerState] with the given initial item.
- *
- * This uses [remember] instead of [rememberSaveable] because arbitrary [T] values are not
- * guaranteed to be saveable. Higher-level picker states such as [TimePickerState],
- * [DatePickerState], and [YearMonthPickerState] provide saveable state for their supported value
- * types.
- *
- * @param initialItem The initial selected item.
- * @return A [PickerState] with the given initial item.
- */
-@Composable
-fun <T> rememberPickerState(initialItem: T) = remember { PickerState(initialItem) }
-
-/**
- * State holder for the picker component.
- *
- * The [selectedItem] property is read-only from external code. Use [selectItem] to change the
- * selection programmatically, or let [Picker] update it when the user scrolls.
- *
- * @param initialItem The initial selected item.
- */
-@Stable
-class PickerState<T>(
-    initialItem: T
-) {
-    /**
-     * The currently selected item.
-     * This value is updated internally when the user scrolls the picker.
-     */
-    var selectedItem: T by mutableStateOf(initialItem)
-        internal set
-
-    internal var selectionRequestVersion: Int by mutableStateOf(0)
-        private set
-
-    internal var activeSelectionRequest: PickerSelectionRequest<T>? by mutableStateOf(null)
-        private set
-
-    /**
-     * Programmatically selects [item].
-     *
-     * When this state is used by [Picker], the picker scroll position is synchronized to the selected item
-     * if that item exists in the current item list. If [item] is not present in the current list, [Picker]
-     * normalizes the state back to the currently centered item.
-     */
-    fun selectItem(item: T) {
-        selectedItem = item
-        selectionRequestVersion += 1
-        activeSelectionRequest = PickerSelectionRequest(selectionRequestVersion, item)
-    }
-
-    internal fun updateSelectedItemFromScroll(item: T) {
-        if (activeSelectionRequest == null) {
-            selectedItem = item
-        }
-    }
-
-    internal fun completeSelectionRequest(requestVersion: Int, settledItem: T) {
-        if (activeSelectionRequest?.version == requestVersion) {
-            selectedItem = settledItem
-            activeSelectionRequest = null
-        }
-    }
-
-    internal fun clearSelectionRequest(requestVersion: Int) {
-        if (activeSelectionRequest?.version == requestVersion) {
-            activeSelectionRequest = null
-        }
-    }
-}
-
-internal data class PickerSelectionRequest<T>(
-    val version: Int,
-    val item: T
-)
-
-/**
- * Creates and remembers a [YearMonthPickerState].
+ * Creates and remembers a [YearMonthPickerState] from a [LocalDate].
  * Initial year and month are read when the state is first created.
  *
- * @param initialYear The initial year to be selected. Defaults to the current year.
- * @param initialMonth The initial month to be selected. Defaults to the current month.
+ * The day value is ignored because [com.kez.picker.date.YearMonthPicker] only selects year and month.
+ *
+ * @param initialDate The initial date whose year and month should be selected. Defaults to the current date.
+ * @return A [YearMonthPickerState] initialized with the year and month from [initialDate].
+ * @throws IllegalArgumentException if [initialDate]'s year is outside the supported 1000..9999 range.
+ */
+@Composable
+fun rememberYearMonthPickerState(
+    initialDate: LocalDate = currentDate()
+): YearMonthPickerState {
+    val rememberedInitialDate = remember { initialDate }
+    return rememberYearMonthPickerState(
+        initialYear = rememberedInitialDate.year,
+        initialMonth = rememberedInitialDate.month.number
+    )
+}
+
+/**
+ * Creates and remembers a [YearMonthPickerState] with explicit year and month values.
+ * Initial year and month are read when the state is first created.
+ *
+ * @param initialYear The initial year to be selected. Must be in 1000..9999.
+ * @param initialMonth The initial month to be selected. Must be in 1..12.
  * @return A [YearMonthPickerState] initialized with the given year and month.
  */
 @Composable
 fun rememberYearMonthPickerState(
-    initialYear: Int = currentDate().year,
-    initialMonth: Int = currentDate().month.number
+    initialYear: Int,
+    initialMonth: Int
 ): YearMonthPickerState {
     val rememberedInitialYear = remember { initialYear }
     val rememberedInitialMonth = remember { initialMonth }
     return rememberSaveable(saver = YearMonthPickerState.Saver) {
         YearMonthPickerState(rememberedInitialYear, rememberedInitialMonth)
     }
-}
-
-/**
- * Creates and remembers a [YearMonthPickerState] from a [LocalDate].
- *
- * The day value is ignored because [com.kez.picker.date.YearMonthPicker] only selects year and month.
- *
- * @param initialDate The initial date whose year and month should be selected.
- * @return A [YearMonthPickerState] initialized with the year and month from [initialDate].
- * @throws IllegalArgumentException if [initialDate]'s year is outside the supported 1000..9999 range.
- */
-@Composable
-fun rememberYearMonthPickerState(initialDate: LocalDate): YearMonthPickerState {
-    return rememberYearMonthPickerState(
-        initialYear = initialDate.year,
-        initialMonth = initialDate.month.number
-    )
 }
 
 /**
@@ -148,9 +73,6 @@ class YearMonthPickerState(
     initialYear: Int,
     initialMonth: Int
 ) {
-    internal val yearState = PickerState(initialYear)
-    internal val monthState = PickerState(initialMonth)
-
     init {
         require(initialYear in 1000..9999) {
             "initialYear must be in range [1000, 9999], but was $initialYear"
@@ -160,17 +82,20 @@ class YearMonthPickerState(
         }
     }
 
+    private var mutableSelectedYear: Int by mutableStateOf(initialYear)
+    private var mutableSelectedMonth: Int by mutableStateOf(initialMonth)
+
     /**
      * The currently selected year.
      */
     val selectedYear: Int
-        get() = yearState.selectedItem
+        get() = mutableSelectedYear
 
     /**
      * The currently selected month (1-12).
      */
     val selectedMonth: Int
-        get() = monthState.selectedItem
+        get() = mutableSelectedMonth
 
     /**
      * The selected year and month represented as the first day of that month.
@@ -181,21 +106,29 @@ class YearMonthPickerState(
     /**
      * Programmatically selects [year] and [month].
      *
-     * The child pickers scroll to the requested values when the current item lists contain them. If a
-     * requested value is not present in a custom item list, that child picker normalizes back to its
-     * currently centered item.
-     *
      * @throws IllegalArgumentException if [year] or [month] is outside the supported range.
      */
     fun selectYearMonth(year: Int, month: Int) {
+        updateYearMonth(year, month)
+    }
+
+    internal fun selectYear(year: Int) {
+        updateYearMonth(year, selectedMonth)
+    }
+
+    internal fun selectMonth(month: Int) {
+        updateYearMonth(selectedYear, month)
+    }
+
+    private fun updateYearMonth(year: Int, month: Int) {
         require(year in 1000..9999) {
             "year must be in range [1000, 9999], but was $year"
         }
         require(month in 1..12) {
             "month must be in range [1, 12], but was $month"
         }
-        yearState.selectItem(year)
-        monthState.selectItem(month)
+        mutableSelectedYear = year
+        mutableSelectedMonth = month
     }
 
     /**
@@ -229,17 +162,17 @@ class YearMonthPickerState(
  * Creates and remembers a [TimePickerState].
  * Initial time values are read when the state is first created.
  *
- * @param initialHour The initial hour to be selected. Defaults to the current hour.
+ * @param initialHour The initial hour to be selected.
  * If [timeFormat] is [TimeFormat.HOUR_12], this value is automatically adjusted to the 12-hour format (1-12).
- * @param initialMinute The initial minute to be selected. Defaults to the current minute.
+ * @param initialMinute The initial minute to be selected.
  * @param initialPeriod The initial period (AM/PM) to be selected. Defaults to the current period based on the current hour.
  * @param timeFormat The time format (12-hour or 24-hour). Defaults to [TimeFormat.HOUR_24].
  * @return A [TimePickerState] initialized with the given time values.
  */
 @Composable
 fun rememberTimePickerState(
-    initialHour: Int = currentHour(),
-    initialMinute: Int = currentMinute(),
+    initialHour: Int,
+    initialMinute: Int,
     initialPeriod: TimePeriod = if (initialHour >= 12) TimePeriod.PM else TimePeriod.AM,
     timeFormat: TimeFormat = TimeFormat.HOUR_24
 ): TimePickerState {
@@ -275,7 +208,7 @@ fun rememberTimePickerState(
  */
 @Composable
 fun rememberTimePickerState(
-    initialTime: LocalTime,
+    initialTime: LocalTime = currentDateTime().time,
     timeFormat: TimeFormat = TimeFormat.HOUR_24
 ): TimePickerState {
     return rememberTimePickerState(
@@ -331,10 +264,6 @@ class TimePickerState(
     initialPeriod: TimePeriod,
     val timeFormat: TimeFormat
 ) {
-    internal val hourState = PickerState(initialHour)
-    internal val minuteState = PickerState(initialMinute)
-    internal val periodState = PickerState(initialPeriod)
-
     init {
         require(initialMinute in 0..59) {
             "initialMinute must be in range [0, 59], but was $initialMinute"
@@ -346,25 +275,29 @@ class TimePickerState(
         }
     }
 
+    private var mutableSelectedHour: Int by mutableStateOf(initialHour)
+    private var mutableSelectedMinute: Int by mutableStateOf(initialMinute)
+    private var mutableSelectedPeriod: TimePeriod by mutableStateOf(initialPeriod)
+
     /**
      * The currently selected hour.
      * For 12-hour format: 1-12, for 24-hour format: 0-23.
      */
     val selectedHour: Int
-        get() = hourState.selectedItem
+        get() = mutableSelectedHour
 
     /**
      * The currently selected minute (0-59).
      */
     val selectedMinute: Int
-        get() = minuteState.selectedItem
+        get() = mutableSelectedMinute
 
     /**
      * The currently selected period (AM/PM).
      * Only relevant when using 12-hour format.
      */
     val selectedPeriod: TimePeriod
-        get() = periodState.selectedItem
+        get() = mutableSelectedPeriod
 
     /**
      * The selected hour converted to 24-hour clock time (0-23).
@@ -390,13 +323,32 @@ class TimePickerState(
      *
      * The hour is converted to the current [timeFormat]. In 12-hour mode, the AM/PM period is derived from
      * [time]. In 24-hour mode, [selectedPeriod] is still updated for consistency but is not displayed by
-     * [com.kez.picker.time.TimePicker]. The child pickers scroll to the requested values when the current
-     * item lists contain them; otherwise that child picker normalizes back to its currently centered item.
+     * [com.kez.picker.time.TimePicker].
      */
     fun selectTime(time: LocalTime) {
-        hourState.selectItem(initialHourForTimeFormat(time.hour, timeFormat))
-        minuteState.selectItem(time.minute)
-        periodState.selectItem(if (time.hour >= 12) TimePeriod.PM else TimePeriod.AM)
+        mutableSelectedHour = initialHourForTimeFormat(time.hour, timeFormat)
+        mutableSelectedMinute = time.minute
+        mutableSelectedPeriod = if (time.hour >= 12) TimePeriod.PM else TimePeriod.AM
+    }
+
+    internal fun selectHour(hour: Int) {
+        val hourRange = if (timeFormat == TimeFormat.HOUR_12) 1..12 else 0..23
+        val hourRangeLabel = if (timeFormat == TimeFormat.HOUR_12) "1..12" else "0..23"
+        require(hour in hourRange) {
+            "hour must be in range $hourRangeLabel for timeFormat=$timeFormat, but was $hour"
+        }
+        mutableSelectedHour = hour
+    }
+
+    internal fun selectMinute(minute: Int) {
+        require(minute in 0..59) {
+            "minute must be in range 0..59, but was $minute"
+        }
+        mutableSelectedMinute = minute
+    }
+
+    internal fun selectPeriod(period: TimePeriod) {
+        mutableSelectedPeriod = period
     }
 
     companion object {

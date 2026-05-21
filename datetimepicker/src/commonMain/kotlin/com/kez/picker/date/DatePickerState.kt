@@ -2,11 +2,13 @@ package com.kez.picker.date
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Stable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.Saver
 import androidx.compose.runtime.saveable.listSaver
 import androidx.compose.runtime.saveable.rememberSaveable
-import com.kez.picker.PickerState
+import androidx.compose.runtime.setValue
 import com.kez.picker.util.currentDate
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.number
@@ -22,9 +24,33 @@ import kotlinx.datetime.number
  */
 @Composable
 fun rememberDatePickerState(
-    initialYear: Int = currentDate().year,
-    initialMonth: Int = currentDate().month.number,
-    initialDay: Int = currentDate().day
+    initialDate: LocalDate = currentDate()
+): DatePickerState {
+    val rememberedInitialDate = remember { initialDate }
+    return rememberSaveable(saver = DatePickerState.Saver) {
+        DatePickerState(
+            initialYear = rememberedInitialDate.year,
+            initialMonth = rememberedInitialDate.month.number,
+            initialDay = rememberedInitialDate.day
+        )
+    }
+}
+
+/**
+ * Creates and remembers a [DatePickerState] with explicit year, month, and day values.
+ *
+ * Initial values are read only when the state is first created.
+ *
+ * @param initialYear The initial year to be selected. Must be in 1000..9999.
+ * @param initialMonth The initial month to be selected. Must be in 1..12.
+ * @param initialDay The initial day to be selected. Must be at least 1.
+ * @return A [DatePickerState] initialized with the given date values.
+ */
+@Composable
+fun rememberDatePickerState(
+    initialYear: Int,
+    initialMonth: Int,
+    initialDay: Int
 ): DatePickerState {
     val rememberedInitialYear = remember { initialYear }
     val rememberedInitialMonth = remember { initialMonth }
@@ -32,22 +58,6 @@ fun rememberDatePickerState(
     return rememberSaveable(saver = DatePickerState.Saver) {
         DatePickerState(rememberedInitialYear, rememberedInitialMonth, rememberedInitialDay)
     }
-}
-
-/**
- * Creates and remembers a [DatePickerState] from a [LocalDate].
- *
- * @param initialDate The initial date to be selected.
- * @return A [DatePickerState] initialized with the year, month, and day from [initialDate].
- * @throws IllegalArgumentException if [initialDate]'s year is outside the supported 1000..9999 range.
- */
-@Composable
-fun rememberDatePickerState(initialDate: LocalDate): DatePickerState {
-    return rememberDatePickerState(
-        initialYear = initialDate.year,
-        initialMonth = initialDate.month.number,
-        initialDay = initialDate.day
-    )
 }
 
 /**
@@ -70,59 +80,6 @@ class DatePickerState(
     initialMonth: Int,
     initialDay: Int
 ) {
-    internal val yearState = PickerState(initialYear)
-    internal val monthState = PickerState(initialMonth)
-    internal val dayState = PickerState(initialDay)
-
-    /**
-     * The currently selected year.
-     */
-    val selectedYear: Int
-        get() = yearState.selectedItem
-
-    /**
-     * The currently selected month (1-12).
-     */
-    val selectedMonth: Int
-        get() = monthState.selectedItem
-
-    /**
-     * The currently selected day (1-31).
-     */
-    val selectedDay: Int
-        get() = dayState.selectedItem
-
-    /**
-     * The currently selected date.
-     */
-    val selectedDate: LocalDate
-        get() = LocalDate(selectedYear, selectedMonth, selectedDay.coerceIn(1, maxDay))
-
-    /**
-     * Programmatically selects [date].
-     *
-     * The child pickers scroll to the requested values when the current item lists contain them. If a
-     * requested value is not present in a custom item list, that child picker normalizes back to its
-     * currently centered item.
-     *
-     * @throws IllegalArgumentException if [date]'s year is outside the supported range.
-     */
-    fun selectDate(date: LocalDate) {
-        require(date.year in 1000..9999) {
-            "date.year must be in range [1000, 9999], but was ${date.year}"
-        }
-        yearState.selectItem(date.year)
-        monthState.selectItem(date.month.number)
-        dayState.selectItem(date.day)
-    }
-
-    /**
-     * The currently valid maximum day for the selected year and month.
-     * Calculated dynamically based on the selected year and month.
-     */
-    val maxDay: Int
-        get() = daysInMonth(selectedYear, selectedMonth)
-
     init {
         require(initialYear in 1000..9999) {
             "initialYear must be in range [1000, 9999], but was $initialYear"
@@ -133,24 +90,95 @@ class DatePickerState(
         require(initialDay >= 1) {
             "initialDay must be greater than or equal to 1, but was $initialDay"
         }
-        val initialMaxDay = daysInMonth(initialYear, initialMonth)
-        if (initialDay > initialMaxDay) {
-            dayState.selectedItem = initialMaxDay
-        }
+    }
+
+    private var mutableSelectedYear: Int by mutableStateOf(initialYear)
+    private var mutableSelectedMonth: Int by mutableStateOf(initialMonth)
+    private var mutableSelectedDay: Int by mutableStateOf(
+        initialDay.coerceAtMost(daysInMonth(initialYear, initialMonth))
+    )
+
+    /**
+     * The currently selected year.
+     */
+    val selectedYear: Int
+        get() = mutableSelectedYear
+
+    /**
+     * The currently selected month (1-12).
+     */
+    val selectedMonth: Int
+        get() = mutableSelectedMonth
+
+    /**
+     * The currently selected day (1-31).
+     */
+    val selectedDay: Int
+        get() = mutableSelectedDay
+
+    /**
+     * The currently selected date.
+     */
+    val selectedDate: LocalDate
+        get() = LocalDate(selectedYear, selectedMonth, selectedDay)
+
+    /**
+     * Programmatically selects [date].
+     *
+     * @throws IllegalArgumentException if [date]'s year is outside the supported range.
+     */
+    fun selectDate(date: LocalDate) {
+        updateDate(
+            year = date.year,
+            month = date.month.number,
+            day = date.day
+        )
     }
 
     /**
-     * Validates and adjusts the selected day if it exceeds the maximum valid day
-     * for the currently selected year and month.
-     *
-     * This function should be called when the year or month changes to ensure
-     * the day remains valid (e.g., Feb 30 -> Feb 28/29).
+     * The currently valid maximum day for the selected year and month.
+     * Calculated dynamically based on the selected year and month.
      */
-    internal fun validate() {
-        val currentMax = maxDay
-        if (dayState.selectedItem > currentMax) {
-            dayState.selectedItem = currentMax
+    val maxDay: Int
+        get() = daysInMonth(selectedYear, selectedMonth)
+
+    internal fun selectYear(year: Int) {
+        updateDate(
+            year = year,
+            month = selectedMonth,
+            day = selectedDay
+        )
+    }
+
+    internal fun selectMonth(month: Int) {
+        updateDate(
+            year = selectedYear,
+            month = month,
+            day = selectedDay
+        )
+    }
+
+    internal fun selectDay(day: Int) {
+        updateDate(
+            year = selectedYear,
+            month = selectedMonth,
+            day = day
+        )
+    }
+
+    private fun updateDate(year: Int, month: Int, day: Int) {
+        require(year in 1000..9999) {
+            "year must be in range [1000, 9999], but was $year"
         }
+        require(month in 1..12) {
+            "month must be in range [1, 12], but was $month"
+        }
+        require(day >= 1) {
+            "day must be greater than or equal to 1, but was $day"
+        }
+        mutableSelectedYear = year
+        mutableSelectedMonth = month
+        mutableSelectedDay = day.coerceAtMost(daysInMonth(year, month))
     }
 
     private fun daysInMonth(year: Int, month: Int): Int {
