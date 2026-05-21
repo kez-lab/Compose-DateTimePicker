@@ -1,5 +1,8 @@
 package com.kez.picker.sample
 
+import androidx.compose.ui.semantics.SemanticsProperties
+import androidx.compose.ui.semantics.getOrNull
+import androidx.compose.ui.test.SemanticsMatcher
 import androidx.compose.ui.test.assertHasClickAction
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
@@ -50,6 +53,29 @@ class SampleAppSmokeAndroidTest {
             .onNodeWithText("Compose DateTimePicker")
             .assertIsDisplayed()
     }
+
+    @Test
+    fun integratedMenuAction_opensAccessibleSelectionSummaryAndReturnsHome() {
+        composeRule
+            .onNodeWithTag("sample-menu-integrated")
+            .performScrollTo()
+            .performClick()
+
+        composeRule
+            .onNodeWithText("Integrated Sample")
+            .assertIsDisplayed()
+        composeRule
+            .onNode(hasContentDescriptionStartingWith("Selected date,"))
+            .assertIsDisplayed()
+
+        composeRule
+            .onNodeWithContentDescription("Back")
+            .performClick()
+
+        composeRule
+            .onNodeWithText("Compose DateTimePicker")
+            .assertIsDisplayed()
+    }
 }
 
 private val sampleMenuTags = listOf(
@@ -60,3 +86,11 @@ private val sampleMenuTags = listOf(
     "sample-menu-bottom-sheet",
     "sample-menu-background-style"
 )
+
+private fun hasContentDescriptionStartingWith(prefix: String): SemanticsMatcher {
+    return SemanticsMatcher("content description starts with $prefix") { node ->
+        node.config
+            .getOrNull(SemanticsProperties.ContentDescription)
+            ?.any { it.startsWith(prefix) } == true
+    }
+}
