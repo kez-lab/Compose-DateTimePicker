@@ -120,6 +120,7 @@ fun TimePicker12hExample() {
 ```kotlin
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
+import com.kez.picker.PickerDefaults
 import com.kez.picker.date.DatePicker
 import com.kez.picker.date.rememberDatePickerState
 import com.kez.picker.util.currentDate
@@ -136,16 +137,18 @@ fun DatePickerExample() {
 
     DatePicker(
         state = state,
-        yearItems = selectableYears
+        items = PickerDefaults.datePickerItems(
+            yearItems = selectableYears
+        )
     )
 
     // 앱 로직에 전달할 때는 state.selectedDate를 사용합니다.
 }
 ```
 
-`yearItems`나 `monthItems`를 제한할 때는 기억된 초기값 또는 복원된 state 값이 해당 목록 안에
-들어가도록 함께 설계하세요. composition 이후 외부 날짜가 바뀐다면 새 `initialDate` 인자에
-의존하지 말고 `state.selectDate(newDate)`를 호출하세요.
+`PickerDefaults.*Items(...)`로 선택 가능한 목록을 제한할 때는 기억된 초기값 또는 복원된 state 값이
+해당 목록 안에 들어가도록 함께 설계하세요. composition 이후 외부 날짜가 바뀐다면 새 `initialDate`
+인자에 의존하지 말고 `state.selectDate(newDate)`를 호출하세요.
 
 ### YearMonthPicker
 
@@ -382,9 +385,7 @@ fun ProgrammaticTimePickerExample() {
 | 파라미터 | 설명 | 기본값 |
 | :--- | :--- | :--- |
 | `state` | Picker를 제어하기 위한 상태 객체입니다. | `rememberTimePickerState()` |
-| `minuteItems` | 선택 가능한 분 목록입니다. 값은 `0..59` 범위여야 합니다. | `0..59` |
-| `hourItems` | 선택 가능한 시간 목록입니다. 24시간 형식에서는 `0..23`, 12시간 형식에서는 표시 시간 기준 `1..12` 범위여야 합니다. | `0..23` 또는 `1..12` |
-| `periodItems` | 12시간 형식에서 선택 가능한 오전/오후 목록입니다. `timeFormat`이 `HOUR_12`일 때 비어 있으면 안 됩니다. | `TimePeriod.entries` |
+| `items` | 선택 가능한 분, 24시간제 시간, 12시간제 표시 시간, 오전/오후 목록입니다. | `PickerDefaults.timePickerItems()` |
 | `style` | 각 picker column의 시각/레이아웃 스타일입니다. | `PickerDefaults.style()` |
 | `spacingBetweenPickers` | picker column 사이의 가로 간격입니다. | `0.dp` |
 | `accessibility` | 각 picker column의 접근성 label, 값 설명, custom action label입니다. | `PickerDefaults.timePickerAccessibility()` |
@@ -403,15 +404,14 @@ fun ProgrammaticTimePickerExample() {
 
 상태 생성 이후 선택값을 바꾸려면 `state.selectTime(LocalTime(...))`을 호출합니다.
 
-custom item 값이 유효 범위를 벗어나거나, 중복이 있거나, 필수 목록이 비어 있거나, 현재 선택값이 custom 목록에 없으면 composition 중 `IllegalArgumentException`이 발생합니다. 12시간 형식의 `hourItems`는 표시 시간 기준(`1..12`)입니다. 예를 들어 `initialHour = 13`은 `state.selectedHour == 1`, `PM`으로 변환됩니다.
+custom item 값이 유효 범위를 벗어나거나, 중복이 있거나, 필수 목록이 비어 있거나, 현재 선택값이 custom 목록에 없으면 composition 중 `IllegalArgumentException`이 발생합니다. 12시간 형식의 `PickerDefaults.timePickerItems(hour12Items = ...)`는 표시 시간 기준(`1..12`)입니다. 예를 들어 `initialHour = 13`은 `state.selectedHour == 1`, `PM`으로 변환됩니다.
 
 ### DatePicker
 
 | 파라미터 | 설명 | 기본값 |
 | :--- | :--- | :--- |
 | `state` | Picker를 제어하기 위한 상태 객체입니다. | `rememberDatePickerState()` |
-| `yearItems` | 선택 가능한 연도 목록입니다. 값은 `1000..9999` 범위여야 합니다. | `1000..9999` |
-| `monthItems` | 선택 가능한 월 목록입니다. 값은 `1..12` 범위여야 합니다. | `1..12` |
+| `items` | 선택 가능한 연도/월 목록입니다. 값은 `1000..9999`와 `1..12` 범위여야 합니다. | `PickerDefaults.datePickerItems()` |
 | `style` | 각 picker column의 시각/레이아웃 스타일입니다. | `PickerDefaults.style()` |
 | `spacingBetweenPickers` | picker column 사이의 가로 간격입니다. | `0.dp` |
 | `accessibility` | 각 picker column의 접근성 label, 값 설명, custom action label입니다. | `PickerDefaults.datePickerAccessibility()` |
@@ -440,8 +440,7 @@ custom item 값이 유효 범위를 벗어나거나, 중복이 있거나, 목록
 | 파라미터 | 설명 | 기본값 |
 | :--- | :--- | :--- |
 | `state` | Picker를 제어하기 위한 상태 객체입니다. | `rememberYearMonthPickerState()` |
-| `yearItems` | 선택 가능한 연도 목록입니다. 값은 `1000..9999` 범위여야 합니다. | `1000..9999` |
-| `monthItems` | 선택 가능한 월 목록입니다. 값은 `1..12` 범위여야 합니다. | `1..12` |
+| `items` | 선택 가능한 연도/월 목록입니다. 값은 `1000..9999`와 `1..12` 범위여야 합니다. | `PickerDefaults.yearMonthPickerItems()` |
 | `style` | 각 picker column의 시각/레이아웃 스타일입니다. | `PickerDefaults.style()` |
 | `spacingBetweenPickers` | picker column 사이의 가로 간격입니다. | `0.dp` |
 | `accessibility` | 각 picker column의 접근성 label, 값 설명, custom action label입니다. | `PickerDefaults.yearMonthPickerAccessibility()` |

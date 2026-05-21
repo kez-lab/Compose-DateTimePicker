@@ -12,12 +12,11 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.sp
+import com.kez.picker.YearMonthPickerItems
 import com.kez.picker.Picker
 import com.kez.picker.PickerDefaults
 import com.kez.picker.PickerStyle
 import com.kez.picker.YearMonthPickerAccessibility
-import com.kez.picker.util.MONTH_RANGE
-import com.kez.picker.util.YEAR_RANGE
 
 /**
  * A year and month picker component.
@@ -25,8 +24,7 @@ import com.kez.picker.util.YEAR_RANGE
  * @param modifier The modifier to be applied to the component.
  * @param pickerModifier The modifier to be applied to each picker.
  * @param state The state object to control the picker.
- * @param yearItems The list of year values to display. Must be non-empty, distinct, contain values in 1000..9999, and contain [YearMonthPickerState.selectedYear].
- * @param monthItems The list of month values to display. Must be non-empty, distinct, contain values in 1..12, and contain [YearMonthPickerState.selectedMonth].
+ * @param items Selectable year and month item lists for the picker.
  * @param style Visual and layout styling for each picker column.
  * @param spacingBetweenPickers The spacing between the pickers.
  * @param accessibility Accessibility labels, item descriptions, and custom action labels for each picker column.
@@ -37,16 +35,14 @@ fun YearMonthPicker(
     modifier: Modifier = Modifier,
     pickerModifier: Modifier = Modifier,
     state: YearMonthPickerState = rememberYearMonthPickerState(),
-    yearItems: List<Int> = YEAR_RANGE,
-    monthItems: List<Int> = MONTH_RANGE,
+    items: YearMonthPickerItems = PickerDefaults.yearMonthPickerItems(),
     style: PickerStyle = PickerDefaults.style(),
     spacingBetweenPickers: Dp = PickerDefaults.SpacingBetweenPickers,
     accessibility: YearMonthPickerAccessibility = PickerDefaults.yearMonthPickerAccessibility()
 ) {
     validateYearMonthPickerItems(
         state = state,
-        yearItems = yearItems,
-        monthItems = monthItems
+        items = items
     )
 
     Box(modifier = modifier) {
@@ -63,7 +59,7 @@ fun YearMonthPicker(
                 ),
             ) {
                 Picker(
-                    items = yearItems,
+                    items = items.yearItems,
                     selectedItem = state.selectedYear,
                     onSelectedItemChange = state::selectYear,
                     modifier = pickerModifier.weight(1f),
@@ -71,7 +67,7 @@ fun YearMonthPicker(
                     accessibility = accessibility.year
                 )
                 Picker(
-                    items = monthItems,
+                    items = items.monthItems,
                     selectedItem = state.selectedMonth,
                     onSelectedItemChange = state::selectMonth,
                     modifier = pickerModifier.weight(1f),
@@ -88,6 +84,22 @@ internal fun validateYearMonthPickerItems(
     yearItems: List<Int>,
     monthItems: List<Int>
 ) {
+    validateYearMonthPickerItems(
+        state = state,
+        items = YearMonthPickerItems(
+            yearItems = yearItems,
+            monthItems = monthItems
+        )
+    )
+}
+
+internal fun validateYearMonthPickerItems(
+    state: YearMonthPickerState,
+    items: YearMonthPickerItems
+) {
+    val yearItems = items.yearItems
+    val monthItems = items.monthItems
+
     val yearRange = 1000..9999
     val monthRange = 1..12
     val invalidYears = yearItems.invalidValuesFor(yearRange)

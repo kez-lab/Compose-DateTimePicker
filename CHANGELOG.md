@@ -37,6 +37,8 @@ This project tracks notable user-facing and maintainer-facing changes here. The 
 - Added `PickerStyle` and `PickerDefaults.style(...)` so repeated picker visual/layout configuration can be passed as one reusable object.
 - Added `PickerAccessibility` plus component-specific accessibility option objects so localized labels,
   item descriptions, and previous/next action labels can be passed as one reusable object.
+- Added component-specific item-list option objects so custom selectable values can be passed as one
+  reusable `items` object.
 - Custom item lists are now strict: required lists must be non-empty and distinct, values must be in range, and the current selected value must be present before composition proceeds.
 
 ### Compatibility Notes
@@ -55,6 +57,8 @@ This project tracks notable user-facing and maintainer-facing changes here. The 
 - Picker accessibility parameters such as `*PickerLabel`, `*ItemContentDescription`,
   `previousItemActionLabel`, and `nextItemActionLabel` moved under
   `accessibility = PickerDefaults.*Accessibility(...)`.
+- Picker custom item-list parameters such as `minuteItems`, `hourItems`, `periodItems`, `yearItems`,
+  and `monthItems` moved under `items = PickerDefaults.*Items(...)`.
 
 ### Maintenance
 

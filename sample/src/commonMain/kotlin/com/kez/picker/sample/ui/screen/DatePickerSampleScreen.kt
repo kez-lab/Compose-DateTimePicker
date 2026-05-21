@@ -102,7 +102,9 @@ fun DatePickerSampleScreen(
             PickerPanel {
                 DatePicker(
                     state = state,
-                    yearItems = allowedYears,
+                    items = PickerDefaults.datePickerItems(
+                        yearItems = allowedYears
+                    ),
                     style = PickerDefaults.style(
                         visibleItemsCount = 3,
                         textStyles = PickerDefaults.textStyles(

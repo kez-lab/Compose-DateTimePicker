@@ -338,9 +338,11 @@ class PickerAccessibilitySemanticsAndroidTest {
 
             TimePicker(
                 state = state,
-                hourItems = listOf(1, 2, 3),
-                minuteItems = listOf(0, 30),
-                periodItems = listOf(TimePeriod.AM, TimePeriod.PM),
+                items = PickerDefaults.timePickerItems(
+                    minuteItems = listOf(0, 30),
+                    hour12Items = listOf(1, 2, 3),
+                    periodItems = listOf(TimePeriod.AM, TimePeriod.PM)
+                ),
                 style = PickerDefaults.style(visibleItemsCount = 3),
                 accessibility = PickerDefaults.timePickerAccessibility(
                     hourPickerLabel = "시간",
@@ -380,8 +382,10 @@ class PickerAccessibilitySemanticsAndroidTest {
 
             DatePicker(
                 state = state,
-                yearItems = listOf(2026, 2027),
-                monthItems = listOf(1, 5),
+                items = PickerDefaults.datePickerItems(
+                    yearItems = listOf(2026, 2027),
+                    monthItems = listOf(1, 5)
+                ),
                 style = PickerDefaults.style(visibleItemsCount = 3),
                 accessibility = PickerDefaults.datePickerAccessibility(
                     yearPickerLabel = "연도",
@@ -434,8 +438,10 @@ class PickerAccessibilitySemanticsAndroidTest {
 
             TimePicker(
                 state = state,
-                hourItems = listOf(10, 11),
-                minuteItems = listOf(5, 10),
+                items = PickerDefaults.timePickerItems(
+                    minuteItems = listOf(5, 10),
+                    hour24Items = listOf(10, 11)
+                ),
                 style = PickerDefaults.style(visibleItemsCount = 3),
                 accessibility = PickerDefaults.timePickerAccessibility(
                     hourPickerLabel = "시간",
@@ -465,8 +471,10 @@ class PickerAccessibilitySemanticsAndroidTest {
 
             TimePicker(
                 state = state,
-                hourItems = listOf(10, 11),
-                minuteItems = listOf(5, 10),
+                items = PickerDefaults.timePickerItems(
+                    minuteItems = listOf(5, 10),
+                    hour24Items = listOf(10, 11)
+                ),
                 style = PickerDefaults.style(visibleItemsCount = 3),
                 accessibility = PickerDefaults.timePickerAccessibility(
                     hourPickerLabel = "시간",
@@ -505,9 +513,11 @@ class PickerAccessibilitySemanticsAndroidTest {
 
             TimePicker(
                 state = state,
-                hourItems = listOf(10, 11),
-                minuteItems = listOf(5, 10),
-                periodItems = listOf(TimePeriod.AM, TimePeriod.PM),
+                items = PickerDefaults.timePickerItems(
+                    minuteItems = listOf(5, 10),
+                    hour12Items = listOf(10, 11),
+                    periodItems = listOf(TimePeriod.AM, TimePeriod.PM)
+                ),
                 style = PickerDefaults.style(visibleItemsCount = 3),
                 accessibility = PickerDefaults.timePickerAccessibility(
                     hourPickerLabel = "시간",
@@ -570,9 +580,11 @@ class PickerAccessibilitySemanticsAndroidTest {
 
             TimePicker(
                 state = state,
-                hourItems = listOf(10, 11),
-                minuteItems = listOf(5, 10),
-                periodItems = listOf(TimePeriod.AM, TimePeriod.PM),
+                items = PickerDefaults.timePickerItems(
+                    minuteItems = listOf(5, 10),
+                    hour12Items = listOf(10, 11),
+                    periodItems = listOf(TimePeriod.AM, TimePeriod.PM)
+                ),
                 style = PickerDefaults.style(visibleItemsCount = 3),
                 accessibility = PickerDefaults.timePickerAccessibility(
                     periodPickerLabel = "오전/오후",
@@ -602,8 +614,10 @@ class PickerAccessibilitySemanticsAndroidTest {
 
             DatePicker(
                 state = state,
-                yearItems = listOf(2026),
-                monthItems = listOf(5),
+                items = PickerDefaults.datePickerItems(
+                    yearItems = listOf(2026),
+                    monthItems = listOf(5)
+                ),
                 style = PickerDefaults.style(visibleItemsCount = 3),
                 accessibility = PickerDefaults.datePickerAccessibility(
                     yearPickerLabel = "연도",
@@ -642,8 +656,10 @@ class PickerAccessibilitySemanticsAndroidTest {
 
             DatePicker(
                 state = state,
-                yearItems = listOf(2026, 2027),
-                monthItems = listOf(1, 2),
+                items = PickerDefaults.datePickerItems(
+                    yearItems = listOf(2026, 2027),
+                    monthItems = listOf(1, 2)
+                ),
                 style = PickerDefaults.style(visibleItemsCount = 3),
                 accessibility = PickerDefaults.datePickerAccessibility(
                     yearPickerLabel = "연도",
@@ -706,8 +722,10 @@ class PickerAccessibilitySemanticsAndroidTest {
 
             YearMonthPicker(
                 state = state,
-                yearItems = listOf(2026),
-                monthItems = listOf(5),
+                items = PickerDefaults.yearMonthPickerItems(
+                    yearItems = listOf(2026),
+                    monthItems = listOf(5)
+                ),
                 style = PickerDefaults.style(visibleItemsCount = 3),
                 accessibility = PickerDefaults.yearMonthPickerAccessibility(
                     yearPickerLabel = "연도",
@@ -739,8 +757,10 @@ class PickerAccessibilitySemanticsAndroidTest {
 
             YearMonthPicker(
                 state = state,
-                yearItems = listOf(2026, 2027),
-                monthItems = listOf(5, 6),
+                items = PickerDefaults.yearMonthPickerItems(
+                    yearItems = listOf(2026, 2027),
+                    monthItems = listOf(5, 6)
+                ),
                 style = PickerDefaults.style(visibleItemsCount = 3),
                 accessibility = PickerDefaults.yearMonthPickerAccessibility(
                     yearPickerLabel = "연도",

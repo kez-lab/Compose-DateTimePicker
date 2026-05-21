@@ -166,8 +166,10 @@ class PickerStateRestorationAndroidTest {
 
             DatePicker(
                 state = state,
-                yearItems = listOf(2024, 2026),
-                monthItems = listOf(1, 2),
+                items = PickerDefaults.datePickerItems(
+                    yearItems = listOf(2024, 2026),
+                    monthItems = listOf(1, 2)
+                ),
                 style = PickerDefaults.style(visibleItemsCount = 3),
                 accessibility = PickerDefaults.datePickerAccessibility(
                     yearPickerLabel = "Year",
@@ -235,8 +237,10 @@ class PickerStateRestorationAndroidTest {
 
             YearMonthPicker(
                 state = state,
-                yearItems = listOf(2024, 2027),
-                monthItems = listOf(5, 12),
+                items = PickerDefaults.yearMonthPickerItems(
+                    yearItems = listOf(2024, 2027),
+                    monthItems = listOf(5, 12)
+                ),
                 style = PickerDefaults.style(visibleItemsCount = 3),
                 accessibility = PickerDefaults.yearMonthPickerAccessibility(
                     yearPickerLabel = "Year",
