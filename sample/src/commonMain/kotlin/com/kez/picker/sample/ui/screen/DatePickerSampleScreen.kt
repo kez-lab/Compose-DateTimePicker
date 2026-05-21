@@ -103,17 +103,19 @@ fun DatePickerSampleScreen(
                 DatePicker(
                     state = state,
                     yearItems = allowedYears,
-                    visibleItemsCount = 3,
-                    textStyles = PickerDefaults.textStyles(
-                        textStyle = MaterialTheme.typography.bodyLarge,
-                        selectedTextStyle = TextStyle(
-                            fontSize = 22.sp,
-                            fontWeight = FontWeight.Bold
+                    style = PickerDefaults.style(
+                        visibleItemsCount = 3,
+                        textStyles = PickerDefaults.textStyles(
+                            textStyle = MaterialTheme.typography.bodyLarge,
+                            selectedTextStyle = TextStyle(
+                                fontSize = 22.sp,
+                                fontWeight = FontWeight.Bold
+                            )
+                        ),
+                        colors = PickerDefaults.colors(
+                            selectedTextColor = MaterialTheme.colorScheme.primary,
+                            dividerColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.5f)
                         )
-                    ),
-                    colors = PickerDefaults.colors(
-                        selectedTextColor = MaterialTheme.colorScheme.primary,
-                        dividerColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.5f)
                     ),
                     yearPickerLabel = "연도",
                     monthPickerLabel = "월",

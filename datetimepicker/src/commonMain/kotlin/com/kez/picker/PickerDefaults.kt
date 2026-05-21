@@ -6,6 +6,7 @@ import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.LocalTextStyle
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
@@ -100,6 +101,49 @@ object PickerDefaults {
     )
 
     /**
+     * Creates a [PickerStyle] that groups picker visual and layout styling.
+     *
+     * @param visibleItemsCount The number of items visible at once. Must be a positive odd number.
+     * @param colors The colors used by the picker.
+     * @param textStyles The text styles used by the picker.
+     * @param selectedItemBackgroundShape The shape of the selected item background.
+     * @param itemPadding The padding around each item.
+     * @param fadingEdgeGradient The gradient used for fading edges.
+     * @param horizontalAlignment The horizontal alignment of items.
+     * @param verticalAlignment The vertical alignment of item content.
+     * @param dividerThickness The thickness of the selection dividers.
+     * @param dividerShape The shape of the selection dividers.
+     * @param isDividerVisible Whether selection dividers are visible.
+     * @return A [PickerStyle] instance with the specified styling.
+     */
+    @Composable
+    fun style(
+        visibleItemsCount: Int = VisibleItemsCount,
+        colors: PickerColors = PickerDefaults.colors(),
+        textStyles: PickerTextStyles = PickerDefaults.textStyles(),
+        selectedItemBackgroundShape: Shape = SelectedItemBackgroundShape,
+        itemPadding: PaddingValues = ItemPadding,
+        fadingEdgeGradient: Brush = fadingEdgeGradient(),
+        horizontalAlignment: Alignment.Horizontal = Alignment.CenterHorizontally,
+        verticalAlignment: Alignment.Vertical = Alignment.CenterVertically,
+        dividerThickness: Dp = DividerThickness,
+        dividerShape: Shape = DividerShape,
+        isDividerVisible: Boolean = true
+    ): PickerStyle = PickerStyle(
+        visibleItemsCount = visibleItemsCount,
+        colors = colors,
+        textStyles = textStyles,
+        selectedItemBackgroundShape = selectedItemBackgroundShape,
+        itemPadding = itemPadding,
+        fadingEdgeGradient = fadingEdgeGradient,
+        horizontalAlignment = horizontalAlignment,
+        verticalAlignment = verticalAlignment,
+        dividerThickness = dividerThickness,
+        dividerShape = dividerShape,
+        isDividerVisible = isDividerVisible
+    )
+
+    /**
      * Creates the default fading edge gradient.
      *
      * @return A vertical [Brush] with transparent edges and opaque center.
@@ -139,4 +183,35 @@ data class PickerColors(
 data class PickerTextStyles(
     val textStyle: TextStyle,
     val selectedTextStyle: TextStyle
+)
+
+/**
+ * Represents visual and layout styling shared by [Picker] and related components.
+ *
+ * @param visibleItemsCount The number of items visible at once.
+ * @param colors The colors used by the picker.
+ * @param textStyles The text styles used by the picker.
+ * @param selectedItemBackgroundShape The shape of the selected item background.
+ * @param itemPadding The padding around each item.
+ * @param fadingEdgeGradient The gradient used for fading edges.
+ * @param horizontalAlignment The horizontal alignment of items.
+ * @param verticalAlignment The vertical alignment of item content.
+ * @param dividerThickness The thickness of the selection dividers.
+ * @param dividerShape The shape of the selection dividers.
+ * @param isDividerVisible Whether selection dividers are visible.
+ * @see PickerDefaults.style
+ */
+@Immutable
+data class PickerStyle(
+    val visibleItemsCount: Int,
+    val colors: PickerColors,
+    val textStyles: PickerTextStyles,
+    val selectedItemBackgroundShape: Shape,
+    val itemPadding: PaddingValues,
+    val fadingEdgeGradient: Brush,
+    val horizontalAlignment: Alignment.Horizontal,
+    val verticalAlignment: Alignment.Vertical,
+    val dividerThickness: Dp,
+    val dividerShape: Shape,
+    val isDividerVisible: Boolean
 )
