@@ -165,35 +165,97 @@ fun YearMonthPickerExample() {
 ### BottomSheet 통합
 
 Picker 컴포넌트는 `ModalBottomSheet`나 다른 다이얼로그 컴포넌트 내에서도 원활하게 작동합니다.
+확정된 값과 sheet 내부의 임시 picker state를 분리하면, sheet를 닫거나 취소했을 때 앱 상태가
+의도치 않게 바뀌지 않습니다.
 
 ```kotlin
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
-import com.kez.picker.time.TimePicker
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.Button
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.Text
+import androidx.compose.material3.rememberModalBottomSheetState
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberSaveable
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 import com.kez.picker.rememberTimePickerState
+import com.kez.picker.time.TimePicker
+import kotlinx.datetime.LocalTime
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun BottomSheetPickerExample() {
+    var committedHour by rememberSaveable { mutableIntStateOf(9) }
+    var committedMinute by rememberSaveable { mutableIntStateOf(30) }
     var showBottomSheet by remember { mutableStateOf(false) }
     val sheetState = rememberModalBottomSheetState()
-    val state = rememberTimePickerState()
+    val committedTime = LocalTime(committedHour, committedMinute)
 
-    Button(onClick = { showBottomSheet = true }) {
-        Text("시간 선택")
+    Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+        Text("선택된 시간: $committedTime")
+
+        Button(onClick = { showBottomSheet = true }) {
+            Text("시간 선택")
+        }
     }
 
     if (showBottomSheet) {
+        val draftState = rememberTimePickerState(initialTime = committedTime)
+
         ModalBottomSheet(
             onDismissRequest = { showBottomSheet = false },
             sheetState = sheetState
         ) {
-            TimePicker(state = state)
-            // 확인 버튼 로직 등 추가 가능
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(24.dp),
+                verticalArrangement = Arrangement.spacedBy(16.dp)
+            ) {
+                TimePicker(state = draftState)
+
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    OutlinedButton(
+                        onClick = { showBottomSheet = false },
+                        modifier = Modifier.weight(1f)
+                    ) {
+                        Text("취소")
+                    }
+
+                    Button(
+                        onClick = {
+                            val selected = draftState.selectedTime
+                            committedHour = selected.hour
+                            committedMinute = selected.minute
+                            showBottomSheet = false
+                        },
+                        modifier = Modifier.weight(1f)
+                    ) {
+                        Text("적용")
+                    }
+                }
+            }
         }
     }
 }
 ```
+
+위 예제는 Android Activity 재생성에도 보존하기 쉽도록 primitive 값인 hour/minute를
+`rememberSaveable`로 저장하고, draft picker state를 만들기 전에 `LocalTime`을 다시 생성합니다.
 
 ## API 레퍼런스
 
