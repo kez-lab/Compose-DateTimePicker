@@ -134,6 +134,9 @@ fun DatePickerExample() {
     val selectableYears = remember(initialDate.year) {
         ((initialDate.year - 1)..(initialDate.year + 1)).toList()
     }
+    val selectableDays = remember(initialDate.day) {
+        listOf(1, 15, initialDate.day).distinct().sorted()
+    }
     val state = rememberDatePickerState(
         initialDate = initialDate
     )
@@ -144,7 +147,8 @@ fun DatePickerExample() {
             // 앱 state, ViewModel, form data를 여기서 갱신합니다.
         },
         items = PickerDefaults.datePickerItems(
-            yearItems = selectableYears
+            yearItems = selectableYears,
+            dayItems = selectableDays
         )
     )
 
@@ -388,8 +392,9 @@ fun ProgrammaticTimePickerExample() {
 
 요청한 값이 현재 item list에 포함되어 있으면 picker 스크롤 위치가 동기화됩니다. custom list는 엄격하게
 검증됩니다. 비어 있지 않아야 하고, 중복이 없어야 하며, 지원 범위 안의 값만 포함해야 하고, 현재 선택값도
-반드시 포함해야 합니다. 앱이 custom list 밖의 값을 복원하거나 요청할 수 있다면 picker를 렌더링하기 전에
-앱 state를 보정하거나 거부하세요.
+반드시 포함해야 합니다. `DatePicker`는 `dayItems`를 선택된 연/월의 최대 일수로 필터링하므로,
+`dayItems`에는 선택 가능한 모든 연/월 조합에서 유효한 day가 최소 하나 있어야 합니다. 앱이 custom list
+밖의 값을 복원하거나 요청할 수 있다면 picker를 렌더링하기 전에 앱 state를 보정하거나 거부하세요.
 
 `onSelectedTimeChange`, `onSelectedDateChange`, `onSelectedYearMonthChange`는 사용자가 picker를
 조작해서 값이 바뀔 때 호출됩니다. 프로그래밍 방식의 `state.select*` 호출은 state를 직접 변경하므로,
@@ -428,7 +433,7 @@ custom item 값이 유효 범위를 벗어나거나, 중복이 있거나, 필수
 | :--- | :--- | :--- |
 | `state` | Picker를 제어하기 위한 상태 객체입니다. | `rememberDatePickerState()` |
 | `onSelectedDateChange` | 사용자 조작으로 선택된 `LocalDate`가 바뀐 뒤 호출됩니다. | `{}` |
-| `items` | 선택 가능한 연도/월 목록입니다. 값은 `1000..9999`와 `1..12` 범위여야 합니다. | `PickerDefaults.datePickerItems()` |
+| `items` | 선택 가능한 연도/월/일 목록입니다. 값은 `1000..9999`, `1..12`, `1..31` 범위여야 합니다. | `PickerDefaults.datePickerItems()` |
 | `style` | 각 picker column의 시각/레이아웃 스타일입니다. | `PickerDefaults.style()` |
 | `spacingBetweenPickers` | picker column 사이의 가로 간격입니다. | `0.dp` |
 | `accessibility` | 각 picker column의 접근성 label, 값 설명, custom action label입니다. | `PickerDefaults.datePickerAccessibility()` |
@@ -450,7 +455,7 @@ custom item 값이 유효 범위를 벗어나거나, 중복이 있거나, 필수
 
 상태 생성 이후 선택값을 바꾸려면 `state.selectDate(LocalDate(...))`를 호출합니다.
 
-custom item 값이 유효 범위를 벗어나거나, 중복이 있거나, 목록이 비어 있거나, 현재 선택된 연도/월이 custom 목록에 없으면 composition 중 `IllegalArgumentException`이 발생합니다.
+custom item 값이 유효 범위를 벗어나거나, 중복이 있거나, 목록이 비어 있거나, 현재 선택된 연도/월/일이 custom 목록에 없으면 composition 중 `IllegalArgumentException`이 발생합니다. 연/월 변경으로 현재 일이 `dayItems`에서 선택 불가능해지면 해당 월에서 가장 가까운 선택 가능 day로 이동합니다.
 
 ### YearMonthPicker
 

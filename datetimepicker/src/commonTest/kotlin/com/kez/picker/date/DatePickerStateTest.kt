@@ -1,6 +1,7 @@
 package com.kez.picker.date
 
 import androidx.compose.runtime.saveable.SaverScope
+import com.kez.picker.DatePickerItems
 import kotlinx.datetime.LocalDate
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -202,6 +203,100 @@ class DatePickerStateTest {
             yearItems = listOf(1000, 9999),
             monthItems = listOf(1, 12)
         )
+    }
+
+    @Test
+    fun testValidateDatePickerItems_AllowsCustomDayItemsContainingCurrentSelection() {
+        val state = DatePickerState(initialYear = 2025, initialMonth = 6, initialDay = 15)
+
+        validateDatePickerItems(
+            state = state,
+            items = DatePickerItems(
+                yearItems = listOf(2025),
+                monthItems = listOf(6),
+                dayItems = listOf(1, 15)
+            )
+        )
+    }
+
+    @Test
+    fun testValidateDatePickerItems_ThrowsWhenDayItemsMissingCurrentSelection() {
+        val state = DatePickerState(initialYear = 2025, initialMonth = 6, initialDay = 15)
+
+        assertFailsWith<IllegalArgumentException> {
+            validateDatePickerItems(
+                state = state,
+                items = DatePickerItems(
+                    yearItems = listOf(2025),
+                    monthItems = listOf(6),
+                    dayItems = listOf(1, 10)
+                )
+            )
+        }
+    }
+
+    @Test
+    fun testValidateDatePickerItems_ThrowsWhenDayItemsAreEmpty() {
+        val state = DatePickerState(initialYear = 2025, initialMonth = 6, initialDay = 15)
+
+        assertFailsWith<IllegalArgumentException> {
+            validateDatePickerItems(
+                state = state,
+                items = DatePickerItems(
+                    yearItems = listOf(2025),
+                    monthItems = listOf(6),
+                    dayItems = emptyList()
+                )
+            )
+        }
+    }
+
+    @Test
+    fun testValidateDatePickerItems_ThrowsWhenDayItemsContainDuplicateValues() {
+        val state = DatePickerState(initialYear = 2025, initialMonth = 6, initialDay = 15)
+
+        assertFailsWith<IllegalArgumentException> {
+            validateDatePickerItems(
+                state = state,
+                items = DatePickerItems(
+                    yearItems = listOf(2025),
+                    monthItems = listOf(6),
+                    dayItems = listOf(1, 15, 15)
+                )
+            )
+        }
+    }
+
+    @Test
+    fun testValidateDatePickerItems_ThrowsWhenDayItemsContainInvalidValue() {
+        val state = DatePickerState(initialYear = 2025, initialMonth = 6, initialDay = 15)
+
+        assertFailsWith<IllegalArgumentException> {
+            validateDatePickerItems(
+                state = state,
+                items = DatePickerItems(
+                    yearItems = listOf(2025),
+                    monthItems = listOf(6),
+                    dayItems = listOf(0, 15, 32)
+                )
+            )
+        }
+    }
+
+    @Test
+    fun testValidateDatePickerItems_ThrowsWhenDayItemsCannotRepresentEveryYearMonth() {
+        val state = DatePickerState(initialYear = 2025, initialMonth = 1, initialDay = 31)
+
+        assertFailsWith<IllegalArgumentException> {
+            validateDatePickerItems(
+                state = state,
+                items = DatePickerItems(
+                    yearItems = listOf(2025),
+                    monthItems = listOf(1, 2),
+                    dayItems = listOf(31)
+                )
+            )
+        }
     }
 
     @Test

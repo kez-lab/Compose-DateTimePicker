@@ -137,6 +137,9 @@ fun DatePickerExample() {
     val selectableYears = remember(initialDate.year) {
         ((initialDate.year - 1)..(initialDate.year + 1)).toList()
     }
+    val selectableDays = remember(initialDate.day) {
+        listOf(1, 15, initialDate.day).distinct().sorted()
+    }
     val state = rememberDatePickerState(
         initialDate = initialDate
     )
@@ -147,7 +150,8 @@ fun DatePickerExample() {
             // Update app state, ViewModel, or form data here.
         },
         items = PickerDefaults.datePickerItems(
-            yearItems = selectableYears
+            yearItems = selectableYears,
+            dayItems = selectableDays
         )
     )
 
@@ -391,8 +395,9 @@ fun ProgrammaticTimePickerExample() {
 
 The picker scroll position is synchronized when the current item lists contain the requested values. Custom
 item lists are strict: they must be non-empty, distinct, within the supported value ranges, and contain the
-current selected value. If an app can restore or request values outside a custom list, clamp or reject that
-app state before rendering the picker.
+current selected value. `DatePicker` filters `dayItems` by the selected year/month maximum day, so
+`dayItems` must include at least one day valid for every selectable year/month combination. If an app can
+restore or request values outside a custom list, clamp or reject that app state before rendering the picker.
 
 `onSelectedTimeChange`, `onSelectedDateChange`, and `onSelectedYearMonthChange` are called for
 user-driven picker changes. Programmatic `state.select*` calls update the state directly; update your
@@ -431,7 +436,7 @@ Invalid custom item values, duplicate items, empty required lists, or current se
 |:--------------------|:----------------------------------------|:----------------------------|
 | `state`             | The state object to control the picker. | `rememberDatePickerState()` |
 | `onSelectedDateChange` | Called after user interaction changes the selected `LocalDate`. | `{}` |
-| `items`             | Selectable year and month item lists. Values must be in `1000..9999` and `1..12`. | `PickerDefaults.datePickerItems()` |
+| `items`             | Selectable year, month, and day item lists. Values must be in `1000..9999`, `1..12`, and `1..31`. | `PickerDefaults.datePickerItems()` |
 | `style`             | Visual and layout styling for each picker column. | `PickerDefaults.style()` |
 | `spacingBetweenPickers` | Horizontal spacing between picker columns. | `0.dp` |
 | `accessibility` | Accessibility labels, item descriptions, and custom action labels for each picker column. | `PickerDefaults.datePickerAccessibility()` |
@@ -453,7 +458,7 @@ the maximum valid day for the initial year/month, it is clamped to that maximum.
 
 To change the selection after state creation, call `state.selectDate(LocalDate(...))`.
 
-Invalid custom item values, duplicate items, empty lists, or current selected year/month values missing from custom lists throw `IllegalArgumentException` during composition.
+Invalid custom item values, duplicate items, empty lists, or current selected year/month/day values missing from custom lists throw `IllegalArgumentException` during composition. If a year/month change makes the selected day unavailable in `dayItems`, the picker selects the closest available day for that month.
 
 ### YearMonthPicker
 

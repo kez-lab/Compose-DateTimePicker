@@ -12,6 +12,8 @@ This project tracks notable user-facing and maintainer-facing changes here. The 
 - Added user-selection callbacks to composite pickers:
   `onSelectedTimeChange`, `onSelectedDateChange`, and `onSelectedYearMonthChange`.
 - Added `date.YearMonth` as the primary value model for year/month-only selections.
+- Added `dayItems` to `DatePickerItems` / `PickerDefaults.datePickerItems(...)` so apps can
+  constrain selectable days as well as years and months.
 - Added picker accessibility descriptions and localized item description hooks so Android apps can provide clearer TalkBack output.
 - Added previous/next accessibility actions for picker columns, with public labels that apps can localize.
 
@@ -44,6 +46,8 @@ This project tracks notable user-facing and maintainer-facing changes here. The 
   reusable `items` object.
 - `YearMonthPickerState` now exposes `selectedYearMonth: YearMonth` in addition to
   `selectedMonthDate` for `LocalDate` interoperability.
+- `DatePicker` now adjusts to the closest available custom day when a year/month change makes the
+  previous day unavailable in `dayItems`.
 - Custom item lists are now strict: required lists must be non-empty and distinct, values must be in range, and the current selected value must be present before composition proceeds.
 
 ### Compatibility Notes
@@ -67,6 +71,8 @@ This project tracks notable user-facing and maintainer-facing changes here. The 
 - Composite picker function signatures now include user-selection callbacks immediately after `state`.
   Named-argument call sites are straightforward to migrate; positional call sites may need argument
   reordering.
+- `DatePickerItems` now includes `dayItems`. Direct `DatePickerItems(...)` construction must pass
+  day values; `PickerDefaults.datePickerItems(...)` remains the preferred factory.
 
 ### Maintenance
 

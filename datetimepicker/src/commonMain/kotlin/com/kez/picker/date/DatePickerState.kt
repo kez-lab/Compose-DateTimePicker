@@ -181,19 +181,6 @@ class DatePickerState(
         mutableSelectedDay = day.coerceAtMost(daysInMonth(year, month))
     }
 
-    private fun daysInMonth(year: Int, month: Int): Int {
-        return when (month) {
-            1, 3, 5, 7, 8, 10, 12 -> 31
-            4, 6, 9, 11 -> 30
-            2 -> if (isLeapYear(year)) 29 else 28
-            else -> 31 // Should not happen with 1-12 range
-        }
-    }
-
-    private fun isLeapYear(year: Int): Boolean {
-        return (year % 4 == 0 && year % 100 != 0) || (year % 400 == 0)
-    }
-
     companion object {
         /**
          * Saves and restores [DatePickerState] across configuration changes.
@@ -209,4 +196,17 @@ class DatePickerState(
             }
         )
     }
+}
+
+internal fun daysInMonth(year: Int, month: Int): Int {
+    return when (month) {
+        1, 3, 5, 7, 8, 10, 12 -> 31
+        4, 6, 9, 11 -> 30
+        2 -> if (isLeapYear(year)) 29 else 28
+        else -> 31 // Should not happen with 1-12 range
+    }
+}
+
+private fun isLeapYear(year: Int): Boolean {
+    return (year % 4 == 0 && year % 100 != 0) || (year % 400 == 0)
 }

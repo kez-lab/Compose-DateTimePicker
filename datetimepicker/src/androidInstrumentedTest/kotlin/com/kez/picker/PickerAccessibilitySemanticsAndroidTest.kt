@@ -754,6 +754,47 @@ class PickerAccessibilitySemanticsAndroidTest {
     }
 
     @Test
+    fun datePicker_customDayItemsAdjustSelectionWhenMonthChanges() {
+        lateinit var state: DatePickerState
+
+        composeRule.setContent {
+            state = rememberDatePickerState(
+                initialYear = 2026,
+                initialMonth = 1,
+                initialDay = 31
+            )
+
+            DatePicker(
+                state = state,
+                items = PickerDefaults.datePickerItems(
+                    yearItems = listOf(2026),
+                    monthItems = listOf(1, 2),
+                    dayItems = listOf(15, 31)
+                ),
+                style = PickerDefaults.style(visibleItemsCount = 3),
+                accessibility = PickerDefaults.datePickerAccessibility(
+                    monthPickerLabel = "월",
+                    dayPickerLabel = "일",
+                    monthItemContentDescription = { "${it}월" },
+                    dayItemContentDescription = { "${it}일" },
+                    nextItemActionLabel = NEXT_VALUE_ACTION_LABEL
+                )
+            )
+        }
+
+        performCustomAccessibilityAction(
+            contentDescription = "월: 1월",
+            actionLabel = NEXT_VALUE_ACTION_LABEL
+        )
+        waitUntilSelectedItem("월: 2월")
+        waitUntilSelectedItem("일: 15일")
+
+        composeRule.runOnIdle {
+            assertEquals(LocalDate(year = 2026, month = Month.FEBRUARY, day = 15), state.selectedDate)
+        }
+    }
+
+    @Test
     fun datePicker_callsOnSelectedDateChangeAfterUserSelection() {
         lateinit var changedDateState: MutableState<LocalDate?>
 

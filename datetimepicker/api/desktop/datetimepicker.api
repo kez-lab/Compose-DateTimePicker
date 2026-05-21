@@ -16,12 +16,14 @@ public final class com/kez/picker/DatePickerAccessibility {
 
 public final class com/kez/picker/DatePickerItems {
 	public static final field $stable I
-	public fun <init> (Ljava/util/List;Ljava/util/List;)V
+	public fun <init> (Ljava/util/List;Ljava/util/List;Ljava/util/List;)V
 	public final fun component1 ()Ljava/util/List;
 	public final fun component2 ()Ljava/util/List;
-	public final fun copy (Ljava/util/List;Ljava/util/List;)Lcom/kez/picker/DatePickerItems;
-	public static synthetic fun copy$default (Lcom/kez/picker/DatePickerItems;Ljava/util/List;Ljava/util/List;ILjava/lang/Object;)Lcom/kez/picker/DatePickerItems;
+	public final fun component3 ()Ljava/util/List;
+	public final fun copy (Ljava/util/List;Ljava/util/List;Ljava/util/List;)Lcom/kez/picker/DatePickerItems;
+	public static synthetic fun copy$default (Lcom/kez/picker/DatePickerItems;Ljava/util/List;Ljava/util/List;Ljava/util/List;ILjava/lang/Object;)Lcom/kez/picker/DatePickerItems;
 	public fun equals (Ljava/lang/Object;)Z
+	public final fun getDayItems ()Ljava/util/List;
 	public final fun getMonthItems ()Ljava/util/List;
 	public final fun getYearItems ()Ljava/util/List;
 	public fun hashCode ()I
@@ -77,8 +79,8 @@ public final class com/kez/picker/PickerDefaults {
 	public final fun colors-ro_MJ88 (JJJJLandroidx/compose/runtime/Composer;II)Lcom/kez/picker/PickerColors;
 	public final fun datePickerAccessibility (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;Ljava/lang/String;Ljava/lang/String;)Lcom/kez/picker/DatePickerAccessibility;
 	public static synthetic fun datePickerAccessibility$default (Lcom/kez/picker/PickerDefaults;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;Ljava/lang/String;Ljava/lang/String;ILjava/lang/Object;)Lcom/kez/picker/DatePickerAccessibility;
-	public final fun datePickerItems (Ljava/util/List;Ljava/util/List;)Lcom/kez/picker/DatePickerItems;
-	public static synthetic fun datePickerItems$default (Lcom/kez/picker/PickerDefaults;Ljava/util/List;Ljava/util/List;ILjava/lang/Object;)Lcom/kez/picker/DatePickerItems;
+	public final fun datePickerItems (Ljava/util/List;Ljava/util/List;Ljava/util/List;)Lcom/kez/picker/DatePickerItems;
+	public static synthetic fun datePickerItems$default (Lcom/kez/picker/PickerDefaults;Ljava/util/List;Ljava/util/List;Ljava/util/List;ILjava/lang/Object;)Lcom/kez/picker/DatePickerItems;
 	public final fun fadingEdgeGradient ()Landroidx/compose/ui/graphics/Brush;
 	public final fun getDividerShape ()Landroidx/compose/ui/graphics/Shape;
 	public final fun getDividerThickness-D9Ej5fM ()F
@@ -375,6 +377,7 @@ public final class com/kez/picker/util/TimeUtilKt {
 	public static final fun currentMinute ()I
 	public static final fun currentMonth ()I
 	public static final fun currentYear ()I
+	public static final fun getDAY_RANGE ()Ljava/util/List;
 	public static final fun getHOUR12_RANGE ()Ljava/util/List;
 	public static final fun getHOUR24_RANGE ()Ljava/util/List;
 	public static final fun getMINUTE_RANGE ()Ljava/util/List;

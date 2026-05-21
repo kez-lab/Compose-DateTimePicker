@@ -20,6 +20,11 @@ val YEAR_RANGE = (1000..9999).toList()
 val MONTH_RANGE = (1..12).toList()
 
 /**
+ * Range of days for date picker (1-31).
+ */
+val DAY_RANGE = (1..31).toList()
+
+/**
  * Range of hours for 24-hour format (0-23).
  */
 val HOUR24_RANGE = (0..23).toList()
