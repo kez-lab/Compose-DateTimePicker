@@ -21,6 +21,7 @@ public final class com/kez/picker/DatePickerItems {
 	public final fun component1 ()Ljava/util/List;
 	public final fun component2 ()Ljava/util/List;
 	public final fun component3 ()Ljava/util/List;
+	public final fun contains (Lkotlinx/datetime/LocalDate;)Z
 	public final fun copy (Ljava/util/List;Ljava/util/List;Ljava/util/List;)Lcom/kez/picker/DatePickerItems;
 	public static synthetic fun copy$default (Lcom/kez/picker/DatePickerItems;Ljava/util/List;Ljava/util/List;Ljava/util/List;ILjava/lang/Object;)Lcom/kez/picker/DatePickerItems;
 	public fun equals (Ljava/lang/Object;)Z
@@ -175,6 +176,8 @@ public final class com/kez/picker/TimePickerItems {
 	public final fun component2 ()Ljava/util/List;
 	public final fun component3 ()Ljava/util/List;
 	public final fun component4 ()Ljava/util/List;
+	public final fun contains (Lkotlinx/datetime/LocalTime;Lcom/kez/picker/util/TimeFormat;)Z
+	public static synthetic fun contains$default (Lcom/kez/picker/TimePickerItems;Lkotlinx/datetime/LocalTime;Lcom/kez/picker/util/TimeFormat;ILjava/lang/Object;)Z
 	public final fun copy (Ljava/util/List;Ljava/util/List;Ljava/util/List;Ljava/util/List;)Lcom/kez/picker/TimePickerItems;
 	public static synthetic fun copy$default (Lcom/kez/picker/TimePickerItems;Ljava/util/List;Ljava/util/List;Ljava/util/List;Ljava/util/List;ILjava/lang/Object;)Lcom/kez/picker/TimePickerItems;
 	public fun equals (Ljava/lang/Object;)Z
@@ -208,6 +211,9 @@ public final class com/kez/picker/YearMonthPickerItems {
 	public final fun coerceYearMonth (Lcom/kez/picker/date/YearMonth;)Lcom/kez/picker/date/YearMonth;
 	public final fun component1 ()Ljava/util/List;
 	public final fun component2 ()Ljava/util/List;
+	public final fun contains (II)Z
+	public final fun contains (Lcom/kez/picker/date/YearMonth;)Z
+	public final fun contains (Lkotlinx/datetime/LocalDate;)Z
 	public final fun copy (Ljava/util/List;Ljava/util/List;)Lcom/kez/picker/YearMonthPickerItems;
 	public static synthetic fun copy$default (Lcom/kez/picker/YearMonthPickerItems;Ljava/util/List;Ljava/util/List;ILjava/lang/Object;)Lcom/kez/picker/YearMonthPickerItems;
 	public fun equals (Ljava/lang/Object;)Z
