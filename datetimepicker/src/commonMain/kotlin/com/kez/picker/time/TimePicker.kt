@@ -9,7 +9,6 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.width
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
@@ -29,8 +28,6 @@ import com.kez.picker.util.HOUR24_RANGE
 import com.kez.picker.util.MINUTE_RANGE
 import com.kez.picker.util.TimeFormat
 import com.kez.picker.util.TimePeriod
-import com.kez.picker.util.currentDateTime
-import kotlinx.datetime.LocalDateTime
 
 /**
  * A time picker component that allows the user to select hours, minutes, and—when using the 12-hour format—the AM/PM period.
@@ -38,11 +35,9 @@ import kotlinx.datetime.LocalDateTime
  * @param modifier The modifier to be applied to the component.
  * @param pickerModifier The modifier to be applied to each picker.
  * @param state The state object to control the picker.
- * @param startTime Legacy compatibility parameter. It does not initialize or update [state],
- * even when [state] is omitted; prefer [rememberTimePickerState] with initial values.
- * @param minuteItems The list of minute values to display. Must contain values in 0..59.
- * @param hourItems The list of hour values to display. Must contain display-hour values in 1..12 for [TimeFormat.HOUR_12] or 0..23 for [TimeFormat.HOUR_24].
- * @param periodItems The list of period values to display in [TimeFormat.HOUR_12]. Must not be empty when the picker uses 12-hour time.
+ * @param minuteItems The list of minute values to display. Must be non-empty, distinct, contain values in 0..59, and contain [TimePickerState.selectedMinute].
+ * @param hourItems The list of hour values to display. Must be non-empty, distinct, contain display-hour values in 1..12 for [TimeFormat.HOUR_12] or 0..23 for [TimeFormat.HOUR_24], and contain [TimePickerState.selectedHour].
+ * @param periodItems The list of period values to display in [TimeFormat.HOUR_12]. Must be non-empty, distinct, and contain [TimePickerState.selectedPeriod] when the picker uses 12-hour time.
  * @param visibleItemsCount The number of items visible at once.
  * @param colors The colors used by the picker. See [PickerDefaults.colors].
  * @param textStyles The text styles used by the picker. See [PickerDefaults.textStyles].
@@ -63,15 +58,13 @@ import kotlinx.datetime.LocalDateTime
  * @param periodItemContentDescription Accessibility description for each AM/PM value in [TimeFormat.HOUR_12].
  * @param previousItemActionLabel Accessibility action label used by child pickers to select the previous item. Pass null or blank to omit the action.
  * @param nextItemActionLabel Accessibility action label used by child pickers to select the next item. Pass null or blank to omit the action.
- * @throws IllegalArgumentException if custom item lists are empty where required or contain values outside the supported ranges.
+ * @throws IllegalArgumentException if custom item lists are empty where required, contain duplicates, contain values outside the supported ranges, or omit the current selected value.
  */
 @Composable
 fun TimePicker(
     modifier: Modifier = Modifier,
     pickerModifier: Modifier = Modifier,
     state: TimePickerState = rememberTimePickerState(),
-    @Suppress("UNUSED_PARAMETER")
-    startTime: LocalDateTime = currentDateTime(),
     minuteItems: List<Int> = MINUTE_RANGE,
     hourItems: List<Int> = when (state.timeFormat) {
         TimeFormat.HOUR_12 -> HOUR12_RANGE
@@ -112,19 +105,6 @@ fun TimePicker(
             verticalArrangement = Arrangement.Center,
             modifier = Modifier.fillMaxWidth()
         ) {
-
-            val minuteStartIndex = remember(minuteItems) {
-                minuteItems.startIndexOf(state.selectedMinute)
-            }
-
-            val hourStartIndex = remember(hourItems) {
-                hourItems.startIndexOf(state.selectedHour)
-            }
-
-            val periodStartIndex = remember(periodItems) {
-                periodItems.startIndexOf(state.selectedPeriod)
-            }
-
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.Center,
@@ -132,15 +112,15 @@ fun TimePicker(
             ) {
                 if (state.timeFormat == TimeFormat.HOUR_12) {
                     Picker(
-                        state = state.periodState,
                         items = periodItems,
+                        selectedItem = state.selectedPeriod,
+                        onSelectedItemChange = state::selectPeriod,
                         visibleItemsCount = visibleItemsCount,
                         modifier = pickerModifier.weight(1f),
                         colors = colors,
                         textStyles = textStyles,
                         selectedItemBackgroundShape = selectedItemBackgroundShape,
                         itemPadding = itemPadding,
-                        startIndex = periodStartIndex,
                         fadingEdgeGradient = fadingEdgeGradient,
                         horizontalAlignment = horizontalAlignment,
                         verticalAlignment = verticalAlignment,
@@ -156,10 +136,10 @@ fun TimePicker(
                     Spacer(modifier = Modifier.width(spacingBetweenPickers))
                 }
                 Picker(
-                    state = state.hourState,
-                    modifier = pickerModifier.weight(1f),
                     items = hourItems,
-                    startIndex = hourStartIndex,
+                    selectedItem = state.selectedHour,
+                    onSelectedItemChange = state::selectHour,
+                    modifier = pickerModifier.weight(1f),
                     visibleItemsCount = visibleItemsCount,
                     colors = colors,
                     textStyles = textStyles,
@@ -178,9 +158,9 @@ fun TimePicker(
                 )
                 Spacer(modifier = Modifier.width(spacingBetweenPickers))
                 Picker(
-                    state = state.minuteState,
                     items = minuteItems,
-                    startIndex = minuteStartIndex,
+                    selectedItem = state.selectedMinute,
+                    onSelectedItemChange = state::selectMinute,
                     visibleItemsCount = visibleItemsCount,
                     modifier = pickerModifier.weight(1f),
                     colors = colors,
@@ -203,9 +183,6 @@ fun TimePicker(
     }
 }
 
-private fun <T> List<T>.startIndexOf(item: T): Int =
-    indexOf(item).takeIf { it >= 0 } ?: 0
-
 internal fun validateTimePickerItems(
     state: TimePickerState,
     minuteItems: List<Int>,
@@ -215,23 +192,41 @@ internal fun validateTimePickerItems(
     val minuteRange = 0..59
     val invalidMinutes = minuteItems.invalidValuesFor(minuteRange)
     require(minuteItems.isNotEmpty()) { "TimePicker minuteItems must not be empty." }
+    require(minuteItems.distinct().size == minuteItems.size) {
+        "TimePicker minuteItems must not contain duplicate values."
+    }
     require(invalidMinutes.isEmpty()) {
         "TimePicker minuteItems must contain only values in range [0, 59]. " +
                 "Invalid values: $invalidMinutes"
+    }
+    require(state.selectedMinute in minuteItems) {
+        "TimePicker minuteItems must contain state.selectedMinute=${state.selectedMinute}."
     }
 
     val hourRange = if (state.timeFormat == TimeFormat.HOUR_12) 1..12 else 0..23
     val hourRangeLabel = if (state.timeFormat == TimeFormat.HOUR_12) "1, 12" else "0, 23"
     val invalidHours = hourItems.invalidValuesFor(hourRange)
     require(hourItems.isNotEmpty()) { "TimePicker hourItems must not be empty." }
+    require(hourItems.distinct().size == hourItems.size) {
+        "TimePicker hourItems must not contain duplicate values."
+    }
     require(invalidHours.isEmpty()) {
         "TimePicker hourItems must contain only values in range [$hourRangeLabel] " +
                 "for timeFormat=${state.timeFormat}. Invalid values: $invalidHours"
+    }
+    require(state.selectedHour in hourItems) {
+        "TimePicker hourItems must contain state.selectedHour=${state.selectedHour} for timeFormat=${state.timeFormat}."
     }
 
     if (state.timeFormat == TimeFormat.HOUR_12) {
         require(periodItems.isNotEmpty()) {
             "TimePicker periodItems must not be empty for timeFormat=${TimeFormat.HOUR_12}."
+        }
+        require(periodItems.distinct().size == periodItems.size) {
+            "TimePicker periodItems must not contain duplicate values."
+        }
+        require(state.selectedPeriod in periodItems) {
+            "TimePicker periodItems must contain state.selectedPeriod=${state.selectedPeriod}."
         }
     }
 }

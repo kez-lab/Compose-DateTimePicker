@@ -1,5 +1,10 @@
 package com.kez.picker
 
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.semantics.SemanticsActions
 import androidx.compose.ui.semantics.SemanticsProperties
 import androidx.compose.ui.semantics.getOrNull
@@ -35,12 +40,11 @@ class PickerAccessibilitySemanticsAndroidTest {
     @Test
     fun picker_exposesPickerLabelSelectedValueAndSelectedItemSemantics() {
         composeRule.setContent {
-            val state = rememberPickerState(10)
-
+            var selectedItem by remember { mutableStateOf(10) }
             Picker(
                 items = listOf(9, 10, 11),
-                state = state,
-                startIndex = 1,
+                selectedItem = selectedItem,
+                onSelectedItemChange = { selectedItem = it },
                 isInfinity = false,
                 pickerLabel = "Hour",
                 itemContentDescription = { "$it" }
@@ -59,11 +63,11 @@ class PickerAccessibilitySemanticsAndroidTest {
     @Test
     fun picker_updatesAccessibilitySemanticsWhenSelectionChangesByClick() {
         composeRule.setContent {
-            val state = rememberPickerState(1)
-
+            var selectedItem by remember { mutableStateOf(1) }
             Picker(
                 items = listOf(1, 2, 3),
-                state = state,
+                selectedItem = selectedItem,
+                onSelectedItemChange = { selectedItem = it },
                 visibleItemsCount = 3,
                 isInfinity = false,
                 pickerLabel = "Day",
@@ -88,15 +92,14 @@ class PickerAccessibilitySemanticsAndroidTest {
 
     @Test
     fun picker_customAccessibilityActionsSelectAdjacentItems() {
-        lateinit var state: PickerState<Int>
+        lateinit var selectedItemState: MutableState<Int>
 
         composeRule.setContent {
-            state = rememberPickerState(2)
-
+            selectedItemState = remember { mutableStateOf(2) }
             Picker(
                 items = listOf(1, 2, 3),
-                state = state,
-                startIndex = 1,
+                selectedItem = selectedItemState.value,
+                onSelectedItemChange = { selectedItemState.value = it },
                 visibleItemsCount = 3,
                 isInfinity = false,
                 pickerLabel = "Value",
@@ -121,7 +124,7 @@ class PickerAccessibilitySemanticsAndroidTest {
         waitUntilSelectedItem("Value: 3")
 
         composeRule.runOnIdle {
-            assertEquals(3, state.selectedItem)
+            assertEquals(3, selectedItemState.value)
         }
 
         performCustomAccessibilityAction(
@@ -131,18 +134,18 @@ class PickerAccessibilitySemanticsAndroidTest {
         waitUntilSelectedItem("Value: 2")
 
         composeRule.runOnIdle {
-            assertEquals(2, state.selectedItem)
+            assertEquals(2, selectedItemState.value)
         }
     }
 
     @Test
     fun picker_customAccessibilityActionsRespectBoundedEdges() {
         composeRule.setContent {
-            val state = rememberPickerState(1)
-
+            var selectedItem by remember { mutableStateOf(1) }
             Picker(
                 items = listOf(1, 2, 3),
-                state = state,
+                selectedItem = selectedItem,
+                onSelectedItemChange = { selectedItem = it },
                 visibleItemsCount = 3,
                 isInfinity = false,
                 pickerLabel = "Value",
@@ -174,11 +177,11 @@ class PickerAccessibilitySemanticsAndroidTest {
     @Test
     fun picker_customAccessibilityActionsWrapInInfiniteMode() {
         composeRule.setContent {
-            val state = rememberPickerState(1)
-
+            var selectedItem by remember { mutableStateOf(1) }
             Picker(
                 items = listOf(1, 2, 3),
-                state = state,
+                selectedItem = selectedItem,
+                onSelectedItemChange = { selectedItem = it },
                 visibleItemsCount = 3,
                 isInfinity = true,
                 pickerLabel = "Value",
@@ -204,11 +207,11 @@ class PickerAccessibilitySemanticsAndroidTest {
     @Test
     fun picker_omitsCustomAccessibilityActionsForSingleItemInfinitePicker() {
         composeRule.setContent {
-            val state = rememberPickerState(1)
-
+            var selectedItem by remember { mutableStateOf(1) }
             Picker(
                 items = listOf(1),
-                state = state,
+                selectedItem = selectedItem,
+                onSelectedItemChange = { selectedItem = it },
                 visibleItemsCount = 3,
                 isInfinity = true,
                 pickerLabel = "Value",
@@ -223,36 +226,13 @@ class PickerAccessibilitySemanticsAndroidTest {
     }
 
     @Test
-    fun picker_exposesCustomAccessibilityActionsWhenDuplicateSelectedValuesAreNotFirst() {
-        composeRule.setContent {
-            val state = rememberPickerState(1)
-
-            Picker(
-                items = listOf(1, 1, 2),
-                state = state,
-                startIndex = 1,
-                visibleItemsCount = 3,
-                isInfinity = false,
-                pickerLabel = "Value",
-                itemContentDescription = { "$it" },
-                previousItemActionLabel = PREVIOUS_VALUE_ACTION_LABEL,
-                nextItemActionLabel = NEXT_VALUE_ACTION_LABEL
-            )
-        }
-
-        assertCustomAccessibilityAction("Value: 1", PREVIOUS_VALUE_ACTION_LABEL)
-        assertCustomAccessibilityAction("Value: 1", NEXT_VALUE_ACTION_LABEL)
-    }
-
-    @Test
     fun picker_customAccessibilityActionsUseValueDescriptionWhenLabelIsOmitted() {
         composeRule.setContent {
-            val state = rememberPickerState(2)
-
+            var selectedItem by remember { mutableStateOf(2) }
             Picker(
                 items = listOf(1, 2, 3),
-                state = state,
-                startIndex = 1,
+                selectedItem = selectedItem,
+                onSelectedItemChange = { selectedItem = it },
                 visibleItemsCount = 3,
                 isInfinity = false,
                 pickerLabel = null,
@@ -275,12 +255,11 @@ class PickerAccessibilitySemanticsAndroidTest {
     @Test
     fun picker_omitsCustomAccessibilityActionsWhenActionLabelsAreNullOrBlank() {
         composeRule.setContent {
-            val state = rememberPickerState(2)
-
+            var selectedItem by remember { mutableStateOf(2) }
             Picker(
                 items = listOf(1, 2, 3),
-                state = state,
-                startIndex = 1,
+                selectedItem = selectedItem,
+                onSelectedItemChange = { selectedItem = it },
                 visibleItemsCount = 3,
                 isInfinity = false,
                 pickerLabel = "Value",
@@ -295,14 +274,14 @@ class PickerAccessibilitySemanticsAndroidTest {
 
     @Test
     fun picker_updatesAccessibilitySemanticsWhenSelectionChangesProgrammatically() {
-        lateinit var state: PickerState<Int>
+        lateinit var selectedItemState: MutableState<Int>
 
         composeRule.setContent {
-            state = rememberPickerState(1)
-
+            selectedItemState = remember { mutableStateOf(1) }
             Picker(
                 items = (1..30).toList(),
-                state = state,
+                selectedItem = selectedItemState.value,
+                onSelectedItemChange = { selectedItemState.value = it },
                 visibleItemsCount = 3,
                 isInfinity = false,
                 pickerLabel = "Value",
@@ -311,7 +290,7 @@ class PickerAccessibilitySemanticsAndroidTest {
         }
 
         composeRule.runOnIdle {
-            state.selectItem(30)
+            selectedItemState.value = 30
         }
 
         waitUntilSelectedItem("Value: 30")
@@ -323,49 +302,6 @@ class PickerAccessibilitySemanticsAndroidTest {
         composeRule
             .onNode(hasContentDescription("Value: 30") and isSelected())
             .assertIsSelected()
-    }
-
-    @Test
-    fun picker_normalizesMissingProgrammaticSelectionToCenteredItem() {
-        lateinit var state: PickerState<Int>
-
-        composeRule.setContent {
-            state = rememberPickerState(2)
-
-            Picker(
-                items = listOf(1, 2, 3),
-                state = state,
-                startIndex = 1,
-                visibleItemsCount = 3,
-                isInfinity = false,
-                pickerLabel = "Value",
-                itemContentDescription = { "$it" }
-            )
-        }
-
-        composeRule.runOnIdle {
-            state.selectItem(3)
-        }
-
-        waitUntilSelectedItem("Value: 3")
-
-        composeRule.runOnIdle {
-            state.selectItem(99)
-        }
-
-        composeRule.waitForIdle()
-
-        composeRule
-            .onNode(hasContentDescription("Value: 3") and hasStateDescription("3"))
-            .assertExists()
-
-        composeRule
-            .onNode(hasContentDescription("Value: 3") and isSelected())
-            .assertIsSelected()
-
-        composeRule.runOnIdle {
-            assertEquals(3, state.selectedItem)
-        }
     }
 
     @Test
@@ -408,154 +344,6 @@ class PickerAccessibilitySemanticsAndroidTest {
     }
 
     @Test
-    fun timePicker_normalizesMissingProgrammaticChildValuesIndependently() {
-        lateinit var state: TimePickerState
-
-        composeRule.setContent {
-            state = rememberTimePickerState(
-                initialTime = LocalTime(hour = 3, minute = 15),
-                timeFormat = TimeFormat.HOUR_12
-            )
-
-            TimePicker(
-                state = state,
-                hourItems = listOf(1, 2, 3, 4, 5),
-                minuteItems = listOf(0, 15, 45),
-                periodItems = listOf(TimePeriod.AM),
-                visibleItemsCount = 3,
-                hourPickerLabel = "Hour",
-                minutePickerLabel = "Minute",
-                periodPickerLabel = "Period",
-                hourItemContentDescription = { "$it" },
-                minuteItemContentDescription = { "$it" },
-                periodItemContentDescription = { it.name }
-            )
-        }
-
-        composeRule.runOnIdle {
-            state.selectTime(LocalTime(hour = 20, minute = 30))
-        }
-
-        composeRule.waitForIdle()
-
-        composeRule
-            .onNode(hasContentDescription("Hour: 3") and hasStateDescription("3"))
-            .assertExists()
-        composeRule
-            .onNode(hasContentDescription("Minute: 15") and hasStateDescription("15"))
-            .assertExists()
-        composeRule
-            .onNode(hasContentDescription("Period: AM") and hasStateDescription("AM"))
-            .assertExists()
-
-        waitUntilSelectedItem("Hour: 3")
-        waitUntilSelectedItem("Minute: 15")
-        waitUntilSelectedItem("Period: AM")
-
-        composeRule.runOnIdle {
-            assertEquals(3, state.selectedHour)
-            assertEquals(15, state.selectedMinute)
-            assertEquals(TimePeriod.AM, state.selectedPeriod)
-        }
-    }
-
-    @Test
-    fun datePicker_normalizesMissingProgrammaticChildValueIndependently() {
-        lateinit var state: DatePickerState
-
-        composeRule.setContent {
-            state = rememberDatePickerState(
-                initialYear = 2026,
-                initialMonth = 5,
-                initialDay = 20
-            )
-
-            DatePicker(
-                state = state,
-                yearItems = listOf(2026, 2027),
-                monthItems = listOf(1, 5, 12),
-                visibleItemsCount = 3,
-                yearPickerLabel = "Year",
-                monthPickerLabel = "Month",
-                dayPickerLabel = "Day",
-                yearItemContentDescription = { "$it" },
-                monthItemContentDescription = { "$it" },
-                dayItemContentDescription = { "$it" }
-            )
-        }
-
-        composeRule.runOnIdle {
-            state.selectDate(LocalDate(2027, 6, 20))
-        }
-
-        waitUntilSelectedItem("Year: 2027")
-        composeRule.waitForIdle()
-
-        composeRule
-            .onNode(hasContentDescription("Year: 2027") and hasStateDescription("2027"))
-            .assertExists()
-        composeRule
-            .onNode(hasContentDescription("Month: 5") and hasStateDescription("5"))
-            .assertExists()
-        composeRule
-            .onNode(hasContentDescription("Day: 20") and hasStateDescription("20"))
-            .assertExists()
-
-        waitUntilSelectedItem("Month: 5")
-        waitUntilSelectedItem("Day: 20")
-
-        composeRule.runOnIdle {
-            assertEquals(2027, state.selectedYear)
-            assertEquals(5, state.selectedMonth)
-            assertEquals(20, state.selectedDay)
-        }
-    }
-
-    @Test
-    fun yearMonthPicker_normalizesMissingProgrammaticChildValueIndependently() {
-        lateinit var state: YearMonthPickerState
-
-        composeRule.setContent {
-            state = rememberYearMonthPickerState(
-                initialYear = 2026,
-                initialMonth = 5
-            )
-
-            YearMonthPicker(
-                state = state,
-                yearItems = listOf(2026, 2027),
-                monthItems = listOf(1, 5, 12),
-                visibleItemsCount = 3,
-                yearPickerLabel = "Year",
-                monthPickerLabel = "Month",
-                yearItemContentDescription = { "$it" },
-                monthItemContentDescription = { "$it" }
-            )
-        }
-
-        composeRule.runOnIdle {
-            state.selectYearMonth(year = 2027, month = 6)
-        }
-
-        waitUntilSelectedItem("Year: 2027")
-        composeRule.waitForIdle()
-
-        composeRule
-            .onNode(hasContentDescription("Year: 2027") and hasStateDescription("2027"))
-            .assertExists()
-        composeRule
-            .onNode(hasContentDescription("Month: 5") and hasStateDescription("5"))
-            .assertExists()
-
-        waitUntilSelectedItem("Month: 5")
-
-        composeRule.runOnIdle {
-            assertEquals(2027, state.selectedYear)
-            assertEquals(5, state.selectedMonth)
-        }
-    }
-
-    @Test
     fun datePicker_updatesChildPickerSemanticsWhenSelectionChangesProgrammatically() {
         lateinit var state: DatePickerState
 
@@ -592,12 +380,11 @@ class PickerAccessibilitySemanticsAndroidTest {
     @Test
     fun picker_omitsBlankLabelFromItemContentDescription() {
         composeRule.setContent {
-            val state = rememberPickerState(2)
-
+            var selectedItem by remember { mutableStateOf(2) }
             Picker(
                 items = listOf(1, 2, 3),
-                state = state,
-                startIndex = 1,
+                selectedItem = selectedItem,
+                onSelectedItemChange = { selectedItem = it },
                 isInfinity = false,
                 pickerLabel = "   ",
                 itemContentDescription = { "$it item" }

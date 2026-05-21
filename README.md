@@ -276,22 +276,21 @@ Use `Picker<T>` when you need a single custom picker column.
 
 ```kotlin
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.rememberSaveable
+import androidx.compose.runtime.setValue
 import com.kez.picker.Picker
-import com.kez.picker.rememberPickerState
 
 @Composable
 fun SizePickerExample() {
     val items = listOf("Small", "Medium", "Large")
-    val initialItem = "Medium"
-    val startIndex = items.indexOf(initialItem)
-    require(startIndex >= 0) { "initialItem must exist in items." }
-
-    val state = rememberPickerState(initialItem)
+    var selectedSize by rememberSaveable { mutableStateOf("Medium") }
 
     Picker(
         items = items,
-        state = state,
-        startIndex = startIndex,
+        selectedItem = selectedSize,
+        onSelectedItemChange = { selectedSize = it },
         isInfinity = false,
         pickerLabel = "Size",
         itemContentDescription = { it }
@@ -299,12 +298,10 @@ fun SizePickerExample() {
 }
 ```
 
-`rememberPickerState` uses regular `remember`, not `rememberSaveable`, because arbitrary `T` values
-may not be saveable. If a generic picker selection must survive Android Activity recreation, keep a
-saveable representation in your app state, pass it when the picker state is first created, and pass
-a matching `startIndex` to `Picker`. If the app value changes after composition, synchronize the
-existing picker with `state.selectItem(newValue)`; changing the `initialItem` argument alone does not
-update an already remembered `PickerState`.
+`Picker<T>` is a controlled component. Keep the selected value in app state, pass it through
+`selectedItem`, and update that state from `onSelectedItemChange`. `items` must be non-empty and
+distinct, and `selectedItem` must exist in `items`. If `T` is not saveable, store a saveable key in
+your app state and map that key back to an item before rendering the picker.
 
 ### Programmatic Selection
 
@@ -314,7 +311,7 @@ selection.
 
 | State | Method |
 | :--- | :--- |
-| `PickerState<T>` | `selectItem(item)` |
+| Generic `Picker<T>` | Update the app-owned `selectedItem` value |
 | `TimePickerState` | `selectTime(LocalTime(...))` |
 | `DatePickerState` | `selectDate(LocalDate(...))` |
 | `YearMonthPickerState` | `selectYearMonth(year, month)` or `selectDate(LocalDate(...))` |
@@ -342,16 +339,16 @@ fun ProgrammaticTimePickerExample() {
 }
 ```
 
-The picker scroll position is synchronized when the current item lists contain the requested values. If a
-requested value is missing from a custom list, that child picker normalizes back to its currently centered
-item.
+The picker scroll position is synchronized when the current item lists contain the requested values. Custom
+item lists are strict: they must be non-empty, distinct, within the supported value ranges, and contain the
+current selected value. If an app can restore or request values outside a custom list, clamp or reject that
+app state before rendering the picker.
 
 ### TimePicker
 
 | Parameter | Description | Default |
 | :--- | :--- | :--- |
 | `state` | The state object to control the picker. | `rememberTimePickerState()` |
-| `startTime` | Legacy compatibility parameter. It does not initialize or update `state`, even when `state` is omitted; use `rememberTimePickerState(initialTime = ...)` or explicit initial values instead. | `currentDateTime()` |
 | `minuteItems` | Minute values available for selection. Values must be in `0..59`. | `0..59` |
 | `hourItems` | Hour values available for selection. Values must be in `0..23` for 24-hour time or display-hour `1..12` for 12-hour time. | `0..23` or `1..12` |
 | `periodItems` | AM/PM values available in 12-hour time. Must not be empty when `timeFormat` is `HOUR_12`. | `TimePeriod.entries` |
@@ -378,18 +375,17 @@ item.
 
 `rememberTimePickerState` uses saveable state. On Android, selected values can be restored across Activity recreation when the platform saveable registry is available.
 
-For initial values, use either `rememberTimePickerState(initialTime = LocalTime(...))` or the explicit `initialHour`/`initialMinute` parameters. The `startTime` component parameter is retained only for source compatibility and is not used.
+For initial values, use either `rememberTimePickerState(initialTime = LocalTime(...))` or the explicit `initialHour`/`initialMinute` parameters.
 
 To change the selection after state creation, call `state.selectTime(LocalTime(...))`.
 
-Invalid custom item values throw `IllegalArgumentException` during composition. If the current or restored selection is valid but not present in a custom list, the picker starts from the first item in that list and normalizes the state. In 12-hour mode, `hourItems` uses display-hour values (`1..12`): `initialHour = 13` becomes `state.selectedHour == 1` with `PM`.
+Invalid custom item values, duplicate items, empty required lists, or current selections missing from custom lists throw `IllegalArgumentException` during composition. In 12-hour mode, `hourItems` uses display-hour values (`1..12`): `initialHour = 13` becomes `state.selectedHour == 1` with `PM`.
 
 ### DatePicker
 
 | Parameter           | Description                             | Default                     |
 |:--------------------|:----------------------------------------|:----------------------------|
 | `state`             | The state object to control the picker. | `rememberDatePickerState()` |
-| `startLocalDate`    | Legacy compatibility parameter. It does not initialize or update `state`, even when `state` is omitted; use `rememberDatePickerState(initialDate = ...)` or explicit initial values instead. | `currentDate()`             |
 | `yearItems`         | List of years available for selection. Values must be in `1000..9999`. | `1000..9999`                |
 | `monthItems`        | List of months available for selection. Values must be in `1..12`. | `1..12`                     |
 | `visibleItemsCount` | Number of items visible in the list.    | `3`                         |
@@ -417,19 +413,17 @@ Invalid custom item values throw `IllegalArgumentException` during composition. 
 For initial values, use either `rememberDatePickerState(initialDate = LocalDate(...))` or the
 explicit `initialYear`/`initialMonth`/`initialDay` parameters. Initial years must be in
 `1000..9999`, months in `1..12`, and days must be at least `1`. If `initialDay` is greater than
-the maximum valid day for the initial year/month, it is clamped to that maximum. The
-`startLocalDate` component parameter is retained only for source compatibility and is not used.
+the maximum valid day for the initial year/month, it is clamped to that maximum.
 
 To change the selection after state creation, call `state.selectDate(LocalDate(...))`.
 
-Invalid custom item values throw `IllegalArgumentException` during composition. If the current or restored year/month is valid but not present in a custom list, the picker starts from the first item in that list and normalizes the state.
+Invalid custom item values, duplicate items, empty lists, or current selected year/month values missing from custom lists throw `IllegalArgumentException` during composition.
 
 ### YearMonthPicker
 
 | Parameter | Description | Default |
 | :--- | :--- | :--- |
 | `state` | The state object to control the picker. | `rememberYearMonthPickerState()` |
-| `startLocalDate` | Legacy compatibility parameter. It does not initialize or update `state`, even when `state` is omitted; use `rememberYearMonthPickerState(initialDate = ...)` or explicit initial values instead. | `currentDate()` |
 | `yearItems` | List of years available for selection. Values must be in `1000..9999`. | `1000..9999` |
 | `monthItems` | List of months available for selection. Values must be in `1..12`. | `1..12` |
 | `visibleItemsCount` | Number of items visible in the list. | `3` |
@@ -450,11 +444,11 @@ Invalid custom item values throw `IllegalArgumentException` during composition. 
 
 `rememberYearMonthPickerState` uses saveable state. On Android, selected values can be restored across Activity recreation when the platform saveable registry is available.
 
-For initial values, use either `rememberYearMonthPickerState(initialDate = LocalDate(...))` or the explicit `initialYear`/`initialMonth` parameters. Initial years must be in `1000..9999`. The `startLocalDate` component parameter is retained only for source compatibility and is not used.
+For initial values, use either `rememberYearMonthPickerState(initialDate = LocalDate(...))` or the explicit `initialYear`/`initialMonth` parameters. Initial years must be in `1000..9999`.
 
 To change the selection after state creation, call `state.selectYearMonth(year, month)` or `state.selectDate(LocalDate(...))`.
 
-Invalid custom item values throw `IllegalArgumentException` during composition. If the current or restored year/month is valid but not present in a custom list, the picker starts from the first item in that list and normalizes the state.
+Invalid custom item values, duplicate items, empty lists, or current selected year/month values missing from custom lists throw `IllegalArgumentException` during composition.
 
 ## License
 

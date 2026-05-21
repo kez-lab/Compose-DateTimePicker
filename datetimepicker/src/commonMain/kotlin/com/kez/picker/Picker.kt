@@ -19,8 +19,11 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.rememberUpdatedState
+import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -70,9 +73,9 @@ private const val INFINITE_SCROLL_MULTIPLIER = 1000
  * Follows Material3 component design patterns.
  *
  * @param items The list of items to display.
- * @param state The state of the picker.
+ * @param selectedItem The currently selected item. It must exist in [items].
+ * @param onSelectedItemChange Called when scroll or click interaction selects a new item.
  * @param modifier The modifier to be applied to the picker.
- * @param startIndex The initial index to display.
  * @param visibleItemsCount The number of items visible at once. Must be a positive odd number.
  * @param colors The colors used by the picker. See [PickerDefaults.colors].
  * @param textStyles The text styles used by the picker. See [PickerDefaults.textStyles].
@@ -92,11 +95,11 @@ private const val INFINITE_SCROLL_MULTIPLIER = 1000
  * @param content Optional custom content composable for rendering each item.
  */
 @Composable
-fun <T> Picker(
+fun <T : Any> Picker(
     items: List<T>,
-    state: PickerState<T>,
+    selectedItem: T,
+    onSelectedItemChange: (T) -> Unit,
     modifier: Modifier = Modifier,
-    startIndex: Int = 0,
     visibleItemsCount: Int = PickerDefaults.VisibleItemsCount,
     colors: PickerColors = PickerDefaults.colors(),
     textStyles: PickerTextStyles = PickerDefaults.textStyles(),
@@ -116,16 +119,22 @@ fun <T> Picker(
     content: @Composable ((T) -> Unit)? = null
 ) {
     require(items.isNotEmpty()) { "Items list must not be empty" }
+    require(items.distinct().size == items.size) {
+        "Items list must not contain duplicate values because Picker uses item equality as its selection key."
+    }
+    require(selectedItem in items) {
+        "selectedItem must exist in items. selectedItem=$selectedItem, items=$items"
+    }
     require(visibleItemsCount > 0 && visibleItemsCount % 2 == 1) {
         "visibleItemsCount must be a positive odd number, but was $visibleItemsCount"
-    }
-    require(startIndex >= 0 && startIndex < items.size) {
-        "startIndex must be in range [0, ${items.size}), but was $startIndex"
     }
 
     val density = LocalDensity.current
     val visibleItemsMiddle = remember(visibleItemsCount) { visibleItemsCount / 2 }
     val scope = rememberCoroutineScope()
+    val currentOnSelectedItemChange by rememberUpdatedState(onSelectedItemChange)
+    val currentSelectedItem by rememberUpdatedState(selectedItem)
+    val selectedItemIndex = items.indexOf(selectedItem)
 
     val adjustedItems = if (!isInfinity) {
         List(visibleItemsMiddle) { null } + items + List(visibleItemsMiddle) { null }
@@ -141,11 +150,11 @@ fun <T> Picker(
 
     val listScrollMiddle = remember(listScrollCount) { listScrollCount / 2 }
     val listStartIndex =
-        remember(listScrollCount, adjustedItems.size, visibleItemsMiddle, startIndex) {
+        remember(listScrollCount, adjustedItems.size, visibleItemsMiddle, selectedItemIndex) {
             if (isInfinity) {
-                listScrollMiddle - listScrollMiddle % adjustedItems.size - visibleItemsMiddle + startIndex
+                listScrollMiddle - listScrollMiddle % adjustedItems.size - visibleItemsMiddle + selectedItemIndex
             } else {
-                startIndex
+                selectedItemIndex
             }
         }
 
@@ -159,7 +168,7 @@ fun <T> Picker(
         }
     }
 
-    val listState = key(state, listStartIndex, listScrollCount) {
+    val listState = key(items, isInfinity, visibleItemsCount, listScrollCount) {
         rememberLazyListState(initialFirstVisibleItemIndex = listStartIndex)
     }
     val flingBehavior = rememberSnapFlingBehavior(lazyListState = listState)
@@ -185,11 +194,17 @@ fun <T> Picker(
                 itemPadding.calculateBottomPadding()
     }
 
-    LaunchedEffect(listState, adjustedItems, visibleItemsMiddle, state) {
-        snapshotFlow { listState.firstVisibleItemIndex }
-            .mapNotNull { index -> getItem(index + visibleItemsMiddle) }
+    LaunchedEffect(listState, adjustedItems, visibleItemsMiddle) {
+        snapshotFlow { listState.firstVisibleItemIndex to listState.isScrollInProgress }
+            .mapNotNull { (index, isScrollInProgress) ->
+                getItem(index + visibleItemsMiddle)?.let { item -> item to isScrollInProgress }
+            }
             .distinctUntilChanged()
-            .collect { item -> state.updateSelectedItemFromScroll(item) }
+            .collect { (item, isScrollInProgress) ->
+                if (isScrollInProgress && item != currentSelectedItem) {
+                    currentOnSelectedItemChange(item)
+                }
+            }
     }
 
     LaunchedEffect(
@@ -199,25 +214,11 @@ fun <T> Picker(
         visibleItemsCount,
         isInfinity,
         listScrollCount,
-        state.selectionRequestVersion
+        selectedItem
     ) {
-        val selectionRequest = state.activeSelectionRequest ?: return@LaunchedEffect
-        val requestedItem = selectionRequest.item
-
         val currentCenterIndex = listState.firstVisibleItemIndex + visibleItemsMiddle
         val currentCenteredItem = getItem(currentCenterIndex)
-        if (currentCenteredItem == requestedItem) {
-            currentCenteredItem?.let {
-                state.completeSelectionRequest(selectionRequest.version, it)
-            } ?: state.clearSelectionRequest(selectionRequest.version)
-            return@LaunchedEffect
-        }
-
-        val selectedItemIndex = items.indexOf(requestedItem)
-        if (selectedItemIndex < 0) {
-            currentCenteredItem?.let {
-                state.completeSelectionRequest(selectionRequest.version, it)
-            } ?: state.clearSelectionRequest(selectionRequest.version)
+        if (currentCenteredItem == selectedItem) {
             return@LaunchedEffect
         }
 
@@ -243,16 +244,12 @@ fun <T> Picker(
         if (targetFirstVisibleIndex != listState.firstVisibleItemIndex) {
             listState.scrollToItem(targetFirstVisibleIndex)
         }
-        val settledCenteredItem = getItem(listState.firstVisibleItemIndex + visibleItemsMiddle)
-        settledCenteredItem?.let {
-            state.completeSelectionRequest(selectionRequest.version, it)
-        } ?: state.clearSelectionRequest(selectionRequest.version)
     }
 
     val normalizedPickerLabel = pickerLabel.asPickerAccessibilityLabelOrNull()
     val normalizedPreviousItemActionLabel = previousItemActionLabel.asPickerAccessibilityLabelOrNull()
     val normalizedNextItemActionLabel = nextItemActionLabel.asPickerAccessibilityLabelOrNull()
-    val selectedItemDescription = itemContentDescription(state.selectedItem)
+    val selectedItemDescription = itemContentDescription(selectedItem)
     val pickerDescription = pickerAccessibilityDescription(normalizedPickerLabel, selectedItemDescription)
     val hasPickerDescription = pickerDescription.isNotBlank()
 
@@ -382,7 +379,7 @@ fun <T> Picker(
                 }
 
                 val item = getItem(index)
-                val isSelected = item == state.selectedItem
+                val isSelected = item == selectedItem
                 val itemText = item?.toString() ?: ""
                 val itemDescription = item?.let(itemContentDescription) ?: ""
                 val itemIndex = if (isInfinity) {
@@ -488,20 +485,24 @@ private fun Modifier.fadingEdge(brush: Brush) = this
 @Preview(name = "Basic Picker", group = "Picker - Basic", showBackground = true)
 @Composable
 private fun PickerPreview() {
-    val state = rememberPickerState("Item 1")
+    val items = listOf("1", "2", "3")
+    var selectedItem by remember { mutableStateOf("1") }
     Picker(
-        items = listOf("1", "2", "3"),
-        state = state
+        items = items,
+        selectedItem = selectedItem,
+        onSelectedItemChange = { selectedItem = it }
     )
 }
 
 @Preview(name = "Long Text Items", group = "Picker - Variations", showBackground = true)
 @Composable
 private fun PickerLongTextPreview() {
-    val state = rememberPickerState("Long Item 1")
+    val items = listOf("Long Item 1", "Long Item 2", "Long Item 3")
+    var selectedItem by remember { mutableStateOf("Long Item 1") }
     Picker(
-        items = listOf("Long Item 1", "Long Item 2", "Long Item 3"),
-        state = state
+        items = items,
+        selectedItem = selectedItem,
+        onSelectedItemChange = { selectedItem = it }
     )
 }
 
@@ -509,21 +510,23 @@ private fun PickerLongTextPreview() {
 @Composable
 private fun PickerManyItemsPreview() {
     val items = (1..100).map { "Item $it" }
-    val state = rememberPickerState("Item 50")
+    var selectedItem by remember { mutableStateOf("Item 50") }
     Picker(
         items = items,
-        state = state,
-        startIndex = 49
+        selectedItem = selectedItem,
+        onSelectedItemChange = { selectedItem = it }
     )
 }
 
 @Preview(name = "No Divider", group = "Picker - Variations", showBackground = true)
 @Composable
 private fun PickerNoDividerPreview() {
-    val state = rememberPickerState("Item 2")
+    val items = listOf("Item 1", "Item 2", "Item 3")
+    var selectedItem by remember { mutableStateOf("Item 2") }
     Picker(
-        items = listOf("Item 1", "Item 2", "Item 3"),
-        state = state,
+        items = items,
+        selectedItem = selectedItem,
+        onSelectedItemChange = { selectedItem = it },
         isDividerVisible = false
     )
 }
@@ -531,10 +534,12 @@ private fun PickerNoDividerPreview() {
 @Preview(name = "Custom Colors", group = "Picker - Styles", showBackground = true)
 @Composable
 private fun PickerCustomColorsPreview() {
-    val state = rememberPickerState("Blue")
+    val items = listOf("Red", "Green", "Blue")
+    var selectedItem by remember { mutableStateOf("Blue") }
     Picker(
-        items = listOf("Red", "Green", "Blue"),
-        state = state,
+        items = items,
+        selectedItem = selectedItem,
+        onSelectedItemChange = { selectedItem = it },
         colors = PickerDefaults.colors(
             dividerColor = androidx.compose.ui.graphics.Color.Blue,
             selectedTextColor = androidx.compose.ui.graphics.Color.Blue,
@@ -546,10 +551,12 @@ private fun PickerCustomColorsPreview() {
 @Preview(name = "Bounded Scroll", group = "Picker - Variations", showBackground = true)
 @Composable
 private fun PickerBoundedPreview() {
-    val state = rememberPickerState("Item 2")
+    val items = listOf("Item 1", "Item 2", "Item 3", "Item 4", "Item 5")
+    var selectedItem by remember { mutableStateOf("Item 2") }
     Picker(
-        items = listOf("Item 1", "Item 2", "Item 3", "Item 4", "Item 5"),
-        state = state,
+        items = items,
+        selectedItem = selectedItem,
+        onSelectedItemChange = { selectedItem = it },
         isInfinity = false
     )
 }
@@ -558,11 +565,11 @@ private fun PickerBoundedPreview() {
 @Composable
 private fun Picker5VisibleItemsPreview() {
     val items = (1..10).map { "Item $it" }
-    val state = rememberPickerState("Item 5")
+    var selectedItem by remember { mutableStateOf("Item 5") }
     Picker(
         items = items,
-        state = state,
-        startIndex = 4,
+        selectedItem = selectedItem,
+        onSelectedItemChange = { selectedItem = it },
         visibleItemsCount = 5
     )
 }
@@ -570,10 +577,12 @@ private fun Picker5VisibleItemsPreview() {
 @Preview(name = "Selected Background", group = "Picker - Styles", showBackground = true)
 @Composable
 private fun PickerSelectedBackgroundPreview() {
-    val state = rememberPickerState("Item 2")
+    val items = listOf("Item 1", "Item 2", "Item 3")
+    var selectedItem by remember { mutableStateOf("Item 2") }
     Picker(
-        items = listOf("Item 1", "Item 2", "Item 3"),
-        state = state,
+        items = items,
+        selectedItem = selectedItem,
+        onSelectedItemChange = { selectedItem = it },
         colors = PickerDefaults.colors(
             dividerColor = androidx.compose.ui.graphics.Color.Blue,
             selectedTextColor = androidx.compose.ui.graphics.Color.Blue,

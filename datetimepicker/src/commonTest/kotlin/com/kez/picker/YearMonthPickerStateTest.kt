@@ -159,14 +159,13 @@ class YearMonthPickerStateTest {
     }
 
     @Test
-    fun yearMonthPickerState_selectedMonthDate_updatesWhenInternalStateChanges() {
+    fun yearMonthPickerState_selectedMonthDate_updatesWhenSelectionChanges() {
         val state = YearMonthPickerState(
             initialYear = 2024,
             initialMonth = 1
         )
 
-        state.yearState.selectedItem = 2026
-        state.monthState.selectedItem = 12
+        state.selectYearMonth(year = 2026, month = 12)
 
         assertEquals(LocalDate(2026, 12, 1), state.selectedMonthDate)
     }
@@ -183,8 +182,6 @@ class YearMonthPickerStateTest {
         assertEquals(2026, state.selectedYear)
         assertEquals(12, state.selectedMonth)
         assertEquals(LocalDate(2026, 12, 1), state.selectedMonthDate)
-        assertEquals(1, state.yearState.selectionRequestVersion)
-        assertEquals(1, state.monthState.selectionRequestVersion)
     }
 
     @Test
@@ -199,8 +196,6 @@ class YearMonthPickerStateTest {
         assertEquals(2026, state.selectedYear)
         assertEquals(5, state.selectedMonth)
         assertEquals(LocalDate(2026, 5, 1), state.selectedMonthDate)
-        assertEquals(1, state.yearState.selectionRequestVersion)
-        assertEquals(1, state.monthState.selectionRequestVersion)
     }
 
     @Test
@@ -224,8 +219,7 @@ class YearMonthPickerStateTest {
             initialYear = 2024,
             initialMonth = 1
         )
-        state.yearState.selectedItem = 2026
-        state.monthState.selectedItem = 12
+        state.selectYearMonth(year = 2026, month = 12)
 
         val restored = state.saveAndRestore()
 
@@ -249,17 +243,19 @@ class YearMonthPickerStateTest {
     }
 
     @Test
-    fun validateYearMonthPickerItems_allowsYearItemsMissingCurrentSelection() {
+    fun validateYearMonthPickerItems_throwsWhenYearItemsMissingCurrentSelection() {
         val state = YearMonthPickerState(
             initialYear = 2024,
             initialMonth = 6
         )
 
-        validateYearMonthPickerItems(
-            state = state,
-            yearItems = (2025..2030).toList(),
-            monthItems = listOf(3, 6, 9, 12)
-        )
+        assertFailsWith<IllegalArgumentException> {
+            validateYearMonthPickerItems(
+                state = state,
+                yearItems = (2025..2030).toList(),
+                monthItems = listOf(3, 6, 9, 12)
+            )
+        }
     }
 
     @Test
@@ -279,24 +275,26 @@ class YearMonthPickerStateTest {
     }
 
     @Test
-    fun validateYearMonthPickerItems_allowsMonthItemsMissingCurrentSelection() {
+    fun validateYearMonthPickerItems_throwsWhenMonthItemsMissingCurrentSelection() {
         val state = YearMonthPickerState(
             initialYear = 2024,
             initialMonth = 6
         )
 
-        validateYearMonthPickerItems(
-            state = state,
-            yearItems = (2020..2030).toList(),
-            monthItems = listOf(3, 9, 12)
-        )
+        assertFailsWith<IllegalArgumentException> {
+            validateYearMonthPickerItems(
+                state = state,
+                yearItems = (2020..2030).toList(),
+                monthItems = listOf(3, 9, 12)
+            )
+        }
     }
 
     @Test
     fun validateYearMonthPickerItems_allowsBoundaryValues() {
         val state = YearMonthPickerState(
-            initialYear = 2024,
-            initialMonth = 6
+            initialYear = 1000,
+            initialMonth = 1
         )
 
         validateYearMonthPickerItems(
