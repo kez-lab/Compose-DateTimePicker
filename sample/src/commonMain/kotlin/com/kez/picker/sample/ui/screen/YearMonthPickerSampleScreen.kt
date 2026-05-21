@@ -21,6 +21,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.kez.picker.PickerDefaults
 import com.kez.picker.date.YearMonthPicker
 import com.kez.picker.date.rememberYearMonthPickerState
 import com.kez.picker.sample.getMonthContentDescription
@@ -103,12 +104,14 @@ internal fun YearMonthPickerSampleScreen(
                 YearMonthPicker(
                     modifier = Modifier.padding(horizontal = 12.dp),
                     state = state,
-                    yearPickerLabel = "연도",
-                    monthPickerLabel = "월",
-                    yearItemContentDescription = { "${it}년" },
-                    monthItemContentDescription = { getMonthContentDescription(it) },
-                    previousItemActionLabel = "이전 항목 선택",
-                    nextItemActionLabel = "다음 항목 선택"
+                    accessibility = PickerDefaults.yearMonthPickerAccessibility(
+                        yearPickerLabel = "연도",
+                        monthPickerLabel = "월",
+                        yearItemContentDescription = { "${it}년" },
+                        monthItemContentDescription = { getMonthContentDescription(it) },
+                        previousItemActionLabel = "이전 항목 선택",
+                        nextItemActionLabel = "다음 항목 선택"
+                    )
                 )
             }
 

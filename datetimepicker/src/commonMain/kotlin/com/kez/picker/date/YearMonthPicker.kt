@@ -15,6 +15,7 @@ import androidx.compose.ui.unit.sp
 import com.kez.picker.Picker
 import com.kez.picker.PickerDefaults
 import com.kez.picker.PickerStyle
+import com.kez.picker.YearMonthPickerAccessibility
 import com.kez.picker.util.MONTH_RANGE
 import com.kez.picker.util.YEAR_RANGE
 
@@ -28,12 +29,7 @@ import com.kez.picker.util.YEAR_RANGE
  * @param monthItems The list of month values to display. Must be non-empty, distinct, contain values in 1..12, and contain [YearMonthPickerState.selectedMonth].
  * @param style Visual and layout styling for each picker column.
  * @param spacingBetweenPickers The spacing between the pickers.
- * @param yearPickerLabel Accessibility label for the year picker. Pass null to omit the picker label prefix.
- * @param monthPickerLabel Accessibility label for the month picker. Pass null to omit the picker label prefix.
- * @param yearItemContentDescription Accessibility description for each year value.
- * @param monthItemContentDescription Accessibility description for each month value.
- * @param previousItemActionLabel Accessibility action label used by child pickers to select the previous item. Pass null or blank to omit the action.
- * @param nextItemActionLabel Accessibility action label used by child pickers to select the next item. Pass null or blank to omit the action.
+ * @param accessibility Accessibility labels, item descriptions, and custom action labels for each picker column.
  * @throws IllegalArgumentException if custom item lists are empty, contain duplicates, contain values outside the supported ranges, or omit the current selected year/month.
  */
 @Composable
@@ -45,12 +41,7 @@ fun YearMonthPicker(
     monthItems: List<Int> = MONTH_RANGE,
     style: PickerStyle = PickerDefaults.style(),
     spacingBetweenPickers: Dp = PickerDefaults.SpacingBetweenPickers,
-    yearPickerLabel: String? = "Year",
-    monthPickerLabel: String? = "Month",
-    yearItemContentDescription: (Int) -> String = { it.toString() },
-    monthItemContentDescription: (Int) -> String = { it.toString() },
-    previousItemActionLabel: String? = PickerDefaults.PreviousItemActionLabel,
-    nextItemActionLabel: String? = PickerDefaults.NextItemActionLabel
+    accessibility: YearMonthPickerAccessibility = PickerDefaults.yearMonthPickerAccessibility()
 ) {
     validateYearMonthPickerItems(
         state = state,
@@ -77,10 +68,7 @@ fun YearMonthPicker(
                     onSelectedItemChange = state::selectYear,
                     modifier = pickerModifier.weight(1f),
                     style = style,
-                    pickerLabel = yearPickerLabel,
-                    itemContentDescription = yearItemContentDescription,
-                    previousItemActionLabel = previousItemActionLabel,
-                    nextItemActionLabel = nextItemActionLabel
+                    accessibility = accessibility.year
                 )
                 Picker(
                     items = monthItems,
@@ -88,10 +76,7 @@ fun YearMonthPicker(
                     onSelectedItemChange = state::selectMonth,
                     modifier = pickerModifier.weight(1f),
                     style = style,
-                    pickerLabel = monthPickerLabel,
-                    itemContentDescription = monthItemContentDescription,
-                    previousItemActionLabel = previousItemActionLabel,
-                    nextItemActionLabel = nextItemActionLabel
+                    accessibility = accessibility.month
                 )
             }
         }

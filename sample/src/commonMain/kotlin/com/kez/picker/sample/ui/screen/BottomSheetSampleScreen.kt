@@ -247,12 +247,14 @@ internal fun BottomSheetSampleScreen(
                     ) {
                         YearMonthPicker(
                             state = yearMonthState,
-                            yearPickerLabel = "연도",
-                            monthPickerLabel = "월",
-                            yearItemContentDescription = { "${it}년" },
-                            monthItemContentDescription = { getMonthContentDescription(it) },
-                            previousItemActionLabel = "이전 항목 선택",
-                            nextItemActionLabel = "다음 항목 선택",
+                            accessibility = PickerDefaults.yearMonthPickerAccessibility(
+                                yearPickerLabel = "연도",
+                                monthPickerLabel = "월",
+                                yearItemContentDescription = { "${it}년" },
+                                monthItemContentDescription = { getMonthContentDescription(it) },
+                                previousItemActionLabel = "이전 항목 선택",
+                                nextItemActionLabel = "다음 항목 선택"
+                            ),
                             style = PickerDefaults.style(
                                 textStyles = PickerDefaults.textStyles(
                                     textStyle = TextStyle(
@@ -323,14 +325,16 @@ internal fun BottomSheetSampleScreen(
                     ) {
                         TimePicker(
                             state = timeState,
-                            hourPickerLabel = "시간",
-                            minutePickerLabel = "분",
-                            periodPickerLabel = "오전/오후",
-                            hourItemContentDescription = { "${it}시" },
-                            minuteItemContentDescription = { "${it}분" },
-                            periodItemContentDescription = { getTimePeriodContentDescription(it) },
-                            previousItemActionLabel = "이전 항목 선택",
-                            nextItemActionLabel = "다음 항목 선택",
+                            accessibility = PickerDefaults.timePickerAccessibility(
+                                hourPickerLabel = "시간",
+                                minutePickerLabel = "분",
+                                periodPickerLabel = "오전/오후",
+                                hourItemContentDescription = { "${it}시" },
+                                minuteItemContentDescription = { "${it}분" },
+                                periodItemContentDescription = { getTimePeriodContentDescription(it) },
+                                previousItemActionLabel = "이전 항목 선택",
+                                nextItemActionLabel = "다음 항목 선택"
+                            ),
                             style = PickerDefaults.style(
                                 textStyles = PickerDefaults.textStyles(
                                     textStyle = TextStyle(
