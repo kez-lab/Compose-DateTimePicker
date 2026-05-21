@@ -273,6 +273,27 @@ class PickerAccessibilitySemanticsAndroidTest {
     }
 
     @Test
+    fun picker_omitsCustomAccessibilityActionsWhenActionLabelsAreNullOrBlank() {
+        composeRule.setContent {
+            val state = rememberPickerState(2)
+
+            Picker(
+                items = listOf(1, 2, 3),
+                state = state,
+                startIndex = 1,
+                visibleItemsCount = 3,
+                isInfinity = false,
+                pickerLabel = "Value",
+                itemContentDescription = { "$it" },
+                previousItemActionLabel = null,
+                nextItemActionLabel = " "
+            )
+        }
+
+        assertNoCustomAccessibilityActions("Value: 2")
+    }
+
+    @Test
     fun picker_updatesAccessibilitySemanticsWhenSelectionChangesProgrammatically() {
         lateinit var state: PickerState<Int>
 
@@ -972,6 +993,19 @@ class PickerAccessibilitySemanticsAndroidTest {
             .fetchSemanticsNodes()
 
         assertTrue(nodes.isEmpty())
+    }
+
+    private fun assertNoCustomAccessibilityActions(contentDescription: String) {
+        val actions = composeRule
+            .onAllNodes(hasContentDescription(contentDescription))
+            .fetchSemanticsNodes()
+            .flatMap { node ->
+                node.config
+                    .getOrNull(SemanticsActions.CustomActions)
+                    .orEmpty()
+            }
+
+        assertTrue(actions.isNullOrEmpty())
     }
 }
 
