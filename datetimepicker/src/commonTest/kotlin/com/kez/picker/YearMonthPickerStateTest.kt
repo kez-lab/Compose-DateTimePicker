@@ -253,6 +253,32 @@ class YearMonthPickerStateTest {
     }
 
     @Test
+    fun yearMonthPickerItems_coerceYearMonth_usesClosestItems() {
+        val items = YearMonthPickerItems(
+            yearItems = listOf(2024, 2026),
+            monthItems = listOf(3, 9)
+        )
+
+        assertEquals(
+            YearMonth(year = 2024, month = 3),
+            items.coerceYearMonth(YearMonth(year = 2025, month = 6))
+        )
+    }
+
+    @Test
+    fun yearMonthPickerState_selectYearMonthWithItems_coercesSelection() {
+        val state = YearMonthPickerState(initialYear = 2024, initialMonth = 3)
+        val items = YearMonthPickerItems(
+            yearItems = listOf(2024, 2026),
+            monthItems = listOf(3, 9)
+        )
+
+        state.selectYearMonth(year = 2025, month = 6, items = items)
+
+        assertEquals(YearMonth(year = 2024, month = 3), state.selectedYearMonth)
+    }
+
+    @Test
     fun validateYearMonthPickerItems_allowsCurrentSelection() {
         val state = YearMonthPickerState(
             initialYear = 2024,

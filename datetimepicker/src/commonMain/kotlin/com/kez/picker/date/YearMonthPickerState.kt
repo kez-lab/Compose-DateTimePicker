@@ -9,6 +9,7 @@ import androidx.compose.runtime.saveable.Saver
 import androidx.compose.runtime.saveable.listSaver
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import com.kez.picker.YearMonthPickerItems
 import com.kez.picker.util.currentDate
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.number
@@ -120,6 +121,22 @@ class YearMonthPickerState(
         updateYearMonth(yearMonth.year, yearMonth.month)
     }
 
+    /**
+     * Programmatically selects the closest year/month to [yearMonth] that is allowed by [items].
+     *
+     * Use this overload when app-owned state can contain values outside custom picker lists.
+     */
+    fun selectYearMonth(yearMonth: YearMonth, items: YearMonthPickerItems) {
+        selectYearMonth(items.coerceYearMonth(yearMonth))
+    }
+
+    /**
+     * Programmatically selects the closest year/month to [year] and [month] that is allowed by [items].
+     */
+    fun selectYearMonth(year: Int, month: Int, items: YearMonthPickerItems) {
+        selectYearMonth(YearMonth(year, month), items)
+    }
+
     internal fun selectYear(year: Int) {
         updateYearMonth(year, selectedMonth)
     }
@@ -148,6 +165,15 @@ class YearMonthPickerState(
      */
     fun selectDate(date: LocalDate) {
         selectYearMonth(YearMonth.from(date))
+    }
+
+    /**
+     * Programmatically selects the closest year/month to [date] that is allowed by [items].
+     *
+     * The day value is ignored because [YearMonthPicker] only selects year and month.
+     */
+    fun selectDate(date: LocalDate, items: YearMonthPickerItems) {
+        selectYearMonth(YearMonth.from(date), items)
     }
 
     companion object {

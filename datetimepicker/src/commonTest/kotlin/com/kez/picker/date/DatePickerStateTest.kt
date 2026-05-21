@@ -3,6 +3,7 @@ package com.kez.picker.date
 import androidx.compose.runtime.saveable.SaverScope
 import com.kez.picker.DatePickerItems
 import kotlinx.datetime.LocalDate
+import kotlinx.datetime.Month
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
@@ -297,6 +298,51 @@ class DatePickerStateTest {
                 )
             )
         }
+    }
+
+    @Test
+    fun datePickerItems_coerceDate_usesClosestItems() {
+        val items = DatePickerItems(
+            yearItems = listOf(2024, 2026),
+            monthItems = listOf(2, 12),
+            dayItems = listOf(1, 15, 31)
+        )
+
+        assertEquals(
+            LocalDate(year = 2024, month = Month.DECEMBER, day = 31),
+            items.coerceDate(LocalDate(year = 2025, month = Month.NOVEMBER, day = 30))
+        )
+    }
+
+    @Test
+    fun datePickerItems_coerceDate_filtersDayItemsByCoercedYearMonth() {
+        val items = DatePickerItems(
+            yearItems = listOf(2025),
+            monthItems = listOf(2),
+            dayItems = listOf(15, 31)
+        )
+
+        assertEquals(
+            LocalDate(year = 2025, month = Month.FEBRUARY, day = 15),
+            items.coerceDate(LocalDate(year = 2025, month = Month.FEBRUARY, day = 28))
+        )
+    }
+
+    @Test
+    fun datePickerState_selectDateWithItems_coercesSelection() {
+        val state = DatePickerState(initialYear = 2024, initialMonth = 2, initialDay = 1)
+        val items = DatePickerItems(
+            yearItems = listOf(2024, 2026),
+            monthItems = listOf(2, 12),
+            dayItems = listOf(1, 15, 31)
+        )
+
+        state.selectDate(
+            date = LocalDate(year = 2025, month = Month.NOVEMBER, day = 30),
+            items = items
+        )
+
+        assertEquals(LocalDate(year = 2024, month = Month.DECEMBER, day = 31), state.selectedDate)
     }
 
     @Test
