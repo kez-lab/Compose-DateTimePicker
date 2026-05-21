@@ -55,7 +55,7 @@ dependencies {
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import com.kez.picker.time.TimePicker
-import com.kez.picker.rememberTimePickerState
+import com.kez.picker.time.rememberTimePickerState
 import com.kez.picker.util.TimeFormat
 import com.kez.picker.util.currentDateTime
 
@@ -81,7 +81,7 @@ fun TimePicker24hExample() {
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import com.kez.picker.time.TimePicker
-import com.kez.picker.rememberTimePickerState
+import com.kez.picker.time.rememberTimePickerState
 import com.kez.picker.util.TimeFormat
 import com.kez.picker.util.currentDateTime
 
@@ -144,7 +144,7 @@ fun DatePickerExample() {
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import com.kez.picker.date.YearMonthPicker
-import com.kez.picker.rememberYearMonthPickerState
+import com.kez.picker.date.rememberYearMonthPickerState
 import com.kez.picker.util.currentDate
 
 @Composable
@@ -189,7 +189,7 @@ import androidx.compose.runtime.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.kez.picker.rememberTimePickerState
+import com.kez.picker.time.rememberTimePickerState
 import com.kez.picker.time.TimePicker
 import kotlinx.datetime.LocalTime
 
@@ -261,6 +261,11 @@ fun BottomSheetPickerExample() {
 
 > 이 레퍼런스는 현재 `main` 브랜치 API를 설명합니다. 공개 `0.4.0` artifact에 의존하는 프로젝트에 예제를 복사하기 전에는 [CHANGELOG.md](CHANGELOG.md)와 `0.4.0` release/tag 문서를 확인하세요.
 
+공개 state API는 해당 컴포넌트 패키지에 함께 둡니다. `TimePicker`, `TimePickerState`,
+`rememberTimePickerState`는 `com.kez.picker.time`에 있고, `DatePicker`, `DatePickerState`,
+`YearMonthPicker`, `YearMonthPickerState` 및 관련 `remember*State` 함수는
+`com.kez.picker.date`에 있습니다.
+
 접근성 label 파라미터는 semantics에 들어가는 picker column prefix를 바꿉니다. `*ItemContentDescription`
 파라미터는 화면에 보이는 텍스트를 바꾸지 않고 접근성 값 설명만 바꿉니다. 선택 상태는 고정된 영어 문구를
 붙이지 않고 Compose `selected` semantics로 전달됩니다. Picker는 이전/다음 item을 선택하는 custom
@@ -309,16 +314,16 @@ state를 새로 만들 필요는 없습니다.
 | State | Method |
 | :--- | :--- |
 | Generic `Picker<T>` | 앱이 소유한 `selectedItem` 값을 갱신 |
-| `TimePickerState` | `selectTime(LocalTime(...))` |
-| `DatePickerState` | `selectDate(LocalDate(...))` |
-| `YearMonthPickerState` | `selectYearMonth(year, month)` 또는 `selectDate(LocalDate(...))` |
+| `time.TimePickerState` | `selectTime(LocalTime(...))` |
+| `date.DatePickerState` | `selectDate(LocalDate(...))` |
+| `date.YearMonthPickerState` | `selectYearMonth(year, month)` 또는 `selectDate(LocalDate(...))` |
 
 ```kotlin
 import androidx.compose.foundation.layout.Column
 import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import com.kez.picker.rememberTimePickerState
+import com.kez.picker.time.rememberTimePickerState
 import com.kez.picker.time.TimePicker
 import kotlinx.datetime.LocalTime
 

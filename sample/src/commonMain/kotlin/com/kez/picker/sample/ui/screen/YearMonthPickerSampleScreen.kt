@@ -22,7 +22,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.kez.picker.date.YearMonthPicker
-import com.kez.picker.rememberYearMonthPickerState
+import com.kez.picker.date.rememberYearMonthPickerState
 import com.kez.picker.sample.getMonthContentDescription
 import com.kez.picker.sample.getMonthName
 import com.kez.picker.util.currentDate

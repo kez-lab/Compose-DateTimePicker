@@ -38,9 +38,10 @@ DatePicker (year + month + day)
 - Fading edge effect via `graphicsLayer` + `BlendMode.DstIn`
 - State updates via `snapshotFlow { firstVisibleItemIndex }` in `LaunchedEffect`
 
-**`PickerState.kt`**
-- Shared state holders for `TimePicker` and `YearMonthPicker`
-- Created via `rememberTimePickerState` and `rememberYearMonthPickerState`
+**State files**
+- `time/TimePickerState.kt` contains `TimePickerState` and `rememberTimePickerState`
+- `date/DatePickerState.kt` contains `DatePickerState` and `rememberDatePickerState`
+- `date/YearMonthPickerState.kt` contains `YearMonthPickerState` and `rememberYearMonthPickerState`
 - `TimePickerState` exposes `selectedTime: LocalTime` and `selectedHourOfDay`
 - `YearMonthPickerState` exposes `selectedMonthDate: LocalDate`
 - Specialized picker states use saveable state; generic `Picker<T>` is controlled by caller-owned state because arbitrary `T` is not guaranteed saveable
@@ -90,6 +91,7 @@ Most logic lives in `commonMain`. Platform-specific code is minimal.
 - Merge PRs only after relevant local verification and GitHub Actions checks pass.
 - Keep improving toward Android developer ergonomics first: state APIs, sample usability, documentation clarity, accessibility, and predictable behavior in real app lifecycles.
 - During 0.x API stabilization, prefer the best long-term API shape over source compatibility when the maintainer explicitly authorizes breaking changes. Document every breaking change in README/CHANGELOG and update ABI dumps.
+- Keep public state APIs colocated with their component package unless there is a strong API-design reason not to. For example, `TimePickerState` and `rememberTimePickerState` live in `com.kez.picker.time`; date and year-month state APIs live in `com.kez.picker.date`.
 - Prefer controlled picker APIs with a single source of truth. Avoid APIs where both a state object and positional parameter can initialize or mutate the same selection.
 - When public picker APIs accept custom item lists, validate non-empty lists, duplicate values, supported value ranges, and presence of the current selected value before composing the underlying `Picker`.
 - When public validation rules change, update KDoc plus `README.md` and `README_KO.md` in the same PR, including failure mode and whether the app must clamp state before rendering.

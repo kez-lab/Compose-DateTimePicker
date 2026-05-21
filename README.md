@@ -57,7 +57,7 @@ Use `TimePicker` for time selection. It supports both 12-hour and 24-hour format
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import com.kez.picker.time.TimePicker
-import com.kez.picker.rememberTimePickerState
+import com.kez.picker.time.rememberTimePickerState
 import com.kez.picker.util.TimeFormat
 import com.kez.picker.util.currentDateTime
 
@@ -83,7 +83,7 @@ fun TimePicker24hExample() {
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import com.kez.picker.time.TimePicker
-import com.kez.picker.rememberTimePickerState
+import com.kez.picker.time.rememberTimePickerState
 import com.kez.picker.util.TimeFormat
 import com.kez.picker.util.currentDateTime
 
@@ -147,7 +147,7 @@ Use `YearMonthPicker` for selecting a specific month in a year.
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import com.kez.picker.date.YearMonthPicker
-import com.kez.picker.rememberYearMonthPickerState
+import com.kez.picker.date.rememberYearMonthPickerState
 import com.kez.picker.util.currentDate
 
 @Composable
@@ -192,7 +192,7 @@ import androidx.compose.runtime.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.kez.picker.rememberTimePickerState
+import com.kez.picker.time.rememberTimePickerState
 import com.kez.picker.time.TimePicker
 import kotlinx.datetime.LocalTime
 
@@ -264,6 +264,11 @@ The example stores hour and minute separately because primitive values work with
 
 > This reference describes the current `main` branch API. Check [CHANGELOG.md](CHANGELOG.md) and the `0.4.0` release/tag docs before copying API examples into a project that depends on the public `0.4.0` artifact.
 
+Public state APIs live beside their components: `TimePicker`, `TimePickerState`, and
+`rememberTimePickerState` are in `com.kez.picker.time`; `DatePicker`, `DatePickerState`,
+`YearMonthPicker`, `YearMonthPickerState`, and their `remember*State` functions are in
+`com.kez.picker.date`.
+
 Accessibility label parameters customize the picker-column prefix used in semantics. `*ItemContentDescription`
 parameters customize the accessibility value text without changing the visual item text. Selection is exposed
 through Compose `selected` semantics rather than appended as a hardcoded English phrase. Pickers also expose
@@ -312,16 +317,16 @@ selection.
 | State | Method |
 | :--- | :--- |
 | Generic `Picker<T>` | Update the app-owned `selectedItem` value |
-| `TimePickerState` | `selectTime(LocalTime(...))` |
-| `DatePickerState` | `selectDate(LocalDate(...))` |
-| `YearMonthPickerState` | `selectYearMonth(year, month)` or `selectDate(LocalDate(...))` |
+| `time.TimePickerState` | `selectTime(LocalTime(...))` |
+| `date.DatePickerState` | `selectDate(LocalDate(...))` |
+| `date.YearMonthPickerState` | `selectYearMonth(year, month)` or `selectDate(LocalDate(...))` |
 
 ```kotlin
 import androidx.compose.foundation.layout.Column
 import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import com.kez.picker.rememberTimePickerState
+import com.kez.picker.time.rememberTimePickerState
 import com.kez.picker.time.TimePicker
 import kotlinx.datetime.LocalTime
 
