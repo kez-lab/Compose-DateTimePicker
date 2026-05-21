@@ -16,11 +16,9 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.sp
 import com.kez.picker.Picker
 import com.kez.picker.PickerDefaults
+import com.kez.picker.TimePickerItems
 import com.kez.picker.PickerStyle
 import com.kez.picker.TimePickerAccessibility
-import com.kez.picker.util.HOUR12_RANGE
-import com.kez.picker.util.HOUR24_RANGE
-import com.kez.picker.util.MINUTE_RANGE
 import com.kez.picker.util.TimeFormat
 import com.kez.picker.util.TimePeriod
 
@@ -30,9 +28,7 @@ import com.kez.picker.util.TimePeriod
  * @param modifier The modifier to be applied to the component.
  * @param pickerModifier The modifier to be applied to each picker.
  * @param state The state object to control the picker.
- * @param minuteItems The list of minute values to display. Must be non-empty, distinct, contain values in 0..59, and contain [TimePickerState.selectedMinute].
- * @param hourItems The list of hour values to display. Must be non-empty, distinct, contain display-hour values in 1..12 for [TimeFormat.HOUR_12] or 0..23 for [TimeFormat.HOUR_24], and contain [TimePickerState.selectedHour].
- * @param periodItems The list of period values to display in [TimeFormat.HOUR_12]. Must be non-empty, distinct, and contain [TimePickerState.selectedPeriod] when the picker uses 12-hour time.
+ * @param items Selectable minute, hour, and period item lists for the picker.
  * @param style Visual and layout styling for each picker column.
  * @param spacingBetweenPickers The spacing between the pickers.
  * @param accessibility Accessibility labels, item descriptions, and custom action labels for each picker column.
@@ -43,21 +39,16 @@ fun TimePicker(
     modifier: Modifier = Modifier,
     pickerModifier: Modifier = Modifier,
     state: TimePickerState = rememberTimePickerState(),
-    minuteItems: List<Int> = MINUTE_RANGE,
-    hourItems: List<Int> = when (state.timeFormat) {
-        TimeFormat.HOUR_12 -> HOUR12_RANGE
-        TimeFormat.HOUR_24 -> HOUR24_RANGE
-    },
-    periodItems: List<TimePeriod> = TimePeriod.entries,
+    items: TimePickerItems = PickerDefaults.timePickerItems(),
     style: PickerStyle = PickerDefaults.style(),
     spacingBetweenPickers: Dp = PickerDefaults.SpacingBetweenPickers,
     accessibility: TimePickerAccessibility = PickerDefaults.timePickerAccessibility()
 ) {
+    val hourItems = items.hourItemsFor(state.timeFormat)
+
     validateTimePickerItems(
         state = state,
-        minuteItems = minuteItems,
-        hourItems = hourItems,
-        periodItems = periodItems
+        items = items
     )
 
     Box(modifier = modifier) {
@@ -73,7 +64,7 @@ fun TimePicker(
             ) {
                 if (state.timeFormat == TimeFormat.HOUR_12) {
                     Picker(
-                        items = periodItems,
+                        items = items.periodItems,
                         selectedItem = state.selectedPeriod,
                         onSelectedItemChange = state::selectPeriod,
                         modifier = pickerModifier.weight(1f),
@@ -93,7 +84,7 @@ fun TimePicker(
                 )
                 Spacer(modifier = Modifier.width(spacingBetweenPickers))
                 Picker(
-                    items = minuteItems,
+                    items = items.minuteItems,
                     selectedItem = state.selectedMinute,
                     onSelectedItemChange = state::selectMinute,
                     modifier = pickerModifier.weight(1f),
@@ -111,6 +102,25 @@ internal fun validateTimePickerItems(
     hourItems: List<Int>,
     periodItems: List<TimePeriod>
 ) {
+    validateTimePickerItems(
+        state = state,
+        items = TimePickerItems(
+            minuteItems = minuteItems,
+            hour24Items = hourItems,
+            hour12Items = hourItems,
+            periodItems = periodItems
+        )
+    )
+}
+
+internal fun validateTimePickerItems(
+    state: TimePickerState,
+    items: TimePickerItems
+) {
+    val minuteItems = items.minuteItems
+    val hourItems = items.hourItemsFor(state.timeFormat)
+    val periodItems = items.periodItems
+
     val minuteRange = 0..59
     val invalidMinutes = minuteItems.invalidValuesFor(minuteRange)
     require(minuteItems.isNotEmpty()) { "TimePicker minuteItems must not be empty." }
@@ -125,22 +135,25 @@ internal fun validateTimePickerItems(
         "TimePicker minuteItems must contain state.selectedMinute=${state.selectedMinute}."
     }
 
-    val hourRange = if (state.timeFormat == TimeFormat.HOUR_12) 1..12 else 0..23
-    val hourRangeLabel = if (state.timeFormat == TimeFormat.HOUR_12) "1, 12" else "0, 23"
+    val isHour12 = state.timeFormat == TimeFormat.HOUR_12
+    val hourItemsName = if (isHour12) "hour12Items" else "hour24Items"
+    val hourRange = if (isHour12) 1..12 else 0..23
+    val hourRangeLabel = if (isHour12) "1, 12" else "0, 23"
     val invalidHours = hourItems.invalidValuesFor(hourRange)
-    require(hourItems.isNotEmpty()) { "TimePicker hourItems must not be empty." }
+    require(hourItems.isNotEmpty()) { "TimePicker $hourItemsName must not be empty." }
     require(hourItems.distinct().size == hourItems.size) {
-        "TimePicker hourItems must not contain duplicate values."
+        "TimePicker $hourItemsName must not contain duplicate values."
     }
     require(invalidHours.isEmpty()) {
-        "TimePicker hourItems must contain only values in range [$hourRangeLabel] " +
+        "TimePicker $hourItemsName must contain only values in range [$hourRangeLabel] " +
                 "for timeFormat=${state.timeFormat}. Invalid values: $invalidHours"
     }
     require(state.selectedHour in hourItems) {
-        "TimePicker hourItems must contain state.selectedHour=${state.selectedHour} for timeFormat=${state.timeFormat}."
+        "TimePicker $hourItemsName must contain state.selectedHour=${state.selectedHour} " +
+                "for timeFormat=${state.timeFormat}."
     }
 
-    if (state.timeFormat == TimeFormat.HOUR_12) {
+    if (isHour12) {
         require(periodItems.isNotEmpty()) {
             "TimePicker periodItems must not be empty for timeFormat=${TimeFormat.HOUR_12}."
         }

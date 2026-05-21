@@ -14,7 +14,12 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.kez.picker.util.HOUR12_RANGE
+import com.kez.picker.util.HOUR24_RANGE
+import com.kez.picker.util.MINUTE_RANGE
+import com.kez.picker.util.MONTH_RANGE
 import com.kez.picker.util.TimePeriod
+import com.kez.picker.util.YEAR_RANGE
 
 /**
  * Contains default values and factory methods for creating Picker styles.
@@ -285,6 +290,57 @@ object PickerDefaults {
             previousItemActionLabel = previousItemActionLabel,
             nextItemActionLabel = nextItemActionLabel
         )
+    )
+
+    /**
+     * Creates selectable item lists for a time picker.
+     *
+     * @param minuteItems Minute values available for selection. Values must be in 0..59.
+     * @param hour24Items Hour values available when using 24-hour time. Values must be in 0..23.
+     * @param hour12Items Display-hour values available when using 12-hour time. Values must be in 1..12.
+     * @param periodItems AM/PM values available when using 12-hour time.
+     * @return A [TimePickerItems] instance with the specified item lists.
+     */
+    fun timePickerItems(
+        minuteItems: List<Int> = MINUTE_RANGE,
+        hour24Items: List<Int> = HOUR24_RANGE,
+        hour12Items: List<Int> = HOUR12_RANGE,
+        periodItems: List<TimePeriod> = TimePeriod.entries
+    ): TimePickerItems = TimePickerItems(
+        minuteItems = minuteItems,
+        hour24Items = hour24Items,
+        hour12Items = hour12Items,
+        periodItems = periodItems
+    )
+
+    /**
+     * Creates selectable item lists for a date picker.
+     *
+     * @param yearItems Year values available for selection. Values must be in 1000..9999.
+     * @param monthItems Month values available for selection. Values must be in 1..12.
+     * @return A [DatePickerItems] instance with the specified item lists.
+     */
+    fun datePickerItems(
+        yearItems: List<Int> = YEAR_RANGE,
+        monthItems: List<Int> = MONTH_RANGE
+    ): DatePickerItems = DatePickerItems(
+        yearItems = yearItems,
+        monthItems = monthItems
+    )
+
+    /**
+     * Creates selectable item lists for a year-month picker.
+     *
+     * @param yearItems Year values available for selection. Values must be in 1000..9999.
+     * @param monthItems Month values available for selection. Values must be in 1..12.
+     * @return A [YearMonthPickerItems] instance with the specified item lists.
+     */
+    fun yearMonthPickerItems(
+        yearItems: List<Int> = YEAR_RANGE,
+        monthItems: List<Int> = MONTH_RANGE
+    ): YearMonthPickerItems = YearMonthPickerItems(
+        yearItems = yearItems,
+        monthItems = monthItems
     )
 
     /**

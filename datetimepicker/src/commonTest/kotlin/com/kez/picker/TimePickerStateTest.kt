@@ -286,6 +286,50 @@ class TimePickerStateTest {
     }
 
     @Test
+    fun validateTimePickerItems_usesHour24ItemsFor24HourFormat() {
+        val state = TimePickerState(
+            initialHour = 14,
+            initialMinute = 30,
+            initialPeriod = TimePeriod.PM,
+            timeFormat = TimeFormat.HOUR_24
+        )
+
+        validateTimePickerItems(
+            state = state,
+            items = TimePickerItems(
+                minuteItems = listOf(0, 30),
+                hour24Items = listOf(14, 15),
+                hour12Items = emptyList(),
+                periodItems = emptyList()
+            )
+        )
+    }
+
+    @Test
+    fun validateTimePickerItems_usesHour12ItemsFor12HourFormat() {
+        val state = TimePickerState(
+            initialHour = 2,
+            initialMinute = 30,
+            initialPeriod = TimePeriod.PM,
+            timeFormat = TimeFormat.HOUR_12
+        )
+
+        val error = assertFailsWith<IllegalArgumentException> {
+            validateTimePickerItems(
+                state = state,
+                items = TimePickerItems(
+                    minuteItems = listOf(0, 30),
+                    hour24Items = listOf(14, 15),
+                    hour12Items = listOf(1, 3),
+                    periodItems = TimePeriod.entries
+                )
+            )
+        }
+
+        assertTrue(error.message?.contains("hour12Items") == true)
+    }
+
+    @Test
     fun validateTimePickerItems_throwsWhenMinuteItemsMissingCurrentSelection() {
         val state = TimePickerState(
             initialHour = 14,
