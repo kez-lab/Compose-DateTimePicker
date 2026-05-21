@@ -266,11 +266,25 @@ fun BottomSheetPickerExample() {
 `YearMonthPicker`, `YearMonthPickerState` 및 관련 `remember*State` 함수는
 `com.kez.picker.date`에 있습니다.
 
-접근성 label 파라미터는 semantics에 들어가는 picker column prefix를 바꿉니다. `*ItemContentDescription`
-파라미터는 화면에 보이는 텍스트를 바꾸지 않고 접근성 값 설명만 바꿉니다. 선택 상태는 고정된 영어 문구를
-붙이지 않고 Compose `selected` semantics로 전달됩니다. Picker는 이전/다음 item을 선택하는 custom
-accessibility action도 제공합니다. `previousItemActionLabel`과 `nextItemActionLabel`로 action label을
-현지화할 수 있고, `null`이나 blank를 전달하면 해당 action을 생략합니다.
+접근성 옵션은 semantics에 들어가는 picker column prefix, 접근성 값 설명, 이전/다음 accessibility action
+label을 한 곳에서 정의합니다. 화면에 보이는 텍스트를 바꾸지 않고 TalkBack 출력만 현지화할 수 있습니다.
+선택 상태는 고정된 영어 문구를 붙이지 않고 Compose `selected` semantics로 전달됩니다.
+`PickerDefaults.accessibility(...)`, `timePickerAccessibility(...)`, `datePickerAccessibility(...)`,
+`yearMonthPickerAccessibility(...)`로 화면별 재사용 가능한 접근성 객체를 만드세요.
+
+```kotlin
+TimePicker(
+    state = state,
+    accessibility = PickerDefaults.timePickerAccessibility(
+        hourPickerLabel = "시간",
+        minutePickerLabel = "분",
+        hourItemContentDescription = { "${it}시" },
+        minuteItemContentDescription = { "${it}분" },
+        previousItemActionLabel = "이전 항목 선택",
+        nextItemActionLabel = "다음 항목 선택"
+    )
+)
+```
 
 ### Generic Picker
 
@@ -283,6 +297,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.rememberSaveable
 import androidx.compose.runtime.setValue
 import com.kez.picker.Picker
+import com.kez.picker.PickerDefaults
 
 @Composable
 fun SizePickerExample() {
@@ -294,8 +309,10 @@ fun SizePickerExample() {
         selectedItem = selectedSize,
         onSelectedItemChange = { selectedSize = it },
         isInfinity = false,
-        pickerLabel = "Size",
-        itemContentDescription = { it }
+        accessibility = PickerDefaults.accessibility(
+            pickerLabel = "Size",
+            itemContentDescription = { it }
+        )
     )
 }
 ```
@@ -359,14 +376,7 @@ fun ProgrammaticTimePickerExample() {
 | `periodItems` | 12시간 형식에서 선택 가능한 오전/오후 목록입니다. `timeFormat`이 `HOUR_12`일 때 비어 있으면 안 됩니다. | `TimePeriod.entries` |
 | `style` | 각 picker column의 시각/레이아웃 스타일입니다. | `PickerDefaults.style()` |
 | `spacingBetweenPickers` | picker column 사이의 가로 간격입니다. | `0.dp` |
-| `hourPickerLabel` | 시간 picker의 접근성 label입니다. `null`을 전달하면 picker label prefix를 생략합니다. | `"Hour"` |
-| `minutePickerLabel` | 분 picker의 접근성 label입니다. `null`을 전달하면 picker label prefix를 생략합니다. | `"Minute"` |
-| `periodPickerLabel` | 12시간 형식에서 오전/오후 picker의 접근성 label입니다. `null`을 전달하면 picker label prefix를 생략합니다. | `"AM/PM"` |
-| `hourItemContentDescription` | 각 시간 값의 접근성 설명입니다. | `it.toString()` |
-| `minuteItemContentDescription` | 각 분 값의 접근성 설명입니다. | `it.toString()` |
-| `periodItemContentDescription` | 12시간 형식에서 각 오전/오후 값의 접근성 설명입니다. | `it.name` |
-| `previousItemActionLabel` | child picker가 이전 item을 선택할 때 쓰는 접근성 action label입니다. `null` 또는 blank를 전달하면 생략합니다. | `"Select previous item"` |
-| `nextItemActionLabel` | child picker가 다음 item을 선택할 때 쓰는 접근성 action label입니다. `null` 또는 blank를 전달하면 생략합니다. | `"Select next item"` |
+| `accessibility` | 각 picker column의 접근성 label, 값 설명, custom action label입니다. | `PickerDefaults.timePickerAccessibility()` |
 
 **TimePickerState 속성:**
 
@@ -393,14 +403,7 @@ custom item 값이 유효 범위를 벗어나거나, 중복이 있거나, 필수
 | `monthItems` | 선택 가능한 월 목록입니다. 값은 `1..12` 범위여야 합니다. | `1..12` |
 | `style` | 각 picker column의 시각/레이아웃 스타일입니다. | `PickerDefaults.style()` |
 | `spacingBetweenPickers` | picker column 사이의 가로 간격입니다. | `0.dp` |
-| `yearPickerLabel` | 연도 picker의 접근성 label입니다. `null`을 전달하면 picker label prefix를 생략합니다. | `"Year"` |
-| `monthPickerLabel` | 월 picker의 접근성 label입니다. `null`을 전달하면 picker label prefix를 생략합니다. | `"Month"` |
-| `dayPickerLabel` | 일 picker의 접근성 label입니다. `null`을 전달하면 picker label prefix를 생략합니다. | `"Day"` |
-| `yearItemContentDescription` | 각 연도 값의 접근성 설명입니다. | `it.toString()` |
-| `monthItemContentDescription` | 각 월 값의 접근성 설명입니다. | `it.toString()` |
-| `dayItemContentDescription` | 각 일 값의 접근성 설명입니다. | `it.toString()` |
-| `previousItemActionLabel` | child picker가 이전 item을 선택할 때 쓰는 접근성 action label입니다. `null` 또는 blank를 전달하면 생략합니다. | `"Select previous item"` |
-| `nextItemActionLabel` | child picker가 다음 item을 선택할 때 쓰는 접근성 action label입니다. `null` 또는 blank를 전달하면 생략합니다. | `"Select next item"` |
+| `accessibility` | 각 picker column의 접근성 label, 값 설명, custom action label입니다. | `PickerDefaults.datePickerAccessibility()` |
 
 **DatePickerState 속성:**
 
@@ -430,12 +433,7 @@ custom item 값이 유효 범위를 벗어나거나, 중복이 있거나, 목록
 | `monthItems` | 선택 가능한 월 목록입니다. 값은 `1..12` 범위여야 합니다. | `1..12` |
 | `style` | 각 picker column의 시각/레이아웃 스타일입니다. | `PickerDefaults.style()` |
 | `spacingBetweenPickers` | picker column 사이의 가로 간격입니다. | `0.dp` |
-| `yearPickerLabel` | 연도 picker의 접근성 label입니다. `null`을 전달하면 picker label prefix를 생략합니다. | `"Year"` |
-| `monthPickerLabel` | 월 picker의 접근성 label입니다. `null`을 전달하면 picker label prefix를 생략합니다. | `"Month"` |
-| `yearItemContentDescription` | 각 연도 값의 접근성 설명입니다. | `it.toString()` |
-| `monthItemContentDescription` | 각 월 값의 접근성 설명입니다. | `it.toString()` |
-| `previousItemActionLabel` | child picker가 이전 item을 선택할 때 쓰는 접근성 action label입니다. `null` 또는 blank를 전달하면 생략합니다. | `"Select previous item"` |
-| `nextItemActionLabel` | child picker가 다음 item을 선택할 때 쓰는 접근성 action label입니다. `null` 또는 blank를 전달하면 생략합니다. | `"Select next item"` |
+| `accessibility` | 각 picker column의 접근성 label, 값 설명, custom action label입니다. | `PickerDefaults.yearMonthPickerAccessibility()` |
 
 **YearMonthPickerState 속성:**
 

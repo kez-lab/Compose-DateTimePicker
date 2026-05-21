@@ -269,11 +269,25 @@ Public state APIs live beside their components: `TimePicker`, `TimePickerState`,
 `YearMonthPicker`, `YearMonthPickerState`, and their `remember*State` functions are in
 `com.kez.picker.date`.
 
-Accessibility label parameters customize the picker-column prefix used in semantics. `*ItemContentDescription`
-parameters customize the accessibility value text without changing the visual item text. Selection is exposed
-through Compose `selected` semantics rather than appended as a hardcoded English phrase. Pickers also expose
-custom accessibility actions for selecting the previous or next item. Use `previousItemActionLabel` and
-`nextItemActionLabel` to localize those action labels, or pass `null`/blank to omit an action.
+Accessibility options customize the picker-column prefix, accessibility value text, and previous/next
+accessibility action labels without changing the visual item text. Selection is exposed through Compose
+`selected` semantics rather than appended as a hardcoded English phrase. Use
+`PickerDefaults.accessibility(...)`, `timePickerAccessibility(...)`, `datePickerAccessibility(...)`, or
+`yearMonthPickerAccessibility(...)` to create reusable localized accessibility objects.
+
+```kotlin
+TimePicker(
+    state = state,
+    accessibility = PickerDefaults.timePickerAccessibility(
+        hourPickerLabel = "Hour",
+        minutePickerLabel = "Minute",
+        hourItemContentDescription = { "$it hour" },
+        minuteItemContentDescription = { "$it minute" },
+        previousItemActionLabel = "Select previous value",
+        nextItemActionLabel = "Select next value"
+    )
+)
+```
 
 ### Generic Picker
 
@@ -286,6 +300,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.rememberSaveable
 import androidx.compose.runtime.setValue
 import com.kez.picker.Picker
+import com.kez.picker.PickerDefaults
 
 @Composable
 fun SizePickerExample() {
@@ -297,8 +312,10 @@ fun SizePickerExample() {
         selectedItem = selectedSize,
         onSelectedItemChange = { selectedSize = it },
         isInfinity = false,
-        pickerLabel = "Size",
-        itemContentDescription = { it }
+        accessibility = PickerDefaults.accessibility(
+            pickerLabel = "Size",
+            itemContentDescription = { it }
+        )
     )
 }
 ```
@@ -362,14 +379,7 @@ app state before rendering the picker.
 | `periodItems` | AM/PM values available in 12-hour time. Must not be empty when `timeFormat` is `HOUR_12`. | `TimePeriod.entries` |
 | `style` | Visual and layout styling for each picker column. | `PickerDefaults.style()` |
 | `spacingBetweenPickers` | Horizontal spacing between picker columns. | `0.dp` |
-| `hourPickerLabel` | Accessibility label for the hour picker. Pass `null` to omit the picker label prefix. | `"Hour"` |
-| `minutePickerLabel` | Accessibility label for the minute picker. Pass `null` to omit the picker label prefix. | `"Minute"` |
-| `periodPickerLabel` | Accessibility label for the AM/PM picker in 12-hour time. Pass `null` to omit the picker label prefix. | `"AM/PM"` |
-| `hourItemContentDescription` | Accessibility description for each hour value. | `it.toString()` |
-| `minuteItemContentDescription` | Accessibility description for each minute value. | `it.toString()` |
-| `periodItemContentDescription` | Accessibility description for each AM/PM value in 12-hour time. | `it.name` |
-| `previousItemActionLabel` | Accessibility action label used by child pickers to select the previous item. Pass `null` or blank to omit it. | `"Select previous item"` |
-| `nextItemActionLabel` | Accessibility action label used by child pickers to select the next item. Pass `null` or blank to omit it. | `"Select next item"` |
+| `accessibility` | Accessibility labels, item descriptions, and custom action labels for each picker column. | `PickerDefaults.timePickerAccessibility()` |
 
 **TimePickerState Properties:**
 
@@ -396,14 +406,7 @@ Invalid custom item values, duplicate items, empty required lists, or current se
 | `monthItems`        | List of months available for selection. Values must be in `1..12`. | `1..12`                     |
 | `style`             | Visual and layout styling for each picker column. | `PickerDefaults.style()` |
 | `spacingBetweenPickers` | Horizontal spacing between picker columns. | `0.dp` |
-| `yearPickerLabel`   | Accessibility label for the year picker. Pass `null` to omit the picker label prefix. | `"Year"` |
-| `monthPickerLabel`  | Accessibility label for the month picker. Pass `null` to omit the picker label prefix. | `"Month"` |
-| `dayPickerLabel`    | Accessibility label for the day picker. Pass `null` to omit the picker label prefix. | `"Day"` |
-| `yearItemContentDescription` | Accessibility description for each year value. | `it.toString()` |
-| `monthItemContentDescription` | Accessibility description for each month value. | `it.toString()` |
-| `dayItemContentDescription` | Accessibility description for each day value. | `it.toString()` |
-| `previousItemActionLabel` | Accessibility action label used by child pickers to select the previous item. Pass `null` or blank to omit it. | `"Select previous item"` |
-| `nextItemActionLabel` | Accessibility action label used by child pickers to select the next item. Pass `null` or blank to omit it. | `"Select next item"` |
+| `accessibility` | Accessibility labels, item descriptions, and custom action labels for each picker column. | `PickerDefaults.datePickerAccessibility()` |
 
 **DatePickerState Properties:**
 
@@ -433,12 +436,7 @@ Invalid custom item values, duplicate items, empty lists, or current selected ye
 | `monthItems` | List of months available for selection. Values must be in `1..12`. | `1..12` |
 | `style` | Visual and layout styling for each picker column. | `PickerDefaults.style()` |
 | `spacingBetweenPickers` | Horizontal spacing between picker columns. | `0.dp` |
-| `yearPickerLabel` | Accessibility label for the year picker. Pass `null` to omit the picker label prefix. | `"Year"` |
-| `monthPickerLabel` | Accessibility label for the month picker. Pass `null` to omit the picker label prefix. | `"Month"` |
-| `yearItemContentDescription` | Accessibility description for each year value. | `it.toString()` |
-| `monthItemContentDescription` | Accessibility description for each month value. | `it.toString()` |
-| `previousItemActionLabel` | Accessibility action label used by child pickers to select the previous item. Pass `null` or blank to omit it. | `"Select previous item"` |
-| `nextItemActionLabel` | Accessibility action label used by child pickers to select the next item. Pass `null` or blank to omit it. | `"Select next item"` |
+| `accessibility` | Accessibility labels, item descriptions, and custom action labels for each picker column. | `PickerDefaults.yearMonthPickerAccessibility()` |
 
 **YearMonthPickerState Properties:**
 
