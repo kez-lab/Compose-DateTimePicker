@@ -15,6 +15,17 @@ Android, iOS, Desktop (JVM), Web (Wasm) 등 다양한 플랫폼에서 일관된 
 *   **상태 관리**: `rememberTimePickerState`, `rememberDatePickerState`, `rememberYearMonthPickerState`를 통해 간편하게 상태를 관리할 수 있습니다.
 *   **접근성**: 스크린 리더 및 내비게이션 지원 등 접근성을 고려하여 설계되었습니다.
 
+## 샘플 앱
+
+이 저장소에는 날짜, 시간, bottom sheet 흐름을 실제 앱 형태로 확인하고 복사해 활용할 수 있는 Compose Multiplatform 샘플 앱이 포함되어 있습니다.
+
+<p align="center">
+  <img src="docs/images/sample/sample-home.png" alt="샘플 앱 홈 화면" width="23%" />
+  <img src="docs/images/sample/sample-date-picker.png" alt="DatePicker 샘플 화면" width="23%" />
+  <img src="docs/images/sample/sample-time-picker.png" alt="TimePicker 샘플 화면" width="23%" />
+  <img src="docs/images/sample/sample-bottom-sheet.png" alt="Bottom sheet picker 샘플 화면" width="23%" />
+</p>
+
 ## 설치 방법
 
 버전 카탈로그 또는 빌드 파일에 의존성을 추가하여 사용할 수 있습니다.
