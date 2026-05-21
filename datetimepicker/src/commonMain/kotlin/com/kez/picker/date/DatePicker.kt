@@ -16,6 +16,7 @@ import com.kez.picker.Picker
 import com.kez.picker.PickerDefaults
 import com.kez.picker.PickerStyle
 import com.kez.picker.DatePickerAccessibility
+import kotlinx.datetime.LocalDate
 
 /**
  * A date picker component that allows selecting year, month, and day.
@@ -23,6 +24,7 @@ import com.kez.picker.DatePickerAccessibility
  * @param modifier The modifier to be applied to the component.
  * @param pickerModifier The modifier to be applied to each picker.
  * @param state The state object to control the picker.
+ * @param onSelectedDateChange Called after user interaction changes the selected date.
  * @param items Selectable year and month item lists for the picker.
  * @param style Visual and layout styling for each picker column.
  * @param spacingBetweenPickers The spacing between the pickers.
@@ -34,6 +36,7 @@ fun DatePicker(
     modifier: Modifier = Modifier,
     pickerModifier: Modifier = Modifier,
     state: DatePickerState = rememberDatePickerState(),
+    onSelectedDateChange: (LocalDate) -> Unit = {},
     items: DatePickerItems = PickerDefaults.datePickerItems(),
     style: PickerStyle = PickerDefaults.style(),
     spacingBetweenPickers: Dp = PickerDefaults.SpacingBetweenPickers,
@@ -43,6 +46,15 @@ fun DatePicker(
         state = state,
         items = items
     )
+
+    fun updateSelectedDate(update: () -> Unit) {
+        val previousDate = state.selectedDate
+        update()
+        val nextDate = state.selectedDate
+        if (nextDate != previousDate) {
+            onSelectedDateChange(nextDate)
+        }
+    }
 
     Box(modifier = modifier) {
         Column(
@@ -61,7 +73,9 @@ fun DatePicker(
                 Picker(
                     items = items.yearItems,
                     selectedItem = state.selectedYear,
-                    onSelectedItemChange = state::selectYear,
+                    onSelectedItemChange = { year ->
+                        updateSelectedDate { state.selectYear(year) }
+                    },
                     modifier = pickerModifier.weight(1.2f), // Give Year slightly more width
                     style = style,
                     accessibility = accessibility.year
@@ -70,7 +84,9 @@ fun DatePicker(
                 Picker(
                     items = items.monthItems,
                     selectedItem = state.selectedMonth,
-                    onSelectedItemChange = state::selectMonth,
+                    onSelectedItemChange = { month ->
+                        updateSelectedDate { state.selectMonth(month) }
+                    },
                     modifier = pickerModifier.weight(0.8f),
                     style = style,
                     accessibility = accessibility.month
@@ -80,7 +96,9 @@ fun DatePicker(
                     Picker(
                         items = dayItems,
                         selectedItem = state.selectedDay,
-                        onSelectedItemChange = state::selectDay,
+                        onSelectedItemChange = { day ->
+                            updateSelectedDate { state.selectDay(day) }
+                        },
                         modifier = pickerModifier.weight(0.8f),
                         style = style,
                         isInfinity = false,

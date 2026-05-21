@@ -16,6 +16,7 @@ import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.performClick
 import com.kez.picker.date.DatePicker
 import com.kez.picker.date.DatePickerState
+import com.kez.picker.date.YearMonth
 import com.kez.picker.date.YearMonthPicker
 import com.kez.picker.date.YearMonthPickerState
 import com.kez.picker.date.rememberDatePickerState
@@ -571,6 +572,46 @@ class PickerAccessibilitySemanticsAndroidTest {
     }
 
     @Test
+    fun timePicker_callsOnSelectedTimeChangeAfterUserSelection() {
+        lateinit var changedTimeState: MutableState<LocalTime?>
+
+        composeRule.setContent {
+            val state = rememberTimePickerState(
+                initialTime = LocalTime(hour = 10, minute = 5),
+                timeFormat = TimeFormat.HOUR_24
+            )
+            changedTimeState = remember { mutableStateOf(null) }
+
+            TimePicker(
+                state = state,
+                onSelectedTimeChange = { changedTimeState.value = it },
+                items = PickerDefaults.timePickerItems(
+                    minuteItems = listOf(5, 10),
+                    hour24Items = listOf(10, 11)
+                ),
+                style = PickerDefaults.style(visibleItemsCount = 3),
+                accessibility = PickerDefaults.timePickerAccessibility(
+                    hourPickerLabel = "시간",
+                    minutePickerLabel = "분",
+                    hourItemContentDescription = { "${it}시" },
+                    minuteItemContentDescription = { "${it}분" },
+                    nextItemActionLabel = NEXT_VALUE_ACTION_LABEL
+                )
+            )
+        }
+
+        performCustomAccessibilityAction(
+            contentDescription = "시간: 10시",
+            actionLabel = NEXT_VALUE_ACTION_LABEL
+        )
+        waitUntilSelectedItem("시간: 11시")
+
+        composeRule.runOnIdle {
+            assertEquals(LocalTime(hour = 11, minute = 5), changedTimeState.value)
+        }
+    }
+
+    @Test
     fun timePicker_forwardsCustomPeriodAccessibilityDescriptionIn12HourMode() {
         composeRule.setContent {
             val state = rememberTimePickerState(
@@ -713,6 +754,45 @@ class PickerAccessibilitySemanticsAndroidTest {
     }
 
     @Test
+    fun datePicker_callsOnSelectedDateChangeAfterUserSelection() {
+        lateinit var changedDateState: MutableState<LocalDate?>
+
+        composeRule.setContent {
+            val state = rememberDatePickerState(
+                initialYear = 2026,
+                initialMonth = 1,
+                initialDay = 31
+            )
+            changedDateState = remember { mutableStateOf(null) }
+
+            DatePicker(
+                state = state,
+                onSelectedDateChange = { changedDateState.value = it },
+                items = PickerDefaults.datePickerItems(
+                    yearItems = listOf(2026),
+                    monthItems = listOf(1, 2)
+                ),
+                style = PickerDefaults.style(visibleItemsCount = 3),
+                accessibility = PickerDefaults.datePickerAccessibility(
+                    monthPickerLabel = "월",
+                    monthItemContentDescription = { "${it}월" },
+                    nextItemActionLabel = NEXT_VALUE_ACTION_LABEL
+                )
+            )
+        }
+
+        performCustomAccessibilityAction(
+            contentDescription = "월: 1월",
+            actionLabel = NEXT_VALUE_ACTION_LABEL
+        )
+        waitUntilSelectedItem("월: 2월")
+
+        composeRule.runOnIdle {
+            assertEquals(LocalDate(year = 2026, month = Month.FEBRUARY, day = 28), changedDateState.value)
+        }
+    }
+
+    @Test
     fun yearMonthPicker_forwardsCustomAccessibilityDescriptionsToChildPickers() {
         composeRule.setContent {
             val state = rememberYearMonthPickerState(
@@ -796,6 +876,44 @@ class PickerAccessibilitySemanticsAndroidTest {
                 LocalDate(year = 2027, month = Month.MAY, day = 1),
                 state.selectedMonthDate
             )
+        }
+    }
+
+    @Test
+    fun yearMonthPicker_callsOnSelectedYearMonthChangeAfterUserSelection() {
+        lateinit var changedYearMonthState: MutableState<YearMonth?>
+
+        composeRule.setContent {
+            val state = rememberYearMonthPickerState(
+                initialYear = 2026,
+                initialMonth = 5
+            )
+            changedYearMonthState = remember { mutableStateOf(null) }
+
+            YearMonthPicker(
+                state = state,
+                onSelectedYearMonthChange = { changedYearMonthState.value = it },
+                items = PickerDefaults.yearMonthPickerItems(
+                    yearItems = listOf(2026),
+                    monthItems = listOf(5, 6)
+                ),
+                style = PickerDefaults.style(visibleItemsCount = 3),
+                accessibility = PickerDefaults.yearMonthPickerAccessibility(
+                    monthPickerLabel = "월",
+                    monthItemContentDescription = { "${it}월" },
+                    nextItemActionLabel = NEXT_VALUE_ACTION_LABEL
+                )
+            )
+        }
+
+        performCustomAccessibilityAction(
+            contentDescription = "월: 5월",
+            actionLabel = NEXT_VALUE_ACTION_LABEL
+        )
+        waitUntilSelectedItem("월: 6월")
+
+        composeRule.runOnIdle {
+            assertEquals(YearMonth(year = 2026, month = 6), changedYearMonthState.value)
         }
     }
 

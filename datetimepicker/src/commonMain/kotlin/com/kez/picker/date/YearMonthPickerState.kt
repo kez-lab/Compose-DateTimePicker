@@ -93,10 +93,16 @@ class YearMonthPickerState(
         get() = mutableSelectedMonth
 
     /**
+     * The selected year/month value.
+     */
+    val selectedYearMonth: YearMonth
+        get() = YearMonth(selectedYear, selectedMonth)
+
+    /**
      * The selected year and month represented as the first day of that month.
      */
     val selectedMonthDate: LocalDate
-        get() = LocalDate(selectedYear, selectedMonth, 1)
+        get() = selectedYearMonth.atDay()
 
     /**
      * Programmatically selects [year] and [month].
@@ -105,6 +111,13 @@ class YearMonthPickerState(
      */
     fun selectYearMonth(year: Int, month: Int) {
         updateYearMonth(year, month)
+    }
+
+    /**
+     * Programmatically selects [yearMonth].
+     */
+    fun selectYearMonth(yearMonth: YearMonth) {
+        updateYearMonth(yearMonth.year, yearMonth.month)
     }
 
     internal fun selectYear(year: Int) {
@@ -134,7 +147,7 @@ class YearMonthPickerState(
      * @throws IllegalArgumentException if [date]'s year is outside the supported range.
      */
     fun selectDate(date: LocalDate) {
-        selectYearMonth(date.year, date.month.number)
+        selectYearMonth(YearMonth.from(date))
     }
 
     companion object {
