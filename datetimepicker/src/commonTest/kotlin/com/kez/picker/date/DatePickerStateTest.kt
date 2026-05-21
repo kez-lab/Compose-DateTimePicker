@@ -67,6 +67,16 @@ class DatePickerStateTest {
     }
 
     @Test
+    fun datePickerState_localDateConstructor_initializesSelection() {
+        val state = DatePickerState(LocalDate(2026, 5, 20))
+
+        assertEquals(2026, state.selectedYear)
+        assertEquals(5, state.selectedMonth)
+        assertEquals(20, state.selectedDay)
+        assertEquals(LocalDate(2026, 5, 20), state.selectedDate)
+    }
+
+    @Test
     fun testInitialMonth_Throws_WhenOutOfRange() {
         assertFailsWith<IllegalArgumentException> {
             DatePickerState(initialYear = 2024, initialMonth = 13, initialDay = 1)

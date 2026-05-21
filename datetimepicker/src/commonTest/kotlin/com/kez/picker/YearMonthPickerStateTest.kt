@@ -56,6 +56,25 @@ class YearMonthPickerStateTest {
         assertEquals(12, state.selectedMonth)
     }
 
+    @Test
+    fun yearMonthPickerState_yearMonthConstructor_initializesSelection() {
+        val state = YearMonthPickerState(
+            initialYearMonth = YearMonth(year = 2026, month = 5)
+        )
+
+        assertEquals(YearMonth(year = 2026, month = 5), state.selectedYearMonth)
+    }
+
+    @Test
+    fun yearMonthPickerState_localDateConstructor_ignoresDayValue() {
+        val state = YearMonthPickerState(
+            initialDate = LocalDate(2026, 5, 20)
+        )
+
+        assertEquals(YearMonth(year = 2026, month = 5), state.selectedYearMonth)
+        assertEquals(LocalDate(2026, 5, 1), state.selectedMonthDate)
+    }
+
     // ==================== Year Boundary Tests ====================
 
     @Test
