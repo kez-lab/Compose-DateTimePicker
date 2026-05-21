@@ -32,15 +32,18 @@ data class TimePickerItems(
  * Selectable item lists for [com.kez.picker.date.DatePicker].
  *
  * Lists must be non-empty, contain distinct values, stay within their documented ranges, and contain
- * the current state selection.
+ * the current state selection. [dayItems] is filtered by the selected year/month maximum day before
+ * rendering.
  *
  * @param yearItems Year values available for selection. Values must be in 1000..9999.
  * @param monthItems Month values available for selection. Values must be in 1..12.
+ * @param dayItems Day values available for selection. Values must be in 1..31.
  * @see PickerDefaults.datePickerItems
  */
 data class DatePickerItems(
     val yearItems: List<Int>,
-    val monthItems: List<Int>
+    val monthItems: List<Int>,
+    val dayItems: List<Int>
 )
 
 /**

@@ -14,6 +14,7 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.kez.picker.util.DAY_RANGE
 import com.kez.picker.util.HOUR12_RANGE
 import com.kez.picker.util.HOUR24_RANGE
 import com.kez.picker.util.MINUTE_RANGE
@@ -318,14 +319,17 @@ object PickerDefaults {
      *
      * @param yearItems Year values available for selection. Values must be in 1000..9999.
      * @param monthItems Month values available for selection. Values must be in 1..12.
+     * @param dayItems Day values available for selection. Values must be in 1..31.
      * @return A [DatePickerItems] instance with the specified item lists.
      */
     fun datePickerItems(
         yearItems: List<Int> = YEAR_RANGE,
-        monthItems: List<Int> = MONTH_RANGE
+        monthItems: List<Int> = MONTH_RANGE,
+        dayItems: List<Int> = DAY_RANGE
     ): DatePickerItems = DatePickerItems(
         yearItems = yearItems,
-        monthItems = monthItems
+        monthItems = monthItems,
+        dayItems = dayItems
     )
 
     /**
