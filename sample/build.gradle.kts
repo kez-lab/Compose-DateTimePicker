@@ -74,6 +74,12 @@ kotlin {
             implementation(libs.androidx.core.splashscreen)
         }
 
+        val androidInstrumentedTest by getting {
+            dependencies {
+                implementation(libs.androidx.uitest.junit4)
+            }
+        }
+
         iosMain.dependencies {
             // iOS-specific dependencies if needed
         }
@@ -91,6 +97,10 @@ kotlin {
     }
 }
 
+dependencies {
+    debugImplementation(libs.androidx.uitest.testManifest)
+}
+
 android {
     namespace = "com.kez.picker.sample"
     compileSdk = 36
@@ -101,6 +111,7 @@ android {
         targetSdk = 36
         versionCode = 1
         versionName = "1.0.0"
+        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
     packaging {
@@ -127,4 +138,17 @@ android {
     buildFeatures {
         compose = true
     }
-} 
+
+    testOptions {
+        managedDevices {
+            localDevices {
+                create("pixel2Api35") {
+                    device = "Pixel 2"
+                    apiLevel = 35
+                    systemImageSource = "aosp-atd"
+                    require64Bit = true
+                }
+            }
+        }
+    }
+}

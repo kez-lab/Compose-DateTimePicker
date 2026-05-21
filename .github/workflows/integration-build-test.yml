@@ -121,6 +121,7 @@ jobs:
         run: |
           ./gradlew \
             ${{ env.LIBRARY_MODULE }}:pixel2Api35DebugAndroidTest \
+            ${{ env.SAMPLE_MODULE }}:pixel2Api35DebugAndroidTest \
             -Pandroid.testoptions.manageddevices.emulator.gpu=swiftshader_indirect \
             --stacktrace \
             --no-daemon
@@ -134,6 +135,9 @@ jobs:
             datetimepicker/build/reports/androidTests/**
             datetimepicker/build/outputs/androidTest-results/**
             datetimepicker/build/outputs/managed_device_android_test_additional_output/**
+            sample/build/reports/androidTests/**
+            sample/build/outputs/androidTest-results/**
+            sample/build/outputs/managed_device_android_test_additional_output/**
           if-no-files-found: ignore
 
       # Web(WASM) Build/Test

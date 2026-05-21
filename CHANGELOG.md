@@ -35,6 +35,7 @@ This project tracks notable user-facing and maintainer-facing changes here. The 
 
 ### Maintenance
 
+- Added Android managed-device smoke coverage for the sample app home screen and `DatePicker` navigation path.
 - Added Android instrumented accessibility semantics coverage and a Gradle Managed Device CI gate.
 - Extended Android accessibility action coverage for `TimePicker`, `DatePicker`, and `YearMonthPicker`
   child picker state updates.
