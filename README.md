@@ -17,6 +17,17 @@ It provides consistent UI components across Android, iOS, Desktop (JVM), and Web
   `rememberDatePickerState`, and `rememberYearMonthPickerState`.
 *   **Accessibility**: Built with accessibility in mind, supporting screen readers and navigation.
 
+## Sample App
+
+The repository includes a Compose Multiplatform sample app with copyable date, time, and bottom sheet flows.
+
+<p align="center">
+  <img src="docs/images/sample/sample-home.png" alt="Sample app home screen" width="23%" />
+  <img src="docs/images/sample/sample-date-picker.png" alt="DatePicker sample screen" width="23%" />
+  <img src="docs/images/sample/sample-time-picker.png" alt="TimePicker sample screen" width="23%" />
+  <img src="docs/images/sample/sample-bottom-sheet.png" alt="Bottom sheet picker sample screen" width="23%" />
+</p>
+
 ## Installation
 
 Add the dependency to your version catalog or build file.
