@@ -99,6 +99,7 @@ Most logic lives in `commonMain`. Platform-specific code is minimal.
 - Keep repeated accessibility/semantics configuration grouped in `PickerAccessibility` or the component-specific accessibility option objects instead of expanding composable signatures with more label/action parameters.
 - Keep repeated custom item-list configuration grouped in component-specific item option objects instead of adding separate list parameters to picker composables.
 - When public picker APIs accept custom item-list option objects, validate non-empty lists, duplicate values, supported value ranges, and presence of the current selected value before composing the underlying `Picker`.
+- When app-driven selection can come from restored values or presets, prefer public `items.coerce*` helpers or `state.select*(value, items)` overloads over asking apps to duplicate picker constraint logic.
 - For `DatePickerItems.dayItems`, remember that the list is filtered by the selected year/month maximum day. If a year/month change makes the current day unavailable, keep the component behavior predictable by moving to the closest available valid day and documenting that behavior.
 - When public validation rules change, update KDoc plus `README.md` and `README_KO.md` in the same PR, including failure mode and whether the app must clamp state before rendering.
 - Do not reintroduce legacy `startTime`, `startLocalDate`, or generic `startIndex` component parameters. Prefer explicit `remember*State` overloads for initial values and controlled `selectedItem` for generic `Picker<T>`.

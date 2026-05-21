@@ -9,6 +9,7 @@ import androidx.compose.runtime.saveable.Saver
 import androidx.compose.runtime.saveable.listSaver
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import com.kez.picker.TimePickerItems
 import com.kez.picker.util.TimeFormat
 import com.kez.picker.util.TimePeriod
 import com.kez.picker.util.currentDateTime
@@ -185,6 +186,15 @@ class TimePickerState(
         mutableSelectedHour = initialHourForTimeFormat(time.hour, timeFormat)
         mutableSelectedMinute = time.minute
         mutableSelectedPeriod = if (time.hour >= 12) TimePeriod.PM else TimePeriod.AM
+    }
+
+    /**
+     * Programmatically selects the closest time to [time] that is allowed by [items].
+     *
+     * Use this overload when app-owned state can contain values outside custom picker lists.
+     */
+    fun selectTime(time: LocalTime, items: TimePickerItems) {
+        selectTime(items.coerceTime(time = time, timeFormat = timeFormat))
     }
 
     internal fun selectHour(hour: Int) {

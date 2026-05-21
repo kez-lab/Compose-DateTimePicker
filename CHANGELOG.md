@@ -14,6 +14,9 @@ This project tracks notable user-facing and maintainer-facing changes here. The 
 - Added `date.YearMonth` as the primary value model for year/month-only selections.
 - Added `dayItems` to `DatePickerItems` / `PickerDefaults.datePickerItems(...)` so apps can
   constrain selectable days as well as years and months.
+- Added `TimePickerItems.coerceTime(...)`, `DatePickerItems.coerceDate(...)`, and
+  `YearMonthPickerItems.coerceYearMonth(...)` plus matching state-selection overloads so apps can
+  move restored or preset values to the closest selectable value before rendering custom item lists.
 - Added picker accessibility descriptions and localized item description hooks so Android apps can provide clearer TalkBack output.
 - Added previous/next accessibility actions for picker columns, with public labels that apps can localize.
 

@@ -697,6 +697,50 @@ class TimePickerStateTest {
     }
 
     @Test
+    fun timePickerItems_coerceTime_usesClosest24HourItems() {
+        val items = TimePickerItems(
+            minuteItems = listOf(0, 30),
+            hour24Items = listOf(9, 17),
+            hour12Items = emptyList(),
+            periodItems = emptyList()
+        )
+
+        assertEquals(LocalTime(17, 30), items.coerceTime(LocalTime(14, 20), TimeFormat.HOUR_24))
+    }
+
+    @Test
+    fun timePickerItems_coerceTime_usesClosest12HourDisplayItems() {
+        val items = TimePickerItems(
+            minuteItems = listOf(0, 30),
+            hour24Items = emptyList(),
+            hour12Items = listOf(9, 11),
+            periodItems = listOf(TimePeriod.AM)
+        )
+
+        assertEquals(LocalTime(9, 30), items.coerceTime(LocalTime(22, 45), TimeFormat.HOUR_12))
+    }
+
+    @Test
+    fun timePickerState_selectTimeWithItems_coercesSelection() {
+        val state = TimePickerState(
+            initialHour = 8,
+            initialMinute = 0,
+            initialPeriod = TimePeriod.AM,
+            timeFormat = TimeFormat.HOUR_24
+        )
+        val items = TimePickerItems(
+            minuteItems = listOf(0, 30),
+            hour24Items = listOf(9, 17),
+            hour12Items = emptyList(),
+            periodItems = emptyList()
+        )
+
+        state.selectTime(LocalTime(14, 20), items)
+
+        assertEquals(LocalTime(17, 30), state.selectedTime)
+    }
+
+    @Test
     fun initialHourForTimeFormat_converts24HourInputFor12HourMode() {
         assertEquals(12, initialHourForTimeFormat(0, TimeFormat.HOUR_12))
         assertEquals(12, initialHourForTimeFormat(12, TimeFormat.HOUR_12))

@@ -363,9 +363,9 @@ state를 새로 만들 필요는 없습니다.
 | State | Method |
 | :--- | :--- |
 | Generic `Picker<T>` | 앱이 소유한 `selectedItem` 값을 갱신 |
-| `time.TimePickerState` | `selectTime(LocalTime(...))` |
-| `date.DatePickerState` | `selectDate(LocalDate(...))` |
-| `date.YearMonthPickerState` | `selectYearMonth(YearMonth(...))`, `selectYearMonth(year, month)`, 또는 `selectDate(LocalDate(...))` |
+| `time.TimePickerState` | `selectTime(LocalTime(...))` 또는 `selectTime(LocalTime(...), items)` |
+| `date.DatePickerState` | `selectDate(LocalDate(...))` 또는 `selectDate(LocalDate(...), items)` |
+| `date.YearMonthPickerState` | `selectYearMonth(YearMonth(...))`, `selectYearMonth(year, month)`, `selectDate(LocalDate(...))`, 또는 대응되는 `items` overload |
 
 ```kotlin
 import androidx.compose.foundation.layout.Column
@@ -394,7 +394,8 @@ fun ProgrammaticTimePickerExample() {
 검증됩니다. 비어 있지 않아야 하고, 중복이 없어야 하며, 지원 범위 안의 값만 포함해야 하고, 현재 선택값도
 반드시 포함해야 합니다. `DatePicker`는 `dayItems`를 선택된 연/월의 최대 일수로 필터링하므로,
 `dayItems`에는 선택 가능한 모든 연/월 조합에서 유효한 day가 최소 하나 있어야 합니다. 앱이 custom list
-밖의 값을 복원하거나 요청할 수 있다면 picker를 렌더링하기 전에 앱 state를 보정하거나 거부하세요.
+밖의 값을 복원하거나 요청할 수 있다면 `state.select*(value, items)` overload나 `items.coerce*`
+helper로 가장 가까운 선택 가능 값으로 이동한 뒤 picker를 렌더링하세요.
 
 `onSelectedTimeChange`, `onSelectedDateChange`, `onSelectedYearMonthChange`는 사용자가 picker를
 조작해서 값이 바뀔 때 호출됩니다. 프로그래밍 방식의 `state.select*` 호출은 state를 직접 변경하므로,

@@ -9,6 +9,7 @@ import androidx.compose.runtime.saveable.Saver
 import androidx.compose.runtime.saveable.listSaver
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import com.kez.picker.DatePickerItems
 import com.kez.picker.util.currentDate
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.number
@@ -133,6 +134,15 @@ class DatePickerState(
             month = date.month.number,
             day = date.day
         )
+    }
+
+    /**
+     * Programmatically selects the closest date to [date] that is allowed by [items].
+     *
+     * Use this overload when app-owned state can contain values outside custom picker lists.
+     */
+    fun selectDate(date: LocalDate, items: DatePickerItems) {
+        selectDate(items.coerceDate(date))
     }
 
     /**

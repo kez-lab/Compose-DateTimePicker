@@ -72,6 +72,12 @@ fun DatePickerSampleScreen(
             val allowedDays = remember(today.day, leapDate.day) {
                 listOf(1, 15, today.day, leapDate.day).distinct().sorted()
             }
+            val pickerItems = remember(allowedYears, allowedDays) {
+                PickerDefaults.datePickerItems(
+                    yearItems = allowedYears,
+                    dayItems = allowedDays
+                )
+            }
             val state = rememberDatePickerState(initialDate = today)
             var selectedDateText by rememberSaveable { mutableStateOf(today.toString()) }
 
@@ -87,8 +93,8 @@ fun DatePickerSampleScreen(
             SampleActionRow {
                 Button(
                     onClick = {
-                        state.selectDate(today)
-                        selectedDateText = today.toString()
+                        state.selectDate(today, pickerItems)
+                        selectedDateText = state.selectedDate.toString()
                     },
                     modifier = Modifier.fillMaxWidth()
                 ) {
@@ -102,8 +108,8 @@ fun DatePickerSampleScreen(
 
                 OutlinedButton(
                     onClick = {
-                        state.selectDate(leapDate)
-                        selectedDateText = leapDate.toString()
+                        state.selectDate(leapDate, pickerItems)
+                        selectedDateText = state.selectedDate.toString()
                     },
                     modifier = Modifier.fillMaxWidth()
                 ) {
@@ -117,10 +123,7 @@ fun DatePickerSampleScreen(
                 DatePicker(
                     state = state,
                     onSelectedDateChange = { selectedDateText = it.toString() },
-                    items = PickerDefaults.datePickerItems(
-                        yearItems = allowedYears,
-                        dayItems = allowedDays
-                    ),
+                    items = pickerItems,
                     style = PickerDefaults.style(
                         visibleItemsCount = 3,
                         textStyles = PickerDefaults.textStyles(
