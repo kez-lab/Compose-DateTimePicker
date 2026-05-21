@@ -81,7 +81,10 @@ fun TimePicker24hExample() {
     )
 
     TimePicker(
-        state = state
+        state = state,
+        onSelectedTimeChange = { selectedTime ->
+            // Update app state, ViewModel, or form data here.
+        }
     )
 
     // Use state.selectedTime when passing the result to app logic.
@@ -140,6 +143,9 @@ fun DatePickerExample() {
 
     DatePicker(
         state = state,
+        onSelectedDateChange = { selectedDate ->
+            // Update app state, ViewModel, or form data here.
+        },
         items = PickerDefaults.datePickerItems(
             yearItems = selectableYears
         )
@@ -160,6 +166,7 @@ Use `YearMonthPicker` for selecting a specific month in a year.
 ```kotlin
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
+import com.kez.picker.date.YearMonth
 import com.kez.picker.date.YearMonthPicker
 import com.kez.picker.date.rememberYearMonthPickerState
 import com.kez.picker.util.currentDate
@@ -172,10 +179,14 @@ fun YearMonthPickerExample() {
     )
 
     YearMonthPicker(
-        state = state
+        state = state,
+        onSelectedYearMonthChange = { selectedYearMonth: YearMonth ->
+            // Update app state, ViewModel, or form data here.
+        }
     )
 
-    // state.selectedMonthDate is the first day of the selected month.
+    // state.selectedYearMonth is YearMonth(year, month).
+    // state.selectedMonthDate is still available for LocalDate interoperability.
 }
 ```
 
@@ -353,7 +364,7 @@ selection.
 | Generic `Picker<T>` | Update the app-owned `selectedItem` value |
 | `time.TimePickerState` | `selectTime(LocalTime(...))` |
 | `date.DatePickerState` | `selectDate(LocalDate(...))` |
-| `date.YearMonthPickerState` | `selectYearMonth(year, month)` or `selectDate(LocalDate(...))` |
+| `date.YearMonthPickerState` | `selectYearMonth(YearMonth(...))`, `selectYearMonth(year, month)`, or `selectDate(LocalDate(...))` |
 
 ```kotlin
 import androidx.compose.foundation.layout.Column
@@ -383,11 +394,16 @@ item lists are strict: they must be non-empty, distinct, within the supported va
 current selected value. If an app can restore or request values outside a custom list, clamp or reject that
 app state before rendering the picker.
 
+`onSelectedTimeChange`, `onSelectedDateChange`, and `onSelectedYearMonthChange` are called for
+user-driven picker changes. Programmatic `state.select*` calls update the state directly; update your
+app-owned value in the same event handler when you trigger programmatic changes.
+
 ### TimePicker
 
 | Parameter | Description | Default |
 | :--- | :--- | :--- |
 | `state` | The state object to control the picker. | `rememberTimePickerState()` |
+| `onSelectedTimeChange` | Called after user interaction changes the selected `LocalTime`. | `{}` |
 | `items` | Selectable minute, 24-hour hour, 12-hour display-hour, and AM/PM item lists. | `PickerDefaults.timePickerItems()` |
 | `style` | Visual and layout styling for each picker column. | `PickerDefaults.style()` |
 | `spacingBetweenPickers` | Horizontal spacing between picker columns. | `0.dp` |
@@ -414,6 +430,7 @@ Invalid custom item values, duplicate items, empty required lists, or current se
 | Parameter           | Description                             | Default                     |
 |:--------------------|:----------------------------------------|:----------------------------|
 | `state`             | The state object to control the picker. | `rememberDatePickerState()` |
+| `onSelectedDateChange` | Called after user interaction changes the selected `LocalDate`. | `{}` |
 | `items`             | Selectable year and month item lists. Values must be in `1000..9999` and `1..12`. | `PickerDefaults.datePickerItems()` |
 | `style`             | Visual and layout styling for each picker column. | `PickerDefaults.style()` |
 | `spacingBetweenPickers` | Horizontal spacing between picker columns. | `0.dp` |
@@ -443,6 +460,7 @@ Invalid custom item values, duplicate items, empty lists, or current selected ye
 | Parameter | Description | Default |
 | :--- | :--- | :--- |
 | `state` | The state object to control the picker. | `rememberYearMonthPickerState()` |
+| `onSelectedYearMonthChange` | Called after user interaction changes the selected `YearMonth`. | `{}` |
 | `items` | Selectable year and month item lists. Values must be in `1000..9999` and `1..12`. | `PickerDefaults.yearMonthPickerItems()` |
 | `style` | Visual and layout styling for each picker column. | `PickerDefaults.style()` |
 | `spacingBetweenPickers` | Horizontal spacing between picker columns. | `0.dp` |
@@ -452,13 +470,15 @@ Invalid custom item values, duplicate items, empty lists, or current selected ye
 
 - `selectedYear`: The currently selected year.
 - `selectedMonth`: The currently selected month (1-12).
+- `selectedYearMonth`: The selected value as `date.YearMonth`.
 - `selectedMonthDate`: The selected year/month represented as the first day of that month.
 
 `rememberYearMonthPickerState` uses saveable state. On Android, selected values can be restored across Activity recreation when the platform saveable registry is available.
 
 For initial values, use either `rememberYearMonthPickerState(initialDate = LocalDate(...))` or the explicit `initialYear`/`initialMonth` parameters. Initial years must be in `1000..9999`.
 
-To change the selection after state creation, call `state.selectYearMonth(year, month)` or `state.selectDate(LocalDate(...))`.
+To change the selection after state creation, call `state.selectYearMonth(YearMonth(...))`,
+`state.selectYearMonth(year, month)`, or `state.selectDate(LocalDate(...))`.
 
 Invalid custom item values, duplicate items, empty lists, or current selected year/month values missing from custom lists throw `IllegalArgumentException` during composition.
 

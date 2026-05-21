@@ -24,6 +24,7 @@ import com.kez.picker.YearMonthPickerAccessibility
  * @param modifier The modifier to be applied to the component.
  * @param pickerModifier The modifier to be applied to each picker.
  * @param state The state object to control the picker.
+ * @param onSelectedYearMonthChange Called after user interaction changes the selected year/month.
  * @param items Selectable year and month item lists for the picker.
  * @param style Visual and layout styling for each picker column.
  * @param spacingBetweenPickers The spacing between the pickers.
@@ -35,6 +36,7 @@ fun YearMonthPicker(
     modifier: Modifier = Modifier,
     pickerModifier: Modifier = Modifier,
     state: YearMonthPickerState = rememberYearMonthPickerState(),
+    onSelectedYearMonthChange: (YearMonth) -> Unit = {},
     items: YearMonthPickerItems = PickerDefaults.yearMonthPickerItems(),
     style: PickerStyle = PickerDefaults.style(),
     spacingBetweenPickers: Dp = PickerDefaults.SpacingBetweenPickers,
@@ -44,6 +46,15 @@ fun YearMonthPicker(
         state = state,
         items = items
     )
+
+    fun updateSelectedYearMonth(update: () -> Unit) {
+        val previousYearMonth = state.selectedYearMonth
+        update()
+        val nextYearMonth = state.selectedYearMonth
+        if (nextYearMonth != previousYearMonth) {
+            onSelectedYearMonthChange(nextYearMonth)
+        }
+    }
 
     Box(modifier = modifier) {
         Column(
@@ -61,7 +72,9 @@ fun YearMonthPicker(
                 Picker(
                     items = items.yearItems,
                     selectedItem = state.selectedYear,
-                    onSelectedItemChange = state::selectYear,
+                    onSelectedItemChange = { year ->
+                        updateSelectedYearMonth { state.selectYear(year) }
+                    },
                     modifier = pickerModifier.weight(1f),
                     style = style,
                     accessibility = accessibility.year
@@ -69,7 +82,9 @@ fun YearMonthPicker(
                 Picker(
                     items = items.monthItems,
                     selectedItem = state.selectedMonth,
-                    onSelectedItemChange = state::selectMonth,
+                    onSelectedItemChange = { month ->
+                        updateSelectedYearMonth { state.selectMonth(month) }
+                    },
                     modifier = pickerModifier.weight(1f),
                     style = style,
                     accessibility = accessibility.month

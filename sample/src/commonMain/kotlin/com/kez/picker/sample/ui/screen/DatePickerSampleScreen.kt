@@ -16,7 +16,11 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.TextStyle
@@ -66,11 +70,12 @@ fun DatePickerSampleScreen(
                 ((today.year - 1)..leapDate.year).toList()
             }
             val state = rememberDatePickerState(initialDate = today)
+            var selectedDateText by rememberSaveable { mutableStateOf(today.toString()) }
 
             SelectedValueCard(
                 icon = FeatherIcons.Calendar,
                 label = "Selected date",
-                value = state.selectedDate.toString(),
+                value = selectedDateText,
                 supportingText = "Selectable years: ${allowedYears.joinToString()}"
             )
 
@@ -78,7 +83,10 @@ fun DatePickerSampleScreen(
 
             SampleActionRow {
                 Button(
-                    onClick = { state.selectDate(today) },
+                    onClick = {
+                        state.selectDate(today)
+                        selectedDateText = today.toString()
+                    },
                     modifier = Modifier.fillMaxWidth()
                 ) {
                     Icon(
@@ -90,7 +98,10 @@ fun DatePickerSampleScreen(
                 }
 
                 OutlinedButton(
-                    onClick = { state.selectDate(leapDate) },
+                    onClick = {
+                        state.selectDate(leapDate)
+                        selectedDateText = leapDate.toString()
+                    },
                     modifier = Modifier.fillMaxWidth()
                 ) {
                     Text("Set $leapDate")
@@ -102,6 +113,7 @@ fun DatePickerSampleScreen(
             PickerPanel {
                 DatePicker(
                     state = state,
+                    onSelectedDateChange = { selectedDateText = it.toString() },
                     items = PickerDefaults.datePickerItems(
                         yearItems = allowedYears
                     ),

@@ -278,9 +278,9 @@ internal fun BottomSheetSampleScreen(
 
                     Button(
                         onClick = {
-                            val selectedMonthDate = yearMonthState.selectedMonthDate
-                            selectedYear = selectedMonthDate.year
-                            selectedMonth = selectedMonthDate.month.number
+                            val selectedYearMonth = yearMonthState.selectedYearMonth
+                            selectedYear = selectedYearMonth.year
+                            selectedMonth = selectedYearMonth.month
                             scope.launch {
                                 dateSheetState.hide()
                                 showDateBottomSheet = false

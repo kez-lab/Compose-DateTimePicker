@@ -21,6 +21,7 @@ import com.kez.picker.PickerStyle
 import com.kez.picker.TimePickerAccessibility
 import com.kez.picker.util.TimeFormat
 import com.kez.picker.util.TimePeriod
+import kotlinx.datetime.LocalTime
 
 /**
  * A time picker component that allows the user to select hours, minutes, and—when using the 12-hour format—the AM/PM period.
@@ -28,6 +29,7 @@ import com.kez.picker.util.TimePeriod
  * @param modifier The modifier to be applied to the component.
  * @param pickerModifier The modifier to be applied to each picker.
  * @param state The state object to control the picker.
+ * @param onSelectedTimeChange Called after user interaction changes the selected time.
  * @param items Selectable minute, hour, and period item lists for the picker.
  * @param style Visual and layout styling for each picker column.
  * @param spacingBetweenPickers The spacing between the pickers.
@@ -39,6 +41,7 @@ fun TimePicker(
     modifier: Modifier = Modifier,
     pickerModifier: Modifier = Modifier,
     state: TimePickerState = rememberTimePickerState(),
+    onSelectedTimeChange: (LocalTime) -> Unit = {},
     items: TimePickerItems = PickerDefaults.timePickerItems(),
     style: PickerStyle = PickerDefaults.style(),
     spacingBetweenPickers: Dp = PickerDefaults.SpacingBetweenPickers,
@@ -50,6 +53,15 @@ fun TimePicker(
         state = state,
         items = items
     )
+
+    fun updateSelectedTime(update: () -> Unit) {
+        val previousTime = state.selectedTime
+        update()
+        val nextTime = state.selectedTime
+        if (nextTime != previousTime) {
+            onSelectedTimeChange(nextTime)
+        }
+    }
 
     Box(modifier = modifier) {
         Column(
@@ -66,7 +78,9 @@ fun TimePicker(
                     Picker(
                         items = items.periodItems,
                         selectedItem = state.selectedPeriod,
-                        onSelectedItemChange = state::selectPeriod,
+                        onSelectedItemChange = { period ->
+                            updateSelectedTime { state.selectPeriod(period) }
+                        },
                         modifier = pickerModifier.weight(1f),
                         style = style,
                         isInfinity = false,
@@ -77,7 +91,9 @@ fun TimePicker(
                 Picker(
                     items = hourItems,
                     selectedItem = state.selectedHour,
-                    onSelectedItemChange = state::selectHour,
+                    onSelectedItemChange = { hour ->
+                        updateSelectedTime { state.selectHour(hour) }
+                    },
                     modifier = pickerModifier.weight(1f),
                     style = style,
                     accessibility = accessibility.hour
@@ -86,7 +102,9 @@ fun TimePicker(
                 Picker(
                     items = items.minuteItems,
                     selectedItem = state.selectedMinute,
-                    onSelectedItemChange = state::selectMinute,
+                    onSelectedItemChange = { minute ->
+                        updateSelectedTime { state.selectMinute(minute) }
+                    },
                     modifier = pickerModifier.weight(1f),
                     style = style,
                     accessibility = accessibility.minute

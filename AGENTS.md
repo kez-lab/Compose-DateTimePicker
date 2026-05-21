@@ -43,7 +43,7 @@ DatePicker (year + month + day)
 - `date/DatePickerState.kt` contains `DatePickerState` and `rememberDatePickerState`
 - `date/YearMonthPickerState.kt` contains `YearMonthPickerState` and `rememberYearMonthPickerState`
 - `TimePickerState` exposes `selectedTime: LocalTime` and `selectedHourOfDay`
-- `YearMonthPickerState` exposes `selectedMonthDate: LocalDate`
+- `YearMonthPickerState` exposes `selectedYearMonth: YearMonth`; `selectedMonthDate: LocalDate` is for interoperability with date APIs
 - Specialized picker states use saveable state; generic `Picker<T>` is controlled by caller-owned state because arbitrary `T` is not guaranteed saveable
 
 **`DatePicker.kt`** / **`DatePickerState.kt`**
@@ -93,6 +93,8 @@ Most logic lives in `commonMain`. Platform-specific code is minimal.
 - During 0.x API stabilization, prefer the best long-term API shape over source compatibility when the maintainer explicitly authorizes breaking changes. Document every breaking change in README/CHANGELOG and update ABI dumps.
 - Keep public state APIs colocated with their component package unless there is a strong API-design reason not to. For example, `TimePickerState` and `rememberTimePickerState` live in `com.kez.picker.time`; date and year-month state APIs live in `com.kez.picker.date`.
 - Prefer controlled picker APIs with a single source of truth. Avoid APIs where both a state object and positional parameter can initialize or mutate the same selection.
+- For composite pickers, expose a state object for saveable logical selection plus an optional `onSelected*Change` callback for user-driven changes. Document that programmatic `state.select*` calls require the caller to update app-owned state in the same event handler.
+- For year/month-only values, prefer `date.YearMonth` over encoding the selection as the first day of a `LocalDate`; keep `selectedMonthDate` only as an interop convenience.
 - Keep repeated visual/layout picker configuration grouped in `PickerStyle` instead of expanding the public composable parameter list. New visual options should usually be added to `PickerDefaults.style(...)` and documented as a breaking API change while the library is still 0.x.
 - Keep repeated accessibility/semantics configuration grouped in `PickerAccessibility` or the component-specific accessibility option objects instead of expanding composable signatures with more label/action parameters.
 - Keep repeated custom item-list configuration grouped in component-specific item option objects instead of adding separate list parameters to picker composables.

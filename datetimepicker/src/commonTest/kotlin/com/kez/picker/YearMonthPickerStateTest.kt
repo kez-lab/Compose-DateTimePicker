@@ -1,6 +1,7 @@
 package com.kez.picker
 
 import androidx.compose.runtime.saveable.SaverScope
+import com.kez.picker.date.YearMonth
 import com.kez.picker.date.YearMonthPickerState
 import com.kez.picker.date.validateYearMonthPickerItems
 import kotlinx.datetime.LocalDate
@@ -31,6 +32,7 @@ class YearMonthPickerStateTest {
 
         assertEquals(2024, state.selectedYear)
         assertEquals(6, state.selectedMonth)
+        assertEquals(YearMonth(year = 2024, month = 6), state.selectedYearMonth)
         assertEquals(LocalDate(2024, 6, 1), state.selectedMonthDate)
     }
 
@@ -169,6 +171,27 @@ class YearMonthPickerStateTest {
         state.selectYearMonth(year = 2026, month = 12)
 
         assertEquals(LocalDate(2026, 12, 1), state.selectedMonthDate)
+    }
+
+    @Test
+    fun yearMonthPickerState_selectedYearMonth_updatesWhenSelectionChanges() {
+        val state = YearMonthPickerState(
+            initialYear = 2024,
+            initialMonth = 1
+        )
+
+        state.selectYearMonth(YearMonth(year = 2026, month = 12))
+
+        assertEquals(YearMonth(year = 2026, month = 12), state.selectedYearMonth)
+        assertEquals(LocalDate(2026, 12, 1), state.selectedYearMonth.atDay())
+    }
+
+    @Test
+    fun yearMonth_fromLocalDate_ignoresDayValue() {
+        assertEquals(
+            YearMonth(year = 2026, month = 5),
+            YearMonth.from(LocalDate(2026, 5, 20))
+        )
     }
 
     @Test

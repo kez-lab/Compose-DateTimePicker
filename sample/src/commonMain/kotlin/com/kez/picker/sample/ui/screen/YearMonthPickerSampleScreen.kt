@@ -17,11 +17,15 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.kez.picker.PickerDefaults
+import com.kez.picker.date.YearMonth
 import com.kez.picker.date.YearMonthPicker
 import com.kez.picker.date.rememberYearMonthPickerState
 import com.kez.picker.sample.getMonthContentDescription
@@ -40,11 +44,13 @@ internal fun YearMonthPickerSampleScreen(
     val state = rememberYearMonthPickerState(
         initialDate = currentDate
     )
+    var selectedYear by rememberSaveable { mutableIntStateOf(state.selectedYear) }
+    var selectedMonth by rememberSaveable { mutableIntStateOf(state.selectedMonth) }
 
     // Calculate selected date text
     val selectedDateText by remember {
         derivedStateOf {
-            "${state.selectedYear}년 ${getMonthName(state.selectedMonth)}"
+            "${selectedYear}년 ${getMonthName(selectedMonth)}"
         }
     }
 
@@ -68,14 +74,19 @@ internal fun YearMonthPickerSampleScreen(
                 icon = FeatherIcons.Calendar,
                 label = "Selected month",
                 value = selectedDateText,
-                supportingText = "Stored as ${state.selectedMonthDate}"
+                supportingText = "Stored as ${YearMonth(selectedYear, selectedMonth).atDay()}"
             )
 
             Spacer(modifier = Modifier.height(16.dp))
 
             SampleActionRow {
                 Button(
-                    onClick = { state.selectDate(currentDate()) },
+                    onClick = {
+                        val yearMonth = YearMonth.from(currentDate())
+                        state.selectYearMonth(yearMonth)
+                        selectedYear = yearMonth.year
+                        selectedMonth = yearMonth.month
+                    },
                     modifier = Modifier.fillMaxWidth()
                 ) {
                     Icon(
@@ -87,10 +98,13 @@ internal fun YearMonthPickerSampleScreen(
                 }
                 OutlinedButton(
                     onClick = {
-                        state.selectYearMonth(
+                        val yearMonth = YearMonth(
                             year = currentDate.year + 1,
                             month = currentDate.month.number
                         )
+                        state.selectYearMonth(yearMonth)
+                        selectedYear = yearMonth.year
+                        selectedMonth = yearMonth.month
                     },
                     modifier = Modifier.fillMaxWidth()
                 ) {
@@ -104,6 +118,10 @@ internal fun YearMonthPickerSampleScreen(
                 YearMonthPicker(
                     modifier = Modifier.padding(horizontal = 12.dp),
                     state = state,
+                    onSelectedYearMonthChange = {
+                        selectedYear = it.year
+                        selectedMonth = it.month
+                    },
                     accessibility = PickerDefaults.yearMonthPickerAccessibility(
                         yearPickerLabel = "연도",
                         monthPickerLabel = "월",
