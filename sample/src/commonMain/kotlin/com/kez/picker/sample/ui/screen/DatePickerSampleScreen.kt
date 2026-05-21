@@ -69,6 +69,9 @@ fun DatePickerSampleScreen(
             val allowedYears = remember(today.year, leapDate.year) {
                 ((today.year - 1)..leapDate.year).toList()
             }
+            val allowedDays = remember(today.day, leapDate.day) {
+                listOf(1, 15, today.day, leapDate.day).distinct().sorted()
+            }
             val state = rememberDatePickerState(initialDate = today)
             var selectedDateText by rememberSaveable { mutableStateOf(today.toString()) }
 
@@ -76,7 +79,7 @@ fun DatePickerSampleScreen(
                 icon = FeatherIcons.Calendar,
                 label = "Selected date",
                 value = selectedDateText,
-                supportingText = "Selectable years: ${allowedYears.joinToString()}"
+                supportingText = "Years: ${allowedYears.joinToString()} · Days: ${allowedDays.joinToString()}"
             )
 
             Spacer(modifier = Modifier.height(16.dp))
@@ -115,7 +118,8 @@ fun DatePickerSampleScreen(
                     state = state,
                     onSelectedDateChange = { selectedDateText = it.toString() },
                     items = PickerDefaults.datePickerItems(
-                        yearItems = allowedYears
+                        yearItems = allowedYears,
+                        dayItems = allowedDays
                     ),
                     style = PickerDefaults.style(
                         visibleItemsCount = 3,
