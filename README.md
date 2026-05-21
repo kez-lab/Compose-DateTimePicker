@@ -414,7 +414,11 @@ Invalid custom item values throw `IllegalArgumentException` during composition. 
 
 `rememberDatePickerState` uses saveable state. On Android, selected values can be restored across Activity recreation when the platform saveable registry is available.
 
-For initial values, use either `rememberDatePickerState(initialDate = LocalDate(...))` or the explicit `initialYear`/`initialMonth`/`initialDay` parameters. Initial years must be in `1000..9999`. The `startLocalDate` component parameter is retained only for source compatibility and is not used.
+For initial values, use either `rememberDatePickerState(initialDate = LocalDate(...))` or the
+explicit `initialYear`/`initialMonth`/`initialDay` parameters. Initial years must be in
+`1000..9999`, months in `1..12`, and days must be at least `1`. If `initialDay` is greater than
+the maximum valid day for the initial year/month, it is clamped to that maximum. The
+`startLocalDate` component parameter is retained only for source compatibility and is not used.
 
 To change the selection after state creation, call `state.selectDate(LocalDate(...))`.
 
