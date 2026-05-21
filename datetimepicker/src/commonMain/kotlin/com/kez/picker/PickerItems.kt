@@ -29,6 +29,21 @@ data class TimePickerItems(
     val periodItems: List<TimePeriod>
 ) {
     /**
+     * Returns whether [time] is directly selectable under [timeFormat].
+     *
+     * This predicate does not validate the item-list configuration; it only checks membership.
+     */
+    fun contains(time: LocalTime, timeFormat: TimeFormat = TimeFormat.HOUR_24): Boolean {
+        if (time.minute !in minuteItems) return false
+        return when (timeFormat) {
+            TimeFormat.HOUR_24 -> time.hour in hour24Items
+            TimeFormat.HOUR_12 ->
+                displayHourFor(time.hour) in hour12Items &&
+                        periodFor(time.hour) in periodItems
+        }
+    }
+
+    /**
      * Returns the closest selectable time for [time] under [timeFormat].
      *
      * This is useful before calling [com.kez.picker.time.TimePickerState.selectTime] when app-owned
@@ -97,6 +112,19 @@ data class DatePickerItems(
     val dayItems: List<Int>
 ) {
     /**
+     * Returns whether [date] is directly selectable.
+     *
+     * [dayItems] is checked after the selected year/month maximum day is applied.
+     */
+    fun contains(date: LocalDate): Boolean {
+        val month = date.month.number
+        return date.year in yearItems &&
+                month in monthItems &&
+                date.day <= daysInMonth(date.year, month) &&
+                date.day in dayItems
+    }
+
+    /**
      * Returns the closest selectable date for [date].
      *
      * The year and month are coerced to the closest configured values, then [dayItems] is filtered by
@@ -148,6 +176,24 @@ data class YearMonthPickerItems(
     val yearItems: List<Int>,
     val monthItems: List<Int>
 ) {
+    /**
+     * Returns whether [yearMonth] is directly selectable.
+     */
+    fun contains(yearMonth: YearMonth): Boolean =
+        contains(year = yearMonth.year, month = yearMonth.month)
+
+    /**
+     * Returns whether [year] and [month] are directly selectable.
+     */
+    fun contains(year: Int, month: Int): Boolean =
+        year in yearItems && month in monthItems
+
+    /**
+     * Returns whether the year/month portion of [date] is directly selectable.
+     */
+    fun contains(date: LocalDate): Boolean =
+        contains(YearMonth.from(date))
+
     /**
      * Returns the closest selectable [YearMonth] for [yearMonth].
      *
