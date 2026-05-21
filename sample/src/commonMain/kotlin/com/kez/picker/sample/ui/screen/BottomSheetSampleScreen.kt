@@ -253,19 +253,21 @@ internal fun BottomSheetSampleScreen(
                             monthItemContentDescription = { getMonthContentDescription(it) },
                             previousItemActionLabel = "이전 항목 선택",
                             nextItemActionLabel = "다음 항목 선택",
-                            textStyles = PickerDefaults.textStyles(
-                                textStyle = TextStyle(
-                                    fontSize = 18.sp
+                            style = PickerDefaults.style(
+                                textStyles = PickerDefaults.textStyles(
+                                    textStyle = TextStyle(
+                                        fontSize = 18.sp
+                                    ),
+                                    selectedTextStyle = TextStyle(
+                                        fontSize = 22.sp,
+                                        fontWeight = FontWeight.Bold
+                                    )
                                 ),
-                                selectedTextStyle = TextStyle(
-                                    fontSize = 22.sp,
-                                    fontWeight = FontWeight.Bold
+                                colors = PickerDefaults.colors(
+                                    textColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f),
+                                    selectedTextColor = MaterialTheme.colorScheme.primary,
+                                    dividerColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.2f)
                                 )
-                            ),
-                            colors = PickerDefaults.colors(
-                                textColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f),
-                                selectedTextColor = MaterialTheme.colorScheme.primary,
-                                dividerColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.2f)
                             )
                         )
                     }
@@ -329,19 +331,21 @@ internal fun BottomSheetSampleScreen(
                             periodItemContentDescription = { getTimePeriodContentDescription(it) },
                             previousItemActionLabel = "이전 항목 선택",
                             nextItemActionLabel = "다음 항목 선택",
-                            textStyles = PickerDefaults.textStyles(
-                                textStyle = TextStyle(
-                                    fontSize = 18.sp
+                            style = PickerDefaults.style(
+                                textStyles = PickerDefaults.textStyles(
+                                    textStyle = TextStyle(
+                                        fontSize = 18.sp
+                                    ),
+                                    selectedTextStyle = TextStyle(
+                                        fontSize = 22.sp,
+                                        fontWeight = FontWeight.Bold
+                                    )
                                 ),
-                                selectedTextStyle = TextStyle(
-                                    fontSize = 22.sp,
-                                    fontWeight = FontWeight.Bold
+                                colors = PickerDefaults.colors(
+                                    textColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f),
+                                    selectedTextColor = MaterialTheme.colorScheme.primary,
+                                    dividerColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.2f)
                                 )
-                            ),
-                            colors = PickerDefaults.colors(
-                                textColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f),
-                                selectedTextColor = MaterialTheme.colorScheme.primary,
-                                dividerColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.2f)
                             )
                         )
                     }

@@ -5,7 +5,6 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.snapping.rememberSnapFlingBehavior
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -31,7 +30,6 @@ import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.graphics.BlendMode
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.CompositingStrategy
-import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.lerp
 import androidx.compose.ui.platform.LocalDensity
@@ -52,7 +50,6 @@ import androidx.compose.ui.semantics.stateDescription
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.isSpecified
 import androidx.compose.ui.unit.lerp
 import androidx.compose.ui.unit.sp
@@ -76,17 +73,7 @@ private const val INFINITE_SCROLL_MULTIPLIER = 1000
  * @param selectedItem The currently selected item. It must exist in [items].
  * @param onSelectedItemChange Called when scroll or click interaction selects a new item.
  * @param modifier The modifier to be applied to the picker.
- * @param visibleItemsCount The number of items visible at once. Must be a positive odd number.
- * @param colors The colors used by the picker. See [PickerDefaults.colors].
- * @param textStyles The text styles used by the picker. See [PickerDefaults.textStyles].
- * @param selectedItemBackgroundShape The shape of the background of the selected item area.
- * @param itemPadding The padding around each item.
- * @param fadingEdgeGradient The gradient to use for fading edges.
- * @param horizontalAlignment The horizontal alignment of items.
- * @param verticalAlignment The vertical alignment of the text within items.
- * @param dividerThickness The thickness of the dividers.
- * @param dividerShape The shape of the dividers.
- * @param isDividerVisible Whether the divider should be visible.
+ * @param style Visual and layout styling for the picker.
  * @param isInfinity Whether the picker should loop infinitely.
  * @param pickerLabel Accessibility label for the picker (e.g., "Hour", "Minute", "Year").
  * @param itemContentDescription Accessibility description for each item value.
@@ -100,17 +87,7 @@ fun <T : Any> Picker(
     selectedItem: T,
     onSelectedItemChange: (T) -> Unit,
     modifier: Modifier = Modifier,
-    visibleItemsCount: Int = PickerDefaults.VisibleItemsCount,
-    colors: PickerColors = PickerDefaults.colors(),
-    textStyles: PickerTextStyles = PickerDefaults.textStyles(),
-    selectedItemBackgroundShape: Shape = PickerDefaults.SelectedItemBackgroundShape,
-    itemPadding: PaddingValues = PickerDefaults.ItemPadding,
-    fadingEdgeGradient: Brush = PickerDefaults.fadingEdgeGradient(),
-    horizontalAlignment: Alignment.Horizontal = Alignment.CenterHorizontally,
-    verticalAlignment: Alignment.Vertical = Alignment.CenterVertically,
-    dividerThickness: Dp = PickerDefaults.DividerThickness,
-    dividerShape: Shape = PickerDefaults.DividerShape,
-    isDividerVisible: Boolean = true,
+    style: PickerStyle = PickerDefaults.style(),
     isInfinity: Boolean = true,
     pickerLabel: String? = null,
     itemContentDescription: (T) -> String = { it.toString() },
@@ -125,6 +102,7 @@ fun <T : Any> Picker(
     require(selectedItem in items) {
         "selectedItem must exist in items. selectedItem=$selectedItem, items=$items"
     }
+    val visibleItemsCount = style.visibleItemsCount
     require(visibleItemsCount > 0 && visibleItemsCount % 2 == 1) {
         "visibleItemsCount must be a positive odd number, but was $visibleItemsCount"
     }
@@ -135,6 +113,16 @@ fun <T : Any> Picker(
     val currentOnSelectedItemChange by rememberUpdatedState(onSelectedItemChange)
     val currentSelectedItem by rememberUpdatedState(selectedItem)
     val selectedItemIndex = items.indexOf(selectedItem)
+    val colors = style.colors
+    val textStyles = style.textStyles
+    val selectedItemBackgroundShape = style.selectedItemBackgroundShape
+    val itemPadding = style.itemPadding
+    val fadingEdgeGradient = style.fadingEdgeGradient
+    val horizontalAlignment = style.horizontalAlignment
+    val verticalAlignment = style.verticalAlignment
+    val dividerThickness = style.dividerThickness
+    val dividerShape = style.dividerShape
+    val isDividerVisible = style.isDividerVisible
 
     val adjustedItems = if (!isInfinity) {
         List(visibleItemsMiddle) { null } + items + List(visibleItemsMiddle) { null }
@@ -527,7 +515,7 @@ private fun PickerNoDividerPreview() {
         items = items,
         selectedItem = selectedItem,
         onSelectedItemChange = { selectedItem = it },
-        isDividerVisible = false
+        style = PickerDefaults.style(isDividerVisible = false)
     )
 }
 
@@ -540,10 +528,12 @@ private fun PickerCustomColorsPreview() {
         items = items,
         selectedItem = selectedItem,
         onSelectedItemChange = { selectedItem = it },
-        colors = PickerDefaults.colors(
-            dividerColor = androidx.compose.ui.graphics.Color.Blue,
-            selectedTextColor = androidx.compose.ui.graphics.Color.Blue,
-            textColor = androidx.compose.ui.graphics.Color.Gray
+        style = PickerDefaults.style(
+            colors = PickerDefaults.colors(
+                dividerColor = androidx.compose.ui.graphics.Color.Blue,
+                selectedTextColor = androidx.compose.ui.graphics.Color.Blue,
+                textColor = androidx.compose.ui.graphics.Color.Gray
+            )
         )
     )
 }
@@ -570,7 +560,7 @@ private fun Picker5VisibleItemsPreview() {
         items = items,
         selectedItem = selectedItem,
         onSelectedItemChange = { selectedItem = it },
-        visibleItemsCount = 5
+        style = PickerDefaults.style(visibleItemsCount = 5)
     )
 }
 
@@ -583,11 +573,13 @@ private fun PickerSelectedBackgroundPreview() {
         items = items,
         selectedItem = selectedItem,
         onSelectedItemChange = { selectedItem = it },
-        colors = PickerDefaults.colors(
-            dividerColor = androidx.compose.ui.graphics.Color.Blue,
-            selectedTextColor = androidx.compose.ui.graphics.Color.Blue,
-            textColor = androidx.compose.ui.graphics.Color.Gray,
-            selectedItemBackgroundColor = androidx.compose.ui.graphics.Color.Blue.copy(alpha = 0.1f)
+        style = PickerDefaults.style(
+            colors = PickerDefaults.colors(
+                dividerColor = androidx.compose.ui.graphics.Color.Blue,
+                selectedTextColor = androidx.compose.ui.graphics.Color.Blue,
+                textColor = androidx.compose.ui.graphics.Color.Gray,
+                selectedItemBackgroundColor = androidx.compose.ui.graphics.Color.Blue.copy(alpha = 0.1f)
+            )
         )
     )
 }

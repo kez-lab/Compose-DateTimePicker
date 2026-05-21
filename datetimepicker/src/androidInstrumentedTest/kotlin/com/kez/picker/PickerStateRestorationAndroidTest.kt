@@ -95,7 +95,7 @@ class PickerStateRestorationAndroidTest {
 
             TimePicker(
                 state = state,
-                visibleItemsCount = 3,
+                style = PickerDefaults.style(visibleItemsCount = 3),
                 hourPickerLabel = "Hour",
                 minutePickerLabel = "Minute",
                 periodPickerLabel = "Period",
@@ -166,7 +166,7 @@ class PickerStateRestorationAndroidTest {
                 state = state,
                 yearItems = listOf(2024, 2026),
                 monthItems = listOf(1, 2),
-                visibleItemsCount = 3,
+                style = PickerDefaults.style(visibleItemsCount = 3),
                 yearPickerLabel = "Year",
                 monthPickerLabel = "Month",
                 dayPickerLabel = "Day",
@@ -233,7 +233,7 @@ class PickerStateRestorationAndroidTest {
                 state = state,
                 yearItems = listOf(2024, 2027),
                 monthItems = listOf(5, 12),
-                visibleItemsCount = 3,
+                style = PickerDefaults.style(visibleItemsCount = 3),
                 yearPickerLabel = "Year",
                 monthPickerLabel = "Month",
                 yearItemContentDescription = { "$it year" },

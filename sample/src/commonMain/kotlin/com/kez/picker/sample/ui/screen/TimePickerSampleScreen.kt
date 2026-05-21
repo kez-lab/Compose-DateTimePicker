@@ -28,9 +28,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.kez.picker.time.rememberTimePickerState
+import com.kez.picker.PickerDefaults
 import com.kez.picker.sample.getTimePeriodContentDescription
 import com.kez.picker.time.TimePicker
+import com.kez.picker.time.rememberTimePickerState
 import com.kez.picker.util.TimeFormat
 import com.kez.picker.util.currentDateTime
 import compose.icons.FeatherIcons
@@ -165,7 +166,7 @@ internal fun TimePickerSampleScreen(
                 } else {
                     TimePicker(
                         state = timeState24,
-                        visibleItemsCount = 5,
+                        style = PickerDefaults.style(visibleItemsCount = 5),
                         hourPickerLabel = "시간",
                         minutePickerLabel = "분",
                         hourItemContentDescription = { "${it}시" },

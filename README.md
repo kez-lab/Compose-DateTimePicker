@@ -12,7 +12,7 @@ It provides consistent UI components across Android, iOS, Desktop (JVM), and Web
 * **DatePicker**: A complete date picker for selecting year, month, and day with automatic day
   validation.
 *   **YearMonthPicker**: A dedicated component for selecting years and months.
-*   **Customizable**: Extensible API allowing custom content rendering, styling, and configuration.
+*   **Customizable**: Extensible API with `PickerStyle` for reusable visual configuration.
 * **State Management**: simplified state handling with `rememberTimePickerState`,
   `rememberDatePickerState`, and `rememberYearMonthPickerState`.
 *   **Accessibility**: Built with accessibility in mind, supporting screen readers and navigation.
@@ -308,6 +308,9 @@ fun SizePickerExample() {
 distinct, and `selectedItem` must exist in `items`. If `T` is not saveable, store a saveable key in
 your app state and map that key back to an item before rendering the picker.
 
+Use `style = PickerDefaults.style(...)` to customize visible item count, colors, text styles,
+dividers, item padding, selected item background, and fading edge behavior with one reusable object.
+
 ### Programmatic Selection
 
 Create picker state with `remember*State`, pass it to the picker, then call the public selection method
@@ -357,10 +360,8 @@ app state before rendering the picker.
 | `minuteItems` | Minute values available for selection. Values must be in `0..59`. | `0..59` |
 | `hourItems` | Hour values available for selection. Values must be in `0..23` for 24-hour time or display-hour `1..12` for 12-hour time. | `0..23` or `1..12` |
 | `periodItems` | AM/PM values available in 12-hour time. Must not be empty when `timeFormat` is `HOUR_12`. | `TimePeriod.entries` |
-| `visibleItemsCount` | Number of items visible in the list. | `3` |
-| `colors` | Colors for text, selected text, dividers, and selected item background. | `PickerDefaults.colors()` |
-| `textStyles` | Text styles for selected and unselected items. | `PickerDefaults.textStyles()` |
-| `isDividerVisible` | Whether selection dividers are visible. | `true` |
+| `style` | Visual and layout styling for each picker column. | `PickerDefaults.style()` |
+| `spacingBetweenPickers` | Horizontal spacing between picker columns. | `0.dp` |
 | `hourPickerLabel` | Accessibility label for the hour picker. Pass `null` to omit the picker label prefix. | `"Hour"` |
 | `minutePickerLabel` | Accessibility label for the minute picker. Pass `null` to omit the picker label prefix. | `"Minute"` |
 | `periodPickerLabel` | Accessibility label for the AM/PM picker in 12-hour time. Pass `null` to omit the picker label prefix. | `"AM/PM"` |
@@ -393,9 +394,8 @@ Invalid custom item values, duplicate items, empty required lists, or current se
 | `state`             | The state object to control the picker. | `rememberDatePickerState()` |
 | `yearItems`         | List of years available for selection. Values must be in `1000..9999`. | `1000..9999`                |
 | `monthItems`        | List of months available for selection. Values must be in `1..12`. | `1..12`                     |
-| `visibleItemsCount` | Number of items visible in the list.    | `3`                         |
-| `colors`            | Colors for text, selected text, dividers, and selected item background. | `PickerDefaults.colors()` |
-| `textStyles`        | Text styles for selected and unselected items. | `PickerDefaults.textStyles()` |
+| `style`             | Visual and layout styling for each picker column. | `PickerDefaults.style()` |
+| `spacingBetweenPickers` | Horizontal spacing between picker columns. | `0.dp` |
 | `yearPickerLabel`   | Accessibility label for the year picker. Pass `null` to omit the picker label prefix. | `"Year"` |
 | `monthPickerLabel`  | Accessibility label for the month picker. Pass `null` to omit the picker label prefix. | `"Month"` |
 | `dayPickerLabel`    | Accessibility label for the day picker. Pass `null` to omit the picker label prefix. | `"Day"` |
@@ -431,9 +431,8 @@ Invalid custom item values, duplicate items, empty lists, or current selected ye
 | `state` | The state object to control the picker. | `rememberYearMonthPickerState()` |
 | `yearItems` | List of years available for selection. Values must be in `1000..9999`. | `1000..9999` |
 | `monthItems` | List of months available for selection. Values must be in `1..12`. | `1..12` |
-| `visibleItemsCount` | Number of items visible in the list. | `3` |
-| `colors` | Colors for text, selected text, dividers, and selected item background. | `PickerDefaults.colors()` |
-| `textStyles` | Text styles for selected and unselected items. | `PickerDefaults.textStyles()` |
+| `style` | Visual and layout styling for each picker column. | `PickerDefaults.style()` |
+| `spacingBetweenPickers` | Horizontal spacing between picker columns. | `0.dp` |
 | `yearPickerLabel` | Accessibility label for the year picker. Pass `null` to omit the picker label prefix. | `"Year"` |
 | `monthPickerLabel` | Accessibility label for the month picker. Pass `null` to omit the picker label prefix. | `"Month"` |
 | `yearItemContentDescription` | Accessibility description for each year value. | `it.toString()` |
