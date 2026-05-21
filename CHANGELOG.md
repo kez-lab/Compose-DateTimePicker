@@ -17,6 +17,8 @@ This project tracks notable user-facing and maintainer-facing changes here. The 
 - Added `TimePickerItems.coerceTime(...)`, `DatePickerItems.coerceDate(...)`, and
   `YearMonthPickerItems.coerceYearMonth(...)` plus matching state-selection overloads so apps can
   move restored or preset values to the closest selectable value before rendering custom item lists.
+- Added `remember*State(items = ..., initial... = ...)` overloads so initial picker state can be
+  coerced by the same custom item lists before first composition.
 - Added picker accessibility descriptions and localized item description hooks so Android apps can provide clearer TalkBack output.
 - Added previous/next accessibility actions for picker columns, with public labels that apps can localize.
 

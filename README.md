@@ -399,6 +399,8 @@ current selected value. `DatePicker` filters `dayItems` by the selected year/mon
 `dayItems` must include at least one day valid for every selectable year/month combination. If an app can
 restore or request values outside a custom list, call the `state.select*(value, items)` overload or
 `items.coerce*` helper to move to the closest selectable value before rendering the picker.
+For first composition, use `remember*State(items = items, initial... = value)` to apply the same coercion
+before the picker is rendered.
 
 `onSelectedTimeChange`, `onSelectedDateChange`, and `onSelectedYearMonthChange` are called for
 user-driven picker changes. Programmatic `state.select*` calls update the state directly; update your

@@ -396,6 +396,8 @@ fun ProgrammaticTimePickerExample() {
 `dayItems`에는 선택 가능한 모든 연/월 조합에서 유효한 day가 최소 하나 있어야 합니다. 앱이 custom list
 밖의 값을 복원하거나 요청할 수 있다면 `state.select*(value, items)` overload나 `items.coerce*`
 helper로 가장 가까운 선택 가능 값으로 이동한 뒤 picker를 렌더링하세요.
+첫 composition의 초기값에도 같은 보정이 필요하면 `remember*State(items = items, initial... = value)`를
+사용하세요.
 
 `onSelectedTimeChange`, `onSelectedDateChange`, `onSelectedYearMonthChange`는 사용자가 picker를
 조작해서 값이 바뀔 때 호출됩니다. 프로그래밍 방식의 `state.select*` 호출은 state를 직접 변경하므로,
