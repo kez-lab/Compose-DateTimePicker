@@ -225,12 +225,14 @@ color = lerp(selectedTextStyle.color, textStyle.color, fraction)
 **Current coverage** (estimated):
 - Unit tests: picker states, date validation, time calculation, picker index utility behavior, and accessibility description formatting
 - Android instrumented tests: picker accessibility semantics for selected values, custom labels, state descriptions, and higher-level picker forwarding
-- Missing: broader UI interaction tests, screenshot tests, full TalkBack/readout validation, and sample smoke tests
+- Sample Android smoke tests: home-screen example entry points and a representative navigation path
+- Missing: broader UI interaction tests, screenshot tests, and full TalkBack/readout validation
 
 **When adding tests**:
 - Unit tests → `datetimepicker/src/commonTest/kotlin/`
 - Android UI/instrumented tests → `datetimepicker/src/androidInstrumentedTest/kotlin/`
-- Use `:datetimepicker:assembleDebugAndroidTest` to verify Android test APK compilation/packaging. Use `:datetimepicker:pixel2Api35DebugAndroidTest -Pandroid.testoptions.manageddevices.emulator.gpu=swiftshader_indirect` for the Gradle Managed Device path used by CI; it requires Android Emulator, the API 35 AOSP ATD x86_64 system image, and local virtualization/KVM. Use `:datetimepicker:connectedDebugAndroidTest` when a local device or emulator is already available. If managed-device prerequisites are unavailable locally, run `assembleDebugAndroidTest` or a managed-device `--dry-run` and rely on CI for the actual emulator run.
+- Sample Android smoke tests → `sample/src/androidInstrumentedTest/kotlin/`
+- Use `:datetimepicker:assembleDebugAndroidTest` or `:sample:assembleDebugAndroidTest` to verify Android test APK compilation/packaging. Use `:datetimepicker:pixel2Api35DebugAndroidTest -Pandroid.testoptions.manageddevices.emulator.gpu=swiftshader_indirect` and `:sample:pixel2Api35DebugAndroidTest -Pandroid.testoptions.manageddevices.emulator.gpu=swiftshader_indirect` for the Gradle Managed Device path used by CI; it requires Android Emulator, the API 35 AOSP ATD system image for the host architecture, and local virtualization/KVM. Use `:datetimepicker:connectedDebugAndroidTest` when a local device or emulator is already available. If managed-device prerequisites are unavailable locally, run `assembleDebugAndroidTest` or a managed-device `--dry-run` and rely on CI for the actual emulator run.
 - Public Kotlin API/ABI changes → run `:datetimepicker:checkLegacyAbi`. If the API change is intentional and SemVer-appropriate, run `:datetimepicker:updateLegacyAbi`, commit the updated `datetimepicker/api/` dumps, and review preview/generated resource changes separately from supported picker/state API changes.
 - Follow naming: `<ComponentName>Test.kt` or `<ComponentName>AndroidTest.kt`
 
@@ -253,7 +255,7 @@ Follow **Semantic Versioning**: MAJOR.MINOR.PATCH
 ## CI/CD
 
 GitHub Actions workflows:
-- **`integration-build-test.yml`**: Runs repository hygiene and multiplatform library checks on pull requests to `main`; the hygiene job runs `git diff --check` on the PR diff, the dedicated macOS ABI job runs `checkLegacyAbi`, and the Android matrix runs the Gradle Managed Device `pixel2Api35DebugAndroidTest` gate for instrumented tests.
+- **`integration-build-test.yml`**: Runs repository hygiene and multiplatform library checks on pull requests to `main`; the hygiene job runs `git diff --check` on the PR diff, the dedicated macOS ABI job runs `checkLegacyAbi`, and the Android matrix runs the Gradle Managed Device `pixel2Api35DebugAndroidTest` gate for library and sample instrumented tests.
 - **`maven-central-deploy.yml`**: Publishes releases to Maven Central
 
 Build matrix: Ubuntu latest for Android/Desktop/Wasm and macOS 14 for iOS, using JDK 17 (Temurin)
