@@ -9,6 +9,9 @@ This project tracks notable user-facing and maintainer-facing changes here. The 
 - Added programmatic selection APIs for picker state objects:
   `TimePickerState.selectTime`, `DatePickerState.selectDate`,
   `YearMonthPickerState.selectYearMonth`, and `YearMonthPickerState.selectDate`.
+- Added user-selection callbacks to composite pickers:
+  `onSelectedTimeChange`, `onSelectedDateChange`, and `onSelectedYearMonthChange`.
+- Added `date.YearMonth` as the primary value model for year/month-only selections.
 - Added picker accessibility descriptions and localized item description hooks so Android apps can provide clearer TalkBack output.
 - Added previous/next accessibility actions for picker columns, with public labels that apps can localize.
 
@@ -39,6 +42,8 @@ This project tracks notable user-facing and maintainer-facing changes here. The 
   item descriptions, and previous/next action labels can be passed as one reusable object.
 - Added component-specific item-list option objects so custom selectable values can be passed as one
   reusable `items` object.
+- `YearMonthPickerState` now exposes `selectedYearMonth: YearMonth` in addition to
+  `selectedMonthDate` for `LocalDate` interoperability.
 - Custom item lists are now strict: required lists must be non-empty and distinct, values must be in range, and the current selected value must be present before composition proceeds.
 
 ### Compatibility Notes
@@ -59,6 +64,9 @@ This project tracks notable user-facing and maintainer-facing changes here. The 
   `accessibility = PickerDefaults.*Accessibility(...)`.
 - Picker custom item-list parameters such as `minuteItems`, `hourItems`, `periodItems`, `yearItems`,
   and `monthItems` moved under `items = PickerDefaults.*Items(...)`.
+- Composite picker function signatures now include user-selection callbacks immediately after `state`.
+  Named-argument call sites are straightforward to migrate; positional call sites may need argument
+  reordering.
 
 ### Maintenance
 

@@ -79,7 +79,10 @@ fun TimePicker24hExample() {
     )
 
     TimePicker(
-        state = state
+        state = state,
+        onSelectedTimeChange = { selectedTime ->
+            // 앱 state, ViewModel, form data를 여기서 갱신합니다.
+        }
     )
 
     // 앱 로직에 전달할 때는 state.selectedTime을 사용합니다.
@@ -137,6 +140,9 @@ fun DatePickerExample() {
 
     DatePicker(
         state = state,
+        onSelectedDateChange = { selectedDate ->
+            // 앱 state, ViewModel, form data를 여기서 갱신합니다.
+        },
         items = PickerDefaults.datePickerItems(
             yearItems = selectableYears
         )
@@ -157,6 +163,7 @@ fun DatePickerExample() {
 ```kotlin
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
+import com.kez.picker.date.YearMonth
 import com.kez.picker.date.YearMonthPicker
 import com.kez.picker.date.rememberYearMonthPickerState
 import com.kez.picker.util.currentDate
@@ -169,10 +176,14 @@ fun YearMonthPickerExample() {
     )
 
     YearMonthPicker(
-        state = state
+        state = state,
+        onSelectedYearMonthChange = { selectedYearMonth: YearMonth ->
+            // 앱 state, ViewModel, form data를 여기서 갱신합니다.
+        }
     )
 
-    // state.selectedMonthDate는 선택된 월의 1일을 나타냅니다.
+    // state.selectedYearMonth는 YearMonth(year, month)입니다.
+    // state.selectedMonthDate는 LocalDate 연동이 필요할 때 사용할 수 있습니다.
 }
 ```
 
@@ -350,7 +361,7 @@ state를 새로 만들 필요는 없습니다.
 | Generic `Picker<T>` | 앱이 소유한 `selectedItem` 값을 갱신 |
 | `time.TimePickerState` | `selectTime(LocalTime(...))` |
 | `date.DatePickerState` | `selectDate(LocalDate(...))` |
-| `date.YearMonthPickerState` | `selectYearMonth(year, month)` 또는 `selectDate(LocalDate(...))` |
+| `date.YearMonthPickerState` | `selectYearMonth(YearMonth(...))`, `selectYearMonth(year, month)`, 또는 `selectDate(LocalDate(...))` |
 
 ```kotlin
 import androidx.compose.foundation.layout.Column
@@ -380,11 +391,16 @@ fun ProgrammaticTimePickerExample() {
 반드시 포함해야 합니다. 앱이 custom list 밖의 값을 복원하거나 요청할 수 있다면 picker를 렌더링하기 전에
 앱 state를 보정하거나 거부하세요.
 
+`onSelectedTimeChange`, `onSelectedDateChange`, `onSelectedYearMonthChange`는 사용자가 picker를
+조작해서 값이 바뀔 때 호출됩니다. 프로그래밍 방식의 `state.select*` 호출은 state를 직접 변경하므로,
+그 이벤트 핸들러 안에서 앱이 소유한 값도 함께 갱신하세요.
+
 ### TimePicker
 
 | 파라미터 | 설명 | 기본값 |
 | :--- | :--- | :--- |
 | `state` | Picker를 제어하기 위한 상태 객체입니다. | `rememberTimePickerState()` |
+| `onSelectedTimeChange` | 사용자 조작으로 선택된 `LocalTime`이 바뀐 뒤 호출됩니다. | `{}` |
 | `items` | 선택 가능한 분, 24시간제 시간, 12시간제 표시 시간, 오전/오후 목록입니다. | `PickerDefaults.timePickerItems()` |
 | `style` | 각 picker column의 시각/레이아웃 스타일입니다. | `PickerDefaults.style()` |
 | `spacingBetweenPickers` | picker column 사이의 가로 간격입니다. | `0.dp` |
@@ -411,6 +427,7 @@ custom item 값이 유효 범위를 벗어나거나, 중복이 있거나, 필수
 | 파라미터 | 설명 | 기본값 |
 | :--- | :--- | :--- |
 | `state` | Picker를 제어하기 위한 상태 객체입니다. | `rememberDatePickerState()` |
+| `onSelectedDateChange` | 사용자 조작으로 선택된 `LocalDate`가 바뀐 뒤 호출됩니다. | `{}` |
 | `items` | 선택 가능한 연도/월 목록입니다. 값은 `1000..9999`와 `1..12` 범위여야 합니다. | `PickerDefaults.datePickerItems()` |
 | `style` | 각 picker column의 시각/레이아웃 스타일입니다. | `PickerDefaults.style()` |
 | `spacingBetweenPickers` | picker column 사이의 가로 간격입니다. | `0.dp` |
@@ -440,6 +457,7 @@ custom item 값이 유효 범위를 벗어나거나, 중복이 있거나, 목록
 | 파라미터 | 설명 | 기본값 |
 | :--- | :--- | :--- |
 | `state` | Picker를 제어하기 위한 상태 객체입니다. | `rememberYearMonthPickerState()` |
+| `onSelectedYearMonthChange` | 사용자 조작으로 선택된 `YearMonth`가 바뀐 뒤 호출됩니다. | `{}` |
 | `items` | 선택 가능한 연도/월 목록입니다. 값은 `1000..9999`와 `1..12` 범위여야 합니다. | `PickerDefaults.yearMonthPickerItems()` |
 | `style` | 각 picker column의 시각/레이아웃 스타일입니다. | `PickerDefaults.style()` |
 | `spacingBetweenPickers` | picker column 사이의 가로 간격입니다. | `0.dp` |
@@ -449,14 +467,15 @@ custom item 값이 유효 범위를 벗어나거나, 중복이 있거나, 목록
 
 - `selectedYear`: 현재 선택된 연도입니다.
 - `selectedMonth`: 현재 선택된 월입니다. (1-12)
+- `selectedYearMonth`: 선택된 값을 `date.YearMonth`로 제공합니다.
 - `selectedMonthDate`: 선택된 연/월을 해당 월의 1일 `LocalDate`로 제공합니다.
 
 `rememberYearMonthPickerState`는 saveable state를 사용합니다. Android에서는 플랫폼 saveable registry가 제공될 때 Activity 재생성 이후에도 선택값을 복원할 수 있습니다.
 
 초기값은 `rememberYearMonthPickerState(initialDate = LocalDate(...))` 또는 `initialYear`/`initialMonth` 파라미터로 설정합니다. 초기 연도는 `1000..9999` 범위여야 합니다.
 
-상태 생성 이후 선택값을 바꾸려면 `state.selectYearMonth(year, month)` 또는
-`state.selectDate(LocalDate(...))`를 호출합니다.
+상태 생성 이후 선택값을 바꾸려면 `state.selectYearMonth(YearMonth(...))`,
+`state.selectYearMonth(year, month)`, 또는 `state.selectDate(LocalDate(...))`를 호출합니다.
 
 custom item 값이 유효 범위를 벗어나거나, 중복이 있거나, 목록이 비어 있거나, 현재 선택된 연도/월이 custom 목록에 없으면 composition 중 `IllegalArgumentException`이 발생합니다.
 

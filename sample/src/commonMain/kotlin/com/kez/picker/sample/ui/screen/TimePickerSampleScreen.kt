@@ -22,6 +22,7 @@ import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -57,6 +58,8 @@ internal fun TimePickerSampleScreen(
         initialTime = currentTime
     )
     val demoTime = LocalTime(hour = 9, minute = 30)
+    var lastChangedHour by rememberSaveable { mutableIntStateOf(currentTime.hour) }
+    var lastChangedMinute by rememberSaveable { mutableIntStateOf(currentTime.minute) }
 
     val ktxTimeFormat12 = LocalTime.Format {
         amPmHour(padding = Padding.ZERO)
@@ -102,7 +105,9 @@ internal fun TimePickerSampleScreen(
                 icon = FeatherIcons.Clock,
                 label = "Selected time",
                 value = selectedTimeText,
-                supportingText = if (selectedFormat == 0) "12-hour state" else "24-hour state"
+                supportingText = "Last callback: ${
+                    LocalTime(lastChangedHour, lastChangedMinute).format(ktxTimeFormat24)
+                }"
             )
 
             Spacer(modifier = Modifier.height(16.dp))
@@ -113,6 +118,8 @@ internal fun TimePickerSampleScreen(
                         val now = currentDateTime().time
                         timeState12.selectTime(now)
                         timeState24.selectTime(now)
+                        lastChangedHour = now.hour
+                        lastChangedMinute = now.minute
                     },
                     modifier = Modifier.fillMaxWidth()
                 ) {
@@ -127,6 +134,8 @@ internal fun TimePickerSampleScreen(
                     onClick = {
                         timeState12.selectTime(demoTime)
                         timeState24.selectTime(demoTime)
+                        lastChangedHour = demoTime.hour
+                        lastChangedMinute = demoTime.minute
                     },
                     modifier = Modifier.fillMaxWidth()
                 ) {
@@ -154,6 +163,10 @@ internal fun TimePickerSampleScreen(
                 if (selectedFormat == 0) {
                     TimePicker(
                         state = timeState12,
+                        onSelectedTimeChange = {
+                            lastChangedHour = it.hour
+                            lastChangedMinute = it.minute
+                        },
                         accessibility = PickerDefaults.timePickerAccessibility(
                             hourPickerLabel = "시간",
                             minutePickerLabel = "분",
@@ -168,6 +181,10 @@ internal fun TimePickerSampleScreen(
                 } else {
                     TimePicker(
                         state = timeState24,
+                        onSelectedTimeChange = {
+                            lastChangedHour = it.hour
+                            lastChangedMinute = it.minute
+                        },
                         style = PickerDefaults.style(visibleItemsCount = 5),
                         accessibility = PickerDefaults.timePickerAccessibility(
                             hourPickerLabel = "시간",
