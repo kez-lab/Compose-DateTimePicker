@@ -273,22 +273,21 @@ accessibility action도 제공합니다. `previousItemActionLabel`과 `nextItemA
 
 ```kotlin
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.rememberSaveable
+import androidx.compose.runtime.setValue
 import com.kez.picker.Picker
-import com.kez.picker.rememberPickerState
 
 @Composable
 fun SizePickerExample() {
     val items = listOf("Small", "Medium", "Large")
-    val initialItem = "Medium"
-    val startIndex = items.indexOf(initialItem)
-    require(startIndex >= 0) { "initialItem must exist in items." }
-
-    val state = rememberPickerState(initialItem)
+    var selectedSize by rememberSaveable { mutableStateOf("Medium") }
 
     Picker(
         items = items,
-        state = state,
-        startIndex = startIndex,
+        selectedItem = selectedSize,
+        onSelectedItemChange = { selectedSize = it },
         isInfinity = false,
         pickerLabel = "Size",
         itemContentDescription = { it }
@@ -296,12 +295,10 @@ fun SizePickerExample() {
 }
 ```
 
-`rememberPickerState`는 `rememberSaveable`이 아니라 일반 `remember`를 사용합니다. 임의의 `T` 값이
-saveable하다고 보장할 수 없기 때문입니다. generic picker 선택값을 Android Activity 재생성 후에도
-유지해야 한다면 앱 state에 saveable한 표현을 보관하고, picker state가 처음 만들어질 때 그 값을
-전달하며, `Picker`에도 같은 값에 맞는 `startIndex`를 전달하세요. composition 이후 앱 값이 바뀐다면
-`initialItem` 인자만 바꾸어도 이미 기억된 `PickerState`는 갱신되지 않으므로 `state.selectItem(newValue)`로
-기존 picker를 동기화하세요.
+`Picker<T>`는 controlled component입니다. 선택값은 앱 state에 보관하고, 그 값을 `selectedItem`으로
+전달하며, `onSelectedItemChange`에서 앱 state를 갱신하세요. `items`는 비어 있으면 안 되고 중복값이
+없어야 하며, `selectedItem`은 반드시 `items` 안에 있어야 합니다. `T`가 saveable하지 않다면 앱 state에는
+saveable한 key를 저장한 뒤 렌더링 전에 그 key를 item으로 매핑하세요.
 
 ### 프로그래밍 방식 선택
 
@@ -311,7 +308,7 @@ state를 새로 만들 필요는 없습니다.
 
 | State | Method |
 | :--- | :--- |
-| `PickerState<T>` | `selectItem(item)` |
+| Generic `Picker<T>` | 앱이 소유한 `selectedItem` 값을 갱신 |
 | `TimePickerState` | `selectTime(LocalTime(...))` |
 | `DatePickerState` | `selectDate(LocalDate(...))` |
 | `YearMonthPickerState` | `selectYearMonth(year, month)` 또는 `selectDate(LocalDate(...))` |
@@ -339,15 +336,16 @@ fun ProgrammaticTimePickerExample() {
 }
 ```
 
-요청한 값이 현재 item list에 포함되어 있으면 picker 스크롤 위치가 동기화됩니다. custom list에
-요청한 값이 없다면 해당 child picker는 현재 가운데에 보이는 item으로 정상화됩니다.
+요청한 값이 현재 item list에 포함되어 있으면 picker 스크롤 위치가 동기화됩니다. custom list는 엄격하게
+검증됩니다. 비어 있지 않아야 하고, 중복이 없어야 하며, 지원 범위 안의 값만 포함해야 하고, 현재 선택값도
+반드시 포함해야 합니다. 앱이 custom list 밖의 값을 복원하거나 요청할 수 있다면 picker를 렌더링하기 전에
+앱 state를 보정하거나 거부하세요.
 
 ### TimePicker
 
 | 파라미터 | 설명 | 기본값 |
 | :--- | :--- | :--- |
 | `state` | Picker를 제어하기 위한 상태 객체입니다. | `rememberTimePickerState()` |
-| `startTime` | 레거시 호환성 파라미터입니다. `state`를 생략해도 `state`를 초기화하거나 갱신하지 않으므로 `rememberTimePickerState(initialTime = ...)` 또는 명시적인 초기값 파라미터를 사용하세요. | `currentDateTime()` |
 | `minuteItems` | 선택 가능한 분 목록입니다. 값은 `0..59` 범위여야 합니다. | `0..59` |
 | `hourItems` | 선택 가능한 시간 목록입니다. 24시간 형식에서는 `0..23`, 12시간 형식에서는 표시 시간 기준 `1..12` 범위여야 합니다. | `0..23` 또는 `1..12` |
 | `periodItems` | 12시간 형식에서 선택 가능한 오전/오후 목록입니다. `timeFormat`이 `HOUR_12`일 때 비어 있으면 안 됩니다. | `TimePeriod.entries` |
@@ -374,18 +372,17 @@ fun ProgrammaticTimePickerExample() {
 
 `rememberTimePickerState`는 saveable state를 사용합니다. Android에서는 플랫폼 saveable registry가 제공될 때 Activity 재생성 이후에도 선택값을 복원할 수 있습니다.
 
-초기값은 `rememberTimePickerState(initialTime = LocalTime(...))` 또는 `initialHour`/`initialMinute` 파라미터로 설정합니다. 컴포넌트의 `startTime` 파라미터는 소스 호환성 때문에 남아 있지만 사용되지 않습니다.
+초기값은 `rememberTimePickerState(initialTime = LocalTime(...))` 또는 `initialHour`/`initialMinute` 파라미터로 설정합니다.
 
 상태 생성 이후 선택값을 바꾸려면 `state.selectTime(LocalTime(...))`을 호출합니다.
 
-custom item 값이 유효 범위를 벗어나면 composition 중 `IllegalArgumentException`이 발생합니다. 현재 또는 복원된 선택값이 유효하지만 custom 목록에 없다면 picker는 해당 목록의 첫 번째 값에서 시작하고 state를 정상화합니다. 12시간 형식의 `hourItems`는 표시 시간 기준(`1..12`)입니다. 예를 들어 `initialHour = 13`은 `state.selectedHour == 1`, `PM`으로 변환됩니다.
+custom item 값이 유효 범위를 벗어나거나, 중복이 있거나, 필수 목록이 비어 있거나, 현재 선택값이 custom 목록에 없으면 composition 중 `IllegalArgumentException`이 발생합니다. 12시간 형식의 `hourItems`는 표시 시간 기준(`1..12`)입니다. 예를 들어 `initialHour = 13`은 `state.selectedHour == 1`, `PM`으로 변환됩니다.
 
 ### DatePicker
 
 | 파라미터 | 설명 | 기본값 |
 | :--- | :--- | :--- |
 | `state` | Picker를 제어하기 위한 상태 객체입니다. | `rememberDatePickerState()` |
-| `startLocalDate` | 레거시 호환성 파라미터입니다. `state`를 생략해도 `state`를 초기화하거나 갱신하지 않으므로 `rememberDatePickerState(initialDate = ...)` 또는 명시적인 초기값 파라미터를 사용하세요. | `currentDate()` |
 | `yearItems` | 선택 가능한 연도 목록입니다. 값은 `1000..9999` 범위여야 합니다. | `1000..9999` |
 | `monthItems` | 선택 가능한 월 목록입니다. 값은 `1..12` 범위여야 합니다. | `1..12` |
 | `visibleItemsCount` | 리스트에 표시될 아이템의 개수입니다. | `3` |
@@ -413,18 +410,17 @@ custom item 값이 유효 범위를 벗어나면 composition 중 `IllegalArgumen
 초기값은 `rememberDatePickerState(initialDate = LocalDate(...))` 또는
 `initialYear`/`initialMonth`/`initialDay` 파라미터로 설정합니다. 초기 연도는 `1000..9999`,
 월은 `1..12` 범위여야 하고 일은 최소 `1`이어야 합니다. `initialDay`가 초기 연/월의 최대 일수보다
-크면 그 최대 일수로 보정됩니다. 컴포넌트의 `startLocalDate` 파라미터는 소스 호환성 때문에 남아 있지만 사용되지 않습니다.
+크면 그 최대 일수로 보정됩니다.
 
 상태 생성 이후 선택값을 바꾸려면 `state.selectDate(LocalDate(...))`를 호출합니다.
 
-custom item 값이 유효 범위를 벗어나면 composition 중 `IllegalArgumentException`이 발생합니다. 현재 또는 복원된 연도/월이 유효하지만 custom 목록에 없다면 picker는 해당 목록의 첫 번째 값에서 시작하고 state를 정상화합니다.
+custom item 값이 유효 범위를 벗어나거나, 중복이 있거나, 목록이 비어 있거나, 현재 선택된 연도/월이 custom 목록에 없으면 composition 중 `IllegalArgumentException`이 발생합니다.
 
 ### YearMonthPicker
 
 | 파라미터 | 설명 | 기본값 |
 | :--- | :--- | :--- |
 | `state` | Picker를 제어하기 위한 상태 객체입니다. | `rememberYearMonthPickerState()` |
-| `startLocalDate` | 레거시 호환성 파라미터입니다. `state`를 생략해도 `state`를 초기화하거나 갱신하지 않으므로 `rememberYearMonthPickerState(initialDate = ...)` 또는 명시적인 초기값 파라미터를 사용하세요. | `currentDate()` |
 | `yearItems` | 선택 가능한 연도 목록입니다. 값은 `1000..9999` 범위여야 합니다. | `1000..9999` |
 | `monthItems` | 선택 가능한 월 목록입니다. 값은 `1..12` 범위여야 합니다. | `1..12` |
 | `visibleItemsCount` | 리스트에 표시될 아이템의 개수입니다. | `3` |
@@ -445,12 +441,12 @@ custom item 값이 유효 범위를 벗어나면 composition 중 `IllegalArgumen
 
 `rememberYearMonthPickerState`는 saveable state를 사용합니다. Android에서는 플랫폼 saveable registry가 제공될 때 Activity 재생성 이후에도 선택값을 복원할 수 있습니다.
 
-초기값은 `rememberYearMonthPickerState(initialDate = LocalDate(...))` 또는 `initialYear`/`initialMonth` 파라미터로 설정합니다. 초기 연도는 `1000..9999` 범위여야 합니다. 컴포넌트의 `startLocalDate` 파라미터는 소스 호환성 때문에 남아 있지만 사용되지 않습니다.
+초기값은 `rememberYearMonthPickerState(initialDate = LocalDate(...))` 또는 `initialYear`/`initialMonth` 파라미터로 설정합니다. 초기 연도는 `1000..9999` 범위여야 합니다.
 
 상태 생성 이후 선택값을 바꾸려면 `state.selectYearMonth(year, month)` 또는
 `state.selectDate(LocalDate(...))`를 호출합니다.
 
-custom item 값이 유효 범위를 벗어나면 composition 중 `IllegalArgumentException`이 발생합니다. 현재 또는 복원된 연도/월이 유효하지만 custom 목록에 없다면 picker는 해당 목록의 첫 번째 값에서 시작하고 state를 정상화합니다.
+custom item 값이 유효 범위를 벗어나거나, 중복이 있거나, 목록이 비어 있거나, 현재 선택된 연도/월이 custom 목록에 없으면 composition 중 `IllegalArgumentException`이 발생합니다.
 
 ## 라이선스
 

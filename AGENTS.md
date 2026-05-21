@@ -27,7 +27,7 @@ YearMonthPicker (year + month)
 DatePicker (year + month + day)
 ```
 
-**Key pattern**: Higher-level components (`TimePicker`, `YearMonthPicker`) are compositions of multiple `Picker` instances, not subclasses. Each `Picker` instance manages its own `PickerState<T>`.
+**Key pattern**: Higher-level components (`TimePicker`, `YearMonthPicker`) are compositions of multiple controlled `Picker` instances, not subclasses. Generic `Picker<T>` receives `selectedItem` and `onSelectedItemChange` from the caller; higher-level state classes own only logical date/time values.
 
 ### Core Components
 
@@ -39,11 +39,11 @@ DatePicker (year + month + day)
 - State updates via `snapshotFlow { firstVisibleItemIndex }` in `LaunchedEffect`
 
 **`PickerState.kt`**
-- Shared state holders for `Picker`, `TimePicker`, and `YearMonthPicker`
-- Created via `rememberPickerState`, `rememberTimePickerState`, and `rememberYearMonthPickerState`
+- Shared state holders for `TimePicker` and `YearMonthPicker`
+- Created via `rememberTimePickerState` and `rememberYearMonthPickerState`
 - `TimePickerState` exposes `selectedTime: LocalTime` and `selectedHourOfDay`
 - `YearMonthPickerState` exposes `selectedMonthDate: LocalDate`
-- Specialized picker states use saveable state; generic `PickerState<T>` uses regular `remember` because arbitrary `T` is not guaranteed saveable
+- Specialized picker states use saveable state; generic `Picker<T>` is controlled by caller-owned state because arbitrary `T` is not guaranteed saveable
 
 **`DatePicker.kt`** / **`DatePickerState.kt`**
 - Compose year, month, and day pickers
@@ -61,7 +61,8 @@ DatePicker (year + month + day)
 User scrolls LazyColumn
   → LazyListState.firstVisibleItemIndex changes
   → snapshotFlow emits new index
-  → state.selectedItem updated
+  → Picker calls onSelectedItemChange(item)
+  → caller-owned selectedItem updates
   → Recomposition shows updated UI
 ```
 
@@ -88,11 +89,13 @@ Most logic lives in `commonMain`. Platform-specific code is minimal.
 - After a substantial implementation step, run a six-agent feedback loop when the maintainer asks for autonomous improvement work: collect feedback, fix actionable issues, verify again, then open or update the PR.
 - Merge PRs only after relevant local verification and GitHub Actions checks pass.
 - Keep improving toward Android developer ergonomics first: state APIs, sample usability, documentation clarity, accessibility, and predictable behavior in real app lifecycles.
-- When public picker APIs accept custom item lists, validate value ranges before composing the underlying `Picker`. Prefer normalizing a valid-but-missing current state value through existing picker behavior over crashing during composition.
-- When public validation rules change, update KDoc plus `README.md` and `README_KO.md` in the same PR, including failure mode and normalization behavior.
-- Do not repurpose legacy `startTime` or `startLocalDate` component parameters for new initialization behavior. Preserve source compatibility, document that they are compatibility no-ops, and prefer explicit `remember*State` overloads for initial values.
+- During 0.x API stabilization, prefer the best long-term API shape over source compatibility when the maintainer explicitly authorizes breaking changes. Document every breaking change in README/CHANGELOG and update ABI dumps.
+- Prefer controlled picker APIs with a single source of truth. Avoid APIs where both a state object and positional parameter can initialize or mutate the same selection.
+- When public picker APIs accept custom item lists, validate non-empty lists, duplicate values, supported value ranges, and presence of the current selected value before composing the underlying `Picker`.
+- When public validation rules change, update KDoc plus `README.md` and `README_KO.md` in the same PR, including failure mode and whether the app must clamp state before rendering.
+- Do not reintroduce legacy `startTime`, `startLocalDate`, or generic `startIndex` component parameters. Prefer explicit `remember*State` overloads for initial values and controlled `selectedItem` for generic `Picker<T>`.
 - Treat `remember*State` initial parameters as first-composition defaults. Avoid resetting picker state from changing clock/date expressions during recomposition unless the API explicitly models a reset, and keep internal picker scroll state/effects keyed with state resets.
-- When adding public state mutation APIs, keep logical state and picker scroll position synchronized, and document behavior when custom item lists do not contain the requested value.
+- When adding public state mutation APIs, keep logical state and picker scroll position synchronized, and require apps to keep custom item lists consistent with requested values.
 - During programmatic selection sync, do not let intermediate `LazyListState` scroll positions overwrite the requested state value before the picker settles.
 - When higher-level components pass accessibility labels to `Picker`, expose those labels and item content descriptions as public parameters with sensible defaults so Android apps can localize TalkBack output. Update KDoc and both READMEs in the same PR.
 - Kotlin 2.2.21 ABI validation uses `checkLegacyAbi`/`updateLegacyAbi` in this repo. Re-check task names and dump format after Kotlin upgrades.
@@ -239,7 +242,7 @@ color = lerp(selectedTextStyle.color, textStyle.color, fraction)
 ## Code Style
 
 - **Kotlin official style**: `kotlin.code.style=official`
-- **Naming**: PascalCase for composables (`TimePicker`), camelCase for functions (`rememberPickerState`)
+- **Naming**: PascalCase for composables (`TimePicker`), camelCase for functions (`rememberTimePickerState`)
 - **Documentation**: KDoc for all public APIs with `@param` descriptions
 - **Formatting**: Handled by Kotlin plugin (no explicit ktlint/detekt config found)
 
