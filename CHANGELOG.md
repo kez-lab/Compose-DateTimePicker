@@ -21,6 +21,7 @@ This project tracks notable user-facing and maintainer-facing changes here. The 
 - Refined sample screens with shared result cards, picker panels, real reset/confirm actions, and
   bottom-sheet draft state separate from committed selection values.
 - Improved sample accessibility semantics for selected-value cards and home-screen navigation items.
+- Improved the integrated sample summary semantics and covered it in the sample Android smoke test.
 - Removed the redundant Android sample `MaterialTheme` wrapper so the sample entry point uses the shared `AppTheme`.
 - Reworked README bottom-sheet examples to use separate committed and draft picker state.
 - Clarified `DatePickerState` initial-day documentation to distinguish invalid values from max-day clamping.
