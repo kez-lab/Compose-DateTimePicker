@@ -17,6 +17,7 @@ import androidx.compose.ui.unit.sp
 import com.kez.picker.Picker
 import com.kez.picker.PickerDefaults
 import com.kez.picker.PickerStyle
+import com.kez.picker.TimePickerAccessibility
 import com.kez.picker.util.HOUR12_RANGE
 import com.kez.picker.util.HOUR24_RANGE
 import com.kez.picker.util.MINUTE_RANGE
@@ -34,14 +35,7 @@ import com.kez.picker.util.TimePeriod
  * @param periodItems The list of period values to display in [TimeFormat.HOUR_12]. Must be non-empty, distinct, and contain [TimePickerState.selectedPeriod] when the picker uses 12-hour time.
  * @param style Visual and layout styling for each picker column.
  * @param spacingBetweenPickers The spacing between the pickers.
- * @param hourPickerLabel Accessibility label for the hour picker. Pass null to omit the picker label prefix.
- * @param minutePickerLabel Accessibility label for the minute picker. Pass null to omit the picker label prefix.
- * @param periodPickerLabel Accessibility label for the AM/PM picker in [TimeFormat.HOUR_12]. Pass null to omit the picker label prefix.
- * @param hourItemContentDescription Accessibility description for each hour value.
- * @param minuteItemContentDescription Accessibility description for each minute value.
- * @param periodItemContentDescription Accessibility description for each AM/PM value in [TimeFormat.HOUR_12].
- * @param previousItemActionLabel Accessibility action label used by child pickers to select the previous item. Pass null or blank to omit the action.
- * @param nextItemActionLabel Accessibility action label used by child pickers to select the next item. Pass null or blank to omit the action.
+ * @param accessibility Accessibility labels, item descriptions, and custom action labels for each picker column.
  * @throws IllegalArgumentException if custom item lists are empty where required, contain duplicates, contain values outside the supported ranges, or omit the current selected value.
  */
 @Composable
@@ -57,14 +51,7 @@ fun TimePicker(
     periodItems: List<TimePeriod> = TimePeriod.entries,
     style: PickerStyle = PickerDefaults.style(),
     spacingBetweenPickers: Dp = PickerDefaults.SpacingBetweenPickers,
-    hourPickerLabel: String? = "Hour",
-    minutePickerLabel: String? = "Minute",
-    periodPickerLabel: String? = "AM/PM",
-    hourItemContentDescription: (Int) -> String = { it.toString() },
-    minuteItemContentDescription: (Int) -> String = { it.toString() },
-    periodItemContentDescription: (TimePeriod) -> String = { it.name },
-    previousItemActionLabel: String? = PickerDefaults.PreviousItemActionLabel,
-    nextItemActionLabel: String? = PickerDefaults.NextItemActionLabel
+    accessibility: TimePickerAccessibility = PickerDefaults.timePickerAccessibility()
 ) {
     validateTimePickerItems(
         state = state,
@@ -92,10 +79,7 @@ fun TimePicker(
                         modifier = pickerModifier.weight(1f),
                         style = style,
                         isInfinity = false,
-                        pickerLabel = periodPickerLabel,
-                        itemContentDescription = periodItemContentDescription,
-                        previousItemActionLabel = previousItemActionLabel,
-                        nextItemActionLabel = nextItemActionLabel
+                        accessibility = accessibility.period
                     )
                     Spacer(modifier = Modifier.width(spacingBetweenPickers))
                 }
@@ -105,10 +89,7 @@ fun TimePicker(
                     onSelectedItemChange = state::selectHour,
                     modifier = pickerModifier.weight(1f),
                     style = style,
-                    pickerLabel = hourPickerLabel,
-                    itemContentDescription = hourItemContentDescription,
-                    previousItemActionLabel = previousItemActionLabel,
-                    nextItemActionLabel = nextItemActionLabel
+                    accessibility = accessibility.hour
                 )
                 Spacer(modifier = Modifier.width(spacingBetweenPickers))
                 Picker(
@@ -117,10 +98,7 @@ fun TimePicker(
                     onSelectedItemChange = state::selectMinute,
                     modifier = pickerModifier.weight(1f),
                     style = style,
-                    pickerLabel = minutePickerLabel,
-                    itemContentDescription = minuteItemContentDescription,
-                    previousItemActionLabel = previousItemActionLabel,
-                    nextItemActionLabel = nextItemActionLabel
+                    accessibility = accessibility.minute
                 )
             }
         }

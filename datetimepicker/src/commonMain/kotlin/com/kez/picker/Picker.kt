@@ -74,11 +74,8 @@ private const val INFINITE_SCROLL_MULTIPLIER = 1000
  * @param onSelectedItemChange Called when scroll or click interaction selects a new item.
  * @param modifier The modifier to be applied to the picker.
  * @param style Visual and layout styling for the picker.
+ * @param accessibility Accessibility labels, item descriptions, and custom action labels for the picker.
  * @param isInfinity Whether the picker should loop infinitely.
- * @param pickerLabel Accessibility label for the picker (e.g., "Hour", "Minute", "Year").
- * @param itemContentDescription Accessibility description for each item value.
- * @param previousItemActionLabel Accessibility action label for selecting the previous item. Pass null or blank to omit the action.
- * @param nextItemActionLabel Accessibility action label for selecting the next item. Pass null or blank to omit the action.
  * @param content Optional custom content composable for rendering each item.
  */
 @Composable
@@ -88,11 +85,8 @@ fun <T : Any> Picker(
     onSelectedItemChange: (T) -> Unit,
     modifier: Modifier = Modifier,
     style: PickerStyle = PickerDefaults.style(),
+    accessibility: PickerAccessibility<T> = PickerDefaults.accessibility(),
     isInfinity: Boolean = true,
-    pickerLabel: String? = null,
-    itemContentDescription: (T) -> String = { it.toString() },
-    previousItemActionLabel: String? = PickerDefaults.PreviousItemActionLabel,
-    nextItemActionLabel: String? = PickerDefaults.NextItemActionLabel,
     content: @Composable ((T) -> Unit)? = null
 ) {
     require(items.isNotEmpty()) { "Items list must not be empty" }
@@ -234,10 +228,12 @@ fun <T : Any> Picker(
         }
     }
 
-    val normalizedPickerLabel = pickerLabel.asPickerAccessibilityLabelOrNull()
-    val normalizedPreviousItemActionLabel = previousItemActionLabel.asPickerAccessibilityLabelOrNull()
-    val normalizedNextItemActionLabel = nextItemActionLabel.asPickerAccessibilityLabelOrNull()
-    val selectedItemDescription = itemContentDescription(selectedItem)
+    val normalizedPickerLabel = accessibility.pickerLabel.asPickerAccessibilityLabelOrNull()
+    val normalizedPreviousItemActionLabel =
+        accessibility.previousItemActionLabel.asPickerAccessibilityLabelOrNull()
+    val normalizedNextItemActionLabel =
+        accessibility.nextItemActionLabel.asPickerAccessibilityLabelOrNull()
+    val selectedItemDescription = accessibility.itemContentDescription(selectedItem)
     val pickerDescription = pickerAccessibilityDescription(normalizedPickerLabel, selectedItemDescription)
     val hasPickerDescription = pickerDescription.isNotBlank()
 
@@ -369,7 +365,7 @@ fun <T : Any> Picker(
                 val item = getItem(index)
                 val isSelected = item == selectedItem
                 val itemText = item?.toString() ?: ""
-                val itemDescription = item?.let(itemContentDescription) ?: ""
+                val itemDescription = item?.let(accessibility.itemContentDescription) ?: ""
                 val itemIndex = if (isInfinity) {
                     index % items.size
                 } else {

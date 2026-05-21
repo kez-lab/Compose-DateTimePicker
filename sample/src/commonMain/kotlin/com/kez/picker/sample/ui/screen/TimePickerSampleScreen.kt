@@ -154,25 +154,29 @@ internal fun TimePickerSampleScreen(
                 if (selectedFormat == 0) {
                     TimePicker(
                         state = timeState12,
-                        hourPickerLabel = "시간",
-                        minutePickerLabel = "분",
-                        periodPickerLabel = "오전/오후",
-                        hourItemContentDescription = { "${it}시" },
-                        minuteItemContentDescription = { "${it}분" },
-                        periodItemContentDescription = { getTimePeriodContentDescription(it) },
-                        previousItemActionLabel = "이전 항목 선택",
-                        nextItemActionLabel = "다음 항목 선택"
+                        accessibility = PickerDefaults.timePickerAccessibility(
+                            hourPickerLabel = "시간",
+                            minutePickerLabel = "분",
+                            periodPickerLabel = "오전/오후",
+                            hourItemContentDescription = { "${it}시" },
+                            minuteItemContentDescription = { "${it}분" },
+                            periodItemContentDescription = { getTimePeriodContentDescription(it) },
+                            previousItemActionLabel = "이전 항목 선택",
+                            nextItemActionLabel = "다음 항목 선택"
+                        )
                     )
                 } else {
                     TimePicker(
                         state = timeState24,
                         style = PickerDefaults.style(visibleItemsCount = 5),
-                        hourPickerLabel = "시간",
-                        minutePickerLabel = "분",
-                        hourItemContentDescription = { "${it}시" },
-                        minuteItemContentDescription = { "${it}분" },
-                        previousItemActionLabel = "이전 항목 선택",
-                        nextItemActionLabel = "다음 항목 선택"
+                        accessibility = PickerDefaults.timePickerAccessibility(
+                            hourPickerLabel = "시간",
+                            minutePickerLabel = "분",
+                            hourItemContentDescription = { "${it}시" },
+                            minuteItemContentDescription = { "${it}분" },
+                            previousItemActionLabel = "이전 항목 선택",
+                            nextItemActionLabel = "다음 항목 선택"
+                        )
                     )
                 }
             }

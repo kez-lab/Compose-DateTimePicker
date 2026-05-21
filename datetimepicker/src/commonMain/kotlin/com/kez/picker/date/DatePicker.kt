@@ -14,6 +14,7 @@ import androidx.compose.ui.unit.Dp
 import com.kez.picker.Picker
 import com.kez.picker.PickerDefaults
 import com.kez.picker.PickerStyle
+import com.kez.picker.DatePickerAccessibility
 import com.kez.picker.util.MONTH_RANGE
 import com.kez.picker.util.YEAR_RANGE
 
@@ -27,14 +28,7 @@ import com.kez.picker.util.YEAR_RANGE
  * @param monthItems The list of month values to display. Must be non-empty, distinct, contain values in 1..12, and contain [DatePickerState.selectedMonth].
  * @param style Visual and layout styling for each picker column.
  * @param spacingBetweenPickers The spacing between the pickers.
- * @param yearPickerLabel Accessibility label for the year picker. Pass null to omit the picker label prefix.
- * @param monthPickerLabel Accessibility label for the month picker. Pass null to omit the picker label prefix.
- * @param dayPickerLabel Accessibility label for the day picker. Pass null to omit the picker label prefix.
- * @param yearItemContentDescription Accessibility description for each year value.
- * @param monthItemContentDescription Accessibility description for each month value.
- * @param dayItemContentDescription Accessibility description for each day value.
- * @param previousItemActionLabel Accessibility action label used by child pickers to select the previous item. Pass null or blank to omit the action.
- * @param nextItemActionLabel Accessibility action label used by child pickers to select the next item. Pass null or blank to omit the action.
+ * @param accessibility Accessibility labels, item descriptions, and custom action labels for each picker column.
  * @throws IllegalArgumentException if custom item lists are empty, contain duplicates, contain values outside the supported ranges, or omit the current selected year/month.
  */
 @Composable
@@ -46,14 +40,7 @@ fun DatePicker(
     monthItems: List<Int> = MONTH_RANGE,
     style: PickerStyle = PickerDefaults.style(),
     spacingBetweenPickers: Dp = PickerDefaults.SpacingBetweenPickers,
-    yearPickerLabel: String? = "Year",
-    monthPickerLabel: String? = "Month",
-    dayPickerLabel: String? = "Day",
-    yearItemContentDescription: (Int) -> String = { it.toString() },
-    monthItemContentDescription: (Int) -> String = { it.toString() },
-    dayItemContentDescription: (Int) -> String = { it.toString() },
-    previousItemActionLabel: String? = PickerDefaults.PreviousItemActionLabel,
-    nextItemActionLabel: String? = PickerDefaults.NextItemActionLabel
+    accessibility: DatePickerAccessibility = PickerDefaults.datePickerAccessibility()
 ) {
     validateDatePickerItems(
         state = state,
@@ -81,10 +68,7 @@ fun DatePicker(
                     onSelectedItemChange = state::selectYear,
                     modifier = pickerModifier.weight(1.2f), // Give Year slightly more width
                     style = style,
-                    pickerLabel = yearPickerLabel,
-                    itemContentDescription = yearItemContentDescription,
-                    previousItemActionLabel = previousItemActionLabel,
-                    nextItemActionLabel = nextItemActionLabel
+                    accessibility = accessibility.year
                 )
 
                 Picker(
@@ -93,10 +77,7 @@ fun DatePicker(
                     onSelectedItemChange = state::selectMonth,
                     modifier = pickerModifier.weight(0.8f),
                     style = style,
-                    pickerLabel = monthPickerLabel,
-                    itemContentDescription = monthItemContentDescription,
-                    previousItemActionLabel = previousItemActionLabel,
-                    nextItemActionLabel = nextItemActionLabel
+                    accessibility = accessibility.month
                 )
 
                 key(maxDay) {
@@ -107,10 +88,7 @@ fun DatePicker(
                         modifier = pickerModifier.weight(0.8f),
                         style = style,
                         isInfinity = false,
-                        pickerLabel = dayPickerLabel,
-                        itemContentDescription = dayItemContentDescription,
-                        previousItemActionLabel = previousItemActionLabel,
-                        nextItemActionLabel = nextItemActionLabel
+                        accessibility = accessibility.day
                     )
                 }
             }

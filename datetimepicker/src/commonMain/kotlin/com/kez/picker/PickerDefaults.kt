@@ -14,6 +14,7 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.kez.picker.util.TimePeriod
 
 /**
  * Contains default values and factory methods for creating Picker styles.
@@ -141,6 +142,149 @@ object PickerDefaults {
         dividerThickness = dividerThickness,
         dividerShape = dividerShape,
         isDividerVisible = isDividerVisible
+    )
+
+    /**
+     * Creates accessibility configuration for one picker column.
+     *
+     * @param pickerLabel Optional label used as the accessibility prefix for the picker column.
+     * @param itemContentDescription Accessibility description for each item value.
+     * @param previousItemActionLabel Accessibility action label for selecting the previous item. Pass null or blank to omit the action.
+     * @param nextItemActionLabel Accessibility action label for selecting the next item. Pass null or blank to omit the action.
+     * @return A [PickerAccessibility] instance with the specified semantics behavior.
+     */
+    fun <T : Any> accessibility(
+        pickerLabel: String? = null,
+        itemContentDescription: (T) -> String = { it.toString() },
+        previousItemActionLabel: String? = PreviousItemActionLabel,
+        nextItemActionLabel: String? = NextItemActionLabel
+    ): PickerAccessibility<T> = PickerAccessibility(
+        pickerLabel = pickerLabel,
+        itemContentDescription = itemContentDescription,
+        previousItemActionLabel = previousItemActionLabel,
+        nextItemActionLabel = nextItemActionLabel
+    )
+
+    /**
+     * Creates accessibility configuration for a time picker.
+     *
+     * Shared previous/next action labels are applied to all child picker columns. Use
+     * [TimePickerAccessibility.copy] with [accessibility] when one column needs a custom label or formatter.
+     *
+     * @param hourPickerLabel Accessibility label for the hour picker. Pass null to omit the picker label prefix.
+     * @param minutePickerLabel Accessibility label for the minute picker. Pass null to omit the picker label prefix.
+     * @param periodPickerLabel Accessibility label for the AM/PM picker in 12-hour time. Pass null to omit the picker label prefix.
+     * @param hourItemContentDescription Accessibility description for each hour value.
+     * @param minuteItemContentDescription Accessibility description for each minute value.
+     * @param periodItemContentDescription Accessibility description for each AM/PM value.
+     * @param previousItemActionLabel Accessibility action label used by child pickers to select the previous item.
+     * @param nextItemActionLabel Accessibility action label used by child pickers to select the next item.
+     * @return A [TimePickerAccessibility] instance with the specified semantics behavior.
+     */
+    fun timePickerAccessibility(
+        hourPickerLabel: String? = "Hour",
+        minutePickerLabel: String? = "Minute",
+        periodPickerLabel: String? = "AM/PM",
+        hourItemContentDescription: (Int) -> String = { it.toString() },
+        minuteItemContentDescription: (Int) -> String = { it.toString() },
+        periodItemContentDescription: (TimePeriod) -> String = { it.name },
+        previousItemActionLabel: String? = PreviousItemActionLabel,
+        nextItemActionLabel: String? = NextItemActionLabel
+    ): TimePickerAccessibility = TimePickerAccessibility(
+        hour = accessibility(
+            pickerLabel = hourPickerLabel,
+            itemContentDescription = hourItemContentDescription,
+            previousItemActionLabel = previousItemActionLabel,
+            nextItemActionLabel = nextItemActionLabel
+        ),
+        minute = accessibility(
+            pickerLabel = minutePickerLabel,
+            itemContentDescription = minuteItemContentDescription,
+            previousItemActionLabel = previousItemActionLabel,
+            nextItemActionLabel = nextItemActionLabel
+        ),
+        period = accessibility(
+            pickerLabel = periodPickerLabel,
+            itemContentDescription = periodItemContentDescription,
+            previousItemActionLabel = previousItemActionLabel,
+            nextItemActionLabel = nextItemActionLabel
+        )
+    )
+
+    /**
+     * Creates accessibility configuration for a date picker.
+     *
+     * @param yearPickerLabel Accessibility label for the year picker. Pass null to omit the picker label prefix.
+     * @param monthPickerLabel Accessibility label for the month picker. Pass null to omit the picker label prefix.
+     * @param dayPickerLabel Accessibility label for the day picker. Pass null to omit the picker label prefix.
+     * @param yearItemContentDescription Accessibility description for each year value.
+     * @param monthItemContentDescription Accessibility description for each month value.
+     * @param dayItemContentDescription Accessibility description for each day value.
+     * @param previousItemActionLabel Accessibility action label used by child pickers to select the previous item.
+     * @param nextItemActionLabel Accessibility action label used by child pickers to select the next item.
+     * @return A [DatePickerAccessibility] instance with the specified semantics behavior.
+     */
+    fun datePickerAccessibility(
+        yearPickerLabel: String? = "Year",
+        monthPickerLabel: String? = "Month",
+        dayPickerLabel: String? = "Day",
+        yearItemContentDescription: (Int) -> String = { it.toString() },
+        monthItemContentDescription: (Int) -> String = { it.toString() },
+        dayItemContentDescription: (Int) -> String = { it.toString() },
+        previousItemActionLabel: String? = PreviousItemActionLabel,
+        nextItemActionLabel: String? = NextItemActionLabel
+    ): DatePickerAccessibility = DatePickerAccessibility(
+        year = accessibility(
+            pickerLabel = yearPickerLabel,
+            itemContentDescription = yearItemContentDescription,
+            previousItemActionLabel = previousItemActionLabel,
+            nextItemActionLabel = nextItemActionLabel
+        ),
+        month = accessibility(
+            pickerLabel = monthPickerLabel,
+            itemContentDescription = monthItemContentDescription,
+            previousItemActionLabel = previousItemActionLabel,
+            nextItemActionLabel = nextItemActionLabel
+        ),
+        day = accessibility(
+            pickerLabel = dayPickerLabel,
+            itemContentDescription = dayItemContentDescription,
+            previousItemActionLabel = previousItemActionLabel,
+            nextItemActionLabel = nextItemActionLabel
+        )
+    )
+
+    /**
+     * Creates accessibility configuration for a year-month picker.
+     *
+     * @param yearPickerLabel Accessibility label for the year picker. Pass null to omit the picker label prefix.
+     * @param monthPickerLabel Accessibility label for the month picker. Pass null to omit the picker label prefix.
+     * @param yearItemContentDescription Accessibility description for each year value.
+     * @param monthItemContentDescription Accessibility description for each month value.
+     * @param previousItemActionLabel Accessibility action label used by child pickers to select the previous item.
+     * @param nextItemActionLabel Accessibility action label used by child pickers to select the next item.
+     * @return A [YearMonthPickerAccessibility] instance with the specified semantics behavior.
+     */
+    fun yearMonthPickerAccessibility(
+        yearPickerLabel: String? = "Year",
+        monthPickerLabel: String? = "Month",
+        yearItemContentDescription: (Int) -> String = { it.toString() },
+        monthItemContentDescription: (Int) -> String = { it.toString() },
+        previousItemActionLabel: String? = PreviousItemActionLabel,
+        nextItemActionLabel: String? = NextItemActionLabel
+    ): YearMonthPickerAccessibility = YearMonthPickerAccessibility(
+        year = accessibility(
+            pickerLabel = yearPickerLabel,
+            itemContentDescription = yearItemContentDescription,
+            previousItemActionLabel = previousItemActionLabel,
+            nextItemActionLabel = nextItemActionLabel
+        ),
+        month = accessibility(
+            pickerLabel = monthPickerLabel,
+            itemContentDescription = monthItemContentDescription,
+            previousItemActionLabel = previousItemActionLabel,
+            nextItemActionLabel = nextItemActionLabel
+        )
     )
 
     /**

@@ -1,3 +1,39 @@
+public final class com/kez/picker/DatePickerAccessibility {
+	public static final field $stable I
+	public fun <init> (Lcom/kez/picker/PickerAccessibility;Lcom/kez/picker/PickerAccessibility;Lcom/kez/picker/PickerAccessibility;)V
+	public final fun component1 ()Lcom/kez/picker/PickerAccessibility;
+	public final fun component2 ()Lcom/kez/picker/PickerAccessibility;
+	public final fun component3 ()Lcom/kez/picker/PickerAccessibility;
+	public final fun copy (Lcom/kez/picker/PickerAccessibility;Lcom/kez/picker/PickerAccessibility;Lcom/kez/picker/PickerAccessibility;)Lcom/kez/picker/DatePickerAccessibility;
+	public static synthetic fun copy$default (Lcom/kez/picker/DatePickerAccessibility;Lcom/kez/picker/PickerAccessibility;Lcom/kez/picker/PickerAccessibility;Lcom/kez/picker/PickerAccessibility;ILjava/lang/Object;)Lcom/kez/picker/DatePickerAccessibility;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getDay ()Lcom/kez/picker/PickerAccessibility;
+	public final fun getMonth ()Lcom/kez/picker/PickerAccessibility;
+	public final fun getYear ()Lcom/kez/picker/PickerAccessibility;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class com/kez/picker/PickerAccessibility {
+	public static final field $stable I
+	public fun <init> ()V
+	public fun <init> (Ljava/lang/String;Lkotlin/jvm/functions/Function1;Ljava/lang/String;Ljava/lang/String;)V
+	public synthetic fun <init> (Ljava/lang/String;Lkotlin/jvm/functions/Function1;Ljava/lang/String;Ljava/lang/String;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1 ()Ljava/lang/String;
+	public final fun component2 ()Lkotlin/jvm/functions/Function1;
+	public final fun component3 ()Ljava/lang/String;
+	public final fun component4 ()Ljava/lang/String;
+	public final fun copy (Ljava/lang/String;Lkotlin/jvm/functions/Function1;Ljava/lang/String;Ljava/lang/String;)Lcom/kez/picker/PickerAccessibility;
+	public static synthetic fun copy$default (Lcom/kez/picker/PickerAccessibility;Ljava/lang/String;Lkotlin/jvm/functions/Function1;Ljava/lang/String;Ljava/lang/String;ILjava/lang/Object;)Lcom/kez/picker/PickerAccessibility;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getItemContentDescription ()Lkotlin/jvm/functions/Function1;
+	public final fun getNextItemActionLabel ()Ljava/lang/String;
+	public final fun getPickerLabel ()Ljava/lang/String;
+	public final fun getPreviousItemActionLabel ()Ljava/lang/String;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
 public final class com/kez/picker/PickerColors {
 	public static final field $stable I
 	public synthetic fun <init> (JJJJLkotlin/jvm/internal/DefaultConstructorMarker;)V
@@ -22,7 +58,11 @@ public final class com/kez/picker/PickerDefaults {
 	public static final field NextItemActionLabel Ljava/lang/String;
 	public static final field PreviousItemActionLabel Ljava/lang/String;
 	public static final field VisibleItemsCount I
+	public final fun accessibility (Ljava/lang/String;Lkotlin/jvm/functions/Function1;Ljava/lang/String;Ljava/lang/String;)Lcom/kez/picker/PickerAccessibility;
+	public static synthetic fun accessibility$default (Lcom/kez/picker/PickerDefaults;Ljava/lang/String;Lkotlin/jvm/functions/Function1;Ljava/lang/String;Ljava/lang/String;ILjava/lang/Object;)Lcom/kez/picker/PickerAccessibility;
 	public final fun colors-ro_MJ88 (JJJJLandroidx/compose/runtime/Composer;II)Lcom/kez/picker/PickerColors;
+	public final fun datePickerAccessibility (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;Ljava/lang/String;Ljava/lang/String;)Lcom/kez/picker/DatePickerAccessibility;
+	public static synthetic fun datePickerAccessibility$default (Lcom/kez/picker/PickerDefaults;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;Ljava/lang/String;Ljava/lang/String;ILjava/lang/Object;)Lcom/kez/picker/DatePickerAccessibility;
 	public final fun fadingEdgeGradient ()Landroidx/compose/ui/graphics/Brush;
 	public final fun getDividerShape ()Landroidx/compose/ui/graphics/Shape;
 	public final fun getDividerThickness-D9Ej5fM ()F
@@ -31,10 +71,14 @@ public final class com/kez/picker/PickerDefaults {
 	public final fun getSpacingBetweenPickers-D9Ej5fM ()F
 	public final fun style-Wu8B24Y (ILcom/kez/picker/PickerColors;Lcom/kez/picker/PickerTextStyles;Landroidx/compose/ui/graphics/Shape;Landroidx/compose/foundation/layout/PaddingValues;Landroidx/compose/ui/graphics/Brush;Landroidx/compose/ui/Alignment$Horizontal;Landroidx/compose/ui/Alignment$Vertical;FLandroidx/compose/ui/graphics/Shape;ZLandroidx/compose/runtime/Composer;III)Lcom/kez/picker/PickerStyle;
 	public final fun textStyles (Landroidx/compose/ui/text/TextStyle;Landroidx/compose/ui/text/TextStyle;Landroidx/compose/runtime/Composer;II)Lcom/kez/picker/PickerTextStyles;
+	public final fun timePickerAccessibility (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;Ljava/lang/String;Ljava/lang/String;)Lcom/kez/picker/TimePickerAccessibility;
+	public static synthetic fun timePickerAccessibility$default (Lcom/kez/picker/PickerDefaults;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;Ljava/lang/String;Ljava/lang/String;ILjava/lang/Object;)Lcom/kez/picker/TimePickerAccessibility;
+	public final fun yearMonthPickerAccessibility (Ljava/lang/String;Ljava/lang/String;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;Ljava/lang/String;Ljava/lang/String;)Lcom/kez/picker/YearMonthPickerAccessibility;
+	public static synthetic fun yearMonthPickerAccessibility$default (Lcom/kez/picker/PickerDefaults;Ljava/lang/String;Ljava/lang/String;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;Ljava/lang/String;Ljava/lang/String;ILjava/lang/Object;)Lcom/kez/picker/YearMonthPickerAccessibility;
 }
 
 public final class com/kez/picker/PickerKt {
-	public static final fun Picker (Ljava/util/List;Ljava/lang/Object;Lkotlin/jvm/functions/Function1;Landroidx/compose/ui/Modifier;Lcom/kez/picker/PickerStyle;ZLjava/lang/String;Lkotlin/jvm/functions/Function1;Ljava/lang/String;Ljava/lang/String;Lkotlin/jvm/functions/Function3;Landroidx/compose/runtime/Composer;III)V
+	public static final fun Picker (Ljava/util/List;Ljava/lang/Object;Lkotlin/jvm/functions/Function1;Landroidx/compose/ui/Modifier;Lcom/kez/picker/PickerStyle;Lcom/kez/picker/PickerAccessibility;ZLkotlin/jvm/functions/Function3;Landroidx/compose/runtime/Composer;II)V
 }
 
 public final class com/kez/picker/PickerStyle {
@@ -83,8 +127,38 @@ public final class com/kez/picker/PickerTextStyles {
 	public fun toString ()Ljava/lang/String;
 }
 
+public final class com/kez/picker/TimePickerAccessibility {
+	public static final field $stable I
+	public fun <init> (Lcom/kez/picker/PickerAccessibility;Lcom/kez/picker/PickerAccessibility;Lcom/kez/picker/PickerAccessibility;)V
+	public final fun component1 ()Lcom/kez/picker/PickerAccessibility;
+	public final fun component2 ()Lcom/kez/picker/PickerAccessibility;
+	public final fun component3 ()Lcom/kez/picker/PickerAccessibility;
+	public final fun copy (Lcom/kez/picker/PickerAccessibility;Lcom/kez/picker/PickerAccessibility;Lcom/kez/picker/PickerAccessibility;)Lcom/kez/picker/TimePickerAccessibility;
+	public static synthetic fun copy$default (Lcom/kez/picker/TimePickerAccessibility;Lcom/kez/picker/PickerAccessibility;Lcom/kez/picker/PickerAccessibility;Lcom/kez/picker/PickerAccessibility;ILjava/lang/Object;)Lcom/kez/picker/TimePickerAccessibility;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getHour ()Lcom/kez/picker/PickerAccessibility;
+	public final fun getMinute ()Lcom/kez/picker/PickerAccessibility;
+	public final fun getPeriod ()Lcom/kez/picker/PickerAccessibility;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class com/kez/picker/YearMonthPickerAccessibility {
+	public static final field $stable I
+	public fun <init> (Lcom/kez/picker/PickerAccessibility;Lcom/kez/picker/PickerAccessibility;)V
+	public final fun component1 ()Lcom/kez/picker/PickerAccessibility;
+	public final fun component2 ()Lcom/kez/picker/PickerAccessibility;
+	public final fun copy (Lcom/kez/picker/PickerAccessibility;Lcom/kez/picker/PickerAccessibility;)Lcom/kez/picker/YearMonthPickerAccessibility;
+	public static synthetic fun copy$default (Lcom/kez/picker/YearMonthPickerAccessibility;Lcom/kez/picker/PickerAccessibility;Lcom/kez/picker/PickerAccessibility;ILjava/lang/Object;)Lcom/kez/picker/YearMonthPickerAccessibility;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getMonth ()Lcom/kez/picker/PickerAccessibility;
+	public final fun getYear ()Lcom/kez/picker/PickerAccessibility;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
 public final class com/kez/picker/date/DatePickerKt {
-	public static final fun DatePicker-kiIZU34 (Landroidx/compose/ui/Modifier;Landroidx/compose/ui/Modifier;Lcom/kez/picker/date/DatePickerState;Ljava/util/List;Ljava/util/List;Lcom/kez/picker/PickerStyle;FLjava/lang/String;Ljava/lang/String;Ljava/lang/String;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;Ljava/lang/String;Ljava/lang/String;Landroidx/compose/runtime/Composer;III)V
+	public static final fun DatePicker-0vH8DBg (Landroidx/compose/ui/Modifier;Landroidx/compose/ui/Modifier;Lcom/kez/picker/date/DatePickerState;Ljava/util/List;Ljava/util/List;Lcom/kez/picker/PickerStyle;FLcom/kez/picker/DatePickerAccessibility;Landroidx/compose/runtime/Composer;II)V
 }
 
 public final class com/kez/picker/date/DatePickerState {
@@ -109,7 +183,7 @@ public final class com/kez/picker/date/DatePickerStateKt {
 }
 
 public final class com/kez/picker/date/YearMonthPickerKt {
-	public static final fun YearMonthPicker-xzYpEKs (Landroidx/compose/ui/Modifier;Landroidx/compose/ui/Modifier;Lcom/kez/picker/date/YearMonthPickerState;Ljava/util/List;Ljava/util/List;Lcom/kez/picker/PickerStyle;FLjava/lang/String;Ljava/lang/String;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;Ljava/lang/String;Ljava/lang/String;Landroidx/compose/runtime/Composer;III)V
+	public static final fun YearMonthPicker-0vH8DBg (Landroidx/compose/ui/Modifier;Landroidx/compose/ui/Modifier;Lcom/kez/picker/date/YearMonthPickerState;Ljava/util/List;Ljava/util/List;Lcom/kez/picker/PickerStyle;FLcom/kez/picker/YearMonthPickerAccessibility;Landroidx/compose/runtime/Composer;II)V
 }
 
 public final class com/kez/picker/date/YearMonthPickerState {
@@ -173,7 +247,7 @@ public final class com/kez/picker/resources/Res$string {
 }
 
 public final class com/kez/picker/time/TimePickerKt {
-	public static final fun TimePicker-RnoHquI (Landroidx/compose/ui/Modifier;Landroidx/compose/ui/Modifier;Lcom/kez/picker/time/TimePickerState;Ljava/util/List;Ljava/util/List;Ljava/util/List;Lcom/kez/picker/PickerStyle;FLjava/lang/String;Ljava/lang/String;Ljava/lang/String;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;Ljava/lang/String;Ljava/lang/String;Landroidx/compose/runtime/Composer;III)V
+	public static final fun TimePicker-gMrHQkA (Landroidx/compose/ui/Modifier;Landroidx/compose/ui/Modifier;Lcom/kez/picker/time/TimePickerState;Ljava/util/List;Ljava/util/List;Ljava/util/List;Lcom/kez/picker/PickerStyle;FLcom/kez/picker/TimePickerAccessibility;Landroidx/compose/runtime/Composer;II)V
 }
 
 public final class com/kez/picker/time/TimePickerState {

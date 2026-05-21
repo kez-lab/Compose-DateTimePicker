@@ -117,14 +117,16 @@ fun DatePickerSampleScreen(
                             dividerColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.5f)
                         )
                     ),
-                    yearPickerLabel = "연도",
-                    monthPickerLabel = "월",
-                    dayPickerLabel = "일",
-                    yearItemContentDescription = { "${it}년" },
-                    monthItemContentDescription = { getMonthContentDescription(it) },
-                    dayItemContentDescription = { "${it}일" },
-                    previousItemActionLabel = "이전 항목 선택",
-                    nextItemActionLabel = "다음 항목 선택"
+                    accessibility = PickerDefaults.datePickerAccessibility(
+                        yearPickerLabel = "연도",
+                        monthPickerLabel = "월",
+                        dayPickerLabel = "일",
+                        yearItemContentDescription = { "${it}년" },
+                        monthItemContentDescription = { getMonthContentDescription(it) },
+                        dayItemContentDescription = { "${it}일" },
+                        previousItemActionLabel = "이전 항목 선택",
+                        nextItemActionLabel = "다음 항목 선택"
+                    )
                 )
             }
         }

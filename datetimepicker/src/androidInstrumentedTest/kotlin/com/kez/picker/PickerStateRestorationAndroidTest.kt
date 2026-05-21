@@ -96,12 +96,14 @@ class PickerStateRestorationAndroidTest {
             TimePicker(
                 state = state,
                 style = PickerDefaults.style(visibleItemsCount = 3),
-                hourPickerLabel = "Hour",
-                minutePickerLabel = "Minute",
-                periodPickerLabel = "Period",
-                hourItemContentDescription = { "$it hour" },
-                minuteItemContentDescription = { "$it minute" },
-                periodItemContentDescription = { "$it period" }
+                accessibility = PickerDefaults.timePickerAccessibility(
+                    hourPickerLabel = "Hour",
+                    minutePickerLabel = "Minute",
+                    periodPickerLabel = "Period",
+                    hourItemContentDescription = { "$it hour" },
+                    minuteItemContentDescription = { "$it minute" },
+                    periodItemContentDescription = { "$it period" }
+                )
             )
         }
 
@@ -167,12 +169,14 @@ class PickerStateRestorationAndroidTest {
                 yearItems = listOf(2024, 2026),
                 monthItems = listOf(1, 2),
                 style = PickerDefaults.style(visibleItemsCount = 3),
-                yearPickerLabel = "Year",
-                monthPickerLabel = "Month",
-                dayPickerLabel = "Day",
-                yearItemContentDescription = { "$it year" },
-                monthItemContentDescription = { "$it month" },
-                dayItemContentDescription = { "$it day" }
+                accessibility = PickerDefaults.datePickerAccessibility(
+                    yearPickerLabel = "Year",
+                    monthPickerLabel = "Month",
+                    dayPickerLabel = "Day",
+                    yearItemContentDescription = { "$it year" },
+                    monthItemContentDescription = { "$it month" },
+                    dayItemContentDescription = { "$it day" }
+                )
             )
         }
 
@@ -234,10 +238,12 @@ class PickerStateRestorationAndroidTest {
                 yearItems = listOf(2024, 2027),
                 monthItems = listOf(5, 12),
                 style = PickerDefaults.style(visibleItemsCount = 3),
-                yearPickerLabel = "Year",
-                monthPickerLabel = "Month",
-                yearItemContentDescription = { "$it year" },
-                monthItemContentDescription = { "$it month" }
+                accessibility = PickerDefaults.yearMonthPickerAccessibility(
+                    yearPickerLabel = "Year",
+                    monthPickerLabel = "Month",
+                    yearItemContentDescription = { "$it year" },
+                    monthItemContentDescription = { "$it month" }
+                )
             )
         }
 
