@@ -112,6 +112,7 @@ adjusts the day when the selected month changes (e.g., Feb 30 → Feb 28).
 ```kotlin
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
+import com.kez.picker.PickerDefaults
 import com.kez.picker.date.DatePicker
 import com.kez.picker.date.rememberDatePickerState
 import com.kez.picker.util.currentDate
@@ -128,15 +129,17 @@ fun DatePickerExample() {
 
     DatePicker(
         state = state,
-        yearItems = selectableYears
+        items = PickerDefaults.datePickerItems(
+            yearItems = selectableYears
+        )
     )
 
     // Use state.selectedDate when passing the result to app logic.
 }
 ```
 
-When you restrict `yearItems` or `monthItems`, keep the remembered initial or restored
-state value inside those lists. If an external date changes after composition, call
+When you restrict selectable item lists with `PickerDefaults.*Items(...)`, keep the remembered
+initial or restored state value inside those lists. If an external date changes after composition, call
 `state.selectDate(newDate)` instead of relying on a new `initialDate` argument.
 
 ### YearMonthPicker
@@ -374,9 +377,7 @@ app state before rendering the picker.
 | Parameter | Description | Default |
 | :--- | :--- | :--- |
 | `state` | The state object to control the picker. | `rememberTimePickerState()` |
-| `minuteItems` | Minute values available for selection. Values must be in `0..59`. | `0..59` |
-| `hourItems` | Hour values available for selection. Values must be in `0..23` for 24-hour time or display-hour `1..12` for 12-hour time. | `0..23` or `1..12` |
-| `periodItems` | AM/PM values available in 12-hour time. Must not be empty when `timeFormat` is `HOUR_12`. | `TimePeriod.entries` |
+| `items` | Selectable minute, 24-hour hour, 12-hour display-hour, and AM/PM item lists. | `PickerDefaults.timePickerItems()` |
 | `style` | Visual and layout styling for each picker column. | `PickerDefaults.style()` |
 | `spacingBetweenPickers` | Horizontal spacing between picker columns. | `0.dp` |
 | `accessibility` | Accessibility labels, item descriptions, and custom action labels for each picker column. | `PickerDefaults.timePickerAccessibility()` |
@@ -395,15 +396,14 @@ For initial values, use either `rememberTimePickerState(initialTime = LocalTime(
 
 To change the selection after state creation, call `state.selectTime(LocalTime(...))`.
 
-Invalid custom item values, duplicate items, empty required lists, or current selections missing from custom lists throw `IllegalArgumentException` during composition. In 12-hour mode, `hourItems` uses display-hour values (`1..12`): `initialHour = 13` becomes `state.selectedHour == 1` with `PM`.
+Invalid custom item values, duplicate items, empty required lists, or current selections missing from custom lists throw `IllegalArgumentException` during composition. In 12-hour mode, `PickerDefaults.timePickerItems(hour12Items = ...)` uses display-hour values (`1..12`): `initialHour = 13` becomes `state.selectedHour == 1` with `PM`.
 
 ### DatePicker
 
 | Parameter           | Description                             | Default                     |
 |:--------------------|:----------------------------------------|:----------------------------|
 | `state`             | The state object to control the picker. | `rememberDatePickerState()` |
-| `yearItems`         | List of years available for selection. Values must be in `1000..9999`. | `1000..9999`                |
-| `monthItems`        | List of months available for selection. Values must be in `1..12`. | `1..12`                     |
+| `items`             | Selectable year and month item lists. Values must be in `1000..9999` and `1..12`. | `PickerDefaults.datePickerItems()` |
 | `style`             | Visual and layout styling for each picker column. | `PickerDefaults.style()` |
 | `spacingBetweenPickers` | Horizontal spacing between picker columns. | `0.dp` |
 | `accessibility` | Accessibility labels, item descriptions, and custom action labels for each picker column. | `PickerDefaults.datePickerAccessibility()` |
@@ -432,8 +432,7 @@ Invalid custom item values, duplicate items, empty lists, or current selected ye
 | Parameter | Description | Default |
 | :--- | :--- | :--- |
 | `state` | The state object to control the picker. | `rememberYearMonthPickerState()` |
-| `yearItems` | List of years available for selection. Values must be in `1000..9999`. | `1000..9999` |
-| `monthItems` | List of months available for selection. Values must be in `1..12`. | `1..12` |
+| `items` | Selectable year and month item lists. Values must be in `1000..9999` and `1..12`. | `PickerDefaults.yearMonthPickerItems()` |
 | `style` | Visual and layout styling for each picker column. | `PickerDefaults.style()` |
 | `spacingBetweenPickers` | Horizontal spacing between picker columns. | `0.dp` |
 | `accessibility` | Accessibility labels, item descriptions, and custom action labels for each picker column. | `PickerDefaults.yearMonthPickerAccessibility()` |
