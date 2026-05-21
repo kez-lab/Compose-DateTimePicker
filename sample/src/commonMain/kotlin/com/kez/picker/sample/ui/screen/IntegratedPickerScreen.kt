@@ -40,6 +40,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.semantics.clearAndSetSemantics
+import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
@@ -222,9 +224,12 @@ internal fun IntegratedPickerScreen(
 
 @Composable
 internal fun SelectedDateTimeCard(date: String, time: String) {
-    // Simple solid color card (gradient removed)
     Card(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier
+            .fillMaxWidth()
+            .clearAndSetSemantics {
+                contentDescription = "Selected date, $date, selected time, $time"
+            },
         shape = RoundedCornerShape(16.dp),
         elevation = CardDefaults.cardElevation(2.dp),
         colors = CardDefaults.cardColors(
@@ -244,7 +249,7 @@ internal fun SelectedDateTimeCard(date: String, time: String) {
             ) {
                 Icon(
                     imageVector = FeatherIcons.Calendar,
-                    contentDescription = "Date",
+                    contentDescription = null,
                     tint = MaterialTheme.colorScheme.primary,
                     modifier = Modifier.size(20.dp)
                 )
@@ -267,7 +272,7 @@ internal fun SelectedDateTimeCard(date: String, time: String) {
             ) {
                 Icon(
                     imageVector = FeatherIcons.Clock,
-                    contentDescription = "Time",
+                    contentDescription = null,
                     tint = MaterialTheme.colorScheme.primary,
                     modifier = Modifier.size(20.dp)
                 )
