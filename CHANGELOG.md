@@ -23,6 +23,7 @@ This project tracks notable user-facing and maintainer-facing changes here. The 
 - Improved sample accessibility semantics for selected-value cards and home-screen navigation items.
 - Removed the redundant Android sample `MaterialTheme` wrapper so the sample entry point uses the shared `AppTheme`.
 - Reworked README bottom-sheet examples to use separate committed and draft picker state.
+- Clarified `DatePickerState` initial-day documentation to distinguish invalid values from max-day clamping.
 - Documented generic `Picker<T>` usage, initial `startIndex` alignment, and the regular `remember`
   behavior of `rememberPickerState`.
 - Clarified `DatePicker` README examples for custom year ranges and state synchronization after composition.
