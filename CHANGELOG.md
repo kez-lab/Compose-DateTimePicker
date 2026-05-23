@@ -24,6 +24,9 @@ This project tracks notable user-facing and maintainer-facing changes here. The 
   `YearMonthPickerState(LocalDate)`.
 - Added `contains(...)` predicates to picker item option objects so apps can check whether a value is
   already directly selectable before deciding to reject or coerce it.
+- Added `Picker.itemText` plus `TimePickerDisplay`, `DatePickerDisplay`, and
+  `YearMonthPickerDisplay` option objects so apps can customize visible item text separately from
+  accessibility descriptions.
 - Added picker accessibility descriptions and localized item description hooks so Android apps can provide clearer TalkBack output.
 - Added previous/next accessibility actions for picker columns, with public labels that apps can localize.
 
@@ -78,6 +81,8 @@ This project tracks notable user-facing and maintainer-facing changes here. The 
   `accessibility = PickerDefaults.*Accessibility(...)`.
 - Picker custom item-list parameters such as `minuteItems`, `hourItems`, `periodItems`, `yearItems`,
   and `monthItems` moved under `items = PickerDefaults.*Items(...)`.
+- Composite picker function signatures now include `display` after `items`. Prefer named arguments
+  when configuring `style`, `spacingBetweenPickers`, `accessibility`, or `display`.
 - Composite picker function signatures now include user-selection callbacks immediately after `state`.
   Named-argument call sites are straightforward to migrate; positional call sites may need argument
   reordering.

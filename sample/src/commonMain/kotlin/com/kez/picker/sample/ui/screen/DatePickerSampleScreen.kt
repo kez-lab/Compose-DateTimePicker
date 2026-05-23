@@ -31,6 +31,7 @@ import com.kez.picker.PickerDefaults
 import com.kez.picker.date.DatePicker
 import com.kez.picker.date.rememberDatePickerState
 import com.kez.picker.sample.getMonthContentDescription
+import com.kez.picker.sample.getMonthName
 import com.kez.picker.util.currentDate
 import compose.icons.FeatherIcons
 import compose.icons.feathericons.Calendar
@@ -127,6 +128,11 @@ fun DatePickerSampleScreen(
                     state = state,
                     onSelectedDateChange = { selectedDateText = it.toString() },
                     items = pickerItems,
+                    display = PickerDefaults.datePickerDisplay(
+                        yearItemText = { "${it}년" },
+                        monthItemText = { getMonthName(it) },
+                        dayItemText = { "${it}일" }
+                    ),
                     style = PickerDefaults.style(
                         visibleItemsCount = 3,
                         textStyles = PickerDefaults.textStyles(

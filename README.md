@@ -12,7 +12,7 @@ It provides consistent UI components across Android, iOS, Desktop (JVM), and Web
 * **DatePicker**: A complete date picker for selecting year, month, and day with automatic day
   validation.
 *   **YearMonthPicker**: A dedicated component for selecting years and months.
-*   **Customizable**: Extensible API with `PickerStyle` for reusable visual configuration.
+*   **Customizable**: Extensible API with `PickerStyle` and display options for reusable UI configuration.
 * **State Management**: simplified state handling with `rememberTimePickerState`,
   `rememberDatePickerState`, and `rememberYearMonthPickerState`.
 *   **Accessibility**: Built with accessibility in mind, supporting screen readers and navigation.
@@ -304,9 +304,18 @@ accessibility action labels without changing the visual item text. Selection is 
 `PickerDefaults.accessibility(...)`, `timePickerAccessibility(...)`, `datePickerAccessibility(...)`, or
 `yearMonthPickerAccessibility(...)` to create reusable localized accessibility objects.
 
+Display options customize the visible item text without changing accessibility output. Use
+`itemText` on a generic `Picker<T>`, or `PickerDefaults.timePickerDisplay(...)`,
+`datePickerDisplay(...)`, and `yearMonthPickerDisplay(...)` for composite pickers when visible labels
+need padding, suffixes, or localized month/period names.
+
 ```kotlin
 TimePicker(
     state = state,
+    display = PickerDefaults.timePickerDisplay(
+        hourItemText = { it.toString().padStart(2, '0') },
+        minuteItemText = { it.toString().padStart(2, '0') }
+    ),
     accessibility = PickerDefaults.timePickerAccessibility(
         hourPickerLabel = "Hour",
         minutePickerLabel = "Minute",
@@ -341,6 +350,7 @@ fun SizePickerExample() {
         selectedItem = selectedSize,
         onSelectedItemChange = { selectedSize = it },
         isInfinity = false,
+        itemText = { size -> size.uppercase() },
         accessibility = PickerDefaults.accessibility(
             pickerLabel = "Size",
             itemContentDescription = { it }
@@ -356,6 +366,8 @@ your app state and map that key back to an item before rendering the picker.
 
 Use `style = PickerDefaults.style(...)` to customize visible item count, colors, text styles,
 dividers, item padding, selected item background, and fading edge behavior with one reusable object.
+Use `itemText` for visible text and `accessibility.itemContentDescription` for screen-reader text
+when those two strings should differ.
 
 ### Programmatic Selection
 
@@ -413,6 +425,7 @@ app-owned value in the same event handler when you trigger programmatic changes.
 | `state` | The state object to control the picker. | `rememberTimePickerState()` |
 | `onSelectedTimeChange` | Called after user interaction changes the selected `LocalTime`. | `{}` |
 | `items` | Selectable minute, 24-hour hour, 12-hour display-hour, and AM/PM item lists. | `PickerDefaults.timePickerItems()` |
+| `display` | Visible item text formatters for each picker column. | `PickerDefaults.timePickerDisplay()` |
 | `style` | Visual and layout styling for each picker column. | `PickerDefaults.style()` |
 | `spacingBetweenPickers` | Horizontal spacing between picker columns. | `0.dp` |
 | `accessibility` | Accessibility labels, item descriptions, and custom action labels for each picker column. | `PickerDefaults.timePickerAccessibility()` |
@@ -440,6 +453,7 @@ Invalid custom item values, duplicate items, empty required lists, or current se
 | `state`             | The state object to control the picker. | `rememberDatePickerState()` |
 | `onSelectedDateChange` | Called after user interaction changes the selected `LocalDate`. | `{}` |
 | `items`             | Selectable year, month, and day item lists. Values must be in `1000..9999`, `1..12`, and `1..31`. | `PickerDefaults.datePickerItems()` |
+| `display` | Visible item text formatters for each picker column. | `PickerDefaults.datePickerDisplay()` |
 | `style`             | Visual and layout styling for each picker column. | `PickerDefaults.style()` |
 | `spacingBetweenPickers` | Horizontal spacing between picker columns. | `0.dp` |
 | `accessibility` | Accessibility labels, item descriptions, and custom action labels for each picker column. | `PickerDefaults.datePickerAccessibility()` |
@@ -470,6 +484,7 @@ Invalid custom item values, duplicate items, empty lists, or current selected ye
 | `state` | The state object to control the picker. | `rememberYearMonthPickerState()` |
 | `onSelectedYearMonthChange` | Called after user interaction changes the selected `YearMonth`. | `{}` |
 | `items` | Selectable year and month item lists. Values must be in `1000..9999` and `1..12`. | `PickerDefaults.yearMonthPickerItems()` |
+| `display` | Visible item text formatters for each picker column. | `PickerDefaults.yearMonthPickerDisplay()` |
 | `style` | Visual and layout styling for each picker column. | `PickerDefaults.style()` |
 | `spacingBetweenPickers` | Horizontal spacing between picker columns. | `0.dp` |
 | `accessibility` | Accessibility labels, item descriptions, and custom action labels for each picker column. | `PickerDefaults.yearMonthPickerAccessibility()` |

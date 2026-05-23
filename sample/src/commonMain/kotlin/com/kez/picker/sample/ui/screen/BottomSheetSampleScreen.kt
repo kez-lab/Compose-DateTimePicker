@@ -247,6 +247,10 @@ internal fun BottomSheetSampleScreen(
                     ) {
                         YearMonthPicker(
                             state = yearMonthState,
+                            display = PickerDefaults.yearMonthPickerDisplay(
+                                yearItemText = { "${it}년" },
+                                monthItemText = { getMonthName(it) }
+                            ),
                             accessibility = PickerDefaults.yearMonthPickerAccessibility(
                                 yearPickerLabel = "연도",
                                 monthPickerLabel = "월",
@@ -325,6 +329,11 @@ internal fun BottomSheetSampleScreen(
                     ) {
                         TimePicker(
                             state = timeState,
+                            display = PickerDefaults.timePickerDisplay(
+                                hourItemText = { it.toString().padStart(2, '0') },
+                                minuteItemText = { it.toString().padStart(2, '0') },
+                                periodItemText = { getTimePeriodContentDescription(it) }
+                            ),
                             accessibility = PickerDefaults.timePickerAccessibility(
                                 hourPickerLabel = "시간",
                                 minutePickerLabel = "분",

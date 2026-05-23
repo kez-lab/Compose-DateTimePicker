@@ -122,6 +122,10 @@ internal fun YearMonthPickerSampleScreen(
                         selectedYear = it.year
                         selectedMonth = it.month
                     },
+                    display = PickerDefaults.yearMonthPickerDisplay(
+                        yearItemText = { "${it}년" },
+                        monthItemText = { getMonthName(it) }
+                    ),
                     accessibility = PickerDefaults.yearMonthPickerAccessibility(
                         yearPickerLabel = "연도",
                         monthPickerLabel = "월",

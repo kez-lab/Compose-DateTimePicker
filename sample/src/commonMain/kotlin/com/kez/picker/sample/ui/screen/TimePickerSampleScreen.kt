@@ -167,6 +167,11 @@ internal fun TimePickerSampleScreen(
                             lastChangedHour = it.hour
                             lastChangedMinute = it.minute
                         },
+                        display = PickerDefaults.timePickerDisplay(
+                            hourItemText = { it.toString().padStart(2, '0') },
+                            minuteItemText = { it.toString().padStart(2, '0') },
+                            periodItemText = { getTimePeriodContentDescription(it) }
+                        ),
                         accessibility = PickerDefaults.timePickerAccessibility(
                             hourPickerLabel = "시간",
                             minutePickerLabel = "분",
@@ -185,6 +190,10 @@ internal fun TimePickerSampleScreen(
                             lastChangedHour = it.hour
                             lastChangedMinute = it.minute
                         },
+                        display = PickerDefaults.timePickerDisplay(
+                            hourItemText = { it.toString().padStart(2, '0') },
+                            minuteItemText = { it.toString().padStart(2, '0') }
+                        ),
                         style = PickerDefaults.style(visibleItemsCount = 5),
                         accessibility = PickerDefaults.timePickerAccessibility(
                             hourPickerLabel = "시간",
