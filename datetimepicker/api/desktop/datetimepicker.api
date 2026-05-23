@@ -68,6 +68,22 @@ public final class com/kez/picker/DatePickerItems {
 	public fun toString ()Ljava/lang/String;
 }
 
+public final class com/kez/picker/DatePickerLayout {
+	public static final field $stable I
+	public fun <init> (Ljava/lang/Float;Ljava/lang/Float;Ljava/lang/Float;)V
+	public final fun component1 ()Ljava/lang/Float;
+	public final fun component2 ()Ljava/lang/Float;
+	public final fun component3 ()Ljava/lang/Float;
+	public final fun copy (Ljava/lang/Float;Ljava/lang/Float;Ljava/lang/Float;)Lcom/kez/picker/DatePickerLayout;
+	public static synthetic fun copy$default (Lcom/kez/picker/DatePickerLayout;Ljava/lang/Float;Ljava/lang/Float;Ljava/lang/Float;ILjava/lang/Object;)Lcom/kez/picker/DatePickerLayout;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getDayWeight ()Ljava/lang/Float;
+	public final fun getMonthWeight ()Ljava/lang/Float;
+	public final fun getYearWeight ()Ljava/lang/Float;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
 public final class com/kez/picker/PickerAccessibility {
 	public static final field $stable I
 	public fun <init> ()V
@@ -132,6 +148,8 @@ public final class com/kez/picker/PickerDefaults {
 	public static synthetic fun datePickerDisplay$default (Lcom/kez/picker/PickerDefaults;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)Lcom/kez/picker/DatePickerDisplay;
 	public final fun datePickerItems (Ljava/util/List;Ljava/util/List;Ljava/util/List;Lkotlinx/datetime/LocalDate;Lkotlinx/datetime/LocalDate;)Lcom/kez/picker/DatePickerItems;
 	public static synthetic fun datePickerItems$default (Lcom/kez/picker/PickerDefaults;Ljava/util/List;Ljava/util/List;Ljava/util/List;Lkotlinx/datetime/LocalDate;Lkotlinx/datetime/LocalDate;ILjava/lang/Object;)Lcom/kez/picker/DatePickerItems;
+	public final fun datePickerLayout (Ljava/lang/Float;Ljava/lang/Float;Ljava/lang/Float;)Lcom/kez/picker/DatePickerLayout;
+	public static synthetic fun datePickerLayout$default (Lcom/kez/picker/PickerDefaults;Ljava/lang/Float;Ljava/lang/Float;Ljava/lang/Float;ILjava/lang/Object;)Lcom/kez/picker/DatePickerLayout;
 	public final fun fadingEdgeGradient ()Landroidx/compose/ui/graphics/Brush;
 	public final fun getDividerShape ()Landroidx/compose/ui/graphics/Shape;
 	public final fun getDividerThickness-D9Ej5fM ()F
@@ -150,6 +168,8 @@ public final class com/kez/picker/PickerDefaults {
 	public static synthetic fun timePickerDisplay$default (Lcom/kez/picker/PickerDefaults;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)Lcom/kez/picker/TimePickerDisplay;
 	public final fun timePickerItems (Ljava/util/List;Ljava/util/List;Ljava/util/List;Ljava/util/List;Lkotlinx/datetime/LocalTime;Lkotlinx/datetime/LocalTime;)Lcom/kez/picker/TimePickerItems;
 	public static synthetic fun timePickerItems$default (Lcom/kez/picker/PickerDefaults;Ljava/util/List;Ljava/util/List;Ljava/util/List;Ljava/util/List;Lkotlinx/datetime/LocalTime;Lkotlinx/datetime/LocalTime;ILjava/lang/Object;)Lcom/kez/picker/TimePickerItems;
+	public final fun timePickerLayout (Ljava/lang/Float;Ljava/lang/Float;Ljava/lang/Float;)Lcom/kez/picker/TimePickerLayout;
+	public static synthetic fun timePickerLayout$default (Lcom/kez/picker/PickerDefaults;Ljava/lang/Float;Ljava/lang/Float;Ljava/lang/Float;ILjava/lang/Object;)Lcom/kez/picker/TimePickerLayout;
 	public final fun yearMonthPickerAccessibility (Ljava/lang/String;Ljava/lang/String;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;Ljava/lang/String;Ljava/lang/String;)Lcom/kez/picker/YearMonthPickerAccessibility;
 	public static synthetic fun yearMonthPickerAccessibility$default (Lcom/kez/picker/PickerDefaults;Ljava/lang/String;Ljava/lang/String;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;Ljava/lang/String;Ljava/lang/String;ILjava/lang/Object;)Lcom/kez/picker/YearMonthPickerAccessibility;
 	public final fun yearMonthPickerConstraints (Lcom/kez/picker/date/YearMonth;Lcom/kez/picker/date/YearMonth;)Lcom/kez/picker/YearMonthPickerConstraints;
@@ -158,6 +178,8 @@ public final class com/kez/picker/PickerDefaults {
 	public static synthetic fun yearMonthPickerDisplay$default (Lcom/kez/picker/PickerDefaults;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)Lcom/kez/picker/YearMonthPickerDisplay;
 	public final fun yearMonthPickerItems (Ljava/util/List;Ljava/util/List;Lcom/kez/picker/date/YearMonth;Lcom/kez/picker/date/YearMonth;)Lcom/kez/picker/YearMonthPickerItems;
 	public static synthetic fun yearMonthPickerItems$default (Lcom/kez/picker/PickerDefaults;Ljava/util/List;Ljava/util/List;Lcom/kez/picker/date/YearMonth;Lcom/kez/picker/date/YearMonth;ILjava/lang/Object;)Lcom/kez/picker/YearMonthPickerItems;
+	public final fun yearMonthPickerLayout (Ljava/lang/Float;Ljava/lang/Float;)Lcom/kez/picker/YearMonthPickerLayout;
+	public static synthetic fun yearMonthPickerLayout$default (Lcom/kez/picker/PickerDefaults;Ljava/lang/Float;Ljava/lang/Float;ILjava/lang/Object;)Lcom/kez/picker/YearMonthPickerLayout;
 }
 
 public final class com/kez/picker/PickerItemScope {
@@ -309,6 +331,22 @@ public final class com/kez/picker/TimePickerItems {
 	public fun toString ()Ljava/lang/String;
 }
 
+public final class com/kez/picker/TimePickerLayout {
+	public static final field $stable I
+	public fun <init> (Ljava/lang/Float;Ljava/lang/Float;Ljava/lang/Float;)V
+	public final fun component1 ()Ljava/lang/Float;
+	public final fun component2 ()Ljava/lang/Float;
+	public final fun component3 ()Ljava/lang/Float;
+	public final fun copy (Ljava/lang/Float;Ljava/lang/Float;Ljava/lang/Float;)Lcom/kez/picker/TimePickerLayout;
+	public static synthetic fun copy$default (Lcom/kez/picker/TimePickerLayout;Ljava/lang/Float;Ljava/lang/Float;Ljava/lang/Float;ILjava/lang/Object;)Lcom/kez/picker/TimePickerLayout;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getHourWeight ()Ljava/lang/Float;
+	public final fun getMinuteWeight ()Ljava/lang/Float;
+	public final fun getPeriodWeight ()Ljava/lang/Float;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
 public final class com/kez/picker/YearMonthPickerAccessibility {
 	public static final field $stable I
 	public fun <init> (Lcom/kez/picker/PickerAccessibility;Lcom/kez/picker/PickerAccessibility;)V
@@ -377,8 +415,22 @@ public final class com/kez/picker/YearMonthPickerItems {
 	public fun toString ()Ljava/lang/String;
 }
 
+public final class com/kez/picker/YearMonthPickerLayout {
+	public static final field $stable I
+	public fun <init> (Ljava/lang/Float;Ljava/lang/Float;)V
+	public final fun component1 ()Ljava/lang/Float;
+	public final fun component2 ()Ljava/lang/Float;
+	public final fun copy (Ljava/lang/Float;Ljava/lang/Float;)Lcom/kez/picker/YearMonthPickerLayout;
+	public static synthetic fun copy$default (Lcom/kez/picker/YearMonthPickerLayout;Ljava/lang/Float;Ljava/lang/Float;ILjava/lang/Object;)Lcom/kez/picker/YearMonthPickerLayout;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getMonthWeight ()Ljava/lang/Float;
+	public final fun getYearWeight ()Ljava/lang/Float;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
 public final class com/kez/picker/date/DatePickerKt {
-	public static final fun DatePicker-tJlDC5Y (Landroidx/compose/ui/Modifier;Landroidx/compose/ui/Modifier;Lcom/kez/picker/date/DatePickerState;Lkotlin/jvm/functions/Function1;ZLcom/kez/picker/DatePickerItems;Lcom/kez/picker/DatePickerDisplay;Lcom/kez/picker/PickerStyle;FLcom/kez/picker/DatePickerAccessibility;Landroidx/compose/runtime/Composer;II)V
+	public static final fun DatePicker-J1qPv4o (Landroidx/compose/ui/Modifier;Landroidx/compose/ui/Modifier;Lcom/kez/picker/date/DatePickerState;Lkotlin/jvm/functions/Function1;ZLcom/kez/picker/DatePickerItems;Lcom/kez/picker/DatePickerDisplay;Lcom/kez/picker/PickerStyle;Lcom/kez/picker/DatePickerLayout;FLcom/kez/picker/DatePickerAccessibility;Landroidx/compose/runtime/Composer;III)V
 }
 
 public final class com/kez/picker/date/DatePickerState {
@@ -429,7 +481,7 @@ public final class com/kez/picker/date/YearMonth$Companion {
 }
 
 public final class com/kez/picker/date/YearMonthPickerKt {
-	public static final fun YearMonthPicker-tJlDC5Y (Landroidx/compose/ui/Modifier;Landroidx/compose/ui/Modifier;Lcom/kez/picker/date/YearMonthPickerState;Lkotlin/jvm/functions/Function1;ZLcom/kez/picker/YearMonthPickerItems;Lcom/kez/picker/YearMonthPickerDisplay;Lcom/kez/picker/PickerStyle;FLcom/kez/picker/YearMonthPickerAccessibility;Landroidx/compose/runtime/Composer;II)V
+	public static final fun YearMonthPicker-J1qPv4o (Landroidx/compose/ui/Modifier;Landroidx/compose/ui/Modifier;Lcom/kez/picker/date/YearMonthPickerState;Lkotlin/jvm/functions/Function1;ZLcom/kez/picker/YearMonthPickerItems;Lcom/kez/picker/YearMonthPickerDisplay;Lcom/kez/picker/PickerStyle;Lcom/kez/picker/YearMonthPickerLayout;FLcom/kez/picker/YearMonthPickerAccessibility;Landroidx/compose/runtime/Composer;III)V
 }
 
 public final class com/kez/picker/date/YearMonthPickerState {
@@ -502,7 +554,7 @@ public final class com/kez/picker/resources/Res$string {
 }
 
 public final class com/kez/picker/time/TimePickerKt {
-	public static final fun TimePicker-tJlDC5Y (Landroidx/compose/ui/Modifier;Landroidx/compose/ui/Modifier;Lcom/kez/picker/time/TimePickerState;Lkotlin/jvm/functions/Function1;ZLcom/kez/picker/TimePickerItems;Lcom/kez/picker/TimePickerDisplay;Lcom/kez/picker/PickerStyle;FLcom/kez/picker/TimePickerAccessibility;Landroidx/compose/runtime/Composer;II)V
+	public static final fun TimePicker-J1qPv4o (Landroidx/compose/ui/Modifier;Landroidx/compose/ui/Modifier;Lcom/kez/picker/time/TimePickerState;Lkotlin/jvm/functions/Function1;ZLcom/kez/picker/TimePickerItems;Lcom/kez/picker/TimePickerDisplay;Lcom/kez/picker/PickerStyle;Lcom/kez/picker/TimePickerLayout;FLcom/kez/picker/TimePickerAccessibility;Landroidx/compose/runtime/Composer;III)V
 }
 
 public final class com/kez/picker/time/TimePickerState {
