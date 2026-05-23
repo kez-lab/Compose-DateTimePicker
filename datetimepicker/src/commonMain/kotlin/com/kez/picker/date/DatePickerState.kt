@@ -104,6 +104,15 @@ class DatePickerState(
     initialMonth: Int,
     initialDay: Int
 ) {
+    /**
+     * Creates a [DatePickerState] from [initialDate].
+     */
+    constructor(initialDate: LocalDate) : this(
+        initialYear = initialDate.year,
+        initialMonth = initialDate.month.number,
+        initialDay = initialDate.day
+    )
+
     init {
         require(initialYear in 1000..9999) {
             "initialYear must be in range [1000, 9999], but was $initialYear"

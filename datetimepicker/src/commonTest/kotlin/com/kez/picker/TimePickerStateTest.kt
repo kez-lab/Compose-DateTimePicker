@@ -78,6 +78,19 @@ class TimePickerStateTest {
         assertEquals(59, state.selectedMinute)
     }
 
+    @Test
+    fun timePickerState_localTimeConstructor_initializes24HourSelection() {
+        val state = TimePickerState(
+            initialTime = LocalTime(21, 45),
+            timeFormat = TimeFormat.HOUR_24
+        )
+
+        assertEquals(21, state.selectedHour)
+        assertEquals(45, state.selectedMinute)
+        assertEquals(TimePeriod.PM, state.selectedPeriod)
+        assertEquals(LocalTime(21, 45), state.selectedTime)
+    }
+
     // ==================== 12-hour Format Tests ====================
 
     @Test
@@ -151,6 +164,19 @@ class TimePickerStateTest {
 
         assertEquals(15, state.selectedHourOfDay)
         assertEquals(LocalTime(15, 45), state.selectedTime)
+    }
+
+    @Test
+    fun timePickerState_localTimeConstructor_initializes12HourSelection() {
+        val state = TimePickerState(
+            initialTime = LocalTime(13, 5),
+            timeFormat = TimeFormat.HOUR_12
+        )
+
+        assertEquals(1, state.selectedHour)
+        assertEquals(5, state.selectedMinute)
+        assertEquals(TimePeriod.PM, state.selectedPeriod)
+        assertEquals(LocalTime(13, 5), state.selectedTime)
     }
 
     // ==================== Minute Boundary Tests ====================

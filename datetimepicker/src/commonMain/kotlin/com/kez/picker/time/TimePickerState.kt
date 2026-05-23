@@ -152,6 +152,22 @@ class TimePickerState(
     initialPeriod: TimePeriod,
     val timeFormat: TimeFormat
 ) {
+    /**
+     * Creates a [TimePickerState] from a [LocalTime].
+     *
+     * When [timeFormat] is [TimeFormat.HOUR_12], the hour is converted to the display-hour range
+     * and the AM/PM period is derived from [initialTime].
+     */
+    constructor(
+        initialTime: LocalTime,
+        timeFormat: TimeFormat = TimeFormat.HOUR_24
+    ) : this(
+        initialHour = initialHourForTimeFormat(initialTime.hour, timeFormat),
+        initialMinute = initialTime.minute,
+        initialPeriod = if (initialTime.hour >= 12) TimePeriod.PM else TimePeriod.AM,
+        timeFormat = timeFormat
+    )
+
     init {
         require(initialMinute in 0..59) {
             "initialMinute must be in range [0, 59], but was $initialMinute"

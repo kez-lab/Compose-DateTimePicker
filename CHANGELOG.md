@@ -19,6 +19,9 @@ This project tracks notable user-facing and maintainer-facing changes here. The 
   move restored or preset values to the closest selectable value before rendering custom item lists.
 - Added `remember*State(items = ..., initial... = ...)` overloads so initial picker state can be
   coerced by the same custom item lists before first composition.
+- Added value-first state constructors: `TimePickerState(LocalTime, ...)`,
+  `DatePickerState(LocalDate)`, `YearMonthPickerState(YearMonth)`, and
+  `YearMonthPickerState(LocalDate)`.
 - Added picker accessibility descriptions and localized item description hooks so Android apps can provide clearer TalkBack output.
 - Added previous/next accessibility actions for picker columns, with public labels that apps can localize.
 

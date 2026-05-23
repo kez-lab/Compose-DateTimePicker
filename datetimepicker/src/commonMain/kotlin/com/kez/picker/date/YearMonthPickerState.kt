@@ -125,6 +125,21 @@ class YearMonthPickerState(
     initialYear: Int,
     initialMonth: Int
 ) {
+    /**
+     * Creates a [YearMonthPickerState] from [initialYearMonth].
+     */
+    constructor(initialYearMonth: YearMonth) : this(
+        initialYear = initialYearMonth.year,
+        initialMonth = initialYearMonth.month
+    )
+
+    /**
+     * Creates a [YearMonthPickerState] from the year/month portion of [initialDate].
+     *
+     * The day value is ignored because [YearMonthPicker] only selects year and month.
+     */
+    constructor(initialDate: LocalDate) : this(YearMonth.from(initialDate))
+
     init {
         require(initialYear in 1000..9999) {
             "initialYear must be in range [1000, 9999], but was $initialYear"
