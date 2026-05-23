@@ -428,7 +428,9 @@ fun SizePickerExample() {
 distinct, and `selectedItem` must exist in `items`. If `T` is not saveable, store a saveable key in
 your app state and map that key back to an item before rendering the picker.
 Pass `enabled = false` to prevent user scroll, click, and accessibility selection actions while still
-showing the current value.
+showing the current value. Disabled pickers use the disabled slots from `PickerDefaults.colors(...)`
+for default text, dividers, and selected-item backgrounds; custom `content` composables should render
+their own disabled appearance.
 
 Use `style = PickerDefaults.style(...)` to customize visible item count, colors, text styles,
 dividers, item padding, selected item background, and fading edge behavior with one reusable object.

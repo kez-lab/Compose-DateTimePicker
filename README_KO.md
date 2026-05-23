@@ -425,7 +425,9 @@ fun SizePickerExample() {
 없어야 하며, `selectedItem`은 반드시 `items` 안에 있어야 합니다. `T`가 saveable하지 않다면 앱 state에는
 saveable한 key를 저장한 뒤 렌더링 전에 그 key를 item으로 매핑하세요.
 현재 값을 표시하되 사용자의 scroll, click, accessibility 선택 action을 막아야 한다면 `enabled = false`를
-전달하세요.
+전달하세요. Disabled picker는 기본 텍스트, divider, 선택 영역 배경에 `PickerDefaults.colors(...)`의
+disabled 색상 슬롯을 사용합니다. custom `content` composable을 전달한 경우 disabled 표현도 앱이 직접
+그려야 합니다.
 
 `style = PickerDefaults.style(...)`로 visible item count, 색상, 텍스트 스타일, divider, item padding,
 선택 영역 배경, fading edge 동작을 하나의 재사용 가능한 객체로 커스터마이즈하세요.
