@@ -116,6 +116,41 @@ fun TimePicker12hExample() {
 }
 ```
 
+#### 3. 시간 범위 제한
+
+폼에서 특정 시간 범위만 허용해야 한다면 `PickerDefaults.timePickerItems(minTime = ..., maxTime = ...)`를
+사용하세요. 같은 `items` 객체로 state를 만들면 복원값이나 preset 값이 picker가 렌더링되기 전에 가장
+가까운 선택 가능 시간으로 보정됩니다.
+
+```kotlin
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
+import com.kez.picker.PickerDefaults
+import com.kez.picker.time.TimePicker
+import com.kez.picker.time.rememberTimePickerState
+import kotlinx.datetime.LocalTime
+
+@Composable
+fun BusinessHoursTimePickerExample() {
+    val items = remember {
+        PickerDefaults.timePickerItems(
+            minuteItems = listOf(0, 15, 30, 45),
+            minTime = LocalTime(8, 0),
+            maxTime = LocalTime(18, 0)
+        )
+    }
+    val state = rememberTimePickerState(
+        items = items,
+        initialTime = LocalTime(7, 30)
+    )
+
+    TimePicker(
+        state = state,
+        items = items
+    )
+}
+```
+
 ### DatePicker
 
 연도, 월, 일을 함께 선택할 때 `DatePicker`를 사용합니다. 선택된 월에 유효하지 않은 일이 있으면 자동으로 보정됩니다.
@@ -419,8 +454,9 @@ fun ProgrammaticTimePickerExample() {
 
 요청한 값이 현재 item list에 포함되어 있으면 picker 스크롤 위치가 동기화됩니다. custom list는 엄격하게
 검증됩니다. 비어 있지 않아야 하고, 중복이 없어야 하며, 지원 범위 안의 값만 포함해야 하고, 현재 선택값도
-반드시 포함해야 합니다. `DatePicker`는 `dayItems`를 선택된 연/월의 최대 일수로 필터링하고,
-선택적 `minDate`/`maxDate` 범위도 함께 적용합니다. 앱이 custom list나 날짜 범위 밖의 값을 복원하거나
+반드시 포함해야 합니다. `TimePicker`는 선택적 `minTime`/`maxTime` 범위에 맞춰 시간, 분, 오전/오후
+column을 필터링합니다. `DatePicker`는 `dayItems`를 선택된 연/월의 최대 일수로 필터링하고,
+선택적 `minDate`/`maxDate` 범위도 함께 적용합니다. 앱이 custom list나 설정된 범위 밖의 값을 복원하거나
 요청할 수 있다면 `state.select*(value, items)` overload나 `items.coerce*` helper로 가장 가까운 선택
 가능 값으로 이동한 뒤 picker를 렌더링하세요.
 첫 composition의 초기값에도 같은 보정이 필요하면 `remember*State(items = items, initial... = value)`를
@@ -436,7 +472,7 @@ fun ProgrammaticTimePickerExample() {
 | :--- | :--- | :--- |
 | `state` | Picker를 제어하기 위한 상태 객체입니다. | `rememberTimePickerState()` |
 | `onSelectedTimeChange` | 사용자 조작으로 선택된 `LocalTime`이 바뀐 뒤 호출됩니다. | `{}` |
-| `items` | 선택 가능한 분, 24시간제 시간, 12시간제 표시 시간, 오전/오후 목록입니다. | `PickerDefaults.timePickerItems()` |
+| `items` | 선택 가능한 분, 24시간제 시간, 12시간제 표시 시간, 오전/오후 목록과 선택적 `minTime`/`maxTime` 범위입니다. | `PickerDefaults.timePickerItems()` |
 | `display` | 각 picker column의 화면 표시 텍스트 formatter입니다. | `PickerDefaults.timePickerDisplay()` |
 | `style` | 각 picker column의 시각/레이아웃 스타일입니다. | `PickerDefaults.style()` |
 | `spacingBetweenPickers` | picker column 사이의 가로 간격입니다. | `0.dp` |
@@ -456,7 +492,7 @@ fun ProgrammaticTimePickerExample() {
 
 상태 생성 이후 선택값을 바꾸려면 `state.selectTime(LocalTime(...))`을 호출합니다.
 
-custom item 값이 유효 범위를 벗어나거나, 중복이 있거나, 필수 목록이 비어 있거나, 현재 선택값이 custom 목록에 없으면 composition 중 `IllegalArgumentException`이 발생합니다. 12시간 형식의 `PickerDefaults.timePickerItems(hour12Items = ...)`는 표시 시간 기준(`1..12`)입니다. 예를 들어 `initialHour = 13`은 `state.selectedHour == 1`, `PM`으로 변환됩니다.
+custom item 값이 유효 범위를 벗어나거나, 중복이 있거나, 필수 목록이 비어 있거나, 현재 선택값이 custom 목록 또는 시간 범위 밖이면 composition 중 `IllegalArgumentException`이 발생합니다. 12시간 형식의 `PickerDefaults.timePickerItems(hour12Items = ...)`는 표시 시간 기준(`1..12`)입니다. 예를 들어 `initialHour = 13`은 `state.selectedHour == 1`, `PM`으로 변환됩니다.
 
 ### DatePicker
 
