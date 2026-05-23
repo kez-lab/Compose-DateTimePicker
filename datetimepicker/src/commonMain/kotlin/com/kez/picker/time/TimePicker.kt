@@ -36,7 +36,7 @@ import kotlinx.datetime.LocalTime
  * @param style Visual and layout styling for each picker column.
  * @param spacingBetweenPickers The spacing between the pickers.
  * @param accessibility Accessibility labels, item descriptions, and custom action labels for each picker column.
- * @throws IllegalArgumentException if custom item lists are empty where required, contain duplicates, contain values outside the supported ranges, or omit the current selected value.
+ * @throws IllegalArgumentException if custom item lists are empty where required, contain duplicates, contain values outside the supported ranges, or omit the current selected value after time constraints are applied.
  */
 @Composable
 fun TimePicker(
@@ -50,16 +50,24 @@ fun TimePicker(
     spacingBetweenPickers: Dp = PickerDefaults.SpacingBetweenPickers,
     accessibility: TimePickerAccessibility = PickerDefaults.timePickerAccessibility()
 ) {
-    val hourItems = items.hourItemsFor(state.timeFormat)
-
     validateTimePickerItems(
         state = state,
         items = items
     )
 
+    fun moveSelectionInsideAvailableItems() {
+        state.selectTime(
+            time = items.coerceTime(
+                time = state.selectedTime,
+                timeFormat = state.timeFormat
+            )
+        )
+    }
+
     fun updateSelectedTime(update: () -> Unit) {
         val previousTime = state.selectedTime
         update()
+        moveSelectionInsideAvailableItems()
         val nextTime = state.selectedTime
         if (nextTime != previousTime) {
             onSelectedTimeChange(nextTime)
@@ -78,8 +86,9 @@ fun TimePicker(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 if (state.timeFormat == TimeFormat.HOUR_12) {
+                    val periodItems = items.selectablePeriodItems()
                     Picker(
-                        items = items.periodItems,
+                        items = periodItems,
                         selectedItem = state.selectedPeriod,
                         onSelectedItemChange = { period ->
                             updateSelectedTime { state.selectPeriod(period) }
@@ -92,6 +101,10 @@ fun TimePicker(
                     )
                     Spacer(modifier = Modifier.width(spacingBetweenPickers))
                 }
+                val hourItems = items.selectableHourItemsFor(
+                    timeFormat = state.timeFormat,
+                    period = state.selectedPeriod
+                )
                 Picker(
                     items = hourItems,
                     selectedItem = state.selectedHour,
@@ -104,8 +117,11 @@ fun TimePicker(
                     itemText = display.hour.itemText
                 )
                 Spacer(modifier = Modifier.width(spacingBetweenPickers))
+                val minuteItems = items.selectableMinuteItemsFor(
+                    hourOfDay = state.selectedHourOfDay
+                )
                 Picker(
-                    items = items.minuteItems,
+                    items = minuteItems,
                     selectedItem = state.selectedMinute,
                     onSelectedItemChange = { minute ->
                         updateSelectedTime { state.selectMinute(minute) }
@@ -187,6 +203,26 @@ internal fun validateTimePickerItems(
         require(state.selectedPeriod in periodItems) {
             "TimePicker periodItems must contain state.selectedPeriod=${state.selectedPeriod}."
         }
+        val availablePeriodItems = items.selectablePeriodItems()
+        require(state.selectedPeriod in availablePeriodItems) {
+            "TimePicker constraints must allow state.selectedPeriod=${state.selectedPeriod}."
+        }
+    }
+
+    val availableHourItems = items.selectableHourItemsFor(
+        timeFormat = state.timeFormat,
+        period = state.selectedPeriod
+    )
+    require(state.selectedHour in availableHourItems) {
+        "TimePicker constraints must allow state.selectedHour=${state.selectedHour} " +
+                "for timeFormat=${state.timeFormat}."
+    }
+    val availableMinuteItems = items.selectableMinuteItemsFor(
+        hourOfDay = state.selectedHourOfDay
+    )
+    require(state.selectedMinute in availableMinuteItems) {
+        "TimePicker minuteItems and constraints must allow state.selectedMinute=${state.selectedMinute} " +
+                "for selectedHourOfDay=${state.selectedHourOfDay}."
     }
 }
 
