@@ -181,7 +181,7 @@ fun <T : Any> Picker(
                 itemPadding.calculateBottomPadding()
     }
 
-    LaunchedEffect(listState, adjustedItems, visibleItemsMiddle) {
+    LaunchedEffect(listState, adjustedItems, visibleItemsMiddle, enabled) {
         snapshotFlow { listState.firstVisibleItemIndex to listState.isScrollInProgress }
             .mapNotNull { (index, isScrollInProgress) ->
                 getItem(index + visibleItemsMiddle)?.let { item -> item to isScrollInProgress }
