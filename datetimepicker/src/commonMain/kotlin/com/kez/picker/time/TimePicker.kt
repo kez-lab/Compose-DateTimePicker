@@ -4,9 +4,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.width
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -17,9 +15,11 @@ import androidx.compose.ui.unit.sp
 import com.kez.picker.Picker
 import com.kez.picker.PickerDefaults
 import com.kez.picker.PickerStyle
+import com.kez.picker.TimePickerLayout
 import com.kez.picker.TimePickerAccessibility
 import com.kez.picker.TimePickerDisplay
 import com.kez.picker.TimePickerItems
+import com.kez.picker.pickerColumnModifier
 import com.kez.picker.util.TimeFormat
 import com.kez.picker.util.TimePeriod
 import kotlinx.datetime.LocalTime
@@ -35,6 +35,7 @@ import kotlinx.datetime.LocalTime
  * @param items Selectable minute, hour, and period item lists for the picker.
  * @param display Visible item text formatters for each picker column.
  * @param style Visual and layout styling for each picker column.
+ * @param layout Column layout weights for each picker column.
  * @param spacingBetweenPickers The spacing between the pickers.
  * @param accessibility Accessibility labels, item descriptions, and custom action labels for each picker column.
  * @throws IllegalArgumentException if custom item lists are empty where required, contain duplicates, contain values outside the supported ranges, or omit the current selected value after time constraints are applied.
@@ -49,6 +50,7 @@ fun TimePicker(
     items: TimePickerItems = PickerDefaults.timePickerItems(),
     display: TimePickerDisplay = PickerDefaults.timePickerDisplay(),
     style: PickerStyle = PickerDefaults.style(),
+    layout: TimePickerLayout = PickerDefaults.timePickerLayout(),
     spacingBetweenPickers: Dp = PickerDefaults.SpacingBetweenPickers,
     accessibility: TimePickerAccessibility = PickerDefaults.timePickerAccessibility()
 ) {
@@ -84,7 +86,10 @@ fun TimePicker(
         ) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.Center,
+                horizontalArrangement = Arrangement.spacedBy(
+                    spacingBetweenPickers,
+                    Alignment.CenterHorizontally
+                ),
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 if (state.timeFormat == TimeFormat.HOUR_12) {
@@ -95,14 +100,13 @@ fun TimePicker(
                         onSelectedItemChange = { period ->
                             updateSelectedTime { state.selectPeriod(period) }
                         },
-                        modifier = pickerModifier.weight(1f),
+                        modifier = pickerColumnModifier(pickerModifier, layout.periodWeight),
                         enabled = enabled,
                         style = style,
                         isInfinity = false,
                         accessibility = accessibility.period,
                         itemText = display.period.itemText
                     )
-                    Spacer(modifier = Modifier.width(spacingBetweenPickers))
                 }
                 val hourItems = items.selectableHourItemsFor(
                     timeFormat = state.timeFormat,
@@ -114,13 +118,12 @@ fun TimePicker(
                     onSelectedItemChange = { hour ->
                         updateSelectedTime { state.selectHour(hour) }
                     },
-                    modifier = pickerModifier.weight(1f),
+                    modifier = pickerColumnModifier(pickerModifier, layout.hourWeight),
                     enabled = enabled,
                     style = style,
                     accessibility = accessibility.hour,
                     itemText = display.hour.itemText
                 )
-                Spacer(modifier = Modifier.width(spacingBetweenPickers))
                 val minuteItems = items.selectableMinuteItemsFor(
                     hourOfDay = state.selectedHourOfDay
                 )
@@ -130,7 +133,7 @@ fun TimePicker(
                     onSelectedItemChange = { minute ->
                         updateSelectedTime { state.selectMinute(minute) }
                     },
-                    modifier = pickerModifier.weight(1f),
+                    modifier = pickerColumnModifier(pickerModifier, layout.minuteWeight),
                     enabled = enabled,
                     style = style,
                     accessibility = accessibility.minute,

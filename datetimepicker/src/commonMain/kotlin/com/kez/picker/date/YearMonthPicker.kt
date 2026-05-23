@@ -18,6 +18,8 @@ import com.kez.picker.PickerStyle
 import com.kez.picker.YearMonthPickerAccessibility
 import com.kez.picker.YearMonthPickerDisplay
 import com.kez.picker.YearMonthPickerItems
+import com.kez.picker.YearMonthPickerLayout
+import com.kez.picker.pickerColumnModifier
 
 /**
  * A year and month picker component.
@@ -30,6 +32,7 @@ import com.kez.picker.YearMonthPickerItems
  * @param items Selectable year and month item lists plus optional year/month bounds for the picker.
  * @param display Visible item text formatters for each picker column.
  * @param style Visual and layout styling for each picker column.
+ * @param layout Column layout weights for each picker column.
  * @param spacingBetweenPickers The spacing between the pickers.
  * @param accessibility Accessibility labels, item descriptions, and custom action labels for each picker column.
  * @throws IllegalArgumentException if custom item lists are empty, contain duplicates, contain values outside the supported ranges, or omit the current selected year/month after year/month constraints are applied.
@@ -44,6 +47,7 @@ fun YearMonthPicker(
     items: YearMonthPickerItems = PickerDefaults.yearMonthPickerItems(),
     display: YearMonthPickerDisplay = PickerDefaults.yearMonthPickerDisplay(),
     style: PickerStyle = PickerDefaults.style(),
+    layout: YearMonthPickerLayout = PickerDefaults.yearMonthPickerLayout(),
     spacingBetweenPickers: Dp = PickerDefaults.SpacingBetweenPickers,
     accessibility: YearMonthPickerAccessibility = PickerDefaults.yearMonthPickerAccessibility()
 ) {
@@ -88,7 +92,7 @@ fun YearMonthPicker(
                     onSelectedItemChange = { year ->
                         updateSelectedYearMonth { state.selectYear(year) }
                     },
-                    modifier = pickerModifier.weight(1f),
+                    modifier = pickerColumnModifier(pickerModifier, layout.yearWeight),
                     enabled = enabled,
                     style = style,
                     accessibility = accessibility.year,
@@ -101,7 +105,7 @@ fun YearMonthPicker(
                     onSelectedItemChange = { month ->
                         updateSelectedYearMonth { state.selectMonth(month) }
                     },
-                    modifier = pickerModifier.weight(1f),
+                    modifier = pickerColumnModifier(pickerModifier, layout.monthWeight),
                     enabled = enabled,
                     style = style,
                     accessibility = accessibility.month,

@@ -14,9 +14,11 @@ import androidx.compose.ui.unit.Dp
 import com.kez.picker.DatePickerAccessibility
 import com.kez.picker.DatePickerDisplay
 import com.kez.picker.DatePickerItems
+import com.kez.picker.DatePickerLayout
 import com.kez.picker.Picker
 import com.kez.picker.PickerDefaults
 import com.kez.picker.PickerStyle
+import com.kez.picker.pickerColumnModifier
 import kotlinx.datetime.LocalDate
 import kotlin.math.abs
 
@@ -31,6 +33,7 @@ import kotlin.math.abs
  * @param items Selectable year, month, and day item lists for the picker.
  * @param display Visible item text formatters for each picker column.
  * @param style Visual and layout styling for each picker column.
+ * @param layout Column layout weights for each picker column.
  * @param spacingBetweenPickers The spacing between the pickers.
  * @param accessibility Accessibility labels, item descriptions, and custom action labels for each picker column.
  * @throws IllegalArgumentException if custom item lists are empty, contain duplicates, contain values outside the supported ranges, or omit the current selected year/month/day after date constraints are applied.
@@ -45,6 +48,7 @@ fun DatePicker(
     items: DatePickerItems = PickerDefaults.datePickerItems(),
     display: DatePickerDisplay = PickerDefaults.datePickerDisplay(),
     style: PickerStyle = PickerDefaults.style(),
+    layout: DatePickerLayout = PickerDefaults.datePickerLayout(),
     spacingBetweenPickers: Dp = PickerDefaults.SpacingBetweenPickers,
     accessibility: DatePickerAccessibility = PickerDefaults.datePickerAccessibility()
 ) {
@@ -92,7 +96,10 @@ fun DatePicker(
 
             Row(
                 modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.Center,
+                horizontalArrangement = Arrangement.spacedBy(
+                    spacingBetweenPickers,
+                    Alignment.CenterHorizontally
+                ),
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Picker(
@@ -101,7 +108,7 @@ fun DatePicker(
                     onSelectedItemChange = { year ->
                         updateSelectedDate { state.selectYear(year) }
                     },
-                    modifier = pickerModifier.weight(1.2f), // Give Year slightly more width
+                    modifier = pickerColumnModifier(pickerModifier, layout.yearWeight),
                     enabled = enabled,
                     style = style,
                     accessibility = accessibility.year,
@@ -114,7 +121,7 @@ fun DatePicker(
                     onSelectedItemChange = { month ->
                         updateSelectedDate { state.selectMonth(month) }
                     },
-                    modifier = pickerModifier.weight(0.8f),
+                    modifier = pickerColumnModifier(pickerModifier, layout.monthWeight),
                     enabled = enabled,
                     style = style,
                     accessibility = accessibility.month,
@@ -128,7 +135,7 @@ fun DatePicker(
                         onSelectedItemChange = { day ->
                             updateSelectedDate { state.selectDay(day) }
                         },
-                        modifier = pickerModifier.weight(0.8f),
+                        modifier = pickerColumnModifier(pickerModifier, layout.dayWeight),
                         enabled = enabled,
                         style = style,
                         isInfinity = false,
