@@ -90,6 +90,7 @@ public final class com/kez/picker/PickerAccessibility {
 
 public final class com/kez/picker/PickerColors {
 	public static final field $stable I
+	public synthetic fun <init> (JJJJJJJJILkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public synthetic fun <init> (JJJJJJJJLkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public final fun component1-0d7_KjU ()J
 	public final fun component2-0d7_KjU ()J
