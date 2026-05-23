@@ -180,6 +180,23 @@ final class com.kez.picker/DatePickerAccessibility { // com.kez.picker/DatePicke
     final fun toString(): kotlin/String // com.kez.picker/DatePickerAccessibility.toString|toString(){}[0]
 }
 
+final class com.kez.picker/DatePickerConstraints { // com.kez.picker/DatePickerConstraints|null[0]
+    constructor <init>(kotlinx.datetime/LocalDate? = ..., kotlinx.datetime/LocalDate? = ...) // com.kez.picker/DatePickerConstraints.<init>|<init>(kotlinx.datetime.LocalDate?;kotlinx.datetime.LocalDate?){}[0]
+
+    final val maxDate // com.kez.picker/DatePickerConstraints.maxDate|{}maxDate[0]
+        final fun <get-maxDate>(): kotlinx.datetime/LocalDate? // com.kez.picker/DatePickerConstraints.maxDate.<get-maxDate>|<get-maxDate>(){}[0]
+    final val minDate // com.kez.picker/DatePickerConstraints.minDate|{}minDate[0]
+        final fun <get-minDate>(): kotlinx.datetime/LocalDate? // com.kez.picker/DatePickerConstraints.minDate.<get-minDate>|<get-minDate>(){}[0]
+
+    final fun component1(): kotlinx.datetime/LocalDate? // com.kez.picker/DatePickerConstraints.component1|component1(){}[0]
+    final fun component2(): kotlinx.datetime/LocalDate? // com.kez.picker/DatePickerConstraints.component2|component2(){}[0]
+    final fun contains(kotlinx.datetime/LocalDate): kotlin/Boolean // com.kez.picker/DatePickerConstraints.contains|contains(kotlinx.datetime.LocalDate){}[0]
+    final fun copy(kotlinx.datetime/LocalDate? = ..., kotlinx.datetime/LocalDate? = ...): com.kez.picker/DatePickerConstraints // com.kez.picker/DatePickerConstraints.copy|copy(kotlinx.datetime.LocalDate?;kotlinx.datetime.LocalDate?){}[0]
+    final fun equals(kotlin/Any?): kotlin/Boolean // com.kez.picker/DatePickerConstraints.equals|equals(kotlin.Any?){}[0]
+    final fun hashCode(): kotlin/Int // com.kez.picker/DatePickerConstraints.hashCode|hashCode(){}[0]
+    final fun toString(): kotlin/String // com.kez.picker/DatePickerConstraints.toString|toString(){}[0]
+}
+
 final class com.kez.picker/DatePickerDisplay { // com.kez.picker/DatePickerDisplay|null[0]
     constructor <init>(com.kez.picker/PickerItemText<kotlin/Int>, com.kez.picker/PickerItemText<kotlin/Int>, com.kez.picker/PickerItemText<kotlin/Int>) // com.kez.picker/DatePickerDisplay.<init>|<init>(com.kez.picker.PickerItemText<kotlin.Int>;com.kez.picker.PickerItemText<kotlin.Int>;com.kez.picker.PickerItemText<kotlin.Int>){}[0]
 
@@ -200,8 +217,10 @@ final class com.kez.picker/DatePickerDisplay { // com.kez.picker/DatePickerDispl
 }
 
 final class com.kez.picker/DatePickerItems { // com.kez.picker/DatePickerItems|null[0]
-    constructor <init>(kotlin.collections/List<kotlin/Int>, kotlin.collections/List<kotlin/Int>, kotlin.collections/List<kotlin/Int>) // com.kez.picker/DatePickerItems.<init>|<init>(kotlin.collections.List<kotlin.Int>;kotlin.collections.List<kotlin.Int>;kotlin.collections.List<kotlin.Int>){}[0]
+    constructor <init>(kotlin.collections/List<kotlin/Int>, kotlin.collections/List<kotlin/Int>, kotlin.collections/List<kotlin/Int>, com.kez.picker/DatePickerConstraints = ...) // com.kez.picker/DatePickerItems.<init>|<init>(kotlin.collections.List<kotlin.Int>;kotlin.collections.List<kotlin.Int>;kotlin.collections.List<kotlin.Int>;com.kez.picker.DatePickerConstraints){}[0]
 
+    final val constraints // com.kez.picker/DatePickerItems.constraints|{}constraints[0]
+        final fun <get-constraints>(): com.kez.picker/DatePickerConstraints // com.kez.picker/DatePickerItems.constraints.<get-constraints>|<get-constraints>(){}[0]
     final val dayItems // com.kez.picker/DatePickerItems.dayItems|{}dayItems[0]
         final fun <get-dayItems>(): kotlin.collections/List<kotlin/Int> // com.kez.picker/DatePickerItems.dayItems.<get-dayItems>|<get-dayItems>(){}[0]
     final val monthItems // com.kez.picker/DatePickerItems.monthItems|{}monthItems[0]
@@ -213,8 +232,9 @@ final class com.kez.picker/DatePickerItems { // com.kez.picker/DatePickerItems|n
     final fun component1(): kotlin.collections/List<kotlin/Int> // com.kez.picker/DatePickerItems.component1|component1(){}[0]
     final fun component2(): kotlin.collections/List<kotlin/Int> // com.kez.picker/DatePickerItems.component2|component2(){}[0]
     final fun component3(): kotlin.collections/List<kotlin/Int> // com.kez.picker/DatePickerItems.component3|component3(){}[0]
+    final fun component4(): com.kez.picker/DatePickerConstraints // com.kez.picker/DatePickerItems.component4|component4(){}[0]
     final fun contains(kotlinx.datetime/LocalDate): kotlin/Boolean // com.kez.picker/DatePickerItems.contains|contains(kotlinx.datetime.LocalDate){}[0]
-    final fun copy(kotlin.collections/List<kotlin/Int> = ..., kotlin.collections/List<kotlin/Int> = ..., kotlin.collections/List<kotlin/Int> = ...): com.kez.picker/DatePickerItems // com.kez.picker/DatePickerItems.copy|copy(kotlin.collections.List<kotlin.Int>;kotlin.collections.List<kotlin.Int>;kotlin.collections.List<kotlin.Int>){}[0]
+    final fun copy(kotlin.collections/List<kotlin/Int> = ..., kotlin.collections/List<kotlin/Int> = ..., kotlin.collections/List<kotlin/Int> = ..., com.kez.picker/DatePickerConstraints = ...): com.kez.picker/DatePickerItems // com.kez.picker/DatePickerItems.copy|copy(kotlin.collections.List<kotlin.Int>;kotlin.collections.List<kotlin.Int>;kotlin.collections.List<kotlin.Int>;com.kez.picker.DatePickerConstraints){}[0]
     final fun equals(kotlin/Any?): kotlin/Boolean // com.kez.picker/DatePickerItems.equals|equals(kotlin.Any?){}[0]
     final fun hashCode(): kotlin/Int // com.kez.picker/DatePickerItems.hashCode|hashCode(){}[0]
     final fun toString(): kotlin/String // com.kez.picker/DatePickerItems.toString|toString(){}[0]
@@ -455,8 +475,9 @@ final object com.kez.picker/PickerDefaults { // com.kez.picker/PickerDefaults|nu
     final fun <#A1: kotlin/Any> itemText(kotlin/Function1<#A1, kotlin/String> = ...): com.kez.picker/PickerItemText<#A1> // com.kez.picker/PickerDefaults.itemText|itemText(kotlin.Function1<0:0,kotlin.String>){0§<kotlin.Any>}[0]
     final fun colors(androidx.compose.ui.graphics/Color, androidx.compose.ui.graphics/Color, androidx.compose.ui.graphics/Color, androidx.compose.ui.graphics/Color, androidx.compose.runtime/Composer?, kotlin/Int, kotlin/Int): com.kez.picker/PickerColors // com.kez.picker/PickerDefaults.colors|colors(androidx.compose.ui.graphics.Color;androidx.compose.ui.graphics.Color;androidx.compose.ui.graphics.Color;androidx.compose.ui.graphics.Color;androidx.compose.runtime.Composer?;kotlin.Int;kotlin.Int){}[0]
     final fun datePickerAccessibility(kotlin/String? = ..., kotlin/String? = ..., kotlin/String? = ..., kotlin/Function1<kotlin/Int, kotlin/String> = ..., kotlin/Function1<kotlin/Int, kotlin/String> = ..., kotlin/Function1<kotlin/Int, kotlin/String> = ..., kotlin/String? = ..., kotlin/String? = ...): com.kez.picker/DatePickerAccessibility // com.kez.picker/PickerDefaults.datePickerAccessibility|datePickerAccessibility(kotlin.String?;kotlin.String?;kotlin.String?;kotlin.Function1<kotlin.Int,kotlin.String>;kotlin.Function1<kotlin.Int,kotlin.String>;kotlin.Function1<kotlin.Int,kotlin.String>;kotlin.String?;kotlin.String?){}[0]
+    final fun datePickerConstraints(kotlinx.datetime/LocalDate? = ..., kotlinx.datetime/LocalDate? = ...): com.kez.picker/DatePickerConstraints // com.kez.picker/PickerDefaults.datePickerConstraints|datePickerConstraints(kotlinx.datetime.LocalDate?;kotlinx.datetime.LocalDate?){}[0]
     final fun datePickerDisplay(kotlin/Function1<kotlin/Int, kotlin/String> = ..., kotlin/Function1<kotlin/Int, kotlin/String> = ..., kotlin/Function1<kotlin/Int, kotlin/String> = ...): com.kez.picker/DatePickerDisplay // com.kez.picker/PickerDefaults.datePickerDisplay|datePickerDisplay(kotlin.Function1<kotlin.Int,kotlin.String>;kotlin.Function1<kotlin.Int,kotlin.String>;kotlin.Function1<kotlin.Int,kotlin.String>){}[0]
-    final fun datePickerItems(kotlin.collections/List<kotlin/Int> = ..., kotlin.collections/List<kotlin/Int> = ..., kotlin.collections/List<kotlin/Int> = ...): com.kez.picker/DatePickerItems // com.kez.picker/PickerDefaults.datePickerItems|datePickerItems(kotlin.collections.List<kotlin.Int>;kotlin.collections.List<kotlin.Int>;kotlin.collections.List<kotlin.Int>){}[0]
+    final fun datePickerItems(kotlin.collections/List<kotlin/Int> = ..., kotlin.collections/List<kotlin/Int> = ..., kotlin.collections/List<kotlin/Int> = ..., kotlinx.datetime/LocalDate? = ..., kotlinx.datetime/LocalDate? = ...): com.kez.picker/DatePickerItems // com.kez.picker/PickerDefaults.datePickerItems|datePickerItems(kotlin.collections.List<kotlin.Int>;kotlin.collections.List<kotlin.Int>;kotlin.collections.List<kotlin.Int>;kotlinx.datetime.LocalDate?;kotlinx.datetime.LocalDate?){}[0]
     final fun fadingEdgeGradient(): androidx.compose.ui.graphics/Brush // com.kez.picker/PickerDefaults.fadingEdgeGradient|fadingEdgeGradient(){}[0]
     final fun style(kotlin/Int, com.kez.picker/PickerColors?, com.kez.picker/PickerTextStyles?, androidx.compose.ui.graphics/Shape?, androidx.compose.foundation.layout/PaddingValues?, androidx.compose.ui.graphics/Brush?, androidx.compose.ui/Alignment.Horizontal?, androidx.compose.ui/Alignment.Vertical?, androidx.compose.ui.unit/Dp, androidx.compose.ui.graphics/Shape?, kotlin/Boolean, androidx.compose.runtime/Composer?, kotlin/Int, kotlin/Int, kotlin/Int): com.kez.picker/PickerStyle // com.kez.picker/PickerDefaults.style|style(kotlin.Int;com.kez.picker.PickerColors?;com.kez.picker.PickerTextStyles?;androidx.compose.ui.graphics.Shape?;androidx.compose.foundation.layout.PaddingValues?;androidx.compose.ui.graphics.Brush?;androidx.compose.ui.Alignment.Horizontal?;androidx.compose.ui.Alignment.Vertical?;androidx.compose.ui.unit.Dp;androidx.compose.ui.graphics.Shape?;kotlin.Boolean;androidx.compose.runtime.Composer?;kotlin.Int;kotlin.Int;kotlin.Int){}[0]
     final fun textStyles(androidx.compose.ui.text/TextStyle?, androidx.compose.ui.text/TextStyle?, androidx.compose.runtime/Composer?, kotlin/Int, kotlin/Int): com.kez.picker/PickerTextStyles // com.kez.picker/PickerDefaults.textStyles|textStyles(androidx.compose.ui.text.TextStyle?;androidx.compose.ui.text.TextStyle?;androidx.compose.runtime.Composer?;kotlin.Int;kotlin.Int){}[0]
@@ -501,6 +522,7 @@ final val com.kez.picker.util/MONTH_RANGE // com.kez.picker.util/MONTH_RANGE|{}M
 final val com.kez.picker.util/YEAR_RANGE // com.kez.picker.util/YEAR_RANGE|{}YEAR_RANGE[0]
     final fun <get-YEAR_RANGE>(): kotlin.collections/List<kotlin/Int> // com.kez.picker.util/YEAR_RANGE.<get-YEAR_RANGE>|<get-YEAR_RANGE>(){}[0]
 final val com.kez.picker/com_kez_picker_DatePickerAccessibility$stableprop // com.kez.picker/com_kez_picker_DatePickerAccessibility$stableprop|#static{}com_kez_picker_DatePickerAccessibility$stableprop[0]
+final val com.kez.picker/com_kez_picker_DatePickerConstraints$stableprop // com.kez.picker/com_kez_picker_DatePickerConstraints$stableprop|#static{}com_kez_picker_DatePickerConstraints$stableprop[0]
 final val com.kez.picker/com_kez_picker_DatePickerDisplay$stableprop // com.kez.picker/com_kez_picker_DatePickerDisplay$stableprop|#static{}com_kez_picker_DatePickerDisplay$stableprop[0]
 final val com.kez.picker/com_kez_picker_DatePickerItems$stableprop // com.kez.picker/com_kez_picker_DatePickerItems$stableprop|#static{}com_kez_picker_DatePickerItems$stableprop[0]
 final val com.kez.picker/com_kez_picker_PickerAccessibility$stableprop // com.kez.picker/com_kez_picker_PickerAccessibility$stableprop|#static{}com_kez_picker_PickerAccessibility$stableprop[0]
@@ -548,6 +570,7 @@ final fun com.kez.picker.util/currentMinute(): kotlin/Int // com.kez.picker.util
 final fun com.kez.picker.util/currentMonth(): kotlin/Int // com.kez.picker.util/currentMonth|currentMonth(){}[0]
 final fun com.kez.picker.util/currentYear(): kotlin/Int // com.kez.picker.util/currentYear|currentYear(){}[0]
 final fun com.kez.picker/com_kez_picker_DatePickerAccessibility$stableprop_getter(): kotlin/Int // com.kez.picker/com_kez_picker_DatePickerAccessibility$stableprop_getter|com_kez_picker_DatePickerAccessibility$stableprop_getter(){}[0]
+final fun com.kez.picker/com_kez_picker_DatePickerConstraints$stableprop_getter(): kotlin/Int // com.kez.picker/com_kez_picker_DatePickerConstraints$stableprop_getter|com_kez_picker_DatePickerConstraints$stableprop_getter(){}[0]
 final fun com.kez.picker/com_kez_picker_DatePickerDisplay$stableprop_getter(): kotlin/Int // com.kez.picker/com_kez_picker_DatePickerDisplay$stableprop_getter|com_kez_picker_DatePickerDisplay$stableprop_getter(){}[0]
 final fun com.kez.picker/com_kez_picker_DatePickerItems$stableprop_getter(): kotlin/Int // com.kez.picker/com_kez_picker_DatePickerItems$stableprop_getter|com_kez_picker_DatePickerItems$stableprop_getter(){}[0]
 final fun com.kez.picker/com_kez_picker_PickerAccessibility$stableprop_getter(): kotlin/Int // com.kez.picker/com_kez_picker_PickerAccessibility$stableprop_getter|com_kez_picker_PickerAccessibility$stableprop_getter(){}[0]

@@ -130,17 +130,33 @@ import com.kez.picker.PickerDefaults
 import com.kez.picker.date.DatePicker
 import com.kez.picker.date.rememberDatePickerState
 import com.kez.picker.util.currentDate
+import kotlinx.datetime.LocalDate
 
 @Composable
 fun DatePickerExample() {
     val initialDate = remember { currentDate() }
-    val selectableYears = remember(initialDate.year) {
-        ((initialDate.year - 1)..(initialDate.year + 1)).toList()
+    val minDate = remember(initialDate.year) {
+        LocalDate(initialDate.year, 1, 1)
+    }
+    val maxDate = remember(initialDate.year) {
+        LocalDate(initialDate.year + 1, 12, 31)
+    }
+    val selectableYears = remember(minDate.year, maxDate.year) {
+        (minDate.year..maxDate.year).toList()
     }
     val selectableDays = remember(initialDate.day) {
         listOf(1, 15, initialDate.day).distinct().sorted()
     }
+    val items = remember(selectableYears, selectableDays, minDate, maxDate) {
+        PickerDefaults.datePickerItems(
+            yearItems = selectableYears,
+            dayItems = selectableDays,
+            minDate = minDate,
+            maxDate = maxDate
+        )
+    }
     val state = rememberDatePickerState(
+        items = items,
         initialDate = initialDate
     )
 
@@ -149,19 +165,18 @@ fun DatePickerExample() {
         onSelectedDateChange = { selectedDate ->
             // Update app state, ViewModel, or form data here.
         },
-        items = PickerDefaults.datePickerItems(
-            yearItems = selectableYears,
-            dayItems = selectableDays
-        )
+        items = items
     )
 
     // Use state.selectedDate when passing the result to app logic.
 }
 ```
 
-When you restrict selectable item lists with `PickerDefaults.*Items(...)`, keep the remembered
-initial or restored state value inside those lists. If an external date changes after composition, call
-`state.selectDate(newDate)` instead of relying on a new `initialDate` argument.
+When you restrict selectable item lists or date bounds with `PickerDefaults.*Items(...)`, keep the
+remembered initial or restored state value inside those rules, or create state with
+`rememberDatePickerState(items = items, initialDate = value)` to coerce it before first composition.
+If an external date changes after composition, call `state.selectDate(newDate, items)` instead of
+relying on a new `initialDate` argument.
 
 ### YearMonthPicker
 
@@ -407,10 +422,10 @@ fun ProgrammaticTimePickerExample() {
 
 The picker scroll position is synchronized when the current item lists contain the requested values. Custom
 item lists are strict: they must be non-empty, distinct, within the supported value ranges, and contain the
-current selected value. `DatePicker` filters `dayItems` by the selected year/month maximum day, so
-`dayItems` must include at least one day valid for every selectable year/month combination. If an app can
-restore or request values outside a custom list, call the `state.select*(value, items)` overload or
-`items.coerce*` helper to move to the closest selectable value before rendering the picker.
+current selected value. `DatePicker` filters `dayItems` by the selected year/month maximum day and optional
+`minDate`/`maxDate` bounds. If an app can restore or request values outside a custom list or date bounds,
+call the `state.select*(value, items)` overload or `items.coerce*` helper to move to the closest selectable
+value before rendering the picker.
 For first composition, use `remember*State(items = items, initial... = value)` to apply the same coercion
 before the picker is rendered.
 
@@ -452,7 +467,7 @@ Invalid custom item values, duplicate items, empty required lists, or current se
 |:--------------------|:----------------------------------------|:----------------------------|
 | `state`             | The state object to control the picker. | `rememberDatePickerState()` |
 | `onSelectedDateChange` | Called after user interaction changes the selected `LocalDate`. | `{}` |
-| `items`             | Selectable year, month, and day item lists. Values must be in `1000..9999`, `1..12`, and `1..31`. | `PickerDefaults.datePickerItems()` |
+| `items`             | Selectable year/month/day item lists plus optional inclusive `minDate`/`maxDate` bounds. Values must be in `1000..9999`, `1..12`, and `1..31`. | `PickerDefaults.datePickerItems()` |
 | `display` | Visible item text formatters for each picker column. | `PickerDefaults.datePickerDisplay()` |
 | `style`             | Visual and layout styling for each picker column. | `PickerDefaults.style()` |
 | `spacingBetweenPickers` | Horizontal spacing between picker columns. | `0.dp` |
@@ -475,7 +490,7 @@ the maximum valid day for the initial year/month, it is clamped to that maximum.
 
 To change the selection after state creation, call `state.selectDate(LocalDate(...))`.
 
-Invalid custom item values, duplicate items, empty lists, or current selected year/month/day values missing from custom lists throw `IllegalArgumentException` during composition. If a year/month change makes the selected day unavailable in `dayItems`, the picker selects the closest available day for that month.
+Invalid custom item values, duplicate items, empty lists, or current selected year/month/day values missing from custom lists or date bounds throw `IllegalArgumentException` during composition. If a year/month change makes the selected month or day unavailable, the picker selects the closest available value for the configured constraints.
 
 ### YearMonthPicker
 

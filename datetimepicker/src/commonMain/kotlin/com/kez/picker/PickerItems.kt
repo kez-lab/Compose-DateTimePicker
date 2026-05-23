@@ -95,33 +95,65 @@ data class TimePickerItems(
 }
 
 /**
+ * Date constraints applied by [DatePickerItems].
+ *
+ * @param minDate The earliest selectable date, inclusive. Pass null to omit the lower bound.
+ * @param maxDate The latest selectable date, inclusive. Pass null to omit the upper bound.
+ */
+data class DatePickerConstraints(
+    val minDate: LocalDate? = null,
+    val maxDate: LocalDate? = null
+) {
+    init {
+        if (minDate != null && maxDate != null) {
+            require(minDate <= maxDate) {
+                "DatePicker minDate must be on or before maxDate. minDate=$minDate, maxDate=$maxDate"
+            }
+        }
+    }
+
+    /**
+     * Returns whether [date] is inside the configured inclusive bounds.
+     */
+    fun contains(date: LocalDate): Boolean =
+        (minDate == null || date >= minDate) &&
+                (maxDate == null || date <= maxDate)
+
+    internal val isUnbounded: Boolean
+        get() = minDate == null && maxDate == null
+}
+
+/**
  * Selectable item lists for [com.kez.picker.date.DatePicker].
  *
  * Lists must be non-empty, contain distinct values, stay within their documented ranges, and contain
- * the current state selection. [dayItems] is filtered by the selected year/month maximum day before
- * rendering.
+ * the current state selection. [dayItems] is filtered by the selected year/month maximum day and
+ * [constraints] before rendering.
  *
  * @param yearItems Year values available for selection. Values must be in 1000..9999.
  * @param monthItems Month values available for selection. Values must be in 1..12.
  * @param dayItems Day values available for selection. Values must be in 1..31.
+ * @param constraints Inclusive date bounds applied after the year, month, and day item lists.
  * @see PickerDefaults.datePickerItems
  */
 data class DatePickerItems(
     val yearItems: List<Int>,
     val monthItems: List<Int>,
-    val dayItems: List<Int>
+    val dayItems: List<Int>,
+    val constraints: DatePickerConstraints = DatePickerConstraints()
 ) {
     /**
      * Returns whether [date] is directly selectable.
      *
-     * [dayItems] is checked after the selected year/month maximum day is applied.
+     * [dayItems] is checked after the selected year/month maximum day and [constraints] are applied.
      */
     fun contains(date: LocalDate): Boolean {
         val month = date.month.number
         return date.year in yearItems &&
                 month in monthItems &&
                 date.day <= daysInMonth(date.year, month) &&
-                date.day in dayItems
+                date.day in dayItems &&
+                constraints.contains(date)
     }
 
     /**
@@ -136,28 +168,47 @@ data class DatePickerItems(
      */
     fun coerceDate(date: LocalDate): LocalDate {
         requireValid()
-        val year = yearItems.closestTo(date.year)
-        val month = monthItems.closestTo(date.month.number)
-        val day = dayItems
-            .filter { it <= daysInMonth(year, month) }
-            .closestTo(date.day)
+        val year = selectableYearItems().closestTo(date.year)
+        val month = selectableMonthItemsFor(year).closestTo(date.month.number)
+        val day = selectableDayItemsFor(year = year, month = month).closestTo(date.day)
         return LocalDate(year = year, month = monthFor(month), day = day)
     }
+
+    internal fun selectableYearItems(): List<Int> =
+        yearItems.filter { year ->
+            monthItems.any { month -> selectableDayItemsFor(year = year, month = month).isNotEmpty() }
+        }
+
+    internal fun selectableMonthItemsFor(year: Int): List<Int> =
+        monthItems.filter { month ->
+            selectableDayItemsFor(year = year, month = month).isNotEmpty()
+        }
+
+    internal fun selectableDayItemsFor(year: Int, month: Int): List<Int> =
+        dayItems.filter { day ->
+            day <= daysInMonth(year, month) &&
+                    constraints.contains(LocalDate(year = year, month = monthFor(month), day = day))
+        }
 
     private fun requireValid() {
         yearItems.requireIntItems(name = "DatePicker yearItems", range = 1000..9999)
         monthItems.requireIntItems(name = "DatePicker monthItems", range = 1..12)
         dayItems.requireIntItems(name = "DatePicker dayItems", range = 1..31)
-        val minimumMaxDay = monthItems.minOf { month ->
-            when (month) {
-                2 -> if (yearItems.any { daysInMonth(it, month) == 28 }) 28 else 29
-                4, 6, 9, 11 -> 30
-                else -> 31
+        if (constraints.isUnbounded) {
+            val minimumMaxDay = monthItems.minOf { month ->
+                when (month) {
+                    2 -> if (yearItems.any { daysInMonth(it, month) == 28 }) 28 else 29
+                    4, 6, 9, 11 -> 30
+                    else -> 31
+                }
+            }
+            require(dayItems.any { it <= minimumMaxDay }) {
+                "DatePicker dayItems must contain at least one day valid for every selectable " +
+                        "year/month combination. Smallest maximum day is $minimumMaxDay."
             }
         }
-        require(dayItems.any { it <= minimumMaxDay }) {
-            "DatePicker dayItems must contain at least one day valid for every selectable " +
-                    "year/month combination. Smallest maximum day is $minimumMaxDay."
+        require(selectableYearItems().isNotEmpty()) {
+            "DatePicker items must contain at least one date allowed by constraints."
         }
     }
 }

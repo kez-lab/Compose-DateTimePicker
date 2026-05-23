@@ -21,6 +21,7 @@ import com.kez.picker.util.MINUTE_RANGE
 import com.kez.picker.util.MONTH_RANGE
 import com.kez.picker.util.TimePeriod
 import com.kez.picker.util.YEAR_RANGE
+import kotlinx.datetime.LocalDate
 
 /**
  * Contains default values and factory methods for creating Picker styles.
@@ -376,21 +377,44 @@ object PickerDefaults {
     )
 
     /**
+     * Creates inclusive date constraints for a date picker.
+     *
+     * @param minDate The earliest selectable date, inclusive. Pass null to omit the lower bound.
+     * @param maxDate The latest selectable date, inclusive. Pass null to omit the upper bound.
+     * @return A [DatePickerConstraints] instance with the specified bounds.
+     */
+    fun datePickerConstraints(
+        minDate: LocalDate? = null,
+        maxDate: LocalDate? = null
+    ): DatePickerConstraints = DatePickerConstraints(
+        minDate = minDate,
+        maxDate = maxDate
+    )
+
+    /**
      * Creates selectable item lists for a date picker.
      *
      * @param yearItems Year values available for selection. Values must be in 1000..9999.
      * @param monthItems Month values available for selection. Values must be in 1..12.
      * @param dayItems Day values available for selection. Values must be in 1..31.
+     * @param minDate The earliest selectable date, inclusive. Pass null to omit the lower bound.
+     * @param maxDate The latest selectable date, inclusive. Pass null to omit the upper bound.
      * @return A [DatePickerItems] instance with the specified item lists.
      */
     fun datePickerItems(
         yearItems: List<Int> = YEAR_RANGE,
         monthItems: List<Int> = MONTH_RANGE,
-        dayItems: List<Int> = DAY_RANGE
+        dayItems: List<Int> = DAY_RANGE,
+        minDate: LocalDate? = null,
+        maxDate: LocalDate? = null
     ): DatePickerItems = DatePickerItems(
         yearItems = yearItems,
         monthItems = monthItems,
-        dayItems = dayItems
+        dayItems = dayItems,
+        constraints = datePickerConstraints(
+            minDate = minDate,
+            maxDate = maxDate
+        )
     )
 
     /**

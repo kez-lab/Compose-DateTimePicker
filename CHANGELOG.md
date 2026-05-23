@@ -27,6 +27,8 @@ This project tracks notable user-facing and maintainer-facing changes here. The 
 - Added `Picker.itemText` plus `TimePickerDisplay`, `DatePickerDisplay`, and
   `YearMonthPickerDisplay` option objects so apps can customize visible item text separately from
   accessibility descriptions.
+- Added inclusive `DatePicker` bounds through `DatePickerConstraints` and
+  `PickerDefaults.datePickerItems(minDate = ..., maxDate = ...)`.
 - Added picker accessibility descriptions and localized item description hooks so Android apps can provide clearer TalkBack output.
 - Added previous/next accessibility actions for picker columns, with public labels that apps can localize.
 
@@ -61,6 +63,8 @@ This project tracks notable user-facing and maintainer-facing changes here. The 
   `selectedMonthDate` for `LocalDate` interoperability.
 - `DatePicker` now adjusts to the closest available custom day when a year/month change makes the
   previous day unavailable in `dayItems`.
+- `DatePicker` now filters month and day columns through `DatePickerConstraints` when
+  `minDate`/`maxDate` bounds are configured.
 - Custom item lists are now strict: required lists must be non-empty and distinct, values must be in range, and the current selected value must be present before composition proceeds.
 
 ### Compatibility Notes
@@ -88,6 +92,8 @@ This project tracks notable user-facing and maintainer-facing changes here. The 
   reordering.
 - `DatePickerItems` now includes `dayItems`. Direct `DatePickerItems(...)` construction must pass
   day values; `PickerDefaults.datePickerItems(...)` remains the preferred factory.
+- `DatePickerItems` now includes `constraints`. Kotlin callers can omit it because it has a default
+  value; direct Java or binary call sites need to pass a `DatePickerConstraints` instance.
 
 ### Maintenance
 
