@@ -100,11 +100,11 @@ class PickerItemScope<T : Any> internal constructor(
  * @param onSelectedItemChange Called when scroll or click interaction selects a new item.
  * @param modifier The modifier to be applied to the picker.
  * @param enabled Whether user scroll, click, and accessibility selection actions are enabled.
+ * @param display Visible item text configuration. When [content] is provided, this text is still
+ * exposed through [PickerItemScope.text].
  * @param style Visual and layout styling for the picker.
  * @param accessibility Accessibility labels, item descriptions, and custom action labels for the picker.
  * @param isInfinity Whether the picker should loop infinitely.
- * @param display Visible item text configuration. When [content] is provided, this text is still
- * exposed through [PickerItemScope.text].
  * @param content Optional custom content composable for rendering each item.
  */
 @Composable
@@ -114,10 +114,10 @@ fun <T : Any> Picker(
     onSelectedItemChange: (T) -> Unit,
     modifier: Modifier = Modifier,
     enabled: Boolean = true,
+    display: PickerItemText<T> = PickerDefaults.itemText(),
     style: PickerStyle = PickerDefaults.style(),
     accessibility: PickerAccessibility<T> = PickerDefaults.accessibility(),
     isInfinity: Boolean = true,
-    display: PickerItemText<T> = PickerDefaults.itemText(),
     content: @Composable ((PickerItemScope<T>) -> Unit)? = null
 ) {
     require(items.isNotEmpty()) { "Items list must not be empty" }
