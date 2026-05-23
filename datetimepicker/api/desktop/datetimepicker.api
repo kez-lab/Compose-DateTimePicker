@@ -509,7 +509,9 @@ public final class com/kez/picker/date/YearMonthPickerState$Companion {
 public final class com/kez/picker/date/YearMonthPickerStateKt {
 	public static final fun rememberYearMonthPickerState (IILandroidx/compose/runtime/Composer;I)Lcom/kez/picker/date/YearMonthPickerState;
 	public static final fun rememberYearMonthPickerState (Lcom/kez/picker/YearMonthPickerItems;IILandroidx/compose/runtime/Composer;I)Lcom/kez/picker/date/YearMonthPickerState;
+	public static final fun rememberYearMonthPickerState (Lcom/kez/picker/YearMonthPickerItems;Lcom/kez/picker/date/YearMonth;Landroidx/compose/runtime/Composer;I)Lcom/kez/picker/date/YearMonthPickerState;
 	public static final fun rememberYearMonthPickerState (Lcom/kez/picker/YearMonthPickerItems;Lkotlinx/datetime/LocalDate;Landroidx/compose/runtime/Composer;II)Lcom/kez/picker/date/YearMonthPickerState;
+	public static final fun rememberYearMonthPickerState (Lcom/kez/picker/date/YearMonth;Landroidx/compose/runtime/Composer;I)Lcom/kez/picker/date/YearMonthPickerState;
 	public static final fun rememberYearMonthPickerState (Lkotlinx/datetime/LocalDate;Landroidx/compose/runtime/Composer;II)Lcom/kez/picker/date/YearMonthPickerState;
 }
 
