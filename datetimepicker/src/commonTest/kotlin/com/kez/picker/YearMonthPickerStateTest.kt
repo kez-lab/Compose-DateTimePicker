@@ -279,9 +279,27 @@ class YearMonthPickerStateTest {
         )
 
         assertEquals(
-            YearMonth(year = 2024, month = 3),
+            YearMonth(year = 2024, month = 9),
             items.coerceYearMonth(YearMonth(year = 2025, month = 6))
         )
+    }
+
+    @Test
+    fun yearMonth_compareTo_ordersByWholeMonth() {
+        assertEquals(
+            true,
+            YearMonth(year = 2024, month = 12) < YearMonth(year = 2025, month = 1)
+        )
+    }
+
+    @Test
+    fun yearMonthPickerConstraints_throwsWhenMinimumIsAfterMaximum() {
+        assertFailsWith<IllegalArgumentException> {
+            YearMonthPickerConstraints(
+                minYearMonth = YearMonth(year = 2025, month = 1),
+                maxYearMonth = YearMonth(year = 2024, month = 12)
+            )
+        }
     }
 
     @Test
@@ -298,6 +316,44 @@ class YearMonthPickerStateTest {
     }
 
     @Test
+    fun yearMonthPickerItems_contains_respectsConstraints() {
+        val items = YearMonthPickerItems(
+            yearItems = listOf(2024, 2025, 2026),
+            monthItems = listOf(1, 6, 12),
+            constraints = YearMonthPickerConstraints(
+                minYearMonth = YearMonth(year = 2024, month = 6),
+                maxYearMonth = YearMonth(year = 2025, month = 6)
+            )
+        )
+
+        assertEquals(true, items.contains(YearMonth(year = 2024, month = 6)))
+        assertEquals(true, items.contains(YearMonth(year = 2025, month = 6)))
+        assertEquals(false, items.contains(YearMonth(year = 2024, month = 1)))
+        assertEquals(false, items.contains(YearMonth(year = 2026, month = 1)))
+    }
+
+    @Test
+    fun yearMonthPickerItems_coerceYearMonth_respectsConstraints() {
+        val items = YearMonthPickerItems(
+            yearItems = listOf(2024, 2025, 2026),
+            monthItems = listOf(1, 6, 12),
+            constraints = YearMonthPickerConstraints(
+                minYearMonth = YearMonth(year = 2024, month = 6),
+                maxYearMonth = YearMonth(year = 2025, month = 6)
+            )
+        )
+
+        assertEquals(
+            YearMonth(year = 2024, month = 6),
+            items.coerceYearMonth(year = 2024, month = 1)
+        )
+        assertEquals(
+            YearMonth(year = 2025, month = 6),
+            items.coerceYearMonth(year = 2026, month = 12)
+        )
+    }
+
+    @Test
     fun yearMonthPickerItems_coerceYearMonth_allowsRawValuesOutsidePickerRange() {
         val items = YearMonthPickerItems(
             yearItems = listOf(2024, 2026),
@@ -305,7 +361,7 @@ class YearMonthPickerStateTest {
         )
 
         assertEquals(
-            YearMonth(year = 2024, month = 12),
+            YearMonth(year = 2024, month = 3),
             items.coerceYearMonth(year = 999, month = 13)
         )
     }
@@ -320,7 +376,7 @@ class YearMonthPickerStateTest {
 
         state.selectYearMonth(year = 2025, month = 6, items = items)
 
-        assertEquals(YearMonth(year = 2024, month = 3), state.selectedYearMonth)
+        assertEquals(YearMonth(year = 2024, month = 9), state.selectedYearMonth)
     }
 
     @Test
@@ -333,7 +389,24 @@ class YearMonthPickerStateTest {
 
         state.selectYearMonth(year = 999, month = 13, items = items)
 
-        assertEquals(YearMonth(year = 2024, month = 12), state.selectedYearMonth)
+        assertEquals(YearMonth(year = 2024, month = 3), state.selectedYearMonth)
+    }
+
+    @Test
+    fun yearMonthPickerState_selectYearMonthWithConstrainedItems_coercesSelection() {
+        val state = YearMonthPickerState(initialYear = 2024, initialMonth = 6)
+        val items = YearMonthPickerItems(
+            yearItems = listOf(2024, 2025, 2026),
+            monthItems = listOf(1, 6, 12),
+            constraints = YearMonthPickerConstraints(
+                minYearMonth = YearMonth(year = 2024, month = 6),
+                maxYearMonth = YearMonth(year = 2025, month = 6)
+            )
+        )
+
+        state.selectYearMonth(year = 2026, month = 12, items = items)
+
+        assertEquals(YearMonth(year = 2025, month = 6), state.selectedYearMonth)
     }
 
     @Test
@@ -396,6 +469,28 @@ class YearMonthPickerStateTest {
                 monthItems = listOf(3, 9, 12)
             )
         }
+    }
+
+    @Test
+    fun validateYearMonthPickerItems_throwsWhenCurrentSelectionOutsideConstraints() {
+        val state = YearMonthPickerState(
+            initialYear = 2024,
+            initialMonth = 1
+        )
+        val items = YearMonthPickerItems(
+            yearItems = listOf(2024, 2025),
+            monthItems = listOf(1, 6, 12),
+            constraints = YearMonthPickerConstraints(
+                minYearMonth = YearMonth(year = 2024, month = 6),
+                maxYearMonth = YearMonth(year = 2025, month = 6)
+            )
+        )
+
+        val error = assertFailsWith<IllegalArgumentException> {
+            validateYearMonthPickerItems(state = state, items = items)
+        }
+
+        assertEquals(true, error.message.orEmpty().contains("constraints"))
     }
 
     @Test

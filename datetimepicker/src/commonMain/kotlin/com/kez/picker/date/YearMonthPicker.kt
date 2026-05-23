@@ -26,12 +26,12 @@ import com.kez.picker.YearMonthPickerItems
  * @param pickerModifier The modifier to be applied to each picker.
  * @param state The state object to control the picker.
  * @param onSelectedYearMonthChange Called after user interaction changes the selected year/month.
- * @param items Selectable year and month item lists for the picker.
+ * @param items Selectable year and month item lists plus optional year/month bounds for the picker.
  * @param display Visible item text formatters for each picker column.
  * @param style Visual and layout styling for each picker column.
  * @param spacingBetweenPickers The spacing between the pickers.
  * @param accessibility Accessibility labels, item descriptions, and custom action labels for each picker column.
- * @throws IllegalArgumentException if custom item lists are empty, contain duplicates, contain values outside the supported ranges, or omit the current selected year/month.
+ * @throws IllegalArgumentException if custom item lists are empty, contain duplicates, contain values outside the supported ranges, or omit the current selected year/month after year/month constraints are applied.
  */
 @Composable
 fun YearMonthPicker(
@@ -50,9 +50,16 @@ fun YearMonthPicker(
         items = items
     )
 
+    fun moveSelectionInsideAvailableItems() {
+        state.selectYearMonth(
+            yearMonth = items.coerceYearMonth(state.selectedYearMonth)
+        )
+    }
+
     fun updateSelectedYearMonth(update: () -> Unit) {
         val previousYearMonth = state.selectedYearMonth
         update()
+        moveSelectionInsideAvailableItems()
         val nextYearMonth = state.selectedYearMonth
         if (nextYearMonth != previousYearMonth) {
             onSelectedYearMonthChange(nextYearMonth)
@@ -72,8 +79,9 @@ fun YearMonthPicker(
                     Alignment.CenterHorizontally
                 ),
             ) {
+                val yearItems = items.selectableYearItems()
                 Picker(
-                    items = items.yearItems,
+                    items = yearItems,
                     selectedItem = state.selectedYear,
                     onSelectedItemChange = { year ->
                         updateSelectedYearMonth { state.selectYear(year) }
@@ -83,8 +91,9 @@ fun YearMonthPicker(
                     accessibility = accessibility.year,
                     itemText = display.year.itemText
                 )
+                val monthItems = items.selectableMonthItemsFor(state.selectedYear)
                 Picker(
-                    items = items.monthItems,
+                    items = monthItems,
                     selectedItem = state.selectedMonth,
                     onSelectedItemChange = { month ->
                         updateSelectedYearMonth { state.selectMonth(month) }
@@ -146,6 +155,15 @@ internal fun validateYearMonthPickerItems(
     }
     require(state.selectedMonth in monthItems) {
         "YearMonthPicker monthItems must contain state.selectedMonth=${state.selectedMonth}."
+    }
+    val availableYearItems = items.selectableYearItems()
+    require(state.selectedYear in availableYearItems) {
+        "YearMonthPicker constraints must allow state.selectedYear=${state.selectedYear}."
+    }
+    val availableMonthItems = items.selectableMonthItemsFor(state.selectedYear)
+    require(state.selectedMonth in availableMonthItems) {
+        "YearMonthPicker constraints must allow state.selectedMonth=${state.selectedMonth} " +
+                "for selectedYear=${state.selectedYear}."
     }
 }
 
