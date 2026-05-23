@@ -224,10 +224,10 @@ import com.kez.picker.util.currentDate
 
 @Composable
 fun YearMonthPickerExample() {
-    val initialDate = remember { currentDate() }
-    val minYearMonth = remember { YearMonth.from(initialDate) }
+    val initialYearMonth = remember { YearMonth.from(currentDate()) }
+    val minYearMonth = initialYearMonth
     val maxYearMonth = remember {
-        YearMonth(year = initialDate.year + 1, month = initialDate.month.number)
+        YearMonth(year = initialYearMonth.year + 1, month = initialYearMonth.month)
     }
     val items = remember {
         PickerDefaults.yearMonthPickerItems(
@@ -237,7 +237,7 @@ fun YearMonthPickerExample() {
     }
     val state = rememberYearMonthPickerState(
         items = items,
-        initialDate = initialDate
+        initialYearMonth = initialYearMonth
     )
 
     YearMonthPicker(
@@ -593,7 +593,7 @@ custom item 값이 유효 범위를 벗어나거나, 중복이 있거나, 목록
 
 `rememberYearMonthPickerState`는 saveable state를 사용합니다. Android에서는 플랫폼 saveable registry가 제공될 때 Activity 재생성 이후에도 선택값을 복원할 수 있습니다.
 
-초기값은 `rememberYearMonthPickerState(initialDate = LocalDate(...))` 또는 `initialYear`/`initialMonth` 파라미터로 설정합니다. 초기 연도는 `1000..9999` 범위여야 합니다.
+초기값은 연/월 전용 선택에는 `rememberYearMonthPickerState(initialYearMonth = YearMonth(...))`를 우선 사용하세요. 날짜 API와 연동해야 한다면 `initialDate = LocalDate(...)`로 초기화할 수도 있고, `initialYear`/`initialMonth` 파라미터도 사용할 수 있습니다. 초기 연도는 `1000..9999` 범위여야 합니다.
 
 상태 생성 이후 선택값을 바꾸려면 `state.selectYearMonth(YearMonth(...))`,
 `state.selectYearMonth(year, month)`, 또는 `state.selectDate(LocalDate(...))`를 호출합니다.

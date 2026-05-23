@@ -228,10 +228,10 @@ import com.kez.picker.util.currentDate
 
 @Composable
 fun YearMonthPickerExample() {
-    val initialDate = remember { currentDate() }
-    val minYearMonth = remember { YearMonth.from(initialDate) }
+    val initialYearMonth = remember { YearMonth.from(currentDate()) }
+    val minYearMonth = initialYearMonth
     val maxYearMonth = remember {
-        YearMonth(year = initialDate.year + 1, month = initialDate.month.number)
+        YearMonth(year = initialYearMonth.year + 1, month = initialYearMonth.month)
     }
     val items = remember {
         PickerDefaults.yearMonthPickerItems(
@@ -241,7 +241,7 @@ fun YearMonthPickerExample() {
     }
     val state = rememberYearMonthPickerState(
         items = items,
-        initialDate = initialDate
+        initialYearMonth = initialYearMonth
     )
 
     YearMonthPicker(
@@ -596,7 +596,7 @@ Invalid custom item values, duplicate items, empty lists, or current selected ye
 
 `rememberYearMonthPickerState` uses saveable state. On Android, selected values can be restored across Activity recreation when the platform saveable registry is available.
 
-For initial values, use either `rememberYearMonthPickerState(initialDate = LocalDate(...))` or the explicit `initialYear`/`initialMonth` parameters. Initial years must be in `1000..9999`.
+For initial values, prefer `rememberYearMonthPickerState(initialYearMonth = YearMonth(...))` for year/month-only selections. You can also initialize from `initialDate = LocalDate(...)` for date interop, or use the explicit `initialYear`/`initialMonth` parameters. Initial years must be in `1000..9999`.
 
 To change the selection after state creation, call `state.selectYearMonth(YearMonth(...))`,
 `state.selectYearMonth(year, month)`, or `state.selectDate(LocalDate(...))`.
