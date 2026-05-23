@@ -220,6 +220,7 @@ Use `YearMonthPicker` for selecting a specific month in a year.
 ```kotlin
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
+import com.kez.picker.PickerDefaults
 import com.kez.picker.date.YearMonth
 import com.kez.picker.date.YearMonthPicker
 import com.kez.picker.date.rememberYearMonthPickerState
@@ -228,12 +229,24 @@ import com.kez.picker.util.currentDate
 @Composable
 fun YearMonthPickerExample() {
     val initialDate = remember { currentDate() }
+    val minYearMonth = remember { YearMonth.from(initialDate) }
+    val maxYearMonth = remember {
+        YearMonth(year = initialDate.year + 1, month = initialDate.month.number)
+    }
+    val items = remember {
+        PickerDefaults.yearMonthPickerItems(
+            minYearMonth = minYearMonth,
+            maxYearMonth = maxYearMonth
+        )
+    }
     val state = rememberYearMonthPickerState(
+        items = items,
         initialDate = initialDate
     )
 
     YearMonthPicker(
         state = state,
+        items = items,
         onSelectedYearMonthChange = { selectedYearMonth: YearMonth ->
             // Update app state, ViewModel, or form data here.
         }
@@ -534,7 +547,7 @@ Invalid custom item values, duplicate items, empty lists, or current selected ye
 | :--- | :--- | :--- |
 | `state` | The state object to control the picker. | `rememberYearMonthPickerState()` |
 | `onSelectedYearMonthChange` | Called after user interaction changes the selected `YearMonth`. | `{}` |
-| `items` | Selectable year and month item lists. Values must be in `1000..9999` and `1..12`. | `PickerDefaults.yearMonthPickerItems()` |
+| `items` | Selectable year/month item lists plus optional inclusive `minYearMonth`/`maxYearMonth` bounds. Values must be in `1000..9999` and `1..12`. | `PickerDefaults.yearMonthPickerItems()` |
 | `display` | Visible item text formatters for each picker column. | `PickerDefaults.yearMonthPickerDisplay()` |
 | `style` | Visual and layout styling for each picker column. | `PickerDefaults.style()` |
 | `spacingBetweenPickers` | Horizontal spacing between picker columns. | `0.dp` |
@@ -554,7 +567,7 @@ For initial values, use either `rememberYearMonthPickerState(initialDate = Local
 To change the selection after state creation, call `state.selectYearMonth(YearMonth(...))`,
 `state.selectYearMonth(year, month)`, or `state.selectDate(LocalDate(...))`.
 
-Invalid custom item values, duplicate items, empty lists, or current selected year/month values missing from custom lists throw `IllegalArgumentException` during composition.
+Invalid custom item values, duplicate items, empty lists, or current selected year/month values missing from custom lists or year/month bounds throw `IllegalArgumentException` during composition. If a year change makes the current month unavailable, the picker moves to the closest available `YearMonth`.
 
 ## License
 
