@@ -36,7 +36,9 @@ class PickerDisplayAndroidTest {
                 onSelectedItemChange = { selectedItem = it },
                 style = PickerDefaults.style(visibleItemsCount = 3),
                 isInfinity = false,
-                itemText = { "No. $it" },
+                display = PickerDefaults.itemText(
+                    itemText = { "No. $it" }
+                ),
                 accessibility = PickerDefaults.accessibility(
                     pickerLabel = "Number",
                     itemContentDescription = { "value $it" }

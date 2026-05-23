@@ -96,7 +96,7 @@ fun YearMonthPicker(
                     enabled = enabled,
                     style = style,
                     accessibility = accessibility.year,
-                    itemText = display.year.itemText
+                    display = display.year
                 )
                 val monthItems = items.selectableMonthItemsFor(state.selectedYear)
                 Picker(
@@ -109,7 +109,7 @@ fun YearMonthPicker(
                     enabled = enabled,
                     style = style,
                     accessibility = accessibility.month,
-                    itemText = display.month.itemText
+                    display = display.month
                 )
             }
         }

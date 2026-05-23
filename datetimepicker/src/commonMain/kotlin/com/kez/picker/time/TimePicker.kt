@@ -105,7 +105,7 @@ fun TimePicker(
                         style = style,
                         isInfinity = false,
                         accessibility = accessibility.period,
-                        itemText = display.period.itemText
+                        display = display.period
                     )
                 }
                 val hourItems = items.selectableHourItemsFor(
@@ -122,7 +122,7 @@ fun TimePicker(
                     enabled = enabled,
                     style = style,
                     accessibility = accessibility.hour,
-                    itemText = display.hour.itemText
+                    display = display.hour
                 )
                 val minuteItems = items.selectableMinuteItemsFor(
                     hourOfDay = state.selectedHourOfDay
@@ -137,7 +137,7 @@ fun TimePicker(
                     enabled = enabled,
                     style = style,
                     accessibility = accessibility.minute,
-                    itemText = display.minute.itemText
+                    display = display.minute
                 )
             }
         }
