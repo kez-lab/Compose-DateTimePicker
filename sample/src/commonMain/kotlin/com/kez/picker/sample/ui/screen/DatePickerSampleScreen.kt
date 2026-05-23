@@ -60,23 +60,21 @@ fun DatePickerSampleScreen(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             val today = remember { currentDate() }
-            val leapDate = remember(today.year) {
-                LocalDate(
-                    year = nearestLeapYearFrom(year = today.year),
-                    month = Month.FEBRUARY,
-                    day = 29
-                )
+            val leapDate = remember(today) {
+                nearestLeapDateOnOrAfter(date = today)
             }
             val allowedYears = remember(today.year, leapDate.year) {
-                ((today.year - 1)..leapDate.year).toList()
+                (today.year..leapDate.year).toList()
             }
             val allowedDays = remember(today.day, leapDate.day) {
                 listOf(1, 15, today.day, leapDate.day).distinct().sorted()
             }
-            val pickerItems = remember(allowedYears, allowedDays) {
+            val pickerItems = remember(allowedYears, allowedDays, today, leapDate) {
                 PickerDefaults.datePickerItems(
                     yearItems = allowedYears,
-                    dayItems = allowedDays
+                    dayItems = allowedDays,
+                    minDate = today,
+                    maxDate = leapDate
                 )
             }
             val state = rememberDatePickerState(
@@ -89,7 +87,7 @@ fun DatePickerSampleScreen(
                 icon = FeatherIcons.Calendar,
                 label = "Selected date",
                 value = selectedDateText,
-                supportingText = "Years: ${allowedYears.joinToString()} · Days: ${allowedDays.joinToString()}"
+                supportingText = "Range: $today..$leapDate · Days: ${allowedDays.joinToString()}"
             )
 
             Spacer(modifier = Modifier.height(16.dp))
@@ -163,12 +161,19 @@ fun DatePickerSampleScreen(
     }
 }
 
-private fun nearestLeapYearFrom(year: Int): Int {
-    var candidateYear = year
-    while (!candidateYear.isLeapYear()) {
+private fun nearestLeapDateOnOrAfter(date: LocalDate): LocalDate {
+    var candidateYear = date.year
+    while (true) {
+        if (candidateYear.isLeapYear()) {
+            val candidate = LocalDate(
+                year = candidateYear,
+                month = Month.FEBRUARY,
+                day = 29
+            )
+            if (candidate >= date) return candidate
+        }
         candidateYear += 1
     }
-    return candidateYear
 }
 
 private fun Int.isLeapYear(): Boolean =

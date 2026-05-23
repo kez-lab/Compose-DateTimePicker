@@ -127,17 +127,33 @@ import com.kez.picker.PickerDefaults
 import com.kez.picker.date.DatePicker
 import com.kez.picker.date.rememberDatePickerState
 import com.kez.picker.util.currentDate
+import kotlinx.datetime.LocalDate
 
 @Composable
 fun DatePickerExample() {
     val initialDate = remember { currentDate() }
-    val selectableYears = remember(initialDate.year) {
-        ((initialDate.year - 1)..(initialDate.year + 1)).toList()
+    val minDate = remember(initialDate.year) {
+        LocalDate(initialDate.year, 1, 1)
+    }
+    val maxDate = remember(initialDate.year) {
+        LocalDate(initialDate.year + 1, 12, 31)
+    }
+    val selectableYears = remember(minDate.year, maxDate.year) {
+        (minDate.year..maxDate.year).toList()
     }
     val selectableDays = remember(initialDate.day) {
         listOf(1, 15, initialDate.day).distinct().sorted()
     }
+    val items = remember(selectableYears, selectableDays, minDate, maxDate) {
+        PickerDefaults.datePickerItems(
+            yearItems = selectableYears,
+            dayItems = selectableDays,
+            minDate = minDate,
+            maxDate = maxDate
+        )
+    }
     val state = rememberDatePickerState(
+        items = items,
         initialDate = initialDate
     )
 
@@ -146,19 +162,17 @@ fun DatePickerExample() {
         onSelectedDateChange = { selectedDate ->
             // 앱 state, ViewModel, form data를 여기서 갱신합니다.
         },
-        items = PickerDefaults.datePickerItems(
-            yearItems = selectableYears,
-            dayItems = selectableDays
-        )
+        items = items
     )
 
     // 앱 로직에 전달할 때는 state.selectedDate를 사용합니다.
 }
 ```
 
-`PickerDefaults.*Items(...)`로 선택 가능한 목록을 제한할 때는 기억된 초기값 또는 복원된 state 값이
-해당 목록 안에 들어가도록 함께 설계하세요. composition 이후 외부 날짜가 바뀐다면 새 `initialDate`
-인자에 의존하지 말고 `state.selectDate(newDate)`를 호출하세요.
+`PickerDefaults.*Items(...)`로 선택 가능한 목록이나 날짜 범위를 제한할 때는 기억된 초기값 또는
+복원된 state 값이 해당 규칙 안에 들어가도록 함께 설계하세요. 첫 composition 전에 보정해야 한다면
+`rememberDatePickerState(items = items, initialDate = value)`를 사용하세요. composition 이후 외부
+날짜가 바뀐다면 새 `initialDate` 인자에 의존하지 말고 `state.selectDate(newDate, items)`를 호출하세요.
 
 ### YearMonthPicker
 
@@ -405,10 +419,10 @@ fun ProgrammaticTimePickerExample() {
 
 요청한 값이 현재 item list에 포함되어 있으면 picker 스크롤 위치가 동기화됩니다. custom list는 엄격하게
 검증됩니다. 비어 있지 않아야 하고, 중복이 없어야 하며, 지원 범위 안의 값만 포함해야 하고, 현재 선택값도
-반드시 포함해야 합니다. `DatePicker`는 `dayItems`를 선택된 연/월의 최대 일수로 필터링하므로,
-`dayItems`에는 선택 가능한 모든 연/월 조합에서 유효한 day가 최소 하나 있어야 합니다. 앱이 custom list
-밖의 값을 복원하거나 요청할 수 있다면 `state.select*(value, items)` overload나 `items.coerce*`
-helper로 가장 가까운 선택 가능 값으로 이동한 뒤 picker를 렌더링하세요.
+반드시 포함해야 합니다. `DatePicker`는 `dayItems`를 선택된 연/월의 최대 일수로 필터링하고,
+선택적 `minDate`/`maxDate` 범위도 함께 적용합니다. 앱이 custom list나 날짜 범위 밖의 값을 복원하거나
+요청할 수 있다면 `state.select*(value, items)` overload나 `items.coerce*` helper로 가장 가까운 선택
+가능 값으로 이동한 뒤 picker를 렌더링하세요.
 첫 composition의 초기값에도 같은 보정이 필요하면 `remember*State(items = items, initial... = value)`를
 사용하세요.
 
@@ -450,7 +464,7 @@ custom item 값이 유효 범위를 벗어나거나, 중복이 있거나, 필수
 | :--- | :--- | :--- |
 | `state` | Picker를 제어하기 위한 상태 객체입니다. | `rememberDatePickerState()` |
 | `onSelectedDateChange` | 사용자 조작으로 선택된 `LocalDate`가 바뀐 뒤 호출됩니다. | `{}` |
-| `items` | 선택 가능한 연도/월/일 목록입니다. 값은 `1000..9999`, `1..12`, `1..31` 범위여야 합니다. | `PickerDefaults.datePickerItems()` |
+| `items` | 선택 가능한 연도/월/일 목록과 선택적 `minDate`/`maxDate` inclusive 범위입니다. 값은 `1000..9999`, `1..12`, `1..31` 범위여야 합니다. | `PickerDefaults.datePickerItems()` |
 | `display` | 각 picker column의 화면 표시 텍스트 formatter입니다. | `PickerDefaults.datePickerDisplay()` |
 | `style` | 각 picker column의 시각/레이아웃 스타일입니다. | `PickerDefaults.style()` |
 | `spacingBetweenPickers` | picker column 사이의 가로 간격입니다. | `0.dp` |
@@ -473,7 +487,7 @@ custom item 값이 유효 범위를 벗어나거나, 중복이 있거나, 필수
 
 상태 생성 이후 선택값을 바꾸려면 `state.selectDate(LocalDate(...))`를 호출합니다.
 
-custom item 값이 유효 범위를 벗어나거나, 중복이 있거나, 목록이 비어 있거나, 현재 선택된 연도/월/일이 custom 목록에 없으면 composition 중 `IllegalArgumentException`이 발생합니다. 연/월 변경으로 현재 일이 `dayItems`에서 선택 불가능해지면 해당 월에서 가장 가까운 선택 가능 day로 이동합니다.
+custom item 값이 유효 범위를 벗어나거나, 중복이 있거나, 목록이 비어 있거나, 현재 선택된 연도/월/일이 custom 목록 또는 날짜 범위 밖이면 composition 중 `IllegalArgumentException`이 발생합니다. 연/월 변경으로 현재 월 또는 일이 선택 불가능해지면 설정된 제약 안에서 가장 가까운 선택 가능 값으로 이동합니다.
 
 ### YearMonthPicker
 
