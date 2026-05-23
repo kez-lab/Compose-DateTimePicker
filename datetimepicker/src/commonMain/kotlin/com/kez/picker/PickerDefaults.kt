@@ -173,7 +173,7 @@ object PickerDefaults {
     )
 
     /**
-     * Creates layout weights for [com.kez.picker.time.TimePicker] columns.
+     * Creates layout options for [com.kez.picker.time.TimePicker] columns.
      *
      * Pass `null` for a column weight when [com.kez.picker.time.TimePicker] should use
      * `pickerModifier` to define that column width instead of filling weighted row space.
@@ -181,20 +181,27 @@ object PickerDefaults {
      * @param periodWeight The AM/PM column weight in 12-hour mode.
      * @param hourWeight The hour column weight.
      * @param minuteWeight The minute column weight.
+     * @param columnOrder The visual column order. [TimePickerColumn.PERIOD] is ignored in 24-hour mode.
      * @return A [TimePickerLayout] instance with the specified column weights.
      */
     fun timePickerLayout(
         periodWeight: Float? = 1f,
         hourWeight: Float? = 1f,
-        minuteWeight: Float? = 1f
+        minuteWeight: Float? = 1f,
+        columnOrder: List<TimePickerColumn> = listOf(
+            TimePickerColumn.PERIOD,
+            TimePickerColumn.HOUR,
+            TimePickerColumn.MINUTE
+        )
     ): TimePickerLayout = TimePickerLayout(
         periodWeight = periodWeight,
         hourWeight = hourWeight,
-        minuteWeight = minuteWeight
+        minuteWeight = minuteWeight,
+        columnOrder = columnOrder.toList()
     )
 
     /**
-     * Creates layout weights for [com.kez.picker.date.DatePicker] columns.
+     * Creates layout options for [com.kez.picker.date.DatePicker] columns.
      *
      * Pass `null` for a column weight when [com.kez.picker.date.DatePicker] should use
      * `pickerModifier` to define that column width instead of filling weighted row space.
@@ -202,34 +209,47 @@ object PickerDefaults {
      * @param yearWeight The year column weight.
      * @param monthWeight The month column weight.
      * @param dayWeight The day column weight.
+     * @param columnOrder The visual column order.
      * @return A [DatePickerLayout] instance with the specified column weights.
      */
     fun datePickerLayout(
         yearWeight: Float? = 1.2f,
         monthWeight: Float? = 0.8f,
-        dayWeight: Float? = 0.8f
+        dayWeight: Float? = 0.8f,
+        columnOrder: List<DatePickerColumn> = listOf(
+            DatePickerColumn.YEAR,
+            DatePickerColumn.MONTH,
+            DatePickerColumn.DAY
+        )
     ): DatePickerLayout = DatePickerLayout(
         yearWeight = yearWeight,
         monthWeight = monthWeight,
-        dayWeight = dayWeight
+        dayWeight = dayWeight,
+        columnOrder = columnOrder.toList()
     )
 
     /**
-     * Creates layout weights for [com.kez.picker.date.YearMonthPicker] columns.
+     * Creates layout options for [com.kez.picker.date.YearMonthPicker] columns.
      *
      * Pass `null` for a column weight when [com.kez.picker.date.YearMonthPicker] should use
      * `pickerModifier` to define that column width instead of filling weighted row space.
      *
      * @param yearWeight The year column weight.
      * @param monthWeight The month column weight.
+     * @param columnOrder The visual column order.
      * @return A [YearMonthPickerLayout] instance with the specified column weights.
      */
     fun yearMonthPickerLayout(
         yearWeight: Float? = 1f,
-        monthWeight: Float? = 1f
+        monthWeight: Float? = 1f,
+        columnOrder: List<YearMonthPickerColumn> = listOf(
+            YearMonthPickerColumn.YEAR,
+            YearMonthPickerColumn.MONTH
+        )
     ): YearMonthPickerLayout = YearMonthPickerLayout(
         yearWeight = yearWeight,
-        monthWeight = monthWeight
+        monthWeight = monthWeight,
+        columnOrder = columnOrder.toList()
     )
 
     /**
@@ -645,7 +665,62 @@ data class PickerStyle(
 )
 
 /**
- * Represents layout weights used by [com.kez.picker.time.TimePicker] columns.
+ * Identifies a [com.kez.picker.time.TimePicker] column for layout ordering.
+ */
+enum class TimePickerColumn {
+    /**
+     * AM/PM period column. This column is rendered only in 12-hour mode.
+     */
+    PERIOD,
+
+    /**
+     * Hour column.
+     */
+    HOUR,
+
+    /**
+     * Minute column.
+     */
+    MINUTE
+}
+
+/**
+ * Identifies a [com.kez.picker.date.DatePicker] column for layout ordering.
+ */
+enum class DatePickerColumn {
+    /**
+     * Year column.
+     */
+    YEAR,
+
+    /**
+     * Month column.
+     */
+    MONTH,
+
+    /**
+     * Day column.
+     */
+    DAY
+}
+
+/**
+ * Identifies a [com.kez.picker.date.YearMonthPicker] column for layout ordering.
+ */
+enum class YearMonthPickerColumn {
+    /**
+     * Year column.
+     */
+    YEAR,
+
+    /**
+     * Month column.
+     */
+    MONTH
+}
+
+/**
+ * Represents layout options used by [com.kez.picker.time.TimePicker] columns.
  *
  * Set a column weight to `null` to leave that column unweighted so `pickerModifier` can provide an
  * explicit width.
@@ -653,23 +728,34 @@ data class PickerStyle(
  * @param periodWeight The AM/PM column weight in 12-hour mode.
  * @param hourWeight The hour column weight.
  * @param minuteWeight The minute column weight.
+ * @param columnOrder The visual column order. [TimePickerColumn.PERIOD] is ignored in 24-hour mode.
  * @see PickerDefaults.timePickerLayout
  */
 @Immutable
 data class TimePickerLayout(
     val periodWeight: Float?,
     val hourWeight: Float?,
-    val minuteWeight: Float?
+    val minuteWeight: Float?,
+    val columnOrder: List<TimePickerColumn> = listOf(
+        TimePickerColumn.PERIOD,
+        TimePickerColumn.HOUR,
+        TimePickerColumn.MINUTE
+    )
 ) {
     init {
         requirePickerWeight("periodWeight", periodWeight)
         requirePickerWeight("hourWeight", hourWeight)
         requirePickerWeight("minuteWeight", minuteWeight)
+        requireColumnOrder(
+            name = "TimePickerLayout.columnOrder",
+            columnOrder = columnOrder,
+            expectedColumns = TimePickerColumn.entries
+        )
     }
 }
 
 /**
- * Represents layout weights used by [com.kez.picker.date.DatePicker] columns.
+ * Represents layout options used by [com.kez.picker.date.DatePicker] columns.
  *
  * Set a column weight to `null` to leave that column unweighted so `pickerModifier` can provide an
  * explicit width.
@@ -677,44 +763,75 @@ data class TimePickerLayout(
  * @param yearWeight The year column weight.
  * @param monthWeight The month column weight.
  * @param dayWeight The day column weight.
+ * @param columnOrder The visual column order.
  * @see PickerDefaults.datePickerLayout
  */
 @Immutable
 data class DatePickerLayout(
     val yearWeight: Float?,
     val monthWeight: Float?,
-    val dayWeight: Float?
+    val dayWeight: Float?,
+    val columnOrder: List<DatePickerColumn> = listOf(
+        DatePickerColumn.YEAR,
+        DatePickerColumn.MONTH,
+        DatePickerColumn.DAY
+    )
 ) {
     init {
         requirePickerWeight("yearWeight", yearWeight)
         requirePickerWeight("monthWeight", monthWeight)
         requirePickerWeight("dayWeight", dayWeight)
+        requireColumnOrder(
+            name = "DatePickerLayout.columnOrder",
+            columnOrder = columnOrder,
+            expectedColumns = DatePickerColumn.entries
+        )
     }
 }
 
 /**
- * Represents layout weights used by [com.kez.picker.date.YearMonthPicker] columns.
+ * Represents layout options used by [com.kez.picker.date.YearMonthPicker] columns.
  *
  * Set a column weight to `null` to leave that column unweighted so `pickerModifier` can provide an
  * explicit width.
  *
  * @param yearWeight The year column weight.
  * @param monthWeight The month column weight.
+ * @param columnOrder The visual column order.
  * @see PickerDefaults.yearMonthPickerLayout
  */
 @Immutable
 data class YearMonthPickerLayout(
     val yearWeight: Float?,
-    val monthWeight: Float?
+    val monthWeight: Float?,
+    val columnOrder: List<YearMonthPickerColumn> = listOf(
+        YearMonthPickerColumn.YEAR,
+        YearMonthPickerColumn.MONTH
+    )
 ) {
     init {
         requirePickerWeight("yearWeight", yearWeight)
         requirePickerWeight("monthWeight", monthWeight)
+        requireColumnOrder(
+            name = "YearMonthPickerLayout.columnOrder",
+            columnOrder = columnOrder,
+            expectedColumns = YearMonthPickerColumn.entries
+        )
     }
 }
 
 private fun requirePickerWeight(name: String, weight: Float?) {
     require(weight == null || weight > 0f) {
         "$name must be positive when provided, but was $weight."
+    }
+}
+
+private fun <T> requireColumnOrder(
+    name: String,
+    columnOrder: List<T>,
+    expectedColumns: List<T>
+) {
+    require(columnOrder.size == expectedColumns.size && columnOrder.toSet() == expectedColumns.toSet()) {
+        "$name must contain each of $expectedColumns exactly once, but was $columnOrder."
     }
 }
