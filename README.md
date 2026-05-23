@@ -368,7 +368,7 @@ accessibility action labels without changing the visual item text. Selection is 
 `yearMonthPickerAccessibility(...)` to create reusable localized accessibility objects.
 
 Display options customize the visible item text without changing accessibility output. Use
-`itemText` on a generic `Picker<T>`, or `PickerDefaults.timePickerDisplay(...)`,
+`PickerDefaults.itemText(...)` on a generic `Picker<T>`, or `PickerDefaults.timePickerDisplay(...)`,
 `datePickerDisplay(...)`, and `yearMonthPickerDisplay(...)` for composite pickers when visible labels
 need padding, suffixes, or localized month/period names.
 
@@ -414,7 +414,9 @@ fun SizePickerExample() {
         onSelectedItemChange = { selectedSize = it },
         enabled = true,
         isInfinity = false,
-        itemText = { size -> size.uppercase() },
+        display = PickerDefaults.itemText(
+            itemText = { size -> size.uppercase() }
+        ),
         accessibility = PickerDefaults.accessibility(
             pickerLabel = "Size",
             itemContentDescription = { it }
@@ -451,8 +453,8 @@ Picker(
 
 Use `style = PickerDefaults.style(...)` to customize visible item count, colors, text styles,
 dividers, item padding, selected item background, and fading edge behavior with one reusable object.
-Use `itemText` for visible text and `accessibility.itemContentDescription` for screen-reader text
-when those two strings should differ.
+Use `display.itemText` for visible text and `accessibility.itemContentDescription` for screen-reader
+text when those two strings should differ.
 
 ### Programmatic Selection
 
