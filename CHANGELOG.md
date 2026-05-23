@@ -39,6 +39,9 @@ This project tracks notable user-facing and maintainer-facing changes here. The 
   keep selected values visible while clearly communicating their disabled state.
 - Added `PickerItemScope` for generic `Picker` custom content so row UI can read the formatted text,
   selected state, enabled state, distance fraction, text style, and content color.
+- Added `TimePickerLayout`, `DatePickerLayout`, and `YearMonthPickerLayout` with
+  `PickerDefaults.*Layout(...)` factories so apps can tune or opt out of composite picker column
+  weights.
 - Added picker accessibility descriptions and localized item description hooks so Android apps can provide clearer TalkBack output.
 - Added previous/next accessibility actions for picker columns, with public labels that apps can localize.
 
@@ -85,6 +88,8 @@ This project tracks notable user-facing and maintainer-facing changes here. The 
   `minYearMonth`/`maxYearMonth` bounds are configured.
 - Disabled pickers now expose disabled semantics, omit previous/next accessibility selection actions,
   and use disabled text, divider, and selected-item background colors.
+- `DatePicker.spacingBetweenPickers` now applies actual horizontal spacing between year, month, and
+  day columns.
 - Custom item lists are now strict: required lists must be non-empty and distinct, values must be in range, and the current selected value must be present before composition proceeds.
 
 ### Compatibility Notes
@@ -118,6 +123,8 @@ This project tracks notable user-facing and maintainer-facing changes here. The 
   arguments when configuring `items`, `display`, `style`, `spacingBetweenPickers`, or `accessibility`.
   Named-argument call sites are straightforward to migrate; positional call sites may need argument
   reordering.
+- Composite picker function signatures now include `layout` after `style`. Prefer named arguments
+  when configuring `spacingBetweenPickers` or `accessibility`.
 - Generic `Picker.content` now receives `PickerItemScope<T>` instead of `T`. Replace direct item usage
   with `scope.item`, and use `scope.text`, `scope.textStyle`, or `scope.contentColor` when rendering
   custom rows.
