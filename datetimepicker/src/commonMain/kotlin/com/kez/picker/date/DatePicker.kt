@@ -12,6 +12,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import com.kez.picker.DatePickerAccessibility
+import com.kez.picker.DatePickerDisplay
 import com.kez.picker.DatePickerItems
 import com.kez.picker.Picker
 import com.kez.picker.PickerDefaults
@@ -27,6 +28,7 @@ import kotlin.math.abs
  * @param state The state object to control the picker.
  * @param onSelectedDateChange Called after user interaction changes the selected date.
  * @param items Selectable year, month, and day item lists for the picker.
+ * @param display Visible item text formatters for each picker column.
  * @param style Visual and layout styling for each picker column.
  * @param spacingBetweenPickers The spacing between the pickers.
  * @param accessibility Accessibility labels, item descriptions, and custom action labels for each picker column.
@@ -39,6 +41,7 @@ fun DatePicker(
     state: DatePickerState = rememberDatePickerState(),
     onSelectedDateChange: (LocalDate) -> Unit = {},
     items: DatePickerItems = PickerDefaults.datePickerItems(),
+    display: DatePickerDisplay = PickerDefaults.datePickerDisplay(),
     style: PickerStyle = PickerDefaults.style(),
     spacingBetweenPickers: Dp = PickerDefaults.SpacingBetweenPickers,
     accessibility: DatePickerAccessibility = PickerDefaults.datePickerAccessibility()
@@ -83,7 +86,8 @@ fun DatePicker(
                     },
                     modifier = pickerModifier.weight(1.2f), // Give Year slightly more width
                     style = style,
-                    accessibility = accessibility.year
+                    accessibility = accessibility.year,
+                    itemText = display.year.itemText
                 )
 
                 Picker(
@@ -94,7 +98,8 @@ fun DatePicker(
                     },
                     modifier = pickerModifier.weight(0.8f),
                     style = style,
-                    accessibility = accessibility.month
+                    accessibility = accessibility.month,
+                    itemText = display.month.itemText
                 )
 
                 key(maxDay) {
@@ -107,7 +112,8 @@ fun DatePicker(
                         modifier = pickerModifier.weight(0.8f),
                         style = style,
                         isInfinity = false,
-                        accessibility = accessibility.day
+                        accessibility = accessibility.day,
+                        itemText = display.day.itemText
                     )
                 }
             }
