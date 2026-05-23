@@ -80,7 +80,8 @@ fun rememberTimePickerState(
  * Creates and remembers a [TimePickerState] whose initial value is coerced by [items].
  *
  * Initial values and [items] are read when the state is first created. This is useful when the
- * picker is rendered with custom item lists and restored app state may fall outside those lists.
+ * picker is rendered with custom item lists or time bounds and restored app state may fall outside
+ * those rules.
  *
  * @param items Selectable values used to coerce [initialTime] before creating the state.
  * @param initialTime The requested initial time.
@@ -238,7 +239,8 @@ class TimePickerState(
     /**
      * Programmatically selects the closest time to [time] that is allowed by [items].
      *
-     * Use this overload when app-owned state can contain values outside custom picker lists.
+     * Use this overload when app-owned state can contain values outside custom picker lists or
+     * time bounds.
      */
     fun selectTime(time: LocalTime, items: TimePickerItems) {
         selectTime(items.coerceTime(time = time, timeFormat = timeFormat))

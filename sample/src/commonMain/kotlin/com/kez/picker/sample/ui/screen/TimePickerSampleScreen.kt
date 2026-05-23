@@ -49,12 +49,20 @@ internal fun TimePickerSampleScreen(
 ) {
     var selectedFormat by remember { mutableIntStateOf(0) }
     val currentTime = remember { currentDateTime().time }
+    val businessHoursItems = remember {
+        PickerDefaults.timePickerItems(
+            minuteItems = listOf(0, 15, 30, 45),
+            minTime = LocalTime(hour = 8, minute = 0),
+            maxTime = LocalTime(hour = 18, minute = 0)
+        )
+    }
 
     val timeState12 = rememberTimePickerState(
         initialTime = currentTime,
         timeFormat = TimeFormat.HOUR_12
     )
     val timeState24 = rememberTimePickerState(
+        items = businessHoursItems,
         initialTime = currentTime
     )
     val demoTime = LocalTime(hour = 9, minute = 30)
@@ -117,9 +125,14 @@ internal fun TimePickerSampleScreen(
                     onClick = {
                         val now = currentDateTime().time
                         timeState12.selectTime(now)
-                        timeState24.selectTime(now)
-                        lastChangedHour = now.hour
-                        lastChangedMinute = now.minute
+                        timeState24.selectTime(now, businessHoursItems)
+                        val selectedTime = if (selectedFormat == 0) {
+                            timeState12.selectedTime
+                        } else {
+                            timeState24.selectedTime
+                        }
+                        lastChangedHour = selectedTime.hour
+                        lastChangedMinute = selectedTime.minute
                     },
                     modifier = Modifier.fillMaxWidth()
                 ) {
@@ -133,9 +146,14 @@ internal fun TimePickerSampleScreen(
                 OutlinedButton(
                     onClick = {
                         timeState12.selectTime(demoTime)
-                        timeState24.selectTime(demoTime)
-                        lastChangedHour = demoTime.hour
-                        lastChangedMinute = demoTime.minute
+                        timeState24.selectTime(demoTime, businessHoursItems)
+                        val selectedTime = if (selectedFormat == 0) {
+                            timeState12.selectedTime
+                        } else {
+                            timeState24.selectedTime
+                        }
+                        lastChangedHour = selectedTime.hour
+                        lastChangedMinute = selectedTime.minute
                     },
                     modifier = Modifier.fillMaxWidth()
                 ) {
@@ -190,6 +208,7 @@ internal fun TimePickerSampleScreen(
                             lastChangedHour = it.hour
                             lastChangedMinute = it.minute
                         },
+                        items = businessHoursItems,
                         display = PickerDefaults.timePickerDisplay(
                             hourItemText = { it.toString().padStart(2, '0') },
                             minuteItemText = { it.toString().padStart(2, '0') }

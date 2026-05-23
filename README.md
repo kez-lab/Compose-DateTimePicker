@@ -118,6 +118,41 @@ fun TimePicker12hExample() {
 }
 ```
 
+#### 3. Constrained Hours
+
+Use `PickerDefaults.timePickerItems(minTime = ..., maxTime = ...)` when a form should only allow an
+inclusive time range. Create state with the same `items` object so restored or preset values are
+coerced before the picker renders.
+
+```kotlin
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
+import com.kez.picker.PickerDefaults
+import com.kez.picker.time.TimePicker
+import com.kez.picker.time.rememberTimePickerState
+import kotlinx.datetime.LocalTime
+
+@Composable
+fun BusinessHoursTimePickerExample() {
+    val items = remember {
+        PickerDefaults.timePickerItems(
+            minuteItems = listOf(0, 15, 30, 45),
+            minTime = LocalTime(8, 0),
+            maxTime = LocalTime(18, 0)
+        )
+    }
+    val state = rememberTimePickerState(
+        items = items,
+        initialTime = LocalTime(7, 30)
+    )
+
+    TimePicker(
+        state = state,
+        items = items
+    )
+}
+```
+
 ### DatePicker
 
 Use `DatePicker` for selecting a complete date (year, month, and day). The component automatically
@@ -422,10 +457,11 @@ fun ProgrammaticTimePickerExample() {
 
 The picker scroll position is synchronized when the current item lists contain the requested values. Custom
 item lists are strict: they must be non-empty, distinct, within the supported value ranges, and contain the
-current selected value. `DatePicker` filters `dayItems` by the selected year/month maximum day and optional
-`minDate`/`maxDate` bounds. If an app can restore or request values outside a custom list or date bounds,
-call the `state.select*(value, items)` overload or `items.coerce*` helper to move to the closest selectable
-value before rendering the picker.
+current selected value. `TimePicker` filters hour, minute, and AM/PM columns through optional
+`minTime`/`maxTime` bounds. `DatePicker` filters `dayItems` by the selected year/month maximum day and
+optional `minDate`/`maxDate` bounds. If an app can restore or request values outside a custom list or
+configured bounds, call the `state.select*(value, items)` overload or `items.coerce*` helper to move
+to the closest selectable value before rendering the picker.
 For first composition, use `remember*State(items = items, initial... = value)` to apply the same coercion
 before the picker is rendered.
 
@@ -439,7 +475,7 @@ app-owned value in the same event handler when you trigger programmatic changes.
 | :--- | :--- | :--- |
 | `state` | The state object to control the picker. | `rememberTimePickerState()` |
 | `onSelectedTimeChange` | Called after user interaction changes the selected `LocalTime`. | `{}` |
-| `items` | Selectable minute, 24-hour hour, 12-hour display-hour, and AM/PM item lists. | `PickerDefaults.timePickerItems()` |
+| `items` | Selectable minute, 24-hour hour, 12-hour display-hour, and AM/PM item lists plus optional inclusive `minTime`/`maxTime` bounds. | `PickerDefaults.timePickerItems()` |
 | `display` | Visible item text formatters for each picker column. | `PickerDefaults.timePickerDisplay()` |
 | `style` | Visual and layout styling for each picker column. | `PickerDefaults.style()` |
 | `spacingBetweenPickers` | Horizontal spacing between picker columns. | `0.dp` |
@@ -459,7 +495,7 @@ For initial values, use either `rememberTimePickerState(initialTime = LocalTime(
 
 To change the selection after state creation, call `state.selectTime(LocalTime(...))`.
 
-Invalid custom item values, duplicate items, empty required lists, or current selections missing from custom lists throw `IllegalArgumentException` during composition. In 12-hour mode, `PickerDefaults.timePickerItems(hour12Items = ...)` uses display-hour values (`1..12`): `initialHour = 13` becomes `state.selectedHour == 1` with `PM`.
+Invalid custom item values, duplicate items, empty required lists, or current selections missing from custom lists or time bounds throw `IllegalArgumentException` during composition. In 12-hour mode, `PickerDefaults.timePickerItems(hour12Items = ...)` uses display-hour values (`1..12`): `initialHour = 13` becomes `state.selectedHour == 1` with `PM`.
 
 ### DatePicker
 

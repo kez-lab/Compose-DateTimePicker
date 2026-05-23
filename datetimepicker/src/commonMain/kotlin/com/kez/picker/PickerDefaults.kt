@@ -22,6 +22,7 @@ import com.kez.picker.util.MONTH_RANGE
 import com.kez.picker.util.TimePeriod
 import com.kez.picker.util.YEAR_RANGE
 import kotlinx.datetime.LocalDate
+import kotlinx.datetime.LocalTime
 
 /**
  * Contains default values and factory methods for creating Picker styles.
@@ -356,24 +357,47 @@ object PickerDefaults {
     )
 
     /**
+     * Creates inclusive time constraints for a time picker.
+     *
+     * @param minTime The earliest selectable time, inclusive. Pass null to omit the lower bound.
+     * @param maxTime The latest selectable time, inclusive. Pass null to omit the upper bound.
+     * @return A [TimePickerConstraints] instance with the specified bounds.
+     */
+    fun timePickerConstraints(
+        minTime: LocalTime? = null,
+        maxTime: LocalTime? = null
+    ): TimePickerConstraints = TimePickerConstraints(
+        minTime = minTime,
+        maxTime = maxTime
+    )
+
+    /**
      * Creates selectable item lists for a time picker.
      *
      * @param minuteItems Minute values available for selection. Values must be in 0..59.
      * @param hour24Items Hour values available when using 24-hour time. Values must be in 0..23.
      * @param hour12Items Display-hour values available when using 12-hour time. Values must be in 1..12.
      * @param periodItems AM/PM values available when using 12-hour time.
+     * @param minTime The earliest selectable time, inclusive. Pass null to omit the lower bound.
+     * @param maxTime The latest selectable time, inclusive. Pass null to omit the upper bound.
      * @return A [TimePickerItems] instance with the specified item lists.
      */
     fun timePickerItems(
         minuteItems: List<Int> = MINUTE_RANGE,
         hour24Items: List<Int> = HOUR24_RANGE,
         hour12Items: List<Int> = HOUR12_RANGE,
-        periodItems: List<TimePeriod> = TimePeriod.entries
+        periodItems: List<TimePeriod> = TimePeriod.entries,
+        minTime: LocalTime? = null,
+        maxTime: LocalTime? = null
     ): TimePickerItems = TimePickerItems(
         minuteItems = minuteItems,
         hour24Items = hour24Items,
         hour12Items = hour12Items,
-        periodItems = periodItems
+        periodItems = periodItems,
+        constraints = timePickerConstraints(
+            minTime = minTime,
+            maxTime = maxTime
+        )
     )
 
     /**

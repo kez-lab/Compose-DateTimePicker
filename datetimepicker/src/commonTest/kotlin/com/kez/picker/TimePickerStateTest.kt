@@ -723,6 +723,16 @@ class TimePickerStateTest {
     }
 
     @Test
+    fun timePickerConstraints_throwsWhenMinimumIsAfterMaximum() {
+        assertFailsWith<IllegalArgumentException> {
+            TimePickerConstraints(
+                minTime = LocalTime(18, 0),
+                maxTime = LocalTime(9, 0)
+            )
+        }
+    }
+
+    @Test
     fun timePickerItems_coerceTime_usesClosest24HourItems() {
         val items = TimePickerItems(
             minuteItems = listOf(0, 30),
@@ -731,7 +741,24 @@ class TimePickerStateTest {
             periodItems = emptyList()
         )
 
-        assertEquals(LocalTime(17, 30), items.coerceTime(LocalTime(14, 20), TimeFormat.HOUR_24))
+        assertEquals(LocalTime(17, 0), items.coerceTime(LocalTime(14, 20), TimeFormat.HOUR_24))
+    }
+
+    @Test
+    fun timePickerItems_coerceTime_respects24HourConstraints() {
+        val items = TimePickerItems(
+            minuteItems = listOf(0, 30),
+            hour24Items = (0..23).toList(),
+            hour12Items = emptyList(),
+            periodItems = emptyList(),
+            constraints = TimePickerConstraints(
+                minTime = LocalTime(9, 30),
+                maxTime = LocalTime(17, 0)
+            )
+        )
+
+        assertEquals(LocalTime(9, 30), items.coerceTime(LocalTime(8, 0), TimeFormat.HOUR_24))
+        assertEquals(LocalTime(17, 0), items.coerceTime(LocalTime(18, 30), TimeFormat.HOUR_24))
     }
 
     @Test
@@ -749,6 +776,25 @@ class TimePickerStateTest {
     }
 
     @Test
+    fun timePickerItems_contains_respectsTimeConstraints() {
+        val items = TimePickerItems(
+            minuteItems = listOf(0, 30),
+            hour24Items = (9..18).toList(),
+            hour12Items = emptyList(),
+            periodItems = emptyList(),
+            constraints = TimePickerConstraints(
+                minTime = LocalTime(9, 30),
+                maxTime = LocalTime(17, 30)
+            )
+        )
+
+        assertTrue(items.contains(LocalTime(9, 30), TimeFormat.HOUR_24))
+        assertTrue(items.contains(LocalTime(17, 30), TimeFormat.HOUR_24))
+        assertTrue(!items.contains(LocalTime(9, 0), TimeFormat.HOUR_24))
+        assertTrue(!items.contains(LocalTime(18, 0), TimeFormat.HOUR_24))
+    }
+
+    @Test
     fun timePickerItems_coerceTime_usesClosest12HourDisplayItems() {
         val items = TimePickerItems(
             minuteItems = listOf(0, 30),
@@ -757,7 +803,24 @@ class TimePickerStateTest {
             periodItems = listOf(TimePeriod.AM)
         )
 
-        assertEquals(LocalTime(9, 30), items.coerceTime(LocalTime(22, 45), TimeFormat.HOUR_12))
+        assertEquals(LocalTime(11, 30), items.coerceTime(LocalTime(22, 45), TimeFormat.HOUR_12))
+    }
+
+    @Test
+    fun timePickerItems_coerceTime_respects12HourConstraints() {
+        val items = TimePickerItems(
+            minuteItems = listOf(0, 30),
+            hour24Items = emptyList(),
+            hour12Items = (1..12).toList(),
+            periodItems = TimePeriod.entries,
+            constraints = TimePickerConstraints(
+                minTime = LocalTime(13, 30),
+                maxTime = LocalTime(16, 0)
+            )
+        )
+
+        assertEquals(LocalTime(13, 30), items.coerceTime(LocalTime(8, 0), TimeFormat.HOUR_12))
+        assertEquals(LocalTime(16, 0), items.coerceTime(LocalTime(21, 30), TimeFormat.HOUR_12))
     }
 
     @Test
@@ -772,6 +835,32 @@ class TimePickerStateTest {
         assertTrue(items.contains(LocalTime(9, 30), TimeFormat.HOUR_12))
         assertTrue(!items.contains(LocalTime(21, 30), TimeFormat.HOUR_12))
         assertTrue(!items.contains(LocalTime(9, 45), TimeFormat.HOUR_12))
+    }
+
+    @Test
+    fun validateTimePickerItems_throwsWhenCurrentTimeOutsideConstraints() {
+        val state = TimePickerState(
+            initialHour = 8,
+            initialMinute = 0,
+            initialPeriod = TimePeriod.AM,
+            timeFormat = TimeFormat.HOUR_24
+        )
+        val items = TimePickerItems(
+            minuteItems = listOf(0, 30),
+            hour24Items = (0..23).toList(),
+            hour12Items = emptyList(),
+            periodItems = emptyList(),
+            constraints = TimePickerConstraints(
+                minTime = LocalTime(9, 0),
+                maxTime = LocalTime(17, 30)
+            )
+        )
+
+        val error = assertFailsWith<IllegalArgumentException> {
+            validateTimePickerItems(state = state, items = items)
+        }
+
+        assertTrue(error.message.orEmpty().contains("constraints"))
     }
 
     @Test
@@ -791,7 +880,31 @@ class TimePickerStateTest {
 
         state.selectTime(LocalTime(14, 20), items)
 
-        assertEquals(LocalTime(17, 30), state.selectedTime)
+        assertEquals(LocalTime(17, 0), state.selectedTime)
+    }
+
+    @Test
+    fun timePickerState_selectTimeWithConstrainedItems_coercesSelection() {
+        val state = TimePickerState(
+            initialHour = 9,
+            initialMinute = 0,
+            initialPeriod = TimePeriod.AM,
+            timeFormat = TimeFormat.HOUR_24
+        )
+        val items = TimePickerItems(
+            minuteItems = listOf(0, 30),
+            hour24Items = (0..23).toList(),
+            hour12Items = emptyList(),
+            periodItems = emptyList(),
+            constraints = TimePickerConstraints(
+                minTime = LocalTime(10, 30),
+                maxTime = LocalTime(16, 0)
+            )
+        )
+
+        state.selectTime(LocalTime(8, 0), items)
+
+        assertEquals(LocalTime(10, 30), state.selectedTime)
     }
 
     @Test

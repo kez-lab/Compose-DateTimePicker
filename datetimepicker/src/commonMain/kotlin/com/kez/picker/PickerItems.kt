@@ -11,22 +11,51 @@ import kotlinx.datetime.number
 import kotlin.math.abs
 
 /**
+ * Time constraints applied by [TimePickerItems].
+ *
+ * @param minTime The earliest selectable time, inclusive. Pass null to omit the lower bound.
+ * @param maxTime The latest selectable time, inclusive. Pass null to omit the upper bound.
+ */
+data class TimePickerConstraints(
+    val minTime: LocalTime? = null,
+    val maxTime: LocalTime? = null
+) {
+    init {
+        if (minTime != null && maxTime != null) {
+            require(minTime <= maxTime) {
+                "TimePicker minTime must be on or before maxTime. minTime=$minTime, maxTime=$maxTime"
+            }
+        }
+    }
+
+    /**
+     * Returns whether [time] is inside the configured inclusive bounds.
+     */
+    fun contains(time: LocalTime): Boolean =
+        (minTime == null || time >= minTime) &&
+                (maxTime == null || time <= maxTime)
+}
+
+/**
  * Selectable item lists for [com.kez.picker.time.TimePicker].
  *
  * Lists must be non-empty, contain distinct values, stay within their documented ranges, and contain
- * the current state selection for the active time format.
+ * the current state selection for the active time format. [constraints] are applied after the hour,
+ * minute, and period item lists.
  *
  * @param minuteItems Minute values available for selection. Values must be in 0..59.
  * @param hour24Items Hour values available when using 24-hour time. Values must be in 0..23.
  * @param hour12Items Display-hour values available when using 12-hour time. Values must be in 1..12.
  * @param periodItems AM/PM values available when using 12-hour time.
+ * @param constraints Inclusive time bounds applied after the hour, minute, and period item lists.
  * @see PickerDefaults.timePickerItems
  */
 data class TimePickerItems(
     val minuteItems: List<Int>,
     val hour24Items: List<Int>,
     val hour12Items: List<Int>,
-    val periodItems: List<TimePeriod>
+    val periodItems: List<TimePeriod>,
+    val constraints: TimePickerConstraints = TimePickerConstraints()
 ) {
     /**
      * Returns whether [time] is directly selectable under [timeFormat].
@@ -35,7 +64,7 @@ data class TimePickerItems(
      */
     fun contains(time: LocalTime, timeFormat: TimeFormat = TimeFormat.HOUR_24): Boolean {
         if (time.minute !in minuteItems) return false
-        return when (timeFormat) {
+        return constraints.contains(time) && when (timeFormat) {
             TimeFormat.HOUR_24 -> time.hour in hour24Items
             TimeFormat.HOUR_12 ->
                 displayHourFor(time.hour) in hour12Items &&
@@ -54,22 +83,7 @@ data class TimePickerItems(
      */
     fun coerceTime(time: LocalTime, timeFormat: TimeFormat = TimeFormat.HOUR_24): LocalTime {
         requireValid(timeFormat)
-        val minute = minuteItems.closestTo(time.minute)
-        return when (timeFormat) {
-            TimeFormat.HOUR_24 -> LocalTime(
-                hour = hour24Items.closestTo(time.hour),
-                minute = minute
-            )
-
-            TimeFormat.HOUR_12 -> {
-                val period = periodFor(time.hour).takeIf { it in periodItems } ?: periodItems.first()
-                val displayHour = hour12Items.closestTo(displayHourFor(time.hour))
-                LocalTime(
-                    hour = hourOfDayFor(displayHour = displayHour, period = period),
-                    minute = minute
-                )
-            }
-        }
+        return selectableTimesFor(timeFormat).closestTo(time)
     }
 
     internal fun hourItemsFor(timeFormat: TimeFormat): List<Int> =
@@ -77,6 +91,58 @@ data class TimePickerItems(
             TimeFormat.HOUR_12 -> hour12Items
             TimeFormat.HOUR_24 -> hour24Items
         }
+
+    internal fun selectablePeriodItems(): List<TimePeriod> =
+        periodItems.filter { period ->
+            hour12Items.any { hour ->
+                selectableMinuteItemsFor(hourOfDay = hourOfDayFor(hour, period)).isNotEmpty()
+            }
+        }
+
+    internal fun selectableHourItemsFor(
+        timeFormat: TimeFormat,
+        period: TimePeriod = TimePeriod.AM
+    ): List<Int> =
+        when (timeFormat) {
+            TimeFormat.HOUR_24 -> hour24Items.filter { hour ->
+                selectableMinuteItemsFor(hourOfDay = hour).isNotEmpty()
+            }
+
+            TimeFormat.HOUR_12 -> hour12Items.filter { hour ->
+                selectableMinuteItemsFor(hourOfDay = hourOfDayFor(hour, period)).isNotEmpty()
+            }
+        }
+
+    internal fun selectableMinuteItemsFor(hourOfDay: Int): List<Int> =
+        minuteItems.filter { minute ->
+            constraints.contains(LocalTime(hour = hourOfDay, minute = minute))
+        }
+
+    private fun selectableTimesFor(timeFormat: TimeFormat): List<LocalTime> =
+        when (timeFormat) {
+            TimeFormat.HOUR_24 -> hour24Items.flatMap { hour ->
+                selectableMinuteItemsFor(hourOfDay = hour).map { minute ->
+                    LocalTime(hour = hour, minute = minute)
+                }
+            }
+
+            TimeFormat.HOUR_12 -> periodItems.flatMap { period ->
+                hour12Items.flatMap { hour ->
+                    val hourOfDay = hourOfDayFor(displayHour = hour, period = period)
+                    selectableMinuteItemsFor(hourOfDay = hourOfDay).map { minute ->
+                        LocalTime(hour = hourOfDay, minute = minute)
+                    }
+                }
+            }
+        }
+
+    private fun List<LocalTime>.closestTo(time: LocalTime): LocalTime =
+        minWith(
+            compareBy<LocalTime> { abs(it.toMinuteOfDay() - time.toMinuteOfDay()) }
+                .thenBy { it.toMinuteOfDay() }
+        )
+
+    private fun LocalTime.toMinuteOfDay(): Int = hour * 60 + minute
 
     private fun requireValid(timeFormat: TimeFormat) {
         minuteItems.requireIntItems(name = "TimePicker minuteItems", range = 0..59)
@@ -90,6 +156,13 @@ data class TimePickerItems(
                 hour12Items.requireIntItems(name = "TimePicker hour12Items", range = 1..12)
                 periodItems.requireItems(name = "TimePicker periodItems")
             }
+        }
+        val hasSelectableTime = when (timeFormat) {
+            TimeFormat.HOUR_24 -> selectableHourItemsFor(timeFormat = timeFormat).isNotEmpty()
+            TimeFormat.HOUR_12 -> selectablePeriodItems().isNotEmpty()
+        }
+        require(hasSelectableTime) {
+            "TimePicker items must contain at least one time allowed by constraints."
         }
     }
 }
