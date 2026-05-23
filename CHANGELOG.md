@@ -130,6 +130,9 @@ This project tracks notable user-facing and maintainer-facing changes here. The 
   custom rows.
 - Generic `Picker` now accepts `display = PickerDefaults.itemText(...)` instead of a raw `itemText`
   lambda, matching the composite picker display option pattern.
+- Generic `Picker` optional parameters are ordered as `enabled`, `display`, `style`, `accessibility`,
+  `isInfinity`, then `content` to match the composite picker option flow more closely. Prefer named
+  arguments for optional configuration.
 - `DatePickerItems` now includes `dayItems`. Direct `DatePickerItems(...)` construction must pass
   day values; `PickerDefaults.datePickerItems(...)` remains the preferred factory.
 - `DatePickerItems` now includes `constraints`. Kotlin callers can omit it because it has a default
