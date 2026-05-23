@@ -426,8 +426,25 @@ fun SizePickerExample() {
 saveable한 key를 저장한 뒤 렌더링 전에 그 key를 item으로 매핑하세요.
 현재 값을 표시하되 사용자의 scroll, click, accessibility 선택 action을 막아야 한다면 `enabled = false`를
 전달하세요. Disabled picker는 기본 텍스트, divider, 선택 영역 배경에 `PickerDefaults.colors(...)`의
-disabled 색상 슬롯을 사용합니다. custom `content` composable을 전달한 경우 disabled 표현도 앱이 직접
-그려야 합니다.
+disabled 색상 슬롯을 사용합니다.
+
+custom `content`는 `PickerItemScope<T>`를 받습니다. 따라서 custom row에서도 기본 formatted text,
+selected/enabled 상태, distance fraction, text style, content color를 그대로 재사용할 수 있습니다.
+
+```kotlin
+Picker(
+    items = items,
+    selectedItem = selectedSize,
+    onSelectedItemChange = { selectedSize = it },
+    content = { item ->
+        Text(
+            text = if (item.isSelected) "[${item.text}]" else item.text,
+            style = item.textStyle,
+            color = item.contentColor
+        )
+    }
+)
+```
 
 `style = PickerDefaults.style(...)`로 visible item count, 색상, 텍스트 스타일, divider, item padding,
 선택 영역 배경, fading edge 동작을 하나의 재사용 가능한 객체로 커스터마이즈하세요.
