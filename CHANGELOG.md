@@ -35,6 +35,8 @@ This project tracks notable user-facing and maintainer-facing changes here. The 
   `PickerDefaults.yearMonthPickerItems(minYearMonth = ..., maxYearMonth = ...)`.
 - Added `enabled` parameters to `Picker`, `TimePicker`, `DatePicker`, and `YearMonthPicker` so apps
   can show a selected value while preventing user scroll, click, and accessibility selection actions.
+- Added disabled color slots to `PickerColors` / `PickerDefaults.colors(...)` so disabled pickers can
+  keep selected values visible while clearly communicating their disabled state.
 - Added picker accessibility descriptions and localized item description hooks so Android apps can provide clearer TalkBack output.
 - Added previous/next accessibility actions for picker columns, with public labels that apps can localize.
 
@@ -79,7 +81,8 @@ This project tracks notable user-facing and maintainer-facing changes here. The 
   now chooses the closest selectable `YearMonth` as a whole month value.
 - `YearMonthPicker` now filters year and month columns through `YearMonthPickerConstraints` when
   `minYearMonth`/`maxYearMonth` bounds are configured.
-- Disabled pickers now expose disabled semantics and omit previous/next accessibility selection actions.
+- Disabled pickers now expose disabled semantics, omit previous/next accessibility selection actions,
+  and use disabled text, divider, and selected-item background colors.
 - Custom item lists are now strict: required lists must be non-empty and distinct, values must be in range, and the current selected value must be present before composition proceeds.
 
 ### Compatibility Notes

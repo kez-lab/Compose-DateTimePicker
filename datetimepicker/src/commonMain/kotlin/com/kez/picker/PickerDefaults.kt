@@ -25,6 +25,9 @@ import com.kez.picker.date.YearMonth
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalTime
 
+private const val DISABLED_CONTENT_ALPHA: Float = 0.38f
+private const val DISABLED_CONTAINER_ALPHA: Float = 0.12f
+
 /**
  * Contains default values and factory methods for creating Picker styles.
  * Follows Material3 component design patterns.
@@ -79,6 +82,10 @@ object PickerDefaults {
      * @param selectedItemBackgroundColor The background color of the selected item area.
      * @param textColor The color of unselected item text.
      * @param selectedTextColor The color of the selected item text.
+     * @param disabledDividerColor The divider color used when the picker is disabled.
+     * @param disabledSelectedItemBackgroundColor The selected item background color used when the picker is disabled.
+     * @param disabledTextColor The unselected item text color used when the picker is disabled.
+     * @param disabledSelectedTextColor The selected item text color used when the picker is disabled.
      * @return A [PickerColors] instance with the specified colors.
      */
     @Composable
@@ -86,12 +93,24 @@ object PickerDefaults {
         dividerColor: Color = LocalContentColor.current,
         selectedItemBackgroundColor: Color = Color.Transparent,
         textColor: Color = LocalContentColor.current.copy(alpha = 0.7f),
-        selectedTextColor: Color = LocalContentColor.current
+        selectedTextColor: Color = LocalContentColor.current,
+        disabledDividerColor: Color = dividerColor.copy(alpha = dividerColor.alpha * DISABLED_CONTAINER_ALPHA),
+        disabledSelectedItemBackgroundColor: Color = selectedItemBackgroundColor.copy(
+            alpha = selectedItemBackgroundColor.alpha * DISABLED_CONTAINER_ALPHA
+        ),
+        disabledTextColor: Color = textColor.copy(alpha = textColor.alpha * DISABLED_CONTENT_ALPHA),
+        disabledSelectedTextColor: Color = selectedTextColor.copy(
+            alpha = selectedTextColor.alpha * DISABLED_CONTENT_ALPHA
+        )
     ): PickerColors = PickerColors(
         dividerColor = dividerColor,
         selectedItemBackgroundColor = selectedItemBackgroundColor,
         textColor = textColor,
-        selectedTextColor = selectedTextColor
+        selectedTextColor = selectedTextColor,
+        disabledDividerColor = disabledDividerColor,
+        disabledSelectedItemBackgroundColor = disabledSelectedItemBackgroundColor,
+        disabledTextColor = disabledTextColor,
+        disabledSelectedTextColor = disabledSelectedTextColor
     )
 
     /**
@@ -499,6 +518,10 @@ object PickerDefaults {
  * @param selectedItemBackgroundColor The background color of the selected item area.
  * @param textColor The color of unselected item text.
  * @param selectedTextColor The color of the selected item text.
+ * @param disabledDividerColor The divider color used when the picker is disabled.
+ * @param disabledSelectedItemBackgroundColor The selected item background color used when the picker is disabled.
+ * @param disabledTextColor The unselected item text color used when the picker is disabled.
+ * @param disabledSelectedTextColor The selected item text color used when the picker is disabled.
  * @see PickerDefaults.colors
  */
 @Immutable
@@ -506,7 +529,15 @@ data class PickerColors(
     val dividerColor: Color,
     val selectedItemBackgroundColor: Color,
     val textColor: Color,
-    val selectedTextColor: Color
+    val selectedTextColor: Color,
+    val disabledDividerColor: Color = dividerColor.copy(alpha = dividerColor.alpha * DISABLED_CONTAINER_ALPHA),
+    val disabledSelectedItemBackgroundColor: Color = selectedItemBackgroundColor.copy(
+        alpha = selectedItemBackgroundColor.alpha * DISABLED_CONTAINER_ALPHA
+    ),
+    val disabledTextColor: Color = textColor.copy(alpha = textColor.alpha * DISABLED_CONTENT_ALPHA),
+    val disabledSelectedTextColor: Color = selectedTextColor.copy(
+        alpha = selectedTextColor.alpha * DISABLED_CONTENT_ALPHA
+    )
 )
 
 /**
