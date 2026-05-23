@@ -23,6 +23,8 @@ This project tracks notable user-facing and maintainer-facing changes here. The 
   year/month-only state can be initialized without routing through `LocalDate`.
 - Added `TimePickerState.selectTime(hour, minute)` and `DatePickerState.selectDate(year, month, day)`
   overloads for apps that store primitive form values.
+- Added `DateRange`, `DateRangePickerState`, `rememberDateRangePickerState`, and `DateRangePicker`
+  for ordered start/end date selection without manually wiring two `DatePicker` instances.
 - Added value-first state constructors: `TimePickerState(LocalTime, ...)`,
   `DatePickerState(LocalDate)`, `YearMonthPickerState(YearMonth)`, and
   `YearMonthPickerState(LocalDate)`.
