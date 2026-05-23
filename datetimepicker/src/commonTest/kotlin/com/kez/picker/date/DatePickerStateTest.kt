@@ -325,6 +325,19 @@ class DatePickerStateTest {
     }
 
     @Test
+    fun datePickerItems_contains_checksMembership() {
+        val items = DatePickerItems(
+            yearItems = listOf(2024, 2026),
+            monthItems = listOf(2, 12),
+            dayItems = listOf(1, 15, 31)
+        )
+
+        assertEquals(true, items.contains(LocalDate(year = 2024, month = Month.DECEMBER, day = 31)))
+        assertEquals(false, items.contains(LocalDate(year = 2025, month = Month.DECEMBER, day = 31)))
+        assertEquals(false, items.contains(LocalDate(year = 2024, month = Month.FEBRUARY, day = 29)))
+    }
+
+    @Test
     fun datePickerItems_coerceDate_filtersDayItemsByCoercedYearMonth() {
         val items = DatePickerItems(
             yearItems = listOf(2025),

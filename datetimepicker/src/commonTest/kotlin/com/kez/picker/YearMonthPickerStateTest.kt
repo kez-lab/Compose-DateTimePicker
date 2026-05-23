@@ -285,6 +285,19 @@ class YearMonthPickerStateTest {
     }
 
     @Test
+    fun yearMonthPickerItems_contains_checksMembership() {
+        val items = YearMonthPickerItems(
+            yearItems = listOf(2024, 2026),
+            monthItems = listOf(3, 9)
+        )
+
+        assertEquals(true, items.contains(YearMonth(year = 2024, month = 9)))
+        assertEquals(false, items.contains(YearMonth(year = 2025, month = 9)))
+        assertEquals(false, items.contains(year = 2024, month = 12))
+        assertEquals(true, items.contains(LocalDate(2026, 3, 20)))
+    }
+
+    @Test
     fun yearMonthPickerItems_coerceYearMonth_allowsRawValuesOutsidePickerRange() {
         val items = YearMonthPickerItems(
             yearItems = listOf(2024, 2026),

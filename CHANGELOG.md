@@ -22,6 +22,8 @@ This project tracks notable user-facing and maintainer-facing changes here. The 
 - Added value-first state constructors: `TimePickerState(LocalTime, ...)`,
   `DatePickerState(LocalDate)`, `YearMonthPickerState(YearMonth)`, and
   `YearMonthPickerState(LocalDate)`.
+- Added `contains(...)` predicates to picker item option objects so apps can check whether a value is
+  already directly selectable before deciding to reject or coerce it.
 - Added picker accessibility descriptions and localized item description hooks so Android apps can provide clearer TalkBack output.
 - Added previous/next accessibility actions for picker columns, with public labels that apps can localize.
 
