@@ -172,6 +172,67 @@ object PickerDefaults {
     )
 
     /**
+     * Creates visible item text configuration for one picker column.
+     *
+     * @param itemText Text displayed for each item value.
+     * @return A [PickerItemText] instance with the specified visible text formatter.
+     */
+    fun <T : Any> itemText(
+        itemText: (T) -> String = { it.toString() }
+    ): PickerItemText<T> = PickerItemText(itemText = itemText)
+
+    /**
+     * Creates visible item text configuration for a time picker.
+     *
+     * @param hourItemText Text displayed for each hour value.
+     * @param minuteItemText Text displayed for each minute value.
+     * @param periodItemText Text displayed for each AM/PM value.
+     * @return A [TimePickerDisplay] instance with the specified visible text formatters.
+     */
+    fun timePickerDisplay(
+        hourItemText: (Int) -> String = { it.toString() },
+        minuteItemText: (Int) -> String = { it.toString() },
+        periodItemText: (TimePeriod) -> String = { it.name }
+    ): TimePickerDisplay = TimePickerDisplay(
+        hour = itemText(itemText = hourItemText),
+        minute = itemText(itemText = minuteItemText),
+        period = itemText(itemText = periodItemText)
+    )
+
+    /**
+     * Creates visible item text configuration for a date picker.
+     *
+     * @param yearItemText Text displayed for each year value.
+     * @param monthItemText Text displayed for each month value.
+     * @param dayItemText Text displayed for each day value.
+     * @return A [DatePickerDisplay] instance with the specified visible text formatters.
+     */
+    fun datePickerDisplay(
+        yearItemText: (Int) -> String = { it.toString() },
+        monthItemText: (Int) -> String = { it.toString() },
+        dayItemText: (Int) -> String = { it.toString() }
+    ): DatePickerDisplay = DatePickerDisplay(
+        year = itemText(itemText = yearItemText),
+        month = itemText(itemText = monthItemText),
+        day = itemText(itemText = dayItemText)
+    )
+
+    /**
+     * Creates visible item text configuration for a year-month picker.
+     *
+     * @param yearItemText Text displayed for each year value.
+     * @param monthItemText Text displayed for each month value.
+     * @return A [YearMonthPickerDisplay] instance with the specified visible text formatters.
+     */
+    fun yearMonthPickerDisplay(
+        yearItemText: (Int) -> String = { it.toString() },
+        monthItemText: (Int) -> String = { it.toString() }
+    ): YearMonthPickerDisplay = YearMonthPickerDisplay(
+        year = itemText(itemText = yearItemText),
+        month = itemText(itemText = monthItemText)
+    )
+
+    /**
      * Creates accessibility configuration for a time picker.
      *
      * Shared previous/next action labels are applied to all child picker columns. Use

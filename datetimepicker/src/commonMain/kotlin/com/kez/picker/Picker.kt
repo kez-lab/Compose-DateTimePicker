@@ -76,6 +76,7 @@ private const val INFINITE_SCROLL_MULTIPLIER = 1000
  * @param style Visual and layout styling for the picker.
  * @param accessibility Accessibility labels, item descriptions, and custom action labels for the picker.
  * @param isInfinity Whether the picker should loop infinitely.
+ * @param itemText Text displayed for each item when [content] is not provided.
  * @param content Optional custom content composable for rendering each item.
  */
 @Composable
@@ -87,6 +88,7 @@ fun <T : Any> Picker(
     style: PickerStyle = PickerDefaults.style(),
     accessibility: PickerAccessibility<T> = PickerDefaults.accessibility(),
     isInfinity: Boolean = true,
+    itemText: (T) -> String = { it.toString() },
     content: @Composable ((T) -> Unit)? = null
 ) {
     require(items.isNotEmpty()) { "Items list must not be empty" }
@@ -364,7 +366,7 @@ fun <T : Any> Picker(
 
                 val item = getItem(index)
                 val isSelected = item == selectedItem
-                val itemText = item?.toString() ?: ""
+                val itemText = item?.let(itemText) ?: ""
                 val itemDescription = item?.let(accessibility.itemContentDescription) ?: ""
                 val itemIndex = if (isInfinity) {
                     index % items.size

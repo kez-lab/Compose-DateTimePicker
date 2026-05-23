@@ -16,9 +16,10 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.sp
 import com.kez.picker.Picker
 import com.kez.picker.PickerDefaults
-import com.kez.picker.TimePickerItems
 import com.kez.picker.PickerStyle
 import com.kez.picker.TimePickerAccessibility
+import com.kez.picker.TimePickerDisplay
+import com.kez.picker.TimePickerItems
 import com.kez.picker.util.TimeFormat
 import com.kez.picker.util.TimePeriod
 import kotlinx.datetime.LocalTime
@@ -31,6 +32,7 @@ import kotlinx.datetime.LocalTime
  * @param state The state object to control the picker.
  * @param onSelectedTimeChange Called after user interaction changes the selected time.
  * @param items Selectable minute, hour, and period item lists for the picker.
+ * @param display Visible item text formatters for each picker column.
  * @param style Visual and layout styling for each picker column.
  * @param spacingBetweenPickers The spacing between the pickers.
  * @param accessibility Accessibility labels, item descriptions, and custom action labels for each picker column.
@@ -43,6 +45,7 @@ fun TimePicker(
     state: TimePickerState = rememberTimePickerState(),
     onSelectedTimeChange: (LocalTime) -> Unit = {},
     items: TimePickerItems = PickerDefaults.timePickerItems(),
+    display: TimePickerDisplay = PickerDefaults.timePickerDisplay(),
     style: PickerStyle = PickerDefaults.style(),
     spacingBetweenPickers: Dp = PickerDefaults.SpacingBetweenPickers,
     accessibility: TimePickerAccessibility = PickerDefaults.timePickerAccessibility()
@@ -84,7 +87,8 @@ fun TimePicker(
                         modifier = pickerModifier.weight(1f),
                         style = style,
                         isInfinity = false,
-                        accessibility = accessibility.period
+                        accessibility = accessibility.period,
+                        itemText = display.period.itemText
                     )
                     Spacer(modifier = Modifier.width(spacingBetweenPickers))
                 }
@@ -96,7 +100,8 @@ fun TimePicker(
                     },
                     modifier = pickerModifier.weight(1f),
                     style = style,
-                    accessibility = accessibility.hour
+                    accessibility = accessibility.hour,
+                    itemText = display.hour.itemText
                 )
                 Spacer(modifier = Modifier.width(spacingBetweenPickers))
                 Picker(
@@ -107,7 +112,8 @@ fun TimePicker(
                     },
                     modifier = pickerModifier.weight(1f),
                     style = style,
-                    accessibility = accessibility.minute
+                    accessibility = accessibility.minute,
+                    itemText = display.minute.itemText
                 )
             }
         }

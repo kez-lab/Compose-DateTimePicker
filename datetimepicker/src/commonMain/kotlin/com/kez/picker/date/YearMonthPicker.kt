@@ -12,11 +12,12 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.sp
-import com.kez.picker.YearMonthPickerItems
 import com.kez.picker.Picker
 import com.kez.picker.PickerDefaults
 import com.kez.picker.PickerStyle
 import com.kez.picker.YearMonthPickerAccessibility
+import com.kez.picker.YearMonthPickerDisplay
+import com.kez.picker.YearMonthPickerItems
 
 /**
  * A year and month picker component.
@@ -26,6 +27,7 @@ import com.kez.picker.YearMonthPickerAccessibility
  * @param state The state object to control the picker.
  * @param onSelectedYearMonthChange Called after user interaction changes the selected year/month.
  * @param items Selectable year and month item lists for the picker.
+ * @param display Visible item text formatters for each picker column.
  * @param style Visual and layout styling for each picker column.
  * @param spacingBetweenPickers The spacing between the pickers.
  * @param accessibility Accessibility labels, item descriptions, and custom action labels for each picker column.
@@ -38,6 +40,7 @@ fun YearMonthPicker(
     state: YearMonthPickerState = rememberYearMonthPickerState(),
     onSelectedYearMonthChange: (YearMonth) -> Unit = {},
     items: YearMonthPickerItems = PickerDefaults.yearMonthPickerItems(),
+    display: YearMonthPickerDisplay = PickerDefaults.yearMonthPickerDisplay(),
     style: PickerStyle = PickerDefaults.style(),
     spacingBetweenPickers: Dp = PickerDefaults.SpacingBetweenPickers,
     accessibility: YearMonthPickerAccessibility = PickerDefaults.yearMonthPickerAccessibility()
@@ -77,7 +80,8 @@ fun YearMonthPicker(
                     },
                     modifier = pickerModifier.weight(1f),
                     style = style,
-                    accessibility = accessibility.year
+                    accessibility = accessibility.year,
+                    itemText = display.year.itemText
                 )
                 Picker(
                     items = items.monthItems,
@@ -87,7 +91,8 @@ fun YearMonthPicker(
                     },
                     modifier = pickerModifier.weight(1f),
                     style = style,
-                    accessibility = accessibility.month
+                    accessibility = accessibility.month,
+                    itemText = display.month.itemText
                 )
             }
         }
