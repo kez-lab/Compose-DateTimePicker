@@ -39,7 +39,9 @@ fun rememberYearMonthPickerState(
  * Creates and remembers a [YearMonthPickerState] whose initial year/month is coerced by [items].
  *
  * Initial values and [items] are read when the state is first created. The day value of
- * [initialDate] is ignored because [YearMonthPicker] only selects year and month.
+ * [initialDate] is ignored because [YearMonthPicker] only selects year and month. This is useful
+ * when the picker is rendered with custom item lists or year/month bounds and restored app state may
+ * fall outside those rules.
  *
  * @param items Selectable values used to coerce [initialDate] before creating the state.
  * @param initialDate The requested initial date.
@@ -195,7 +197,8 @@ class YearMonthPickerState(
     /**
      * Programmatically selects the closest year/month to [yearMonth] that is allowed by [items].
      *
-     * Use this overload when app-owned state can contain values outside custom picker lists.
+     * Use this overload when app-owned state can contain values outside custom picker lists or
+     * year/month bounds.
      */
     fun selectYearMonth(yearMonth: YearMonth, items: YearMonthPickerItems) {
         selectYearMonth(items.coerceYearMonth(yearMonth))

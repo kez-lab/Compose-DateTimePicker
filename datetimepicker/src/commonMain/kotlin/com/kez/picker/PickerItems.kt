@@ -287,18 +287,47 @@ data class DatePickerItems(
 }
 
 /**
+ * Year/month constraints applied by [YearMonthPickerItems].
+ *
+ * @param minYearMonth The earliest selectable year/month, inclusive. Pass null to omit the lower bound.
+ * @param maxYearMonth The latest selectable year/month, inclusive. Pass null to omit the upper bound.
+ */
+data class YearMonthPickerConstraints(
+    val minYearMonth: YearMonth? = null,
+    val maxYearMonth: YearMonth? = null
+) {
+    init {
+        if (minYearMonth != null && maxYearMonth != null) {
+            require(minYearMonth <= maxYearMonth) {
+                "YearMonthPicker minYearMonth must be on or before maxYearMonth. " +
+                        "minYearMonth=$minYearMonth, maxYearMonth=$maxYearMonth"
+            }
+        }
+    }
+
+    /**
+     * Returns whether [yearMonth] is inside the configured inclusive bounds.
+     */
+    fun contains(yearMonth: YearMonth): Boolean =
+        (minYearMonth == null || yearMonth >= minYearMonth) &&
+                (maxYearMonth == null || yearMonth <= maxYearMonth)
+}
+
+/**
  * Selectable item lists for [com.kez.picker.date.YearMonthPicker].
  *
  * Lists must be non-empty, contain distinct values, stay within their documented ranges, and contain
- * the current state selection.
+ * the current state selection. [constraints] are applied after year and month item lists.
  *
  * @param yearItems Year values available for selection. Values must be in 1000..9999.
  * @param monthItems Month values available for selection. Values must be in 1..12.
+ * @param constraints Inclusive year/month bounds applied after the year and month item lists.
  * @see PickerDefaults.yearMonthPickerItems
  */
 data class YearMonthPickerItems(
     val yearItems: List<Int>,
-    val monthItems: List<Int>
+    val monthItems: List<Int>,
+    val constraints: YearMonthPickerConstraints = YearMonthPickerConstraints()
 ) {
     /**
      * Returns whether [yearMonth] is directly selectable.
@@ -310,7 +339,9 @@ data class YearMonthPickerItems(
      * Returns whether [year] and [month] are directly selectable.
      */
     fun contains(year: Int, month: Int): Boolean =
-        year in yearItems && month in monthItems
+        year in yearItems &&
+                month in monthItems &&
+                constraints.contains(YearMonth(year = year, month = month))
 
     /**
      * Returns whether the year/month portion of [date] is directly selectable.
@@ -332,10 +363,7 @@ data class YearMonthPickerItems(
      */
     fun coerceYearMonth(year: Int, month: Int): YearMonth {
         requireValid()
-        return YearMonth(
-            year = yearItems.closestTo(year),
-            month = monthItems.closestTo(month)
-        )
+        return selectableYearMonths().closestTo(year = year, month = month)
     }
 
     /**
@@ -344,9 +372,40 @@ data class YearMonthPickerItems(
     fun coerceDate(date: LocalDate): LocalDate =
         coerceYearMonth(YearMonth.from(date)).atDay()
 
+    internal fun selectableYearItems(): List<Int> =
+        yearItems.filter { year ->
+            selectableMonthItemsFor(year = year).isNotEmpty()
+        }
+
+    internal fun selectableMonthItemsFor(year: Int): List<Int> =
+        monthItems.filter { month ->
+            constraints.contains(YearMonth(year = year, month = month))
+        }
+
+    private fun selectableYearMonths(): List<YearMonth> =
+        yearItems.flatMap { year ->
+            selectableMonthItemsFor(year).map { month ->
+                YearMonth(year = year, month = month)
+            }
+        }
+
+    private fun List<YearMonth>.closestTo(year: Int, month: Int): YearMonth {
+        val monthIndex = year * 12 + month
+        return closestTo(monthIndex)
+    }
+
+    private fun List<YearMonth>.closestTo(monthIndex: Int): YearMonth =
+        minWith(
+            compareBy<YearMonth> { abs(it.toMonthIndex() - monthIndex) }
+                .thenBy { it.toMonthIndex() }
+        )
+
     private fun requireValid() {
         yearItems.requireIntItems(name = "YearMonthPicker yearItems", range = 1000..9999)
         monthItems.requireIntItems(name = "YearMonthPicker monthItems", range = 1..12)
+        require(selectableYearItems().isNotEmpty()) {
+            "YearMonthPicker items must contain at least one year/month allowed by constraints."
+        }
     }
 }
 

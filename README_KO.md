@@ -216,6 +216,7 @@ fun DatePickerExample() {
 ```kotlin
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
+import com.kez.picker.PickerDefaults
 import com.kez.picker.date.YearMonth
 import com.kez.picker.date.YearMonthPicker
 import com.kez.picker.date.rememberYearMonthPickerState
@@ -224,12 +225,24 @@ import com.kez.picker.util.currentDate
 @Composable
 fun YearMonthPickerExample() {
     val initialDate = remember { currentDate() }
+    val minYearMonth = remember { YearMonth.from(initialDate) }
+    val maxYearMonth = remember {
+        YearMonth(year = initialDate.year + 1, month = initialDate.month.number)
+    }
+    val items = remember {
+        PickerDefaults.yearMonthPickerItems(
+            minYearMonth = minYearMonth,
+            maxYearMonth = maxYearMonth
+        )
+    }
     val state = rememberYearMonthPickerState(
+        items = items,
         initialDate = initialDate
     )
 
     YearMonthPicker(
         state = state,
+        items = items,
         onSelectedYearMonthChange = { selectedYearMonth: YearMonth ->
             // 앱 state, ViewModel, form data를 여기서 갱신합니다.
         }
@@ -531,7 +544,7 @@ custom item 값이 유효 범위를 벗어나거나, 중복이 있거나, 목록
 | :--- | :--- | :--- |
 | `state` | Picker를 제어하기 위한 상태 객체입니다. | `rememberYearMonthPickerState()` |
 | `onSelectedYearMonthChange` | 사용자 조작으로 선택된 `YearMonth`가 바뀐 뒤 호출됩니다. | `{}` |
-| `items` | 선택 가능한 연도/월 목록입니다. 값은 `1000..9999`와 `1..12` 범위여야 합니다. | `PickerDefaults.yearMonthPickerItems()` |
+| `items` | 선택 가능한 연도/월 목록과 선택적 `minYearMonth`/`maxYearMonth` 범위입니다. 값은 `1000..9999`와 `1..12` 범위여야 합니다. | `PickerDefaults.yearMonthPickerItems()` |
 | `display` | 각 picker column의 화면 표시 텍스트 formatter입니다. | `PickerDefaults.yearMonthPickerDisplay()` |
 | `style` | 각 picker column의 시각/레이아웃 스타일입니다. | `PickerDefaults.style()` |
 | `spacingBetweenPickers` | picker column 사이의 가로 간격입니다. | `0.dp` |
@@ -551,7 +564,7 @@ custom item 값이 유효 범위를 벗어나거나, 중복이 있거나, 목록
 상태 생성 이후 선택값을 바꾸려면 `state.selectYearMonth(YearMonth(...))`,
 `state.selectYearMonth(year, month)`, 또는 `state.selectDate(LocalDate(...))`를 호출합니다.
 
-custom item 값이 유효 범위를 벗어나거나, 중복이 있거나, 목록이 비어 있거나, 현재 선택된 연도/월이 custom 목록에 없으면 composition 중 `IllegalArgumentException`이 발생합니다.
+custom item 값이 유효 범위를 벗어나거나, 중복이 있거나, 목록이 비어 있거나, 현재 선택된 연도/월이 custom 목록 또는 연/월 범위 밖이면 composition 중 `IllegalArgumentException`이 발생합니다. 연도 변경으로 현재 월이 선택 불가능해지면 가장 가까운 선택 가능 `YearMonth`로 이동합니다.
 
 ## 라이선스
 

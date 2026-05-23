@@ -31,6 +31,8 @@ This project tracks notable user-facing and maintainer-facing changes here. The 
   `PickerDefaults.datePickerItems(minDate = ..., maxDate = ...)`.
 - Added inclusive `TimePicker` bounds through `TimePickerConstraints` and
   `PickerDefaults.timePickerItems(minTime = ..., maxTime = ...)`.
+- Added inclusive `YearMonthPicker` bounds through `YearMonthPickerConstraints` and
+  `PickerDefaults.yearMonthPickerItems(minYearMonth = ..., maxYearMonth = ...)`.
 - Added picker accessibility descriptions and localized item description hooks so Android apps can provide clearer TalkBack output.
 - Added previous/next accessibility actions for picker columns, with public labels that apps can localize.
 
@@ -71,6 +73,10 @@ This project tracks notable user-facing and maintainer-facing changes here. The 
   `minTime`/`maxTime` bounds are configured.
 - `TimePickerItems.coerceTime(...)` now chooses the closest selectable `LocalTime` as a whole value,
   instead of independently coercing hour and minute columns.
+- `YearMonth` now implements `Comparable<YearMonth>`, and `YearMonthPickerItems.coerceYearMonth(...)`
+  now chooses the closest selectable `YearMonth` as a whole month value.
+- `YearMonthPicker` now filters year and month columns through `YearMonthPickerConstraints` when
+  `minYearMonth`/`maxYearMonth` bounds are configured.
 - Custom item lists are now strict: required lists must be non-empty and distinct, values must be in range, and the current selected value must be present before composition proceeds.
 
 ### Compatibility Notes
@@ -95,6 +101,9 @@ This project tracks notable user-facing and maintainer-facing changes here. The 
   when configuring `style`, `spacingBetweenPickers`, `accessibility`, or `display`.
 - Composite picker function signatures now include user-selection callbacks immediately after `state`.
 - `TimePickerItems` now includes a `constraints` property. Kotlin callers that use named/default
+  arguments usually do not need source changes, but direct Java or binary constructor calls must pass
+  the new argument after recompilation.
+- `YearMonthPickerItems` now includes a `constraints` property. Kotlin callers that use named/default
   arguments usually do not need source changes, but direct Java or binary constructor calls must pass
   the new argument after recompilation.
   Named-argument call sites are straightforward to migrate; positional call sites may need argument

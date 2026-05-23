@@ -21,6 +21,7 @@ import com.kez.picker.util.MINUTE_RANGE
 import com.kez.picker.util.MONTH_RANGE
 import com.kez.picker.util.TimePeriod
 import com.kez.picker.util.YEAR_RANGE
+import com.kez.picker.date.YearMonth
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalTime
 
@@ -442,18 +443,41 @@ object PickerDefaults {
     )
 
     /**
+     * Creates inclusive year/month constraints for a year-month picker.
+     *
+     * @param minYearMonth The earliest selectable year/month, inclusive. Pass null to omit the lower bound.
+     * @param maxYearMonth The latest selectable year/month, inclusive. Pass null to omit the upper bound.
+     * @return A [YearMonthPickerConstraints] instance with the specified bounds.
+     */
+    fun yearMonthPickerConstraints(
+        minYearMonth: YearMonth? = null,
+        maxYearMonth: YearMonth? = null
+    ): YearMonthPickerConstraints = YearMonthPickerConstraints(
+        minYearMonth = minYearMonth,
+        maxYearMonth = maxYearMonth
+    )
+
+    /**
      * Creates selectable item lists for a year-month picker.
      *
      * @param yearItems Year values available for selection. Values must be in 1000..9999.
      * @param monthItems Month values available for selection. Values must be in 1..12.
+     * @param minYearMonth The earliest selectable year/month, inclusive. Pass null to omit the lower bound.
+     * @param maxYearMonth The latest selectable year/month, inclusive. Pass null to omit the upper bound.
      * @return A [YearMonthPickerItems] instance with the specified item lists.
      */
     fun yearMonthPickerItems(
         yearItems: List<Int> = YEAR_RANGE,
-        monthItems: List<Int> = MONTH_RANGE
+        monthItems: List<Int> = MONTH_RANGE,
+        minYearMonth: YearMonth? = null,
+        maxYearMonth: YearMonth? = null
     ): YearMonthPickerItems = YearMonthPickerItems(
         yearItems = yearItems,
-        monthItems = monthItems
+        monthItems = monthItems,
+        constraints = yearMonthPickerConstraints(
+            minYearMonth = minYearMonth,
+            maxYearMonth = maxYearMonth
+        )
     )
 
     /**

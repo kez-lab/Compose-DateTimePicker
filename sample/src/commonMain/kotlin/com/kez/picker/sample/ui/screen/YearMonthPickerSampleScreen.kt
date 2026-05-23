@@ -41,7 +41,24 @@ internal fun YearMonthPickerSampleScreen(
     onBackPressed: () -> Unit = {},
 ) {
     val currentDate = remember { currentDate() }
+    val currentYearMonth = remember(currentDate) {
+        YearMonth.from(currentDate)
+    }
+    val nextYearSameMonth = remember(currentDate) {
+        YearMonth(
+            year = currentDate.year + 1,
+            month = currentDate.month.number
+        )
+    }
+    val items = remember(currentYearMonth, nextYearSameMonth) {
+        PickerDefaults.yearMonthPickerItems(
+            yearItems = (currentYearMonth.year..nextYearSameMonth.year).toList(),
+            minYearMonth = currentYearMonth,
+            maxYearMonth = nextYearSameMonth
+        )
+    }
     val state = rememberYearMonthPickerState(
+        items = items,
         initialDate = currentDate
     )
     var selectedYear by rememberSaveable { mutableIntStateOf(state.selectedYear) }
@@ -83,9 +100,9 @@ internal fun YearMonthPickerSampleScreen(
                 Button(
                     onClick = {
                         val yearMonth = YearMonth.from(currentDate())
-                        state.selectYearMonth(yearMonth)
-                        selectedYear = yearMonth.year
-                        selectedMonth = yearMonth.month
+                        state.selectYearMonth(yearMonth, items)
+                        selectedYear = state.selectedYear
+                        selectedMonth = state.selectedMonth
                     },
                     modifier = Modifier.fillMaxWidth()
                 ) {
@@ -102,9 +119,9 @@ internal fun YearMonthPickerSampleScreen(
                             year = currentDate.year + 1,
                             month = currentDate.month.number
                         )
-                        state.selectYearMonth(yearMonth)
-                        selectedYear = yearMonth.year
-                        selectedMonth = yearMonth.month
+                        state.selectYearMonth(yearMonth, items)
+                        selectedYear = state.selectedYear
+                        selectedMonth = state.selectedMonth
                     },
                     modifier = Modifier.fillMaxWidth()
                 ) {
@@ -122,6 +139,7 @@ internal fun YearMonthPickerSampleScreen(
                         selectedYear = it.year
                         selectedMonth = it.month
                     },
+                    items = items,
                     display = PickerDefaults.yearMonthPickerDisplay(
                         yearItemText = { "${it}년" },
                         monthItemText = { getMonthName(it) }
