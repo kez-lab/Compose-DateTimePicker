@@ -464,6 +464,13 @@ public final class com/kez/picker/YearMonthPickerLayout {
 	public fun toString ()Ljava/lang/String;
 }
 
+public final class com/kez/picker/date/ComposableSingletons$DateRangePickerKt {
+	public static final field INSTANCE Lcom/kez/picker/date/ComposableSingletons$DateRangePickerKt;
+	public fun <init> ()V
+	public final fun getLambda$-1543062065$datetimepicker ()Lkotlin/jvm/functions/Function2;
+	public final fun getLambda$-1855484280$datetimepicker ()Lkotlin/jvm/functions/Function2;
+}
+
 public final class com/kez/picker/date/DatePickerKt {
 	public static final fun DatePicker-J1qPv4o (Landroidx/compose/ui/Modifier;Landroidx/compose/ui/Modifier;Lcom/kez/picker/date/DatePickerState;Lkotlin/jvm/functions/Function1;ZLcom/kez/picker/DatePickerItems;Lcom/kez/picker/DatePickerDisplay;Lcom/kez/picker/PickerStyle;Lcom/kez/picker/DatePickerLayout;FLcom/kez/picker/DatePickerAccessibility;Landroidx/compose/runtime/Composer;III)V
 }
@@ -492,6 +499,49 @@ public final class com/kez/picker/date/DatePickerStateKt {
 	public static final fun rememberDatePickerState (IIILandroidx/compose/runtime/Composer;I)Lcom/kez/picker/date/DatePickerState;
 	public static final fun rememberDatePickerState (Lcom/kez/picker/DatePickerItems;Lkotlinx/datetime/LocalDate;Landroidx/compose/runtime/Composer;II)Lcom/kez/picker/date/DatePickerState;
 	public static final fun rememberDatePickerState (Lkotlinx/datetime/LocalDate;Landroidx/compose/runtime/Composer;II)Lcom/kez/picker/date/DatePickerState;
+}
+
+public final class com/kez/picker/date/DateRange {
+	public static final field $stable I
+	public fun <init> (Lkotlinx/datetime/LocalDate;Lkotlinx/datetime/LocalDate;)V
+	public final fun component1 ()Lkotlinx/datetime/LocalDate;
+	public final fun component2 ()Lkotlinx/datetime/LocalDate;
+	public final fun contains (Lkotlinx/datetime/LocalDate;)Z
+	public final fun copy (Lkotlinx/datetime/LocalDate;Lkotlinx/datetime/LocalDate;)Lcom/kez/picker/date/DateRange;
+	public static synthetic fun copy$default (Lcom/kez/picker/date/DateRange;Lkotlinx/datetime/LocalDate;Lkotlinx/datetime/LocalDate;ILjava/lang/Object;)Lcom/kez/picker/date/DateRange;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getEndDate ()Lkotlinx/datetime/LocalDate;
+	public final fun getStartDate ()Lkotlinx/datetime/LocalDate;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class com/kez/picker/date/DateRangePickerKt {
+	public static final fun DateRangePicker-qvR4D3M (Landroidx/compose/ui/Modifier;Landroidx/compose/ui/Modifier;Lcom/kez/picker/date/DateRangePickerState;Lkotlin/jvm/functions/Function1;ZLcom/kez/picker/DatePickerItems;Lcom/kez/picker/DatePickerDisplay;Lcom/kez/picker/PickerStyle;Lcom/kez/picker/DatePickerLayout;FFLkotlin/jvm/functions/Function2;Lkotlin/jvm/functions/Function2;Lcom/kez/picker/DatePickerAccessibility;Lcom/kez/picker/DatePickerAccessibility;Landroidx/compose/runtime/Composer;III)V
+}
+
+public final class com/kez/picker/date/DateRangePickerState {
+	public static final field $stable I
+	public static final field Companion Lcom/kez/picker/date/DateRangePickerState$Companion;
+	public fun <init> (Lkotlinx/datetime/LocalDate;Lkotlinx/datetime/LocalDate;)V
+	public final fun getSelectedDateRange ()Lcom/kez/picker/date/DateRange;
+	public final fun getSelectedEndDate ()Lkotlinx/datetime/LocalDate;
+	public final fun getSelectedStartDate ()Lkotlinx/datetime/LocalDate;
+	public final fun selectDateRange (Lkotlinx/datetime/LocalDate;Lkotlinx/datetime/LocalDate;)V
+	public final fun selectDateRange (Lkotlinx/datetime/LocalDate;Lkotlinx/datetime/LocalDate;Lcom/kez/picker/DatePickerItems;)V
+	public final fun selectEndDate (Lkotlinx/datetime/LocalDate;)V
+	public final fun selectEndDate (Lkotlinx/datetime/LocalDate;Lcom/kez/picker/DatePickerItems;)V
+	public final fun selectStartDate (Lkotlinx/datetime/LocalDate;)V
+	public final fun selectStartDate (Lkotlinx/datetime/LocalDate;Lcom/kez/picker/DatePickerItems;)V
+}
+
+public final class com/kez/picker/date/DateRangePickerState$Companion {
+	public final fun getSaver ()Landroidx/compose/runtime/saveable/Saver;
+}
+
+public final class com/kez/picker/date/DateRangePickerStateKt {
+	public static final fun rememberDateRangePickerState (Lcom/kez/picker/DatePickerItems;Lkotlinx/datetime/LocalDate;Lkotlinx/datetime/LocalDate;Landroidx/compose/runtime/Composer;II)Lcom/kez/picker/date/DateRangePickerState;
+	public static final fun rememberDateRangePickerState (Lkotlinx/datetime/LocalDate;Lkotlinx/datetime/LocalDate;Landroidx/compose/runtime/Composer;II)Lcom/kez/picker/date/DateRangePickerState;
 }
 
 public final class com/kez/picker/date/YearMonth : java/lang/Comparable {
