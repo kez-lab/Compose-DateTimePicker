@@ -28,6 +28,41 @@ final enum class com.kez.picker.util/TimePeriod : kotlin/Enum<com.kez.picker.uti
     final fun values(): kotlin/Array<com.kez.picker.util/TimePeriod> // com.kez.picker.util/TimePeriod.values|values#static(){}[0]
 }
 
+final enum class com.kez.picker/DatePickerColumn : kotlin/Enum<com.kez.picker/DatePickerColumn> { // com.kez.picker/DatePickerColumn|null[0]
+    enum entry DAY // com.kez.picker/DatePickerColumn.DAY|null[0]
+    enum entry MONTH // com.kez.picker/DatePickerColumn.MONTH|null[0]
+    enum entry YEAR // com.kez.picker/DatePickerColumn.YEAR|null[0]
+
+    final val entries // com.kez.picker/DatePickerColumn.entries|#static{}entries[0]
+        final fun <get-entries>(): kotlin.enums/EnumEntries<com.kez.picker/DatePickerColumn> // com.kez.picker/DatePickerColumn.entries.<get-entries>|<get-entries>#static(){}[0]
+
+    final fun valueOf(kotlin/String): com.kez.picker/DatePickerColumn // com.kez.picker/DatePickerColumn.valueOf|valueOf#static(kotlin.String){}[0]
+    final fun values(): kotlin/Array<com.kez.picker/DatePickerColumn> // com.kez.picker/DatePickerColumn.values|values#static(){}[0]
+}
+
+final enum class com.kez.picker/TimePickerColumn : kotlin/Enum<com.kez.picker/TimePickerColumn> { // com.kez.picker/TimePickerColumn|null[0]
+    enum entry HOUR // com.kez.picker/TimePickerColumn.HOUR|null[0]
+    enum entry MINUTE // com.kez.picker/TimePickerColumn.MINUTE|null[0]
+    enum entry PERIOD // com.kez.picker/TimePickerColumn.PERIOD|null[0]
+
+    final val entries // com.kez.picker/TimePickerColumn.entries|#static{}entries[0]
+        final fun <get-entries>(): kotlin.enums/EnumEntries<com.kez.picker/TimePickerColumn> // com.kez.picker/TimePickerColumn.entries.<get-entries>|<get-entries>#static(){}[0]
+
+    final fun valueOf(kotlin/String): com.kez.picker/TimePickerColumn // com.kez.picker/TimePickerColumn.valueOf|valueOf#static(kotlin.String){}[0]
+    final fun values(): kotlin/Array<com.kez.picker/TimePickerColumn> // com.kez.picker/TimePickerColumn.values|values#static(){}[0]
+}
+
+final enum class com.kez.picker/YearMonthPickerColumn : kotlin/Enum<com.kez.picker/YearMonthPickerColumn> { // com.kez.picker/YearMonthPickerColumn|null[0]
+    enum entry MONTH // com.kez.picker/YearMonthPickerColumn.MONTH|null[0]
+    enum entry YEAR // com.kez.picker/YearMonthPickerColumn.YEAR|null[0]
+
+    final val entries // com.kez.picker/YearMonthPickerColumn.entries|#static{}entries[0]
+        final fun <get-entries>(): kotlin.enums/EnumEntries<com.kez.picker/YearMonthPickerColumn> // com.kez.picker/YearMonthPickerColumn.entries.<get-entries>|<get-entries>#static(){}[0]
+
+    final fun valueOf(kotlin/String): com.kez.picker/YearMonthPickerColumn // com.kez.picker/YearMonthPickerColumn.valueOf|valueOf#static(kotlin.String){}[0]
+    final fun values(): kotlin/Array<com.kez.picker/YearMonthPickerColumn> // com.kez.picker/YearMonthPickerColumn.values|values#static(){}[0]
+}
+
 final class <#A: kotlin/Any> com.kez.picker/PickerAccessibility { // com.kez.picker/PickerAccessibility|null[0]
     constructor <init>(kotlin/String? = ..., kotlin/Function1<#A, kotlin/String> = ..., kotlin/String? = ..., kotlin/String? = ...) // com.kez.picker/PickerAccessibility.<init>|<init>(kotlin.String?;kotlin.Function1<1:0,kotlin.String>;kotlin.String?;kotlin.String?){}[0]
 
@@ -259,8 +294,10 @@ final class com.kez.picker/DatePickerItems { // com.kez.picker/DatePickerItems|n
 }
 
 final class com.kez.picker/DatePickerLayout { // com.kez.picker/DatePickerLayout|null[0]
-    constructor <init>(kotlin/Float?, kotlin/Float?, kotlin/Float?) // com.kez.picker/DatePickerLayout.<init>|<init>(kotlin.Float?;kotlin.Float?;kotlin.Float?){}[0]
+    constructor <init>(kotlin/Float?, kotlin/Float?, kotlin/Float?, kotlin.collections/List<com.kez.picker/DatePickerColumn> = ...) // com.kez.picker/DatePickerLayout.<init>|<init>(kotlin.Float?;kotlin.Float?;kotlin.Float?;kotlin.collections.List<com.kez.picker.DatePickerColumn>){}[0]
 
+    final val columnOrder // com.kez.picker/DatePickerLayout.columnOrder|{}columnOrder[0]
+        final fun <get-columnOrder>(): kotlin.collections/List<com.kez.picker/DatePickerColumn> // com.kez.picker/DatePickerLayout.columnOrder.<get-columnOrder>|<get-columnOrder>(){}[0]
     final val dayWeight // com.kez.picker/DatePickerLayout.dayWeight|{}dayWeight[0]
         final fun <get-dayWeight>(): kotlin/Float? // com.kez.picker/DatePickerLayout.dayWeight.<get-dayWeight>|<get-dayWeight>(){}[0]
     final val monthWeight // com.kez.picker/DatePickerLayout.monthWeight|{}monthWeight[0]
@@ -271,7 +308,8 @@ final class com.kez.picker/DatePickerLayout { // com.kez.picker/DatePickerLayout
     final fun component1(): kotlin/Float? // com.kez.picker/DatePickerLayout.component1|component1(){}[0]
     final fun component2(): kotlin/Float? // com.kez.picker/DatePickerLayout.component2|component2(){}[0]
     final fun component3(): kotlin/Float? // com.kez.picker/DatePickerLayout.component3|component3(){}[0]
-    final fun copy(kotlin/Float? = ..., kotlin/Float? = ..., kotlin/Float? = ...): com.kez.picker/DatePickerLayout // com.kez.picker/DatePickerLayout.copy|copy(kotlin.Float?;kotlin.Float?;kotlin.Float?){}[0]
+    final fun component4(): kotlin.collections/List<com.kez.picker/DatePickerColumn> // com.kez.picker/DatePickerLayout.component4|component4(){}[0]
+    final fun copy(kotlin/Float? = ..., kotlin/Float? = ..., kotlin/Float? = ..., kotlin.collections/List<com.kez.picker/DatePickerColumn> = ...): com.kez.picker/DatePickerLayout // com.kez.picker/DatePickerLayout.copy|copy(kotlin.Float?;kotlin.Float?;kotlin.Float?;kotlin.collections.List<com.kez.picker.DatePickerColumn>){}[0]
     final fun equals(kotlin/Any?): kotlin/Boolean // com.kez.picker/DatePickerLayout.equals|equals(kotlin.Any?){}[0]
     final fun hashCode(): kotlin/Int // com.kez.picker/DatePickerLayout.hashCode|hashCode(){}[0]
     final fun toString(): kotlin/String // com.kez.picker/DatePickerLayout.toString|toString(){}[0]
@@ -453,8 +491,10 @@ final class com.kez.picker/TimePickerItems { // com.kez.picker/TimePickerItems|n
 }
 
 final class com.kez.picker/TimePickerLayout { // com.kez.picker/TimePickerLayout|null[0]
-    constructor <init>(kotlin/Float?, kotlin/Float?, kotlin/Float?) // com.kez.picker/TimePickerLayout.<init>|<init>(kotlin.Float?;kotlin.Float?;kotlin.Float?){}[0]
+    constructor <init>(kotlin/Float?, kotlin/Float?, kotlin/Float?, kotlin.collections/List<com.kez.picker/TimePickerColumn> = ...) // com.kez.picker/TimePickerLayout.<init>|<init>(kotlin.Float?;kotlin.Float?;kotlin.Float?;kotlin.collections.List<com.kez.picker.TimePickerColumn>){}[0]
 
+    final val columnOrder // com.kez.picker/TimePickerLayout.columnOrder|{}columnOrder[0]
+        final fun <get-columnOrder>(): kotlin.collections/List<com.kez.picker/TimePickerColumn> // com.kez.picker/TimePickerLayout.columnOrder.<get-columnOrder>|<get-columnOrder>(){}[0]
     final val hourWeight // com.kez.picker/TimePickerLayout.hourWeight|{}hourWeight[0]
         final fun <get-hourWeight>(): kotlin/Float? // com.kez.picker/TimePickerLayout.hourWeight.<get-hourWeight>|<get-hourWeight>(){}[0]
     final val minuteWeight // com.kez.picker/TimePickerLayout.minuteWeight|{}minuteWeight[0]
@@ -465,7 +505,8 @@ final class com.kez.picker/TimePickerLayout { // com.kez.picker/TimePickerLayout
     final fun component1(): kotlin/Float? // com.kez.picker/TimePickerLayout.component1|component1(){}[0]
     final fun component2(): kotlin/Float? // com.kez.picker/TimePickerLayout.component2|component2(){}[0]
     final fun component3(): kotlin/Float? // com.kez.picker/TimePickerLayout.component3|component3(){}[0]
-    final fun copy(kotlin/Float? = ..., kotlin/Float? = ..., kotlin/Float? = ...): com.kez.picker/TimePickerLayout // com.kez.picker/TimePickerLayout.copy|copy(kotlin.Float?;kotlin.Float?;kotlin.Float?){}[0]
+    final fun component4(): kotlin.collections/List<com.kez.picker/TimePickerColumn> // com.kez.picker/TimePickerLayout.component4|component4(){}[0]
+    final fun copy(kotlin/Float? = ..., kotlin/Float? = ..., kotlin/Float? = ..., kotlin.collections/List<com.kez.picker/TimePickerColumn> = ...): com.kez.picker/TimePickerLayout // com.kez.picker/TimePickerLayout.copy|copy(kotlin.Float?;kotlin.Float?;kotlin.Float?;kotlin.collections.List<com.kez.picker.TimePickerColumn>){}[0]
     final fun equals(kotlin/Any?): kotlin/Boolean // com.kez.picker/TimePickerLayout.equals|equals(kotlin.Any?){}[0]
     final fun hashCode(): kotlin/Int // com.kez.picker/TimePickerLayout.hashCode|hashCode(){}[0]
     final fun toString(): kotlin/String // com.kez.picker/TimePickerLayout.toString|toString(){}[0]
@@ -546,8 +587,10 @@ final class com.kez.picker/YearMonthPickerItems { // com.kez.picker/YearMonthPic
 }
 
 final class com.kez.picker/YearMonthPickerLayout { // com.kez.picker/YearMonthPickerLayout|null[0]
-    constructor <init>(kotlin/Float?, kotlin/Float?) // com.kez.picker/YearMonthPickerLayout.<init>|<init>(kotlin.Float?;kotlin.Float?){}[0]
+    constructor <init>(kotlin/Float?, kotlin/Float?, kotlin.collections/List<com.kez.picker/YearMonthPickerColumn> = ...) // com.kez.picker/YearMonthPickerLayout.<init>|<init>(kotlin.Float?;kotlin.Float?;kotlin.collections.List<com.kez.picker.YearMonthPickerColumn>){}[0]
 
+    final val columnOrder // com.kez.picker/YearMonthPickerLayout.columnOrder|{}columnOrder[0]
+        final fun <get-columnOrder>(): kotlin.collections/List<com.kez.picker/YearMonthPickerColumn> // com.kez.picker/YearMonthPickerLayout.columnOrder.<get-columnOrder>|<get-columnOrder>(){}[0]
     final val monthWeight // com.kez.picker/YearMonthPickerLayout.monthWeight|{}monthWeight[0]
         final fun <get-monthWeight>(): kotlin/Float? // com.kez.picker/YearMonthPickerLayout.monthWeight.<get-monthWeight>|<get-monthWeight>(){}[0]
     final val yearWeight // com.kez.picker/YearMonthPickerLayout.yearWeight|{}yearWeight[0]
@@ -555,7 +598,8 @@ final class com.kez.picker/YearMonthPickerLayout { // com.kez.picker/YearMonthPi
 
     final fun component1(): kotlin/Float? // com.kez.picker/YearMonthPickerLayout.component1|component1(){}[0]
     final fun component2(): kotlin/Float? // com.kez.picker/YearMonthPickerLayout.component2|component2(){}[0]
-    final fun copy(kotlin/Float? = ..., kotlin/Float? = ...): com.kez.picker/YearMonthPickerLayout // com.kez.picker/YearMonthPickerLayout.copy|copy(kotlin.Float?;kotlin.Float?){}[0]
+    final fun component3(): kotlin.collections/List<com.kez.picker/YearMonthPickerColumn> // com.kez.picker/YearMonthPickerLayout.component3|component3(){}[0]
+    final fun copy(kotlin/Float? = ..., kotlin/Float? = ..., kotlin.collections/List<com.kez.picker/YearMonthPickerColumn> = ...): com.kez.picker/YearMonthPickerLayout // com.kez.picker/YearMonthPickerLayout.copy|copy(kotlin.Float?;kotlin.Float?;kotlin.collections.List<com.kez.picker.YearMonthPickerColumn>){}[0]
     final fun equals(kotlin/Any?): kotlin/Boolean // com.kez.picker/YearMonthPickerLayout.equals|equals(kotlin.Any?){}[0]
     final fun hashCode(): kotlin/Int // com.kez.picker/YearMonthPickerLayout.hashCode|hashCode(){}[0]
     final fun toString(): kotlin/String // com.kez.picker/YearMonthPickerLayout.toString|toString(){}[0]
@@ -602,7 +646,7 @@ final object com.kez.picker/PickerDefaults { // com.kez.picker/PickerDefaults|nu
     final fun datePickerConstraints(kotlinx.datetime/LocalDate? = ..., kotlinx.datetime/LocalDate? = ...): com.kez.picker/DatePickerConstraints // com.kez.picker/PickerDefaults.datePickerConstraints|datePickerConstraints(kotlinx.datetime.LocalDate?;kotlinx.datetime.LocalDate?){}[0]
     final fun datePickerDisplay(kotlin/Function1<kotlin/Int, kotlin/String> = ..., kotlin/Function1<kotlin/Int, kotlin/String> = ..., kotlin/Function1<kotlin/Int, kotlin/String> = ...): com.kez.picker/DatePickerDisplay // com.kez.picker/PickerDefaults.datePickerDisplay|datePickerDisplay(kotlin.Function1<kotlin.Int,kotlin.String>;kotlin.Function1<kotlin.Int,kotlin.String>;kotlin.Function1<kotlin.Int,kotlin.String>){}[0]
     final fun datePickerItems(kotlin.collections/List<kotlin/Int> = ..., kotlin.collections/List<kotlin/Int> = ..., kotlin.collections/List<kotlin/Int> = ..., kotlinx.datetime/LocalDate? = ..., kotlinx.datetime/LocalDate? = ...): com.kez.picker/DatePickerItems // com.kez.picker/PickerDefaults.datePickerItems|datePickerItems(kotlin.collections.List<kotlin.Int>;kotlin.collections.List<kotlin.Int>;kotlin.collections.List<kotlin.Int>;kotlinx.datetime.LocalDate?;kotlinx.datetime.LocalDate?){}[0]
-    final fun datePickerLayout(kotlin/Float? = ..., kotlin/Float? = ..., kotlin/Float? = ...): com.kez.picker/DatePickerLayout // com.kez.picker/PickerDefaults.datePickerLayout|datePickerLayout(kotlin.Float?;kotlin.Float?;kotlin.Float?){}[0]
+    final fun datePickerLayout(kotlin/Float? = ..., kotlin/Float? = ..., kotlin/Float? = ..., kotlin.collections/List<com.kez.picker/DatePickerColumn> = ...): com.kez.picker/DatePickerLayout // com.kez.picker/PickerDefaults.datePickerLayout|datePickerLayout(kotlin.Float?;kotlin.Float?;kotlin.Float?;kotlin.collections.List<com.kez.picker.DatePickerColumn>){}[0]
     final fun fadingEdgeGradient(): androidx.compose.ui.graphics/Brush // com.kez.picker/PickerDefaults.fadingEdgeGradient|fadingEdgeGradient(){}[0]
     final fun style(kotlin/Int, com.kez.picker/PickerColors?, com.kez.picker/PickerTextStyles?, androidx.compose.ui.graphics/Shape?, androidx.compose.foundation.layout/PaddingValues?, androidx.compose.ui.graphics/Brush?, androidx.compose.ui/Alignment.Horizontal?, androidx.compose.ui/Alignment.Vertical?, androidx.compose.ui.unit/Dp, androidx.compose.ui.graphics/Shape?, kotlin/Boolean, androidx.compose.runtime/Composer?, kotlin/Int, kotlin/Int, kotlin/Int): com.kez.picker/PickerStyle // com.kez.picker/PickerDefaults.style|style(kotlin.Int;com.kez.picker.PickerColors?;com.kez.picker.PickerTextStyles?;androidx.compose.ui.graphics.Shape?;androidx.compose.foundation.layout.PaddingValues?;androidx.compose.ui.graphics.Brush?;androidx.compose.ui.Alignment.Horizontal?;androidx.compose.ui.Alignment.Vertical?;androidx.compose.ui.unit.Dp;androidx.compose.ui.graphics.Shape?;kotlin.Boolean;androidx.compose.runtime.Composer?;kotlin.Int;kotlin.Int;kotlin.Int){}[0]
     final fun textStyles(androidx.compose.ui.text/TextStyle?, androidx.compose.ui.text/TextStyle?, androidx.compose.runtime/Composer?, kotlin/Int, kotlin/Int): com.kez.picker/PickerTextStyles // com.kez.picker/PickerDefaults.textStyles|textStyles(androidx.compose.ui.text.TextStyle?;androidx.compose.ui.text.TextStyle?;androidx.compose.runtime.Composer?;kotlin.Int;kotlin.Int){}[0]
@@ -610,12 +654,12 @@ final object com.kez.picker/PickerDefaults { // com.kez.picker/PickerDefaults|nu
     final fun timePickerConstraints(kotlinx.datetime/LocalTime? = ..., kotlinx.datetime/LocalTime? = ...): com.kez.picker/TimePickerConstraints // com.kez.picker/PickerDefaults.timePickerConstraints|timePickerConstraints(kotlinx.datetime.LocalTime?;kotlinx.datetime.LocalTime?){}[0]
     final fun timePickerDisplay(kotlin/Function1<kotlin/Int, kotlin/String> = ..., kotlin/Function1<kotlin/Int, kotlin/String> = ..., kotlin/Function1<com.kez.picker.util/TimePeriod, kotlin/String> = ...): com.kez.picker/TimePickerDisplay // com.kez.picker/PickerDefaults.timePickerDisplay|timePickerDisplay(kotlin.Function1<kotlin.Int,kotlin.String>;kotlin.Function1<kotlin.Int,kotlin.String>;kotlin.Function1<com.kez.picker.util.TimePeriod,kotlin.String>){}[0]
     final fun timePickerItems(kotlin.collections/List<kotlin/Int> = ..., kotlin.collections/List<kotlin/Int> = ..., kotlin.collections/List<kotlin/Int> = ..., kotlin.collections/List<com.kez.picker.util/TimePeriod> = ..., kotlinx.datetime/LocalTime? = ..., kotlinx.datetime/LocalTime? = ...): com.kez.picker/TimePickerItems // com.kez.picker/PickerDefaults.timePickerItems|timePickerItems(kotlin.collections.List<kotlin.Int>;kotlin.collections.List<kotlin.Int>;kotlin.collections.List<kotlin.Int>;kotlin.collections.List<com.kez.picker.util.TimePeriod>;kotlinx.datetime.LocalTime?;kotlinx.datetime.LocalTime?){}[0]
-    final fun timePickerLayout(kotlin/Float? = ..., kotlin/Float? = ..., kotlin/Float? = ...): com.kez.picker/TimePickerLayout // com.kez.picker/PickerDefaults.timePickerLayout|timePickerLayout(kotlin.Float?;kotlin.Float?;kotlin.Float?){}[0]
+    final fun timePickerLayout(kotlin/Float? = ..., kotlin/Float? = ..., kotlin/Float? = ..., kotlin.collections/List<com.kez.picker/TimePickerColumn> = ...): com.kez.picker/TimePickerLayout // com.kez.picker/PickerDefaults.timePickerLayout|timePickerLayout(kotlin.Float?;kotlin.Float?;kotlin.Float?;kotlin.collections.List<com.kez.picker.TimePickerColumn>){}[0]
     final fun yearMonthPickerAccessibility(kotlin/String? = ..., kotlin/String? = ..., kotlin/Function1<kotlin/Int, kotlin/String> = ..., kotlin/Function1<kotlin/Int, kotlin/String> = ..., kotlin/String? = ..., kotlin/String? = ...): com.kez.picker/YearMonthPickerAccessibility // com.kez.picker/PickerDefaults.yearMonthPickerAccessibility|yearMonthPickerAccessibility(kotlin.String?;kotlin.String?;kotlin.Function1<kotlin.Int,kotlin.String>;kotlin.Function1<kotlin.Int,kotlin.String>;kotlin.String?;kotlin.String?){}[0]
     final fun yearMonthPickerConstraints(com.kez.picker.date/YearMonth? = ..., com.kez.picker.date/YearMonth? = ...): com.kez.picker/YearMonthPickerConstraints // com.kez.picker/PickerDefaults.yearMonthPickerConstraints|yearMonthPickerConstraints(com.kez.picker.date.YearMonth?;com.kez.picker.date.YearMonth?){}[0]
     final fun yearMonthPickerDisplay(kotlin/Function1<kotlin/Int, kotlin/String> = ..., kotlin/Function1<kotlin/Int, kotlin/String> = ...): com.kez.picker/YearMonthPickerDisplay // com.kez.picker/PickerDefaults.yearMonthPickerDisplay|yearMonthPickerDisplay(kotlin.Function1<kotlin.Int,kotlin.String>;kotlin.Function1<kotlin.Int,kotlin.String>){}[0]
     final fun yearMonthPickerItems(kotlin.collections/List<kotlin/Int> = ..., kotlin.collections/List<kotlin/Int> = ..., com.kez.picker.date/YearMonth? = ..., com.kez.picker.date/YearMonth? = ...): com.kez.picker/YearMonthPickerItems // com.kez.picker/PickerDefaults.yearMonthPickerItems|yearMonthPickerItems(kotlin.collections.List<kotlin.Int>;kotlin.collections.List<kotlin.Int>;com.kez.picker.date.YearMonth?;com.kez.picker.date.YearMonth?){}[0]
-    final fun yearMonthPickerLayout(kotlin/Float? = ..., kotlin/Float? = ...): com.kez.picker/YearMonthPickerLayout // com.kez.picker/PickerDefaults.yearMonthPickerLayout|yearMonthPickerLayout(kotlin.Float?;kotlin.Float?){}[0]
+    final fun yearMonthPickerLayout(kotlin/Float? = ..., kotlin/Float? = ..., kotlin.collections/List<com.kez.picker/YearMonthPickerColumn> = ...): com.kez.picker/YearMonthPickerLayout // com.kez.picker/PickerDefaults.yearMonthPickerLayout|yearMonthPickerLayout(kotlin.Float?;kotlin.Float?;kotlin.collections.List<com.kez.picker.YearMonthPickerColumn>){}[0]
 }
 
 final val com.kez.picker.date/com_kez_picker_date_DatePickerState$stableprop // com.kez.picker.date/com_kez_picker_date_DatePickerState$stableprop|#static{}com_kez_picker_date_DatePickerState$stableprop[0]
