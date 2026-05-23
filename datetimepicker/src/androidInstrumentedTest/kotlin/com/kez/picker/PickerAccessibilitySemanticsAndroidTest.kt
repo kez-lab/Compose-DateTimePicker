@@ -9,6 +9,7 @@ import androidx.compose.ui.semantics.SemanticsActions
 import androidx.compose.ui.semantics.SemanticsProperties
 import androidx.compose.ui.semantics.getOrNull
 import androidx.compose.ui.test.SemanticsMatcher
+import androidx.compose.ui.test.assertIsNotEnabled
 import androidx.compose.ui.test.assertIsSelected
 import androidx.compose.ui.test.hasContentDescription
 import androidx.compose.ui.test.isSelected
@@ -269,6 +270,33 @@ class PickerAccessibilitySemanticsAndroidTest {
                         hasCustomAccessibilityAction(NEXT_VALUE_ACTION_LABEL)
             )
             .assertExists()
+    }
+
+    @Test
+    fun picker_disabledOmitsCustomAccessibilityActionsAndExposesDisabledSemantics() {
+        composeRule.setContent {
+            var selectedItem by remember { mutableStateOf(2) }
+            Picker(
+                items = listOf(1, 2, 3),
+                selectedItem = selectedItem,
+                onSelectedItemChange = { selectedItem = it },
+                enabled = false,
+                style = PickerDefaults.style(visibleItemsCount = 3),
+                isInfinity = false,
+                accessibility = PickerDefaults.accessibility(
+                    pickerLabel = "Value",
+                    itemContentDescription = { "$it" },
+                    previousItemActionLabel = PREVIOUS_VALUE_ACTION_LABEL,
+                    nextItemActionLabel = NEXT_VALUE_ACTION_LABEL
+                )
+            )
+        }
+
+        composeRule
+            .onNode(hasContentDescription("Value: 2") and hasStateDescription("2"))
+            .assertIsNotEnabled()
+
+        assertNoCustomAccessibilityActions("Value: 2")
     }
 
     @Test

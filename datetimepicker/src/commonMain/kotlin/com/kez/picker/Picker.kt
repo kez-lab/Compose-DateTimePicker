@@ -42,6 +42,7 @@ import androidx.compose.ui.semantics.collectionInfo
 import androidx.compose.ui.semantics.collectionItemInfo
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.customActions
+import androidx.compose.ui.semantics.disabled
 import androidx.compose.ui.semantics.liveRegion
 import androidx.compose.ui.semantics.role
 import androidx.compose.ui.semantics.selected
@@ -73,6 +74,7 @@ private const val INFINITE_SCROLL_MULTIPLIER = 1000
  * @param selectedItem The currently selected item. It must exist in [items].
  * @param onSelectedItemChange Called when scroll or click interaction selects a new item.
  * @param modifier The modifier to be applied to the picker.
+ * @param enabled Whether user scroll, click, and accessibility selection actions are enabled.
  * @param style Visual and layout styling for the picker.
  * @param accessibility Accessibility labels, item descriptions, and custom action labels for the picker.
  * @param isInfinity Whether the picker should loop infinitely.
@@ -85,6 +87,7 @@ fun <T : Any> Picker(
     selectedItem: T,
     onSelectedItemChange: (T) -> Unit,
     modifier: Modifier = Modifier,
+    enabled: Boolean = true,
     style: PickerStyle = PickerDefaults.style(),
     accessibility: PickerAccessibility<T> = PickerDefaults.accessibility(),
     isInfinity: Boolean = true,
@@ -185,7 +188,7 @@ fun <T : Any> Picker(
             }
             .distinctUntilChanged()
             .collect { (item, isScrollInProgress) ->
-                if (isScrollInProgress && item != currentSelectedItem) {
+                if (enabled && isScrollInProgress && item != currentSelectedItem) {
                     currentOnSelectedItemChange(item)
                 }
             }
@@ -266,7 +269,7 @@ fun <T : Any> Picker(
     }
 
     val accessibilityActions = buildList {
-        if (normalizedPreviousItemActionLabel != null && adjacentFirstVisibleItemIndex(offset = -1) != null) {
+        if (enabled && normalizedPreviousItemActionLabel != null && adjacentFirstVisibleItemIndex(offset = -1) != null) {
             add(
                 CustomAccessibilityAction(
                     label = normalizedPreviousItemActionLabel,
@@ -274,7 +277,7 @@ fun <T : Any> Picker(
                 )
             )
         }
-        if (normalizedNextItemActionLabel != null && adjacentFirstVisibleItemIndex(offset = 1) != null) {
+        if (enabled && normalizedNextItemActionLabel != null && adjacentFirstVisibleItemIndex(offset = 1) != null) {
             add(
                 CustomAccessibilityAction(
                     label = normalizedNextItemActionLabel,
@@ -291,6 +294,9 @@ fun <T : Any> Picker(
                 contentDescription = pickerDescription
                 stateDescription = selectedItemDescription
                 liveRegion = LiveRegionMode.Polite
+            }
+            if (!enabled) {
+                disabled()
             }
             collectionInfo = CollectionInfo(rowCount = items.size, columnCount = 1)
             if (hasPickerDescription && accessibilityActions.isNotEmpty()) {
@@ -340,6 +346,7 @@ fun <T : Any> Picker(
         LazyColumn(
             state = listState,
             flingBehavior = flingBehavior,
+            userScrollEnabled = enabled,
             horizontalAlignment = horizontalAlignment,
             modifier = Modifier
                 .align(Alignment.Center)
@@ -394,7 +401,7 @@ fun <T : Any> Picker(
                             }
                         }
                         .clickable(
-                            enabled = item != null,
+                            enabled = enabled && item != null,
                             role = Role.Button,
                             indication = null,
                             interactionSource = sharedInteractionSource,
