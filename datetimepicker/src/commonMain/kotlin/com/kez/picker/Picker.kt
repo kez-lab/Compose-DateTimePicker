@@ -29,6 +29,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.graphics.BlendMode
 import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.CompositingStrategy
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.lerp
@@ -48,6 +49,7 @@ import androidx.compose.ui.semantics.role
 import androidx.compose.ui.semantics.selected
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.stateDescription
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
@@ -67,6 +69,29 @@ import kotlin.math.abs
 private const val INFINITE_SCROLL_MULTIPLIER = 1000
 
 /**
+ * Information passed to custom [Picker] item content.
+ *
+ * @param T The picker item type.
+ * @property item The item value represented by this row.
+ * @property text The visible text produced by `itemText` for this item.
+ * @property isSelected Whether this item is the currently selected item.
+ * @property isEnabled Whether the picker currently allows user interaction.
+ * @property distanceFraction A value from `0f` to `1f` where `0f` is the centered selected row and
+ * `1f` is the outer visible edge.
+ * @property textStyle The default interpolated text style for this item.
+ * @property contentColor The default interpolated content color for this item.
+ */
+class PickerItemScope<T : Any> internal constructor(
+    val item: T,
+    val text: String,
+    val isSelected: Boolean,
+    val isEnabled: Boolean,
+    val distanceFraction: Float,
+    val textStyle: TextStyle,
+    val contentColor: Color
+)
+
+/**
  * A generic picker component that displays a list of items and allows the user to select one.
  * Follows Material3 component design patterns.
  *
@@ -78,9 +103,9 @@ private const val INFINITE_SCROLL_MULTIPLIER = 1000
  * @param style Visual and layout styling for the picker.
  * @param accessibility Accessibility labels, item descriptions, and custom action labels for the picker.
  * @param isInfinity Whether the picker should loop infinitely.
- * @param itemText Text displayed for each item when [content] is not provided.
- * @param content Optional custom content composable for rendering each item. When provided, the custom content
- * is responsible for its own enabled/disabled visual treatment.
+ * @param itemText Text displayed for each item when [content] is not provided. When [content] is provided,
+ * this text is still exposed through [PickerItemScope.text].
+ * @param content Optional custom content composable for rendering each item.
  */
 @Composable
 fun <T : Any> Picker(
@@ -93,7 +118,7 @@ fun <T : Any> Picker(
     accessibility: PickerAccessibility<T> = PickerDefaults.accessibility(),
     isInfinity: Boolean = true,
     itemText: (T) -> String = { it.toString() },
-    content: @Composable ((T) -> Unit)? = null
+    content: @Composable ((PickerItemScope<T>) -> Unit)? = null
 ) {
     require(items.isNotEmpty()) { "Items list must not be empty" }
     require(items.distinct().size == items.size) {
@@ -388,6 +413,19 @@ fun <T : Any> Picker(
                 val isSelected = item == selectedItem
                 val itemText = item?.let(itemText) ?: ""
                 val itemDescription = item?.let(accessibility.itemContentDescription) ?: ""
+                val itemContentColor = lerp(
+                    start = selectedTextColor,
+                    stop = textColor,
+                    fraction = fraction
+                )
+                val itemTextStyle = textStyle.copy(
+                    fontSize = lerp(
+                        start = selectedTextStyle.fontSize,
+                        stop = textStyle.fontSize,
+                        fraction
+                    ),
+                    color = itemContentColor,
+                )
                 val itemIndex = if (isInfinity) {
                     index % items.size
                 } else {
@@ -435,24 +473,23 @@ fun <T : Any> Picker(
                 ) {
                     if (item != null) {
                         if (content != null) {
-                            content(item)
+                            content(
+                                PickerItemScope(
+                                    item = item,
+                                    text = itemText,
+                                    isSelected = isSelected,
+                                    isEnabled = enabled,
+                                    distanceFraction = fraction,
+                                    textStyle = itemTextStyle,
+                                    contentColor = itemContentColor
+                                )
+                            )
                         } else {
                             Text(
                                 text = itemText,
                                 maxLines = 1,
                                 overflow = TextOverflow.Ellipsis,
-                                style = textStyle.copy(
-                                    fontSize = lerp(
-                                        start = selectedTextStyle.fontSize,
-                                        stop = textStyle.fontSize,
-                                        fraction
-                                    ),
-                                    color = lerp(
-                                        start = selectedTextColor,
-                                        stop = textColor,
-                                        fraction = fraction
-                                    ),
-                                ),
+                                style = itemTextStyle,
                                 textAlign = TextAlign.Center
                             )
                         }

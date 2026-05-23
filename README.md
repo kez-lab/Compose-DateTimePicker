@@ -429,8 +429,25 @@ distinct, and `selectedItem` must exist in `items`. If `T` is not saveable, stor
 your app state and map that key back to an item before rendering the picker.
 Pass `enabled = false` to prevent user scroll, click, and accessibility selection actions while still
 showing the current value. Disabled pickers use the disabled slots from `PickerDefaults.colors(...)`
-for default text, dividers, and selected-item backgrounds; custom `content` composables should render
-their own disabled appearance.
+for default text, dividers, and selected-item backgrounds.
+
+Custom `content` receives `PickerItemScope<T>` so custom rows can reuse the default formatted text,
+selected/enabled state, distance fraction, text style, and content color:
+
+```kotlin
+Picker(
+    items = items,
+    selectedItem = selectedSize,
+    onSelectedItemChange = { selectedSize = it },
+    content = { item ->
+        Text(
+            text = if (item.isSelected) "[${item.text}]" else item.text,
+            style = item.textStyle,
+            color = item.contentColor
+        )
+    }
+)
+```
 
 Use `style = PickerDefaults.style(...)` to customize visible item count, colors, text styles,
 dividers, item padding, selected item background, and fading edge behavior with one reusable object.

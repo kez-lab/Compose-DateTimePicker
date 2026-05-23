@@ -160,6 +160,17 @@ public final class com/kez/picker/PickerDefaults {
 	public static synthetic fun yearMonthPickerItems$default (Lcom/kez/picker/PickerDefaults;Ljava/util/List;Ljava/util/List;Lcom/kez/picker/date/YearMonth;Lcom/kez/picker/date/YearMonth;ILjava/lang/Object;)Lcom/kez/picker/YearMonthPickerItems;
 }
 
+public final class com/kez/picker/PickerItemScope {
+	public static final field $stable I
+	public final fun getContentColor-0d7_KjU ()J
+	public final fun getDistanceFraction ()F
+	public final fun getItem ()Ljava/lang/Object;
+	public final fun getText ()Ljava/lang/String;
+	public final fun getTextStyle ()Landroidx/compose/ui/text/TextStyle;
+	public final fun isEnabled ()Z
+	public final fun isSelected ()Z
+}
+
 public final class com/kez/picker/PickerItemText {
 	public static final field $stable I
 	public fun <init> ()V

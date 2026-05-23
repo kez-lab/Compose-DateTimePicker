@@ -37,6 +37,8 @@ This project tracks notable user-facing and maintainer-facing changes here. The 
   can show a selected value while preventing user scroll, click, and accessibility selection actions.
 - Added disabled color slots to `PickerColors` / `PickerDefaults.colors(...)` so disabled pickers can
   keep selected values visible while clearly communicating their disabled state.
+- Added `PickerItemScope` for generic `Picker` custom content so row UI can read the formatted text,
+  selected state, enabled state, distance fraction, text style, and content color.
 - Added picker accessibility descriptions and localized item description hooks so Android apps can provide clearer TalkBack output.
 - Added previous/next accessibility actions for picker columns, with public labels that apps can localize.
 
@@ -116,6 +118,9 @@ This project tracks notable user-facing and maintainer-facing changes here. The 
   arguments when configuring `items`, `display`, `style`, `spacingBetweenPickers`, or `accessibility`.
   Named-argument call sites are straightforward to migrate; positional call sites may need argument
   reordering.
+- Generic `Picker.content` now receives `PickerItemScope<T>` instead of `T`. Replace direct item usage
+  with `scope.item`, and use `scope.text`, `scope.textStyle`, or `scope.contentColor` when rendering
+  custom rows.
 - `DatePickerItems` now includes `dayItems`. Direct `DatePickerItems(...)` construction must pass
   day values; `PickerDefaults.datePickerItems(...)` remains the preferred factory.
 - `DatePickerItems` now includes `constraints`. Kotlin callers can omit it because it has a default
