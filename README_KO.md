@@ -462,8 +462,8 @@ state를 새로 만들 필요는 없습니다.
 | State | Method |
 | :--- | :--- |
 | Generic `Picker<T>` | 앱이 소유한 `selectedItem` 값을 갱신 |
-| `time.TimePickerState` | `selectTime(LocalTime(...))` 또는 `selectTime(LocalTime(...), items)` |
-| `date.DatePickerState` | `selectDate(LocalDate(...))` 또는 `selectDate(LocalDate(...), items)` |
+| `time.TimePickerState` | `selectTime(LocalTime(...))`, `selectTime(hour, minute)` 또는 대응되는 `items` overload |
+| `date.DatePickerState` | `selectDate(LocalDate(...))`, `selectDate(year, month, day)` 또는 대응되는 `items` overload |
 | `date.YearMonthPickerState` | `selectYearMonth(YearMonth(...))`, `selectYearMonth(year, month)`, `selectDate(LocalDate(...))`, 또는 대응되는 `items` overload |
 
 ```kotlin
@@ -480,7 +480,7 @@ fun ProgrammaticTimePickerExample() {
     val state = rememberTimePickerState(initialTime = LocalTime(8, 0))
 
     Column {
-        Button(onClick = { state.selectTime(LocalTime(9, 30)) }) {
+        Button(onClick = { state.selectTime(hour = 9, minute = 30) }) {
             Text("Set 09:30")
         }
 
@@ -550,7 +550,8 @@ DatePicker(
 
 초기값은 `rememberTimePickerState(initialTime = LocalTime(...))` 또는 `initialHour`/`initialMinute` 파라미터로 설정합니다.
 
-상태 생성 이후 선택값을 바꾸려면 `state.selectTime(LocalTime(...))`을 호출합니다.
+상태 생성 이후 선택값을 바꾸려면 `state.selectTime(LocalTime(...))` 또는
+`state.selectTime(hour, minute)`을 호출합니다. 정수 `hour`는 `0..23` 범위의 hour-of-day로 해석됩니다.
 
 custom item 값이 유효 범위를 벗어나거나, 중복이 있거나, 필수 목록이 비어 있거나, 현재 선택값이 custom 목록 또는 시간 범위 밖이면 composition 중 `IllegalArgumentException`이 발생합니다. 12시간 형식의 `PickerDefaults.timePickerItems(hour12Items = ...)`는 표시 시간 기준(`1..12`)입니다. 예를 들어 `initialHour = 13`은 `state.selectedHour == 1`, `PM`으로 변환됩니다.
 
@@ -583,7 +584,8 @@ custom item 값이 유효 범위를 벗어나거나, 중복이 있거나, 필수
 월은 `1..12` 범위여야 하고 일은 최소 `1`이어야 합니다. `initialDay`가 초기 연/월의 최대 일수보다
 크면 그 최대 일수로 보정됩니다.
 
-상태 생성 이후 선택값을 바꾸려면 `state.selectDate(LocalDate(...))`를 호출합니다.
+상태 생성 이후 선택값을 바꾸려면 `state.selectDate(LocalDate(...))` 또는
+`state.selectDate(year, month, day)`를 호출합니다.
 
 custom item 값이 유효 범위를 벗어나거나, 중복이 있거나, 목록이 비어 있거나, 현재 선택된 연도/월/일이 custom 목록 또는 날짜 범위 밖이면 composition 중 `IllegalArgumentException`이 발생합니다. 연/월 변경으로 현재 월 또는 일이 선택 불가능해지면 설정된 제약 안에서 가장 가까운 선택 가능 값으로 이동합니다.
 

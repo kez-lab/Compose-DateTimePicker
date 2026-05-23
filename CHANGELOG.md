@@ -21,6 +21,8 @@ This project tracks notable user-facing and maintainer-facing changes here. The 
   coerced by the same custom item lists before first composition.
 - Added `rememberYearMonthPickerState(initialYearMonth = ...)` and the matching `items` overload so
   year/month-only state can be initialized without routing through `LocalDate`.
+- Added `TimePickerState.selectTime(hour, minute)` and `DatePickerState.selectDate(year, month, day)`
+  overloads for apps that store primitive form values.
 - Added value-first state constructors: `TimePickerState(LocalTime, ...)`,
   `DatePickerState(LocalDate)`, `YearMonthPickerState(YearMonth)`, and
   `YearMonthPickerState(LocalDate)`.
