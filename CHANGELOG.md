@@ -33,6 +33,8 @@ This project tracks notable user-facing and maintainer-facing changes here. The 
   `PickerDefaults.timePickerItems(minTime = ..., maxTime = ...)`.
 - Added inclusive `YearMonthPicker` bounds through `YearMonthPickerConstraints` and
   `PickerDefaults.yearMonthPickerItems(minYearMonth = ..., maxYearMonth = ...)`.
+- Added `enabled` parameters to `Picker`, `TimePicker`, `DatePicker`, and `YearMonthPicker` so apps
+  can show a selected value while preventing user scroll, click, and accessibility selection actions.
 - Added picker accessibility descriptions and localized item description hooks so Android apps can provide clearer TalkBack output.
 - Added previous/next accessibility actions for picker columns, with public labels that apps can localize.
 
@@ -77,6 +79,7 @@ This project tracks notable user-facing and maintainer-facing changes here. The 
   now chooses the closest selectable `YearMonth` as a whole month value.
 - `YearMonthPicker` now filters year and month columns through `YearMonthPickerConstraints` when
   `minYearMonth`/`maxYearMonth` bounds are configured.
+- Disabled pickers now expose disabled semantics and omit previous/next accessibility selection actions.
 - Custom item lists are now strict: required lists must be non-empty and distinct, values must be in range, and the current selected value must be present before composition proceeds.
 
 ### Compatibility Notes
@@ -106,6 +109,8 @@ This project tracks notable user-facing and maintainer-facing changes here. The 
 - `YearMonthPickerItems` now includes a `constraints` property. Kotlin callers that use named/default
   arguments usually do not need source changes, but direct Java or binary constructor calls must pass
   the new argument after recompilation.
+- Picker function signatures now include `enabled` after the user-selection callback. Prefer named
+  arguments when configuring `items`, `display`, `style`, `spacingBetweenPickers`, or `accessibility`.
   Named-argument call sites are straightforward to migrate; positional call sites may need argument
   reordering.
 - `DatePickerItems` now includes `dayItems`. Direct `DatePickerItems(...)` construction must pass

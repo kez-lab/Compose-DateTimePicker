@@ -409,6 +409,7 @@ fun SizePickerExample() {
         items = items,
         selectedItem = selectedSize,
         onSelectedItemChange = { selectedSize = it },
+        enabled = true,
         isInfinity = false,
         itemText = { size -> size.uppercase() },
         accessibility = PickerDefaults.accessibility(
@@ -423,6 +424,8 @@ fun SizePickerExample() {
 전달하며, `onSelectedItemChange`에서 앱 state를 갱신하세요. `items`는 비어 있으면 안 되고 중복값이
 없어야 하며, `selectedItem`은 반드시 `items` 안에 있어야 합니다. `T`가 saveable하지 않다면 앱 state에는
 saveable한 key를 저장한 뒤 렌더링 전에 그 key를 item으로 매핑하세요.
+현재 값을 표시하되 사용자의 scroll, click, accessibility 선택 action을 막아야 한다면 `enabled = false`를
+전달하세요.
 
 `style = PickerDefaults.style(...)`로 visible item count, 색상, 텍스트 스타일, divider, item padding,
 선택 영역 배경, fading edge 동작을 하나의 재사용 가능한 객체로 커스터마이즈하세요.
@@ -485,6 +488,7 @@ column을 필터링합니다. `DatePicker`는 `dayItems`를 선택된 연/월의
 | :--- | :--- | :--- |
 | `state` | Picker를 제어하기 위한 상태 객체입니다. | `rememberTimePickerState()` |
 | `onSelectedTimeChange` | 사용자 조작으로 선택된 `LocalTime`이 바뀐 뒤 호출됩니다. | `{}` |
+| `enabled` | 사용자 scroll, click, accessibility 선택 action을 허용할지 여부입니다. | `true` |
 | `items` | 선택 가능한 분, 24시간제 시간, 12시간제 표시 시간, 오전/오후 목록과 선택적 `minTime`/`maxTime` 범위입니다. | `PickerDefaults.timePickerItems()` |
 | `display` | 각 picker column의 화면 표시 텍스트 formatter입니다. | `PickerDefaults.timePickerDisplay()` |
 | `style` | 각 picker column의 시각/레이아웃 스타일입니다. | `PickerDefaults.style()` |
@@ -513,6 +517,7 @@ custom item 값이 유효 범위를 벗어나거나, 중복이 있거나, 필수
 | :--- | :--- | :--- |
 | `state` | Picker를 제어하기 위한 상태 객체입니다. | `rememberDatePickerState()` |
 | `onSelectedDateChange` | 사용자 조작으로 선택된 `LocalDate`가 바뀐 뒤 호출됩니다. | `{}` |
+| `enabled` | 사용자 scroll, click, accessibility 선택 action을 허용할지 여부입니다. | `true` |
 | `items` | 선택 가능한 연도/월/일 목록과 선택적 `minDate`/`maxDate` inclusive 범위입니다. 값은 `1000..9999`, `1..12`, `1..31` 범위여야 합니다. | `PickerDefaults.datePickerItems()` |
 | `display` | 각 picker column의 화면 표시 텍스트 formatter입니다. | `PickerDefaults.datePickerDisplay()` |
 | `style` | 각 picker column의 시각/레이아웃 스타일입니다. | `PickerDefaults.style()` |
@@ -544,6 +549,7 @@ custom item 값이 유효 범위를 벗어나거나, 중복이 있거나, 목록
 | :--- | :--- | :--- |
 | `state` | Picker를 제어하기 위한 상태 객체입니다. | `rememberYearMonthPickerState()` |
 | `onSelectedYearMonthChange` | 사용자 조작으로 선택된 `YearMonth`가 바뀐 뒤 호출됩니다. | `{}` |
+| `enabled` | 사용자 scroll, click, accessibility 선택 action을 허용할지 여부입니다. | `true` |
 | `items` | 선택 가능한 연도/월 목록과 선택적 `minYearMonth`/`maxYearMonth` 범위입니다. 값은 `1000..9999`와 `1..12` 범위여야 합니다. | `PickerDefaults.yearMonthPickerItems()` |
 | `display` | 각 picker column의 화면 표시 텍스트 formatter입니다. | `PickerDefaults.yearMonthPickerDisplay()` |
 | `style` | 각 picker column의 시각/레이아웃 스타일입니다. | `PickerDefaults.style()` |
