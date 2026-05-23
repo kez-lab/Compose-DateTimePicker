@@ -73,7 +73,7 @@ private const val INFINITE_SCROLL_MULTIPLIER = 1000
  *
  * @param T The picker item type.
  * @property item The item value represented by this row.
- * @property text The visible text produced by `itemText` for this item.
+ * @property text The visible text produced by [PickerItemText] for this item.
  * @property isSelected Whether this item is the currently selected item.
  * @property isEnabled Whether the picker currently allows user interaction.
  * @property distanceFraction A value from `0f` to `1f` where `0f` is the centered selected row and
@@ -100,11 +100,11 @@ class PickerItemScope<T : Any> internal constructor(
  * @param onSelectedItemChange Called when scroll or click interaction selects a new item.
  * @param modifier The modifier to be applied to the picker.
  * @param enabled Whether user scroll, click, and accessibility selection actions are enabled.
+ * @param display Visible item text configuration. When [content] is provided, this text is still
+ * exposed through [PickerItemScope.text].
  * @param style Visual and layout styling for the picker.
  * @param accessibility Accessibility labels, item descriptions, and custom action labels for the picker.
  * @param isInfinity Whether the picker should loop infinitely.
- * @param itemText Text displayed for each item when [content] is not provided. When [content] is provided,
- * this text is still exposed through [PickerItemScope.text].
  * @param content Optional custom content composable for rendering each item.
  */
 @Composable
@@ -114,10 +114,10 @@ fun <T : Any> Picker(
     onSelectedItemChange: (T) -> Unit,
     modifier: Modifier = Modifier,
     enabled: Boolean = true,
+    display: PickerItemText<T> = PickerDefaults.itemText(),
     style: PickerStyle = PickerDefaults.style(),
     accessibility: PickerAccessibility<T> = PickerDefaults.accessibility(),
     isInfinity: Boolean = true,
-    itemText: (T) -> String = { it.toString() },
     content: @Composable ((PickerItemScope<T>) -> Unit)? = null
 ) {
     require(items.isNotEmpty()) { "Items list must not be empty" }
@@ -411,7 +411,7 @@ fun <T : Any> Picker(
 
                 val item = getItem(index)
                 val isSelected = item == selectedItem
-                val itemText = item?.let(itemText) ?: ""
+                val itemText = item?.let(display.itemText) ?: ""
                 val itemDescription = item?.let(accessibility.itemContentDescription) ?: ""
                 val itemContentColor = lerp(
                     start = selectedTextColor,

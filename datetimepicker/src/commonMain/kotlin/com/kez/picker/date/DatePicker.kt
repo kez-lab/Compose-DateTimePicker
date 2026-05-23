@@ -112,7 +112,7 @@ fun DatePicker(
                     enabled = enabled,
                     style = style,
                     accessibility = accessibility.year,
-                    itemText = display.year.itemText
+                    display = display.year
                 )
 
                 Picker(
@@ -125,7 +125,7 @@ fun DatePicker(
                     enabled = enabled,
                     style = style,
                     accessibility = accessibility.month,
-                    itemText = display.month.itemText
+                    display = display.month
                 )
 
                 key(dayItems) {
@@ -140,7 +140,7 @@ fun DatePicker(
                         style = style,
                         isInfinity = false,
                         accessibility = accessibility.day,
-                        itemText = display.day.itemText
+                        display = display.day
                     )
                 }
             }

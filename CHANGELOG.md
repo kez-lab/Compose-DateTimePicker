@@ -24,7 +24,7 @@ This project tracks notable user-facing and maintainer-facing changes here. The 
   `YearMonthPickerState(LocalDate)`.
 - Added `contains(...)` predicates to picker item option objects so apps can check whether a value is
   already directly selectable before deciding to reject or coerce it.
-- Added `Picker.itemText` plus `TimePickerDisplay`, `DatePickerDisplay`, and
+- Added `PickerDefaults.itemText(...)` plus `TimePickerDisplay`, `DatePickerDisplay`, and
   `YearMonthPickerDisplay` option objects so apps can customize visible item text separately from
   accessibility descriptions.
 - Added inclusive `DatePicker` bounds through `DatePickerConstraints` and
@@ -128,6 +128,11 @@ This project tracks notable user-facing and maintainer-facing changes here. The 
 - Generic `Picker.content` now receives `PickerItemScope<T>` instead of `T`. Replace direct item usage
   with `scope.item`, and use `scope.text`, `scope.textStyle`, or `scope.contentColor` when rendering
   custom rows.
+- Generic `Picker` now accepts `display = PickerDefaults.itemText(...)` instead of a raw `itemText`
+  lambda, matching the composite picker display option pattern.
+- Generic `Picker` optional parameters are ordered as `enabled`, `display`, `style`, `accessibility`,
+  `isInfinity`, then `content` to match the composite picker option flow more closely. Prefer named
+  arguments for optional configuration.
 - `DatePickerItems` now includes `dayItems`. Direct `DatePickerItems(...)` construction must pass
   day values; `PickerDefaults.datePickerItems(...)` remains the preferred factory.
 - `DatePickerItems` now includes `constraints`. Kotlin callers can omit it because it has a default
