@@ -478,6 +478,8 @@ public final class com/kez/picker/date/DatePickerState {
 	public final fun getSelectedDay ()I
 	public final fun getSelectedMonth ()I
 	public final fun getSelectedYear ()I
+	public final fun selectDate (III)V
+	public final fun selectDate (IIILcom/kez/picker/DatePickerItems;)V
 	public final fun selectDate (Lkotlinx/datetime/LocalDate;)V
 	public final fun selectDate (Lkotlinx/datetime/LocalDate;Lcom/kez/picker/DatePickerItems;)V
 }
@@ -606,6 +608,8 @@ public final class com/kez/picker/time/TimePickerState {
 	public final fun getSelectedPeriod ()Lcom/kez/picker/util/TimePeriod;
 	public final fun getSelectedTime ()Lkotlinx/datetime/LocalTime;
 	public final fun getTimeFormat ()Lcom/kez/picker/util/TimeFormat;
+	public final fun selectTime (II)V
+	public final fun selectTime (IILcom/kez/picker/TimePickerItems;)V
 	public final fun selectTime (Lkotlinx/datetime/LocalTime;)V
 	public final fun selectTime (Lkotlinx/datetime/LocalTime;Lcom/kez/picker/TimePickerItems;)V
 }
