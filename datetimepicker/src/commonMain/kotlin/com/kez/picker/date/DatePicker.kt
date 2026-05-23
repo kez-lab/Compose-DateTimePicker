@@ -27,6 +27,7 @@ import kotlin.math.abs
  * @param pickerModifier The modifier to be applied to each picker.
  * @param state The state object to control the picker.
  * @param onSelectedDateChange Called after user interaction changes the selected date.
+ * @param enabled Whether user scroll, click, and accessibility selection actions are enabled.
  * @param items Selectable year, month, and day item lists for the picker.
  * @param display Visible item text formatters for each picker column.
  * @param style Visual and layout styling for each picker column.
@@ -40,6 +41,7 @@ fun DatePicker(
     pickerModifier: Modifier = Modifier,
     state: DatePickerState = rememberDatePickerState(),
     onSelectedDateChange: (LocalDate) -> Unit = {},
+    enabled: Boolean = true,
     items: DatePickerItems = PickerDefaults.datePickerItems(),
     display: DatePickerDisplay = PickerDefaults.datePickerDisplay(),
     style: PickerStyle = PickerDefaults.style(),
@@ -100,6 +102,7 @@ fun DatePicker(
                         updateSelectedDate { state.selectYear(year) }
                     },
                     modifier = pickerModifier.weight(1.2f), // Give Year slightly more width
+                    enabled = enabled,
                     style = style,
                     accessibility = accessibility.year,
                     itemText = display.year.itemText
@@ -112,6 +115,7 @@ fun DatePicker(
                         updateSelectedDate { state.selectMonth(month) }
                     },
                     modifier = pickerModifier.weight(0.8f),
+                    enabled = enabled,
                     style = style,
                     accessibility = accessibility.month,
                     itemText = display.month.itemText
@@ -125,6 +129,7 @@ fun DatePicker(
                             updateSelectedDate { state.selectDay(day) }
                         },
                         modifier = pickerModifier.weight(0.8f),
+                        enabled = enabled,
                         style = style,
                         isInfinity = false,
                         accessibility = accessibility.day,

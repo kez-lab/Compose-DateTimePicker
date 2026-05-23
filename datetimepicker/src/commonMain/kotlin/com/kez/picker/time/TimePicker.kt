@@ -31,6 +31,7 @@ import kotlinx.datetime.LocalTime
  * @param pickerModifier The modifier to be applied to each picker.
  * @param state The state object to control the picker.
  * @param onSelectedTimeChange Called after user interaction changes the selected time.
+ * @param enabled Whether user scroll, click, and accessibility selection actions are enabled.
  * @param items Selectable minute, hour, and period item lists for the picker.
  * @param display Visible item text formatters for each picker column.
  * @param style Visual and layout styling for each picker column.
@@ -44,6 +45,7 @@ fun TimePicker(
     pickerModifier: Modifier = Modifier,
     state: TimePickerState = rememberTimePickerState(),
     onSelectedTimeChange: (LocalTime) -> Unit = {},
+    enabled: Boolean = true,
     items: TimePickerItems = PickerDefaults.timePickerItems(),
     display: TimePickerDisplay = PickerDefaults.timePickerDisplay(),
     style: PickerStyle = PickerDefaults.style(),
@@ -94,6 +96,7 @@ fun TimePicker(
                             updateSelectedTime { state.selectPeriod(period) }
                         },
                         modifier = pickerModifier.weight(1f),
+                        enabled = enabled,
                         style = style,
                         isInfinity = false,
                         accessibility = accessibility.period,
@@ -112,6 +115,7 @@ fun TimePicker(
                         updateSelectedTime { state.selectHour(hour) }
                     },
                     modifier = pickerModifier.weight(1f),
+                    enabled = enabled,
                     style = style,
                     accessibility = accessibility.hour,
                     itemText = display.hour.itemText
@@ -127,6 +131,7 @@ fun TimePicker(
                         updateSelectedTime { state.selectMinute(minute) }
                     },
                     modifier = pickerModifier.weight(1f),
+                    enabled = enabled,
                     style = style,
                     accessibility = accessibility.minute,
                     itemText = display.minute.itemText

@@ -26,6 +26,7 @@ import com.kez.picker.YearMonthPickerItems
  * @param pickerModifier The modifier to be applied to each picker.
  * @param state The state object to control the picker.
  * @param onSelectedYearMonthChange Called after user interaction changes the selected year/month.
+ * @param enabled Whether user scroll, click, and accessibility selection actions are enabled.
  * @param items Selectable year and month item lists plus optional year/month bounds for the picker.
  * @param display Visible item text formatters for each picker column.
  * @param style Visual and layout styling for each picker column.
@@ -39,6 +40,7 @@ fun YearMonthPicker(
     pickerModifier: Modifier = Modifier,
     state: YearMonthPickerState = rememberYearMonthPickerState(),
     onSelectedYearMonthChange: (YearMonth) -> Unit = {},
+    enabled: Boolean = true,
     items: YearMonthPickerItems = PickerDefaults.yearMonthPickerItems(),
     display: YearMonthPickerDisplay = PickerDefaults.yearMonthPickerDisplay(),
     style: PickerStyle = PickerDefaults.style(),
@@ -87,6 +89,7 @@ fun YearMonthPicker(
                         updateSelectedYearMonth { state.selectYear(year) }
                     },
                     modifier = pickerModifier.weight(1f),
+                    enabled = enabled,
                     style = style,
                     accessibility = accessibility.year,
                     itemText = display.year.itemText
@@ -99,6 +102,7 @@ fun YearMonthPicker(
                         updateSelectedYearMonth { state.selectMonth(month) }
                     },
                     modifier = pickerModifier.weight(1f),
+                    enabled = enabled,
                     style = style,
                     accessibility = accessibility.month,
                     itemText = display.month.itemText
