@@ -208,7 +208,7 @@ public final class com/kez/picker/PickerItemText {
 }
 
 public final class com/kez/picker/PickerKt {
-	public static final fun Picker (Ljava/util/List;Ljava/lang/Object;Lkotlin/jvm/functions/Function1;Landroidx/compose/ui/Modifier;ZLcom/kez/picker/PickerStyle;Lcom/kez/picker/PickerAccessibility;ZLcom/kez/picker/PickerItemText;Lkotlin/jvm/functions/Function3;Landroidx/compose/runtime/Composer;II)V
+	public static final fun Picker (Ljava/util/List;Ljava/lang/Object;Lkotlin/jvm/functions/Function1;Landroidx/compose/ui/Modifier;ZLcom/kez/picker/PickerItemText;Lcom/kez/picker/PickerStyle;Lcom/kez/picker/PickerAccessibility;ZLkotlin/jvm/functions/Function3;Landroidx/compose/runtime/Composer;II)V
 }
 
 public final class com/kez/picker/PickerStyle {
