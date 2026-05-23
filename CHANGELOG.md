@@ -44,6 +44,8 @@ This project tracks notable user-facing and maintainer-facing changes here. The 
 - Added `TimePickerLayout`, `DatePickerLayout`, and `YearMonthPickerLayout` with
   `PickerDefaults.*Layout(...)` factories so apps can tune or opt out of composite picker column
   weights.
+- Added `TimePickerColumn`, `DatePickerColumn`, and `YearMonthPickerColumn` order options so apps can
+  render picker columns in locale- or form-specific order.
 - Added picker accessibility descriptions and localized item description hooks so Android apps can provide clearer TalkBack output.
 - Added previous/next accessibility actions for picker columns, with public labels that apps can localize.
 
