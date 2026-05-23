@@ -32,7 +32,7 @@ import kotlin.math.abs
  * @param style Visual and layout styling for each picker column.
  * @param spacingBetweenPickers The spacing between the pickers.
  * @param accessibility Accessibility labels, item descriptions, and custom action labels for each picker column.
- * @throws IllegalArgumentException if custom item lists are empty, contain duplicates, contain values outside the supported ranges, or omit the current selected year/month/day.
+ * @throws IllegalArgumentException if custom item lists are empty, contain duplicates, contain values outside the supported ranges, or omit the current selected year/month/day after date constraints are applied.
  */
 @Composable
 fun DatePicker(
@@ -51,13 +51,24 @@ fun DatePicker(
         items = items
     )
 
+    fun moveSelectionInsideAvailableItems() {
+        val availableMonthItems = items.selectableMonthItemsFor(state.selectedYear)
+        if (state.selectedMonth !in availableMonthItems) {
+            state.selectMonth(availableMonthItems.closestTo(state.selectedMonth))
+        }
+        val availableDayItems = items.selectableDayItemsFor(
+            year = state.selectedYear,
+            month = state.selectedMonth
+        )
+        if (state.selectedDay !in availableDayItems) {
+            state.selectDay(availableDayItems.closestTo(state.selectedDay))
+        }
+    }
+
     fun updateSelectedDate(update: () -> Unit) {
         val previousDate = state.selectedDate
         update()
-        val availableDayItems = items.dayItems.validDaysFor(state.maxDay)
-        if (state.selectedDay !in availableDayItems) {
-            state.selectDay(availableDayItems.closestDayTo(state.selectedDay))
-        }
+        moveSelectionInsideAvailableItems()
         val nextDate = state.selectedDate
         if (nextDate != previousDate) {
             onSelectedDateChange(nextDate)
@@ -70,8 +81,12 @@ fun DatePicker(
             verticalArrangement = Arrangement.Center,
             modifier = Modifier.fillMaxWidth()
         ) {
-            val maxDay = state.maxDay
-            val dayItems = items.dayItems.validDaysFor(maxDay)
+            val yearItems = items.selectableYearItems()
+            val monthItems = items.selectableMonthItemsFor(state.selectedYear)
+            val dayItems = items.selectableDayItemsFor(
+                year = state.selectedYear,
+                month = state.selectedMonth
+            )
 
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -79,7 +94,7 @@ fun DatePicker(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Picker(
-                    items = items.yearItems,
+                    items = yearItems,
                     selectedItem = state.selectedYear,
                     onSelectedItemChange = { year ->
                         updateSelectedDate { state.selectYear(year) }
@@ -91,7 +106,7 @@ fun DatePicker(
                 )
 
                 Picker(
-                    items = items.monthItems,
+                    items = monthItems,
                     selectedItem = state.selectedMonth,
                     onSelectedItemChange = { month ->
                         updateSelectedDate { state.selectMonth(month) }
@@ -102,7 +117,7 @@ fun DatePicker(
                     itemText = display.month.itemText
                 )
 
-                key(maxDay) {
+                key(dayItems) {
                     Picker(
                         items = dayItems,
                         selectedItem = state.selectedDay,
@@ -181,14 +196,28 @@ internal fun validateDatePickerItems(
     require(state.selectedMonth in monthItems) {
         "DatePicker monthItems must contain state.selectedMonth=${state.selectedMonth}."
     }
-    val minimumMaxDay = minimumMaxDayFor(yearItems, monthItems)
-    require(dayItems.any { it <= minimumMaxDay }) {
-        "DatePicker dayItems must contain at least one day valid for every selectable " +
-                "year/month combination. Smallest maximum day is $minimumMaxDay."
+    if (items.constraints.isUnbounded) {
+        val minimumMaxDay = minimumMaxDayFor(yearItems, monthItems)
+        require(dayItems.any { it <= minimumMaxDay }) {
+            "DatePicker dayItems must contain at least one day valid for every selectable " +
+                    "year/month combination. Smallest maximum day is $minimumMaxDay."
+        }
     }
-    val availableDayItems = dayItems.validDaysFor(state.maxDay)
+    val availableYearItems = items.selectableYearItems()
+    require(state.selectedYear in availableYearItems) {
+        "DatePicker constraints must allow state.selectedYear=${state.selectedYear}."
+    }
+    val availableMonthItems = items.selectableMonthItemsFor(state.selectedYear)
+    require(state.selectedMonth in availableMonthItems) {
+        "DatePicker constraints must allow state.selectedMonth=${state.selectedMonth} " +
+                "for selectedYear=${state.selectedYear}."
+    }
+    val availableDayItems = items.selectableDayItemsFor(
+        year = state.selectedYear,
+        month = state.selectedMonth
+    )
     require(state.selectedDay in availableDayItems) {
-        "DatePicker dayItems must contain state.selectedDay=${state.selectedDay} " +
+        "DatePicker dayItems and constraints must allow state.selectedDay=${state.selectedDay} " +
                 "for selectedYear=${state.selectedYear} and selectedMonth=${state.selectedMonth}."
     }
 }
@@ -196,12 +225,9 @@ internal fun validateDatePickerItems(
 private fun List<Int>.invalidValuesFor(range: IntRange): List<Int> =
     filterNot { it in range }.distinct()
 
-private fun List<Int>.validDaysFor(maxDay: Int): List<Int> =
-    filter { it <= maxDay }
-
-private fun List<Int>.closestDayTo(day: Int): Int =
+private fun List<Int>.closestTo(value: Int): Int =
     minWith(
-        compareBy<Int> { abs(it - day) }
+        compareBy<Int> { abs(it - value) }
             .thenBy { it }
     )
 

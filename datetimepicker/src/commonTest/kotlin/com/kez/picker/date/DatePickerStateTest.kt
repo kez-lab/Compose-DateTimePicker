@@ -1,6 +1,7 @@
 package com.kez.picker.date
 
 import androidx.compose.runtime.saveable.SaverScope
+import com.kez.picker.DatePickerConstraints
 import com.kez.picker.DatePickerItems
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.Month
@@ -338,6 +339,96 @@ class DatePickerStateTest {
     }
 
     @Test
+    fun datePickerConstraints_throwsWhenMinimumIsAfterMaximum() {
+        assertFailsWith<IllegalArgumentException> {
+            DatePickerConstraints(
+                minDate = LocalDate(year = 2026, month = Month.JUNE, day = 20),
+                maxDate = LocalDate(year = 2026, month = Month.MAY, day = 10)
+            )
+        }
+    }
+
+    @Test
+    fun datePickerItems_contains_respectsDateConstraints() {
+        val items = DatePickerItems(
+            yearItems = listOf(2026),
+            monthItems = (1..12).toList(),
+            dayItems = (1..31).toList(),
+            constraints = DatePickerConstraints(
+                minDate = LocalDate(year = 2026, month = Month.MAY, day = 10),
+                maxDate = LocalDate(year = 2026, month = Month.JUNE, day = 20)
+            )
+        )
+
+        assertEquals(true, items.contains(LocalDate(year = 2026, month = Month.MAY, day = 10)))
+        assertEquals(true, items.contains(LocalDate(year = 2026, month = Month.JUNE, day = 20)))
+        assertEquals(false, items.contains(LocalDate(year = 2026, month = Month.MAY, day = 9)))
+        assertEquals(false, items.contains(LocalDate(year = 2026, month = Month.JUNE, day = 21)))
+    }
+
+    @Test
+    fun datePickerItems_coerceDate_respectsDateConstraints() {
+        val items = DatePickerItems(
+            yearItems = listOf(2026),
+            monthItems = (1..12).toList(),
+            dayItems = (1..31).toList(),
+            constraints = DatePickerConstraints(
+                minDate = LocalDate(year = 2026, month = Month.MAY, day = 10),
+                maxDate = LocalDate(year = 2026, month = Month.JUNE, day = 20)
+            )
+        )
+
+        assertEquals(
+            LocalDate(year = 2026, month = Month.MAY, day = 10),
+            items.coerceDate(LocalDate(year = 2026, month = Month.JANUARY, day = 1))
+        )
+        assertEquals(
+            LocalDate(year = 2026, month = Month.JUNE, day = 20),
+            items.coerceDate(LocalDate(year = 2026, month = Month.DECEMBER, day = 31))
+        )
+    }
+
+    @Test
+    fun validateDatePickerItems_allowsConstraintsToFilterBoundaryMonths() {
+        val state = DatePickerState(initialYear = 2026, initialMonth = 3, initialDay = 31)
+        val items = DatePickerItems(
+            yearItems = listOf(2026),
+            monthItems = (1..12).toList(),
+            dayItems = listOf(31),
+            constraints = DatePickerConstraints(
+                minDate = LocalDate(year = 2026, month = Month.MARCH, day = 31),
+                maxDate = LocalDate(year = 2026, month = Month.MARCH, day = 31)
+            )
+        )
+
+        validateDatePickerItems(
+            state = state,
+            items = items
+        )
+    }
+
+    @Test
+    fun validateDatePickerItems_throwsWhenCurrentDateIsOutsideConstraints() {
+        val state = DatePickerState(initialYear = 2026, initialMonth = 5, initialDay = 9)
+        val items = DatePickerItems(
+            yearItems = listOf(2026),
+            monthItems = (1..12).toList(),
+            dayItems = (1..31).toList(),
+            constraints = DatePickerConstraints(
+                minDate = LocalDate(year = 2026, month = Month.MAY, day = 10),
+                maxDate = LocalDate(year = 2026, month = Month.JUNE, day = 20)
+            )
+        )
+
+        assertFailsWith<IllegalArgumentException> {
+            validateDatePickerItems(
+                state = state,
+                items = items
+            )
+        }
+    }
+
+    @Test
     fun datePickerItems_coerceDate_filtersDayItemsByCoercedYearMonth() {
         val items = DatePickerItems(
             yearItems = listOf(2025),
@@ -366,6 +457,27 @@ class DatePickerStateTest {
         )
 
         assertEquals(LocalDate(year = 2024, month = Month.DECEMBER, day = 31), state.selectedDate)
+    }
+
+    @Test
+    fun datePickerState_selectDateWithConstrainedItems_coercesSelection() {
+        val state = DatePickerState(initialYear = 2026, initialMonth = 5, initialDay = 10)
+        val items = DatePickerItems(
+            yearItems = listOf(2026),
+            monthItems = (1..12).toList(),
+            dayItems = (1..31).toList(),
+            constraints = DatePickerConstraints(
+                minDate = LocalDate(year = 2026, month = Month.MAY, day = 10),
+                maxDate = LocalDate(year = 2026, month = Month.JUNE, day = 20)
+            )
+        )
+
+        state.selectDate(
+            date = LocalDate(year = 2026, month = Month.JANUARY, day = 1),
+            items = items
+        )
+
+        assertEquals(LocalDate(year = 2026, month = Month.MAY, day = 10), state.selectedDate)
     }
 
     @Test

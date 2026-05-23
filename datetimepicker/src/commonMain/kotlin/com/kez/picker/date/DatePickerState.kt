@@ -41,7 +41,8 @@ fun rememberDatePickerState(
  * Creates and remembers a [DatePickerState] whose initial value is coerced by [items].
  *
  * Initial values and [items] are read when the state is first created. This is useful when the
- * picker is rendered with custom item lists and restored app state may fall outside those lists.
+ * picker is rendered with custom item lists or date bounds and restored app state may fall outside
+ * those rules.
  *
  * @param items Selectable values used to coerce [initialDate] before creating the state.
  * @param initialDate The requested initial date.
@@ -171,7 +172,7 @@ class DatePickerState(
     /**
      * Programmatically selects the closest date to [date] that is allowed by [items].
      *
-     * Use this overload when app-owned state can contain values outside custom picker lists.
+     * Use this overload when app-owned state can contain values outside custom picker lists or date bounds.
      */
     fun selectDate(date: LocalDate, items: DatePickerItems) {
         selectDate(items.coerceDate(date))
