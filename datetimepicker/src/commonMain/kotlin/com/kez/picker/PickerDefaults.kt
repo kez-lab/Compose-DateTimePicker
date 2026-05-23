@@ -173,6 +173,66 @@ object PickerDefaults {
     )
 
     /**
+     * Creates layout weights for [com.kez.picker.time.TimePicker] columns.
+     *
+     * Pass `null` for a column weight when [com.kez.picker.time.TimePicker] should use
+     * `pickerModifier` to define that column width instead of filling weighted row space.
+     *
+     * @param periodWeight The AM/PM column weight in 12-hour mode.
+     * @param hourWeight The hour column weight.
+     * @param minuteWeight The minute column weight.
+     * @return A [TimePickerLayout] instance with the specified column weights.
+     */
+    fun timePickerLayout(
+        periodWeight: Float? = 1f,
+        hourWeight: Float? = 1f,
+        minuteWeight: Float? = 1f
+    ): TimePickerLayout = TimePickerLayout(
+        periodWeight = periodWeight,
+        hourWeight = hourWeight,
+        minuteWeight = minuteWeight
+    )
+
+    /**
+     * Creates layout weights for [com.kez.picker.date.DatePicker] columns.
+     *
+     * Pass `null` for a column weight when [com.kez.picker.date.DatePicker] should use
+     * `pickerModifier` to define that column width instead of filling weighted row space.
+     *
+     * @param yearWeight The year column weight.
+     * @param monthWeight The month column weight.
+     * @param dayWeight The day column weight.
+     * @return A [DatePickerLayout] instance with the specified column weights.
+     */
+    fun datePickerLayout(
+        yearWeight: Float? = 1.2f,
+        monthWeight: Float? = 0.8f,
+        dayWeight: Float? = 0.8f
+    ): DatePickerLayout = DatePickerLayout(
+        yearWeight = yearWeight,
+        monthWeight = monthWeight,
+        dayWeight = dayWeight
+    )
+
+    /**
+     * Creates layout weights for [com.kez.picker.date.YearMonthPicker] columns.
+     *
+     * Pass `null` for a column weight when [com.kez.picker.date.YearMonthPicker] should use
+     * `pickerModifier` to define that column width instead of filling weighted row space.
+     *
+     * @param yearWeight The year column weight.
+     * @param monthWeight The month column weight.
+     * @return A [YearMonthPickerLayout] instance with the specified column weights.
+     */
+    fun yearMonthPickerLayout(
+        yearWeight: Float? = 1f,
+        monthWeight: Float? = 1f
+    ): YearMonthPickerLayout = YearMonthPickerLayout(
+        yearWeight = yearWeight,
+        monthWeight = monthWeight
+    )
+
+    /**
      * Creates accessibility configuration for one picker column.
      *
      * @param pickerLabel Optional label used as the accessibility prefix for the picker column.
@@ -583,3 +643,78 @@ data class PickerStyle(
     val dividerShape: Shape,
     val isDividerVisible: Boolean
 )
+
+/**
+ * Represents layout weights used by [com.kez.picker.time.TimePicker] columns.
+ *
+ * Set a column weight to `null` to leave that column unweighted so `pickerModifier` can provide an
+ * explicit width.
+ *
+ * @param periodWeight The AM/PM column weight in 12-hour mode.
+ * @param hourWeight The hour column weight.
+ * @param minuteWeight The minute column weight.
+ * @see PickerDefaults.timePickerLayout
+ */
+@Immutable
+data class TimePickerLayout(
+    val periodWeight: Float?,
+    val hourWeight: Float?,
+    val minuteWeight: Float?
+) {
+    init {
+        requirePickerWeight("periodWeight", periodWeight)
+        requirePickerWeight("hourWeight", hourWeight)
+        requirePickerWeight("minuteWeight", minuteWeight)
+    }
+}
+
+/**
+ * Represents layout weights used by [com.kez.picker.date.DatePicker] columns.
+ *
+ * Set a column weight to `null` to leave that column unweighted so `pickerModifier` can provide an
+ * explicit width.
+ *
+ * @param yearWeight The year column weight.
+ * @param monthWeight The month column weight.
+ * @param dayWeight The day column weight.
+ * @see PickerDefaults.datePickerLayout
+ */
+@Immutable
+data class DatePickerLayout(
+    val yearWeight: Float?,
+    val monthWeight: Float?,
+    val dayWeight: Float?
+) {
+    init {
+        requirePickerWeight("yearWeight", yearWeight)
+        requirePickerWeight("monthWeight", monthWeight)
+        requirePickerWeight("dayWeight", dayWeight)
+    }
+}
+
+/**
+ * Represents layout weights used by [com.kez.picker.date.YearMonthPicker] columns.
+ *
+ * Set a column weight to `null` to leave that column unweighted so `pickerModifier` can provide an
+ * explicit width.
+ *
+ * @param yearWeight The year column weight.
+ * @param monthWeight The month column weight.
+ * @see PickerDefaults.yearMonthPickerLayout
+ */
+@Immutable
+data class YearMonthPickerLayout(
+    val yearWeight: Float?,
+    val monthWeight: Float?
+) {
+    init {
+        requirePickerWeight("yearWeight", yearWeight)
+        requirePickerWeight("monthWeight", monthWeight)
+    }
+}
+
+private fun requirePickerWeight(name: String, weight: Float?) {
+    require(weight == null || weight > 0f) {
+        "$name must be positive when provided, but was $weight."
+    }
+}

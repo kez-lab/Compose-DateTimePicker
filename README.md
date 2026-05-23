@@ -504,6 +504,10 @@ before the picker is rendered.
 user-driven picker changes. Programmatic `state.select*` calls update the state directly; update your
 app-owned value in the same event handler when you trigger programmatic changes.
 
+Use `PickerDefaults.timePickerLayout(...)`, `datePickerLayout(...)`, or `yearMonthPickerLayout(...)`
+when a composite picker needs different column proportions. Pass `null` for a column weight to let
+`pickerModifier` provide an explicit width for that column.
+
 ### TimePicker
 
 | Parameter | Description | Default |
@@ -514,6 +518,7 @@ app-owned value in the same event handler when you trigger programmatic changes.
 | `items` | Selectable minute, 24-hour hour, 12-hour display-hour, and AM/PM item lists plus optional inclusive `minTime`/`maxTime` bounds. | `PickerDefaults.timePickerItems()` |
 | `display` | Visible item text formatters for each picker column. | `PickerDefaults.timePickerDisplay()` |
 | `style` | Visual and layout styling for each picker column. | `PickerDefaults.style()` |
+| `layout` | Column weights for period, hour, and minute picker columns. Use `null` weights for explicit-width columns. | `PickerDefaults.timePickerLayout()` |
 | `spacingBetweenPickers` | Horizontal spacing between picker columns. | `0.dp` |
 | `accessibility` | Accessibility labels, item descriptions, and custom action labels for each picker column. | `PickerDefaults.timePickerAccessibility()` |
 
@@ -543,6 +548,7 @@ Invalid custom item values, duplicate items, empty required lists, or current se
 | `items`             | Selectable year/month/day item lists plus optional inclusive `minDate`/`maxDate` bounds. Values must be in `1000..9999`, `1..12`, and `1..31`. | `PickerDefaults.datePickerItems()` |
 | `display` | Visible item text formatters for each picker column. | `PickerDefaults.datePickerDisplay()` |
 | `style`             | Visual and layout styling for each picker column. | `PickerDefaults.style()` |
+| `layout` | Column weights for year, month, and day picker columns. Use `null` weights for explicit-width columns. | `PickerDefaults.datePickerLayout()` |
 | `spacingBetweenPickers` | Horizontal spacing between picker columns. | `0.dp` |
 | `accessibility` | Accessibility labels, item descriptions, and custom action labels for each picker column. | `PickerDefaults.datePickerAccessibility()` |
 
@@ -575,6 +581,7 @@ Invalid custom item values, duplicate items, empty lists, or current selected ye
 | `items` | Selectable year/month item lists plus optional inclusive `minYearMonth`/`maxYearMonth` bounds. Values must be in `1000..9999` and `1..12`. | `PickerDefaults.yearMonthPickerItems()` |
 | `display` | Visible item text formatters for each picker column. | `PickerDefaults.yearMonthPickerDisplay()` |
 | `style` | Visual and layout styling for each picker column. | `PickerDefaults.style()` |
+| `layout` | Column weights for year and month picker columns. Use `null` weights for explicit-width columns. | `PickerDefaults.yearMonthPickerLayout()` |
 | `spacingBetweenPickers` | Horizontal spacing between picker columns. | `0.dp` |
 | `accessibility` | Accessibility labels, item descriptions, and custom action labels for each picker column. | `PickerDefaults.yearMonthPickerAccessibility()` |
 

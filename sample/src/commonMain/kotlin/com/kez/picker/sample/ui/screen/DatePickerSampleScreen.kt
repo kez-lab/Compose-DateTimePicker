@@ -145,6 +145,12 @@ fun DatePickerSampleScreen(
                             dividerColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.5f)
                         )
                     ),
+                    layout = PickerDefaults.datePickerLayout(
+                        yearWeight = 1.3f,
+                        monthWeight = 1f,
+                        dayWeight = 0.8f
+                    ),
+                    spacingBetweenPickers = 8.dp,
                     accessibility = PickerDefaults.datePickerAccessibility(
                         yearPickerLabel = "연도",
                         monthPickerLabel = "월",
