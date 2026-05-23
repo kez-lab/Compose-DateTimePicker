@@ -79,7 +79,8 @@ private const val INFINITE_SCROLL_MULTIPLIER = 1000
  * @param accessibility Accessibility labels, item descriptions, and custom action labels for the picker.
  * @param isInfinity Whether the picker should loop infinitely.
  * @param itemText Text displayed for each item when [content] is not provided.
- * @param content Optional custom content composable for rendering each item.
+ * @param content Optional custom content composable for rendering each item. When provided, the custom content
+ * is responsible for its own enabled/disabled visual treatment.
  */
 @Composable
 fun <T : Any> Picker(
@@ -162,6 +163,18 @@ fun <T : Any> Picker(
 
     val textStyle = textStyles.textStyle
     val selectedTextStyle = textStyles.selectedTextStyle
+    val dividerColor = if (enabled) colors.dividerColor else colors.disabledDividerColor
+    val selectedItemBackgroundColor = if (enabled) {
+        colors.selectedItemBackgroundColor
+    } else {
+        colors.disabledSelectedItemBackgroundColor
+    }
+    val textColor = if (enabled) colors.textColor else colors.disabledTextColor
+    val selectedTextColor = if (enabled) {
+        colors.selectedTextColor
+    } else {
+        colors.disabledSelectedTextColor
+    }
 
     val selectedLineHeight = selectedTextStyle.lineHeight.takeIf { it.isSpecified } ?: 0.sp
     val unselectedLineHeight = textStyle.lineHeight.takeIf { it.isSpecified } ?: 0.sp
@@ -308,7 +321,7 @@ fun <T : Any> Picker(
             modifier = Modifier
                 .align(Alignment.Center)
                 .background(
-                    color = colors.selectedItemBackgroundColor,
+                    color = selectedItemBackgroundColor,
                     shape = selectedItemBackgroundShape
                 )
                 .fillMaxWidth()
@@ -316,24 +329,24 @@ fun <T : Any> Picker(
         ) {
             if (isDividerVisible) {
                 HorizontalDivider(
-                    color = colors.dividerColor,
+                    color = dividerColor,
                     thickness = dividerThickness,
                     modifier = Modifier
                         .fillMaxWidth()
                         .background(
-                            color = colors.dividerColor,
+                            color = dividerColor,
                             shape = dividerShape
                         )
                         .align(Alignment.TopCenter)
                 )
 
                 HorizontalDivider(
-                    color = colors.dividerColor,
+                    color = dividerColor,
                     thickness = dividerThickness,
                     modifier = Modifier
                         .fillMaxWidth()
                         .background(
-                            color = colors.dividerColor,
+                            color = dividerColor,
                             shape = dividerShape
                         )
                         .align(Alignment.BottomCenter)
@@ -435,8 +448,8 @@ fun <T : Any> Picker(
                                         fraction
                                     ),
                                     color = lerp(
-                                        start = colors.selectedTextColor,
-                                        stop = colors.textColor,
+                                        start = selectedTextColor,
+                                        stop = textColor,
                                         fraction = fraction
                                     ),
                                 ),

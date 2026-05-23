@@ -72,6 +72,9 @@ object PickerDefaults {
      */
     val DividerShape: Shape = RoundedCornerShape(10.dp)
 
+    private const val DisabledContentAlpha: Float = 0.38f
+    private const val DisabledContainerAlpha: Float = 0.12f
+
     /**
      * Creates a [PickerColors] with the provided colors.
      *
@@ -79,6 +82,10 @@ object PickerDefaults {
      * @param selectedItemBackgroundColor The background color of the selected item area.
      * @param textColor The color of unselected item text.
      * @param selectedTextColor The color of the selected item text.
+     * @param disabledDividerColor The divider color used when the picker is disabled.
+     * @param disabledSelectedItemBackgroundColor The selected item background color used when the picker is disabled.
+     * @param disabledTextColor The unselected item text color used when the picker is disabled.
+     * @param disabledSelectedTextColor The selected item text color used when the picker is disabled.
      * @return A [PickerColors] instance with the specified colors.
      */
     @Composable
@@ -86,12 +93,24 @@ object PickerDefaults {
         dividerColor: Color = LocalContentColor.current,
         selectedItemBackgroundColor: Color = Color.Transparent,
         textColor: Color = LocalContentColor.current.copy(alpha = 0.7f),
-        selectedTextColor: Color = LocalContentColor.current
+        selectedTextColor: Color = LocalContentColor.current,
+        disabledDividerColor: Color = dividerColor.copy(alpha = dividerColor.alpha * DisabledContainerAlpha),
+        disabledSelectedItemBackgroundColor: Color = selectedItemBackgroundColor.copy(
+            alpha = selectedItemBackgroundColor.alpha * DisabledContainerAlpha
+        ),
+        disabledTextColor: Color = textColor.copy(alpha = textColor.alpha * DisabledContentAlpha),
+        disabledSelectedTextColor: Color = selectedTextColor.copy(
+            alpha = selectedTextColor.alpha * DisabledContentAlpha
+        )
     ): PickerColors = PickerColors(
         dividerColor = dividerColor,
         selectedItemBackgroundColor = selectedItemBackgroundColor,
         textColor = textColor,
-        selectedTextColor = selectedTextColor
+        selectedTextColor = selectedTextColor,
+        disabledDividerColor = disabledDividerColor,
+        disabledSelectedItemBackgroundColor = disabledSelectedItemBackgroundColor,
+        disabledTextColor = disabledTextColor,
+        disabledSelectedTextColor = disabledSelectedTextColor
     )
 
     /**
@@ -499,6 +518,10 @@ object PickerDefaults {
  * @param selectedItemBackgroundColor The background color of the selected item area.
  * @param textColor The color of unselected item text.
  * @param selectedTextColor The color of the selected item text.
+ * @param disabledDividerColor The divider color used when the picker is disabled.
+ * @param disabledSelectedItemBackgroundColor The selected item background color used when the picker is disabled.
+ * @param disabledTextColor The unselected item text color used when the picker is disabled.
+ * @param disabledSelectedTextColor The selected item text color used when the picker is disabled.
  * @see PickerDefaults.colors
  */
 @Immutable
@@ -506,7 +529,11 @@ data class PickerColors(
     val dividerColor: Color,
     val selectedItemBackgroundColor: Color,
     val textColor: Color,
-    val selectedTextColor: Color
+    val selectedTextColor: Color,
+    val disabledDividerColor: Color,
+    val disabledSelectedItemBackgroundColor: Color,
+    val disabledTextColor: Color,
+    val disabledSelectedTextColor: Color
 )
 
 /**
