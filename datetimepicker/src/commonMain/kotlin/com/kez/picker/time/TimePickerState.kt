@@ -237,6 +237,18 @@ class TimePickerState(
     }
 
     /**
+     * Programmatically selects a time from 24-hour clock parts.
+     *
+     * [hour] is interpreted as hour-of-day in `0..23`. In 12-hour mode, the display hour and AM/PM
+     * period are derived from [hour].
+     *
+     * @throws IllegalArgumentException if [hour] or [minute] is outside the supported range.
+     */
+    fun selectTime(hour: Int, minute: Int) {
+        selectTime(LocalTime(hour = hour, minute = minute))
+    }
+
+    /**
      * Programmatically selects the closest time to [time] that is allowed by [items].
      *
      * Use this overload when app-owned state can contain values outside custom picker lists or
@@ -244,6 +256,15 @@ class TimePickerState(
      */
     fun selectTime(time: LocalTime, items: TimePickerItems) {
         selectTime(items.coerceTime(time = time, timeFormat = timeFormat))
+    }
+
+    /**
+     * Programmatically selects the closest time to [hour] and [minute] that is allowed by [items].
+     *
+     * [hour] is interpreted as hour-of-day in `0..23`.
+     */
+    fun selectTime(hour: Int, minute: Int, items: TimePickerItems) {
+        selectTime(LocalTime(hour = hour, minute = minute), items)
     }
 
     internal fun selectHour(hour: Int) {

@@ -634,6 +634,23 @@ class TimePickerStateTest {
     }
 
     @Test
+    fun timePickerState_selectTimeParts_updates24HourSelection() {
+        val state = TimePickerState(
+            initialHour = 8,
+            initialMinute = 0,
+            initialPeriod = TimePeriod.AM,
+            timeFormat = TimeFormat.HOUR_24
+        )
+
+        state.selectTime(hour = 21, minute = 45)
+
+        assertEquals(21, state.selectedHour)
+        assertEquals(45, state.selectedMinute)
+        assertEquals(TimePeriod.PM, state.selectedPeriod)
+        assertEquals(LocalTime(21, 45), state.selectedTime)
+    }
+
+    @Test
     fun timePickerState_selectTime_updates12HourSelection() {
         val state = TimePickerState(
             initialHour = 8,
@@ -650,6 +667,23 @@ class TimePickerStateTest {
         assertEquals(LocalTime(0, 30), state.selectedTime)
 
         state.selectTime(LocalTime(13, 5))
+
+        assertEquals(1, state.selectedHour)
+        assertEquals(5, state.selectedMinute)
+        assertEquals(TimePeriod.PM, state.selectedPeriod)
+        assertEquals(LocalTime(13, 5), state.selectedTime)
+    }
+
+    @Test
+    fun timePickerState_selectTimeParts_updates12HourSelection() {
+        val state = TimePickerState(
+            initialHour = 8,
+            initialMinute = 0,
+            initialPeriod = TimePeriod.AM,
+            timeFormat = TimeFormat.HOUR_12
+        )
+
+        state.selectTime(hour = 13, minute = 5)
 
         assertEquals(1, state.selectedHour)
         assertEquals(5, state.selectedMinute)
@@ -879,6 +913,26 @@ class TimePickerStateTest {
         )
 
         state.selectTime(LocalTime(14, 20), items)
+
+        assertEquals(LocalTime(17, 0), state.selectedTime)
+    }
+
+    @Test
+    fun timePickerState_selectTimePartsWithItems_coercesSelection() {
+        val state = TimePickerState(
+            initialHour = 8,
+            initialMinute = 0,
+            initialPeriod = TimePeriod.AM,
+            timeFormat = TimeFormat.HOUR_24
+        )
+        val items = TimePickerItems(
+            minuteItems = listOf(0, 30),
+            hour24Items = listOf(9, 17),
+            hour12Items = emptyList(),
+            periodItems = emptyList()
+        )
+
+        state.selectTime(hour = 14, minute = 20, items = items)
 
         assertEquals(LocalTime(17, 0), state.selectedTime)
     }

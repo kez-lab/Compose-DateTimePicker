@@ -132,6 +132,27 @@ class DatePickerStateTest {
     }
 
     @Test
+    fun datePickerState_selectDateParts_updatesSelection() {
+        val state = DatePickerState(initialYear = 2025, initialMonth = 1, initialDay = 1)
+
+        state.selectDate(year = 2026, month = 5, day = 20)
+
+        assertEquals(2026, state.selectedYear)
+        assertEquals(5, state.selectedMonth)
+        assertEquals(20, state.selectedDay)
+        assertEquals(LocalDate(2026, 5, 20), state.selectedDate)
+    }
+
+    @Test
+    fun datePickerState_selectDateParts_clampsInvalidDayForMonth() {
+        val state = DatePickerState(initialYear = 2025, initialMonth = 1, initialDay = 1)
+
+        state.selectDate(year = 2026, month = 2, day = 31)
+
+        assertEquals(LocalDate(2026, 2, 28), state.selectedDate)
+    }
+
+    @Test
     fun datePickerState_selectDate_throwsWhenYearOutOfRange() {
         val state = DatePickerState(initialYear = 2025, initialMonth = 1, initialDay = 1)
 
@@ -453,6 +474,25 @@ class DatePickerStateTest {
 
         state.selectDate(
             date = LocalDate(year = 2025, month = Month.NOVEMBER, day = 30),
+            items = items
+        )
+
+        assertEquals(LocalDate(year = 2024, month = Month.DECEMBER, day = 31), state.selectedDate)
+    }
+
+    @Test
+    fun datePickerState_selectDatePartsWithItems_coercesSelection() {
+        val state = DatePickerState(initialYear = 2024, initialMonth = 2, initialDay = 1)
+        val items = DatePickerItems(
+            yearItems = listOf(2024, 2026),
+            monthItems = listOf(2, 12),
+            dayItems = listOf(1, 15, 31)
+        )
+
+        state.selectDate(
+            year = 2025,
+            month = 11,
+            day = 30,
             items = items
         )
 

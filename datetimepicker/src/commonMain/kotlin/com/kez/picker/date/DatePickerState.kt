@@ -170,12 +170,36 @@ class DatePickerState(
     }
 
     /**
+     * Programmatically selects [year], [month], and [day].
+     *
+     * If [day] is greater than the maximum day for [year] and [month], it is clamped to that
+     * maximum, matching [DatePickerState] initialization behavior.
+     *
+     * @throws IllegalArgumentException if [year] or [month] is outside the supported range, or if
+     * [day] is less than 1.
+     */
+    fun selectDate(year: Int, month: Int, day: Int) {
+        updateDate(year = year, month = month, day = day)
+    }
+
+    /**
      * Programmatically selects the closest date to [date] that is allowed by [items].
      *
      * Use this overload when app-owned state can contain values outside custom picker lists or date bounds.
      */
     fun selectDate(date: LocalDate, items: DatePickerItems) {
         selectDate(items.coerceDate(date))
+    }
+
+    /**
+     * Programmatically selects the closest date to [year], [month], and [day] that is allowed by [items].
+     *
+     * If [day] is greater than the maximum day for [year] and [month], it is clamped before applying
+     * [items].
+     */
+    fun selectDate(year: Int, month: Int, day: Int, items: DatePickerItems) {
+        val clampedDate = dateFromParts(year = year, month = month, day = day)
+        selectDate(items.coerceDate(clampedDate))
     }
 
     /**
@@ -210,6 +234,13 @@ class DatePickerState(
     }
 
     private fun updateDate(year: Int, month: Int, day: Int) {
+        val date = dateFromParts(year = year, month = month, day = day)
+        mutableSelectedYear = date.year
+        mutableSelectedMonth = date.month.number
+        mutableSelectedDay = date.day
+    }
+
+    private fun dateFromParts(year: Int, month: Int, day: Int): LocalDate {
         require(year in 1000..9999) {
             "year must be in range [1000, 9999], but was $year"
         }
@@ -219,9 +250,11 @@ class DatePickerState(
         require(day >= 1) {
             "day must be greater than or equal to 1, but was $day"
         }
-        mutableSelectedYear = year
-        mutableSelectedMonth = month
-        mutableSelectedDay = day.coerceAtMost(daysInMonth(year, month))
+        return LocalDate(
+            year = year,
+            month = month,
+            day = day.coerceAtMost(daysInMonth(year, month))
+        )
     }
 
     companion object {
