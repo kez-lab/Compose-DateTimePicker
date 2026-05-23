@@ -78,7 +78,10 @@ fun DatePickerSampleScreen(
                     dayItems = allowedDays
                 )
             }
-            val state = rememberDatePickerState(initialDate = today)
+            val state = rememberDatePickerState(
+                items = pickerItems,
+                initialDate = today
+            )
             var selectedDateText by rememberSaveable { mutableStateOf(today.toString()) }
 
             SelectedValueCard(

@@ -36,6 +36,29 @@ fun rememberYearMonthPickerState(
 }
 
 /**
+ * Creates and remembers a [YearMonthPickerState] whose initial year/month is coerced by [items].
+ *
+ * Initial values and [items] are read when the state is first created. The day value of
+ * [initialDate] is ignored because [YearMonthPicker] only selects year and month.
+ *
+ * @param items Selectable values used to coerce [initialDate] before creating the state.
+ * @param initialDate The requested initial date.
+ * @return A [YearMonthPickerState] initialized to the closest selectable year/month.
+ */
+@Composable
+fun rememberYearMonthPickerState(
+    items: YearMonthPickerItems,
+    initialDate: LocalDate = currentDate()
+): YearMonthPickerState {
+    val rememberedInitialDate = remember { initialDate }
+    val rememberedItems = remember { items }
+    val coercedInitialDate = remember(rememberedInitialDate, rememberedItems) {
+        rememberedItems.coerceDate(rememberedInitialDate)
+    }
+    return rememberYearMonthPickerState(initialDate = coercedInitialDate)
+}
+
+/**
  * Creates and remembers a [YearMonthPickerState] with explicit year and month values.
  * Initial year and month are read when the state is first created.
  *
@@ -53,6 +76,39 @@ fun rememberYearMonthPickerState(
     return rememberSaveable(saver = YearMonthPickerState.Saver) {
         YearMonthPickerState(rememberedInitialYear, rememberedInitialMonth)
     }
+}
+
+/**
+ * Creates and remembers a [YearMonthPickerState] whose explicit initial year/month is coerced by [items].
+ *
+ * @param items Selectable values used to coerce [initialYear] and [initialMonth].
+ * @param initialYear The requested initial year.
+ * @param initialMonth The requested initial month.
+ * @return A [YearMonthPickerState] initialized to the closest selectable year/month.
+ */
+@Composable
+fun rememberYearMonthPickerState(
+    items: YearMonthPickerItems,
+    initialYear: Int,
+    initialMonth: Int
+): YearMonthPickerState {
+    val rememberedInitialYear = remember { initialYear }
+    val rememberedInitialMonth = remember { initialMonth }
+    val rememberedItems = remember { items }
+    val coercedInitialYearMonth = remember(
+        rememberedInitialYear,
+        rememberedInitialMonth,
+        rememberedItems
+    ) {
+        rememberedItems.coerceYearMonth(
+            year = rememberedInitialYear,
+            month = rememberedInitialMonth
+        )
+    }
+    return rememberYearMonthPickerState(
+        initialYear = coercedInitialYearMonth.year,
+        initialMonth = coercedInitialYearMonth.month
+    )
 }
 
 /**
@@ -134,7 +190,7 @@ class YearMonthPickerState(
      * Programmatically selects the closest year/month to [year] and [month] that is allowed by [items].
      */
     fun selectYearMonth(year: Int, month: Int, items: YearMonthPickerItems) {
-        selectYearMonth(YearMonth(year, month), items)
+        selectYearMonth(items.coerceYearMonth(year = year, month = month))
     }
 
     internal fun selectYear(year: Int) {

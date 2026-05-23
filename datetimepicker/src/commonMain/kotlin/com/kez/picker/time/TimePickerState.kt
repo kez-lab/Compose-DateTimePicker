@@ -76,6 +76,37 @@ fun rememberTimePickerState(
     )
 }
 
+/**
+ * Creates and remembers a [TimePickerState] whose initial value is coerced by [items].
+ *
+ * Initial values and [items] are read when the state is first created. This is useful when the
+ * picker is rendered with custom item lists and restored app state may fall outside those lists.
+ *
+ * @param items Selectable values used to coerce [initialTime] before creating the state.
+ * @param initialTime The requested initial time.
+ * @param timeFormat The time format (12-hour or 24-hour). Defaults to [TimeFormat.HOUR_24].
+ * @return A [TimePickerState] initialized to the closest selectable time.
+ */
+@Composable
+fun rememberTimePickerState(
+    items: TimePickerItems,
+    initialTime: LocalTime = currentDateTime().time,
+    timeFormat: TimeFormat = TimeFormat.HOUR_24
+): TimePickerState {
+    val rememberedInitialTime = remember { initialTime }
+    val rememberedItems = remember { items }
+    val coercedInitialTime = remember(rememberedInitialTime, rememberedItems, timeFormat) {
+        rememberedItems.coerceTime(
+            time = rememberedInitialTime,
+            timeFormat = timeFormat
+        )
+    }
+    return rememberTimePickerState(
+        initialTime = coercedInitialTime,
+        timeFormat = timeFormat
+    )
+}
+
 internal fun initialHourForTimeFormat(initialHour: Int, timeFormat: TimeFormat): Int {
     require(initialHour in 0..23) {
         "initialHour must be in range [0, 23], but was $initialHour"

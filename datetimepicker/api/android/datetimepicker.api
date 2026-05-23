@@ -204,6 +204,7 @@ public final class com/kez/picker/YearMonthPickerItems {
 	public static final field $stable I
 	public fun <init> (Ljava/util/List;Ljava/util/List;)V
 	public final fun coerceDate (Lkotlinx/datetime/LocalDate;)Lkotlinx/datetime/LocalDate;
+	public final fun coerceYearMonth (II)Lcom/kez/picker/date/YearMonth;
 	public final fun coerceYearMonth (Lcom/kez/picker/date/YearMonth;)Lcom/kez/picker/date/YearMonth;
 	public final fun component1 ()Ljava/util/List;
 	public final fun component2 ()Ljava/util/List;
@@ -239,6 +240,7 @@ public final class com/kez/picker/date/DatePickerState$Companion {
 
 public final class com/kez/picker/date/DatePickerStateKt {
 	public static final fun rememberDatePickerState (IIILandroidx/compose/runtime/Composer;I)Lcom/kez/picker/date/DatePickerState;
+	public static final fun rememberDatePickerState (Lcom/kez/picker/DatePickerItems;Lkotlinx/datetime/LocalDate;Landroidx/compose/runtime/Composer;II)Lcom/kez/picker/date/DatePickerState;
 	public static final fun rememberDatePickerState (Lkotlinx/datetime/LocalDate;Landroidx/compose/runtime/Composer;II)Lcom/kez/picker/date/DatePickerState;
 }
 
@@ -289,6 +291,8 @@ public final class com/kez/picker/date/YearMonthPickerState$Companion {
 
 public final class com/kez/picker/date/YearMonthPickerStateKt {
 	public static final fun rememberYearMonthPickerState (IILandroidx/compose/runtime/Composer;I)Lcom/kez/picker/date/YearMonthPickerState;
+	public static final fun rememberYearMonthPickerState (Lcom/kez/picker/YearMonthPickerItems;IILandroidx/compose/runtime/Composer;I)Lcom/kez/picker/date/YearMonthPickerState;
+	public static final fun rememberYearMonthPickerState (Lcom/kez/picker/YearMonthPickerItems;Lkotlinx/datetime/LocalDate;Landroidx/compose/runtime/Composer;II)Lcom/kez/picker/date/YearMonthPickerState;
 	public static final fun rememberYearMonthPickerState (Lkotlinx/datetime/LocalDate;Landroidx/compose/runtime/Composer;II)Lcom/kez/picker/date/YearMonthPickerState;
 }
 
@@ -356,6 +360,7 @@ public final class com/kez/picker/time/TimePickerState$Companion {
 
 public final class com/kez/picker/time/TimePickerStateKt {
 	public static final fun rememberTimePickerState (IILcom/kez/picker/util/TimePeriod;Lcom/kez/picker/util/TimeFormat;Landroidx/compose/runtime/Composer;II)Lcom/kez/picker/time/TimePickerState;
+	public static final fun rememberTimePickerState (Lcom/kez/picker/TimePickerItems;Lkotlinx/datetime/LocalTime;Lcom/kez/picker/util/TimeFormat;Landroidx/compose/runtime/Composer;II)Lcom/kez/picker/time/TimePickerState;
 	public static final fun rememberTimePickerState (Lkotlinx/datetime/LocalTime;Lcom/kez/picker/util/TimeFormat;Landroidx/compose/runtime/Composer;II)Lcom/kez/picker/time/TimePickerState;
 }
 

@@ -38,6 +38,29 @@ fun rememberDatePickerState(
 }
 
 /**
+ * Creates and remembers a [DatePickerState] whose initial value is coerced by [items].
+ *
+ * Initial values and [items] are read when the state is first created. This is useful when the
+ * picker is rendered with custom item lists and restored app state may fall outside those lists.
+ *
+ * @param items Selectable values used to coerce [initialDate] before creating the state.
+ * @param initialDate The requested initial date.
+ * @return A [DatePickerState] initialized to the closest selectable date.
+ */
+@Composable
+fun rememberDatePickerState(
+    items: DatePickerItems,
+    initialDate: LocalDate = currentDate()
+): DatePickerState {
+    val rememberedInitialDate = remember { initialDate }
+    val rememberedItems = remember { items }
+    val coercedInitialDate = remember(rememberedInitialDate, rememberedItems) {
+        rememberedItems.coerceDate(rememberedInitialDate)
+    }
+    return rememberDatePickerState(initialDate = coercedInitialDate)
+}
+
+/**
  * Creates and remembers a [DatePickerState] with explicit year, month, and day values.
  *
  * Initial values are read only when the state is first created.

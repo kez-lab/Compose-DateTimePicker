@@ -266,6 +266,19 @@ class YearMonthPickerStateTest {
     }
 
     @Test
+    fun yearMonthPickerItems_coerceYearMonth_allowsRawValuesOutsidePickerRange() {
+        val items = YearMonthPickerItems(
+            yearItems = listOf(2024, 2026),
+            monthItems = listOf(3, 12)
+        )
+
+        assertEquals(
+            YearMonth(year = 2024, month = 12),
+            items.coerceYearMonth(year = 999, month = 13)
+        )
+    }
+
+    @Test
     fun yearMonthPickerState_selectYearMonthWithItems_coercesSelection() {
         val state = YearMonthPickerState(initialYear = 2024, initialMonth = 3)
         val items = YearMonthPickerItems(
@@ -276,6 +289,19 @@ class YearMonthPickerStateTest {
         state.selectYearMonth(year = 2025, month = 6, items = items)
 
         assertEquals(YearMonth(year = 2024, month = 3), state.selectedYearMonth)
+    }
+
+    @Test
+    fun yearMonthPickerState_selectYearMonthWithItems_allowsRawValuesOutsidePickerRange() {
+        val state = YearMonthPickerState(initialYear = 2024, initialMonth = 3)
+        val items = YearMonthPickerItems(
+            yearItems = listOf(2024, 2026),
+            monthItems = listOf(3, 12)
+        )
+
+        state.selectYearMonth(year = 999, month = 13, items = items)
+
+        assertEquals(YearMonth(year = 2024, month = 12), state.selectedYearMonth)
     }
 
     @Test

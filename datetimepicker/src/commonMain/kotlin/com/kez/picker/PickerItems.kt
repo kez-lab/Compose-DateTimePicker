@@ -154,11 +154,17 @@ data class YearMonthPickerItems(
      * @throws IllegalArgumentException if [yearItems] or [monthItems] are empty, contain duplicates,
      * or contain values outside their supported ranges.
      */
-    fun coerceYearMonth(yearMonth: YearMonth): YearMonth {
+    fun coerceYearMonth(yearMonth: YearMonth): YearMonth =
+        coerceYearMonth(year = yearMonth.year, month = yearMonth.month)
+
+    /**
+     * Returns the closest selectable [YearMonth] for [year] and [month].
+     */
+    fun coerceYearMonth(year: Int, month: Int): YearMonth {
         requireValid()
         return YearMonth(
-            year = yearItems.closestTo(yearMonth.year),
-            month = monthItems.closestTo(yearMonth.month)
+            year = yearItems.closestTo(year),
+            month = monthItems.closestTo(month)
         )
     }
 
