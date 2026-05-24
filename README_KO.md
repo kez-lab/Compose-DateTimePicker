@@ -642,7 +642,7 @@ custom item 값이 유효 범위를 벗어나거나, 중복이 있거나, 목록
 | `style` | 각 picker column의 시각/레이아웃 스타일입니다. | `PickerDefaults.style()` |
 | `layout` | 각 child `DatePicker`의 column weight와 표시 순서입니다. | `PickerDefaults.datePickerLayout()` |
 | `startLabel` / `endLabel` | 각 child picker 위에 표시할 선택적 label입니다. | `"Start date"` / `"End date"` |
-| `startAccessibility` / `endAccessibility` | 각 child picker의 접근성 label입니다. | start/end prefix가 붙은 date picker label |
+| `accessibility` | 시작/종료 child picker의 접근성 label입니다. | `PickerDefaults.dateRangePickerAccessibility()` |
 
 `DateRangePickerState`는 `selectedStartDate <= selectedEndDate`를 항상 유지합니다. 사용자가 시작일을
 현재 종료일 뒤로 이동하면 종료일도 같은 날짜로 이동하고, 종료일을 현재 시작일 앞으로 이동하면 시작일도

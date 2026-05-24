@@ -147,17 +147,19 @@ internal fun DateRangePickerSampleScreen(
                     spacingBetweenPickers = 8.dp,
                     startLabel = { Text("시작일") },
                     endLabel = { Text("종료일") },
-                    startAccessibility = PickerDefaults.datePickerAccessibility(
-                        yearPickerLabel = "시작 연도",
-                        monthPickerLabel = "시작 월",
-                        dayPickerLabel = "시작 일",
-                        monthItemContentDescription = { getMonthContentDescription(it) }
-                    ),
-                    endAccessibility = PickerDefaults.datePickerAccessibility(
-                        yearPickerLabel = "종료 연도",
-                        monthPickerLabel = "종료 월",
-                        dayPickerLabel = "종료 일",
-                        monthItemContentDescription = { getMonthContentDescription(it) }
+                    accessibility = PickerDefaults.dateRangePickerAccessibility(
+                        start = PickerDefaults.datePickerAccessibility(
+                            yearPickerLabel = "시작 연도",
+                            monthPickerLabel = "시작 월",
+                            dayPickerLabel = "시작 일",
+                            monthItemContentDescription = { getMonthContentDescription(it) }
+                        ),
+                        end = PickerDefaults.datePickerAccessibility(
+                            yearPickerLabel = "종료 연도",
+                            monthPickerLabel = "종료 월",
+                            dayPickerLabel = "종료 일",
+                            monthItemContentDescription = { getMonthContentDescription(it) }
+                        )
                     )
                 )
             }

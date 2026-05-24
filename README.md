@@ -645,7 +645,7 @@ Invalid custom item values, duplicate items, empty lists, or current selected ye
 | `style` | Visual and layout styling for each picker column. | `PickerDefaults.style()` |
 | `layout` | Column weights and visual order for each child `DatePicker`. | `PickerDefaults.datePickerLayout()` |
 | `startLabel` / `endLabel` | Optional visible labels above each child picker. | `"Start date"` / `"End date"` |
-| `startAccessibility` / `endAccessibility` | Accessibility labels for each child picker. | Start/end-prefixed date picker labels |
+| `accessibility` | Accessibility labels for the start and end child pickers. | `PickerDefaults.dateRangePickerAccessibility()` |
 
 `DateRangePickerState` keeps `selectedStartDate <= selectedEndDate`. If a user moves the start after
 the current end, the end moves to the same date. If a user moves the end before the current start,

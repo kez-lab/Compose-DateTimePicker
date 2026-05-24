@@ -424,6 +424,29 @@ object PickerDefaults {
     )
 
     /**
+     * Creates accessibility configuration for a date range picker.
+     *
+     * @param start Accessibility configuration for the start date picker.
+     * @param end Accessibility configuration for the end date picker.
+     * @return A [DateRangePickerAccessibility] instance with the specified semantics behavior.
+     */
+    fun dateRangePickerAccessibility(
+        start: DatePickerAccessibility = datePickerAccessibility(
+            yearPickerLabel = "Start year",
+            monthPickerLabel = "Start month",
+            dayPickerLabel = "Start day"
+        ),
+        end: DatePickerAccessibility = datePickerAccessibility(
+            yearPickerLabel = "End year",
+            monthPickerLabel = "End month",
+            dayPickerLabel = "End day"
+        )
+    ): DateRangePickerAccessibility = DateRangePickerAccessibility(
+        start = start,
+        end = end
+    )
+
+    /**
      * Creates accessibility configuration for a year-month picker.
      *
      * @param yearPickerLabel Accessibility label for the year picker. Pass null to omit the picker label prefix.

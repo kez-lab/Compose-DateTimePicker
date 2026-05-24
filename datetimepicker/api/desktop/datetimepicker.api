@@ -96,6 +96,20 @@ public final class com/kez/picker/DatePickerLayout {
 	public fun toString ()Ljava/lang/String;
 }
 
+public final class com/kez/picker/DateRangePickerAccessibility {
+	public static final field $stable I
+	public fun <init> (Lcom/kez/picker/DatePickerAccessibility;Lcom/kez/picker/DatePickerAccessibility;)V
+	public final fun component1 ()Lcom/kez/picker/DatePickerAccessibility;
+	public final fun component2 ()Lcom/kez/picker/DatePickerAccessibility;
+	public final fun copy (Lcom/kez/picker/DatePickerAccessibility;Lcom/kez/picker/DatePickerAccessibility;)Lcom/kez/picker/DateRangePickerAccessibility;
+	public static synthetic fun copy$default (Lcom/kez/picker/DateRangePickerAccessibility;Lcom/kez/picker/DatePickerAccessibility;Lcom/kez/picker/DatePickerAccessibility;ILjava/lang/Object;)Lcom/kez/picker/DateRangePickerAccessibility;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getEnd ()Lcom/kez/picker/DatePickerAccessibility;
+	public final fun getStart ()Lcom/kez/picker/DatePickerAccessibility;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
 public final class com/kez/picker/PickerAccessibility {
 	public static final field $stable I
 	public fun <init> ()V
@@ -162,6 +176,8 @@ public final class com/kez/picker/PickerDefaults {
 	public static synthetic fun datePickerItems$default (Lcom/kez/picker/PickerDefaults;Ljava/util/List;Ljava/util/List;Ljava/util/List;Lkotlinx/datetime/LocalDate;Lkotlinx/datetime/LocalDate;ILjava/lang/Object;)Lcom/kez/picker/DatePickerItems;
 	public final fun datePickerLayout (Ljava/lang/Float;Ljava/lang/Float;Ljava/lang/Float;Ljava/util/List;)Lcom/kez/picker/DatePickerLayout;
 	public static synthetic fun datePickerLayout$default (Lcom/kez/picker/PickerDefaults;Ljava/lang/Float;Ljava/lang/Float;Ljava/lang/Float;Ljava/util/List;ILjava/lang/Object;)Lcom/kez/picker/DatePickerLayout;
+	public final fun dateRangePickerAccessibility (Lcom/kez/picker/DatePickerAccessibility;Lcom/kez/picker/DatePickerAccessibility;)Lcom/kez/picker/DateRangePickerAccessibility;
+	public static synthetic fun dateRangePickerAccessibility$default (Lcom/kez/picker/PickerDefaults;Lcom/kez/picker/DatePickerAccessibility;Lcom/kez/picker/DatePickerAccessibility;ILjava/lang/Object;)Lcom/kez/picker/DateRangePickerAccessibility;
 	public final fun fadingEdgeGradient ()Landroidx/compose/ui/graphics/Brush;
 	public final fun getDividerShape ()Landroidx/compose/ui/graphics/Shape;
 	public final fun getDividerThickness-D9Ej5fM ()F
@@ -467,8 +483,8 @@ public final class com/kez/picker/YearMonthPickerLayout {
 public final class com/kez/picker/date/ComposableSingletons$DateRangePickerKt {
 	public static final field INSTANCE Lcom/kez/picker/date/ComposableSingletons$DateRangePickerKt;
 	public fun <init> ()V
-	public final fun getLambda$-1543062065$datetimepicker ()Lkotlin/jvm/functions/Function2;
-	public final fun getLambda$-1855484280$datetimepicker ()Lkotlin/jvm/functions/Function2;
+	public final fun getLambda$1400861543$datetimepicker ()Lkotlin/jvm/functions/Function2;
+	public final fun getLambda$1488335744$datetimepicker ()Lkotlin/jvm/functions/Function2;
 }
 
 public final class com/kez/picker/date/DatePickerKt {
@@ -517,7 +533,7 @@ public final class com/kez/picker/date/DateRange {
 }
 
 public final class com/kez/picker/date/DateRangePickerKt {
-	public static final fun DateRangePicker-qvR4D3M (Landroidx/compose/ui/Modifier;Landroidx/compose/ui/Modifier;Lcom/kez/picker/date/DateRangePickerState;Lkotlin/jvm/functions/Function1;ZLcom/kez/picker/DatePickerItems;Lcom/kez/picker/DatePickerDisplay;Lcom/kez/picker/PickerStyle;Lcom/kez/picker/DatePickerLayout;FFLkotlin/jvm/functions/Function2;Lkotlin/jvm/functions/Function2;Lcom/kez/picker/DatePickerAccessibility;Lcom/kez/picker/DatePickerAccessibility;Landroidx/compose/runtime/Composer;III)V
+	public static final fun DateRangePicker-_UijJhE (Landroidx/compose/ui/Modifier;Landroidx/compose/ui/Modifier;Lcom/kez/picker/date/DateRangePickerState;Lkotlin/jvm/functions/Function1;ZLcom/kez/picker/DatePickerItems;Lcom/kez/picker/DatePickerDisplay;Lcom/kez/picker/PickerStyle;Lcom/kez/picker/DatePickerLayout;FFLkotlin/jvm/functions/Function2;Lkotlin/jvm/functions/Function2;Lcom/kez/picker/DateRangePickerAccessibility;Landroidx/compose/runtime/Composer;III)V
 }
 
 public final class com/kez/picker/date/DateRangePickerState {

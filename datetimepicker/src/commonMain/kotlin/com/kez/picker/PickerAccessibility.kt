@@ -51,6 +51,19 @@ data class DatePickerAccessibility(
 )
 
 /**
+ * Accessibility configuration for [com.kez.picker.date.DateRangePicker].
+ *
+ * @param start Accessibility configuration for the start date picker.
+ * @param end Accessibility configuration for the end date picker.
+ * @see PickerDefaults.dateRangePickerAccessibility
+ */
+@Immutable
+data class DateRangePickerAccessibility(
+    val start: DatePickerAccessibility,
+    val end: DatePickerAccessibility
+)
+
+/**
  * Accessibility configuration for [com.kez.picker.date.YearMonthPicker].
  *
  * @param year Accessibility configuration for the year picker column.

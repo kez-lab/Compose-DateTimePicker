@@ -9,10 +9,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import com.kez.picker.DatePickerAccessibility
 import com.kez.picker.DatePickerDisplay
 import com.kez.picker.DatePickerItems
 import com.kez.picker.DatePickerLayout
+import com.kez.picker.DateRangePickerAccessibility
 import com.kez.picker.PickerDefaults
 import com.kez.picker.PickerStyle
 import kotlinx.datetime.LocalDate
@@ -33,8 +33,7 @@ import kotlinx.datetime.LocalDate
  * @param spacingBetweenDatePickers Vertical spacing between start and end pickers.
  * @param startLabel Optional visible label displayed above the start picker.
  * @param endLabel Optional visible label displayed above the end picker.
- * @param startAccessibility Accessibility labels for the start picker.
- * @param endAccessibility Accessibility labels for the end picker.
+ * @param accessibility Accessibility labels for the start and end pickers.
  */
 @Composable
 fun DateRangePicker(
@@ -51,16 +50,7 @@ fun DateRangePicker(
     spacingBetweenDatePickers: Dp = 16.dp,
     startLabel: (@Composable () -> Unit)? = { DateRangePickerLabel("Start date") },
     endLabel: (@Composable () -> Unit)? = { DateRangePickerLabel("End date") },
-    startAccessibility: DatePickerAccessibility = PickerDefaults.datePickerAccessibility(
-        yearPickerLabel = "Start year",
-        monthPickerLabel = "Start month",
-        dayPickerLabel = "Start day"
-    ),
-    endAccessibility: DatePickerAccessibility = PickerDefaults.datePickerAccessibility(
-        yearPickerLabel = "End year",
-        monthPickerLabel = "End month",
-        dayPickerLabel = "End day"
-    )
+    accessibility: DateRangePickerAccessibility = PickerDefaults.dateRangePickerAccessibility()
 ) {
     fun updateSelectedDateRange(update: () -> Unit) {
         val previousRange = state.selectedDateRange
@@ -91,7 +81,7 @@ fun DateRangePicker(
                 style = style,
                 layout = layout,
                 spacingBetweenPickers = spacingBetweenPickers,
-                accessibility = startAccessibility
+                accessibility = accessibility.start
             )
         }
 
@@ -110,7 +100,7 @@ fun DateRangePicker(
                 style = style,
                 layout = layout,
                 spacingBetweenPickers = spacingBetweenPickers,
-                accessibility = endAccessibility
+                accessibility = accessibility.end
             )
         }
     }
