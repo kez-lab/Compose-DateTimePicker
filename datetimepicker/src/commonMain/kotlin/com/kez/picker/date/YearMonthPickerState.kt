@@ -15,6 +15,24 @@ import kotlinx.datetime.LocalDate
 import kotlinx.datetime.number
 
 /**
+ * Creates and remembers a [YearMonthPickerState] from a [YearMonth].
+ * Initial year and month are read when the state is first created.
+ *
+ * @param initialYearMonth The initial year/month value to select.
+ * @return A [YearMonthPickerState] initialized with [initialYearMonth].
+ */
+@Composable
+fun rememberYearMonthPickerState(
+    initialYearMonth: YearMonth
+): YearMonthPickerState {
+    val rememberedInitialYearMonth = remember { initialYearMonth }
+    return rememberYearMonthPickerState(
+        initialYear = rememberedInitialYearMonth.year,
+        initialMonth = rememberedInitialYearMonth.month
+    )
+}
+
+/**
  * Creates and remembers a [YearMonthPickerState] from a [LocalDate].
  * Initial year and month are read when the state is first created.
  *
@@ -33,6 +51,30 @@ fun rememberYearMonthPickerState(
         initialYear = rememberedInitialDate.year,
         initialMonth = rememberedInitialDate.month.number
     )
+}
+
+/**
+ * Creates and remembers a [YearMonthPickerState] whose initial [YearMonth] is coerced by [items].
+ *
+ * Initial values and [items] are read when the state is first created. This is useful when the
+ * picker is rendered with custom item lists or year/month bounds and restored app state may fall
+ * outside those rules.
+ *
+ * @param items Selectable values used to coerce [initialYearMonth] before creating the state.
+ * @param initialYearMonth The requested initial year/month.
+ * @return A [YearMonthPickerState] initialized to the closest selectable year/month.
+ */
+@Composable
+fun rememberYearMonthPickerState(
+    items: YearMonthPickerItems,
+    initialYearMonth: YearMonth
+): YearMonthPickerState {
+    val rememberedInitialYearMonth = remember { initialYearMonth }
+    val rememberedItems = remember { items }
+    val coercedInitialYearMonth = remember(rememberedInitialYearMonth, rememberedItems) {
+        rememberedItems.coerceYearMonth(rememberedInitialYearMonth)
+    }
+    return rememberYearMonthPickerState(initialYearMonth = coercedInitialYearMonth)
 }
 
 /**
