@@ -22,6 +22,9 @@ import com.kez.picker.util.MONTH_RANGE
 import com.kez.picker.util.TimePeriod
 import com.kez.picker.util.YEAR_RANGE
 import com.kez.picker.date.YearMonth
+import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.persistentListOf
+import kotlinx.collections.immutable.toImmutableList
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalTime
 
@@ -181,7 +184,8 @@ object PickerDefaults {
      * @param periodWeight The AM/PM column weight in 12-hour mode.
      * @param hourWeight The hour column weight.
      * @param minuteWeight The minute column weight.
-     * @param columnOrder The visual column order. [TimePickerColumn.PERIOD] is ignored in 24-hour mode.
+     * @param columnOrder The visual column order. Must contain every [TimePickerColumn] exactly
+     * once. [TimePickerColumn.PERIOD] is still required in 24-hour mode, but its position is ignored.
      * @return A [TimePickerLayout] instance with the specified column weights.
      */
     fun timePickerLayout(
@@ -197,7 +201,7 @@ object PickerDefaults {
         periodWeight = periodWeight,
         hourWeight = hourWeight,
         minuteWeight = minuteWeight,
-        columnOrder = columnOrder.toList()
+        columnOrder = columnOrder.toImmutableList()
     )
 
     /**
@@ -209,7 +213,7 @@ object PickerDefaults {
      * @param yearWeight The year column weight.
      * @param monthWeight The month column weight.
      * @param dayWeight The day column weight.
-     * @param columnOrder The visual column order.
+     * @param columnOrder The visual column order. Must contain every [DatePickerColumn] exactly once.
      * @return A [DatePickerLayout] instance with the specified column weights.
      */
     fun datePickerLayout(
@@ -225,7 +229,7 @@ object PickerDefaults {
         yearWeight = yearWeight,
         monthWeight = monthWeight,
         dayWeight = dayWeight,
-        columnOrder = columnOrder.toList()
+        columnOrder = columnOrder.toImmutableList()
     )
 
     /**
@@ -236,7 +240,7 @@ object PickerDefaults {
      *
      * @param yearWeight The year column weight.
      * @param monthWeight The month column weight.
-     * @param columnOrder The visual column order.
+     * @param columnOrder The visual column order. Must contain every [YearMonthPickerColumn] exactly once.
      * @return A [YearMonthPickerLayout] instance with the specified column weights.
      */
     fun yearMonthPickerLayout(
@@ -249,7 +253,7 @@ object PickerDefaults {
     ): YearMonthPickerLayout = YearMonthPickerLayout(
         yearWeight = yearWeight,
         monthWeight = monthWeight,
-        columnOrder = columnOrder.toList()
+        columnOrder = columnOrder.toImmutableList()
     )
 
     /**
@@ -728,7 +732,8 @@ enum class YearMonthPickerColumn {
  * @param periodWeight The AM/PM column weight in 12-hour mode.
  * @param hourWeight The hour column weight.
  * @param minuteWeight The minute column weight.
- * @param columnOrder The visual column order. [TimePickerColumn.PERIOD] is ignored in 24-hour mode.
+ * @param columnOrder The visual column order. Must contain every [TimePickerColumn] exactly once.
+ * [TimePickerColumn.PERIOD] is still required in 24-hour mode, but its position is ignored.
  * @see PickerDefaults.timePickerLayout
  */
 @Immutable
@@ -736,7 +741,7 @@ data class TimePickerLayout(
     val periodWeight: Float?,
     val hourWeight: Float?,
     val minuteWeight: Float?,
-    val columnOrder: List<TimePickerColumn> = listOf(
+    val columnOrder: ImmutableList<TimePickerColumn> = persistentListOf(
         TimePickerColumn.PERIOD,
         TimePickerColumn.HOUR,
         TimePickerColumn.MINUTE
@@ -763,7 +768,7 @@ data class TimePickerLayout(
  * @param yearWeight The year column weight.
  * @param monthWeight The month column weight.
  * @param dayWeight The day column weight.
- * @param columnOrder The visual column order.
+ * @param columnOrder The visual column order. Must contain every [DatePickerColumn] exactly once.
  * @see PickerDefaults.datePickerLayout
  */
 @Immutable
@@ -771,7 +776,7 @@ data class DatePickerLayout(
     val yearWeight: Float?,
     val monthWeight: Float?,
     val dayWeight: Float?,
-    val columnOrder: List<DatePickerColumn> = listOf(
+    val columnOrder: ImmutableList<DatePickerColumn> = persistentListOf(
         DatePickerColumn.YEAR,
         DatePickerColumn.MONTH,
         DatePickerColumn.DAY
@@ -797,14 +802,14 @@ data class DatePickerLayout(
  *
  * @param yearWeight The year column weight.
  * @param monthWeight The month column weight.
- * @param columnOrder The visual column order.
+ * @param columnOrder The visual column order. Must contain every [YearMonthPickerColumn] exactly once.
  * @see PickerDefaults.yearMonthPickerLayout
  */
 @Immutable
 data class YearMonthPickerLayout(
     val yearWeight: Float?,
     val monthWeight: Float?,
-    val columnOrder: List<YearMonthPickerColumn> = listOf(
+    val columnOrder: ImmutableList<YearMonthPickerColumn> = persistentListOf(
         YearMonthPickerColumn.YEAR,
         YearMonthPickerColumn.MONTH
     )

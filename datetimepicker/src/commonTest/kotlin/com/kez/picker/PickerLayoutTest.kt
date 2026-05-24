@@ -59,6 +59,27 @@ class PickerLayoutTest {
     }
 
     @Test
+    fun timePickerLayout_defensivelyCopiesColumnOrder() {
+        val columnOrder = mutableListOf(
+            TimePickerColumn.HOUR,
+            TimePickerColumn.MINUTE,
+            TimePickerColumn.PERIOD
+        )
+        val layout = PickerDefaults.timePickerLayout(columnOrder = columnOrder)
+
+        columnOrder[0] = TimePickerColumn.PERIOD
+
+        assertEquals(
+            listOf(
+                TimePickerColumn.HOUR,
+                TimePickerColumn.MINUTE,
+                TimePickerColumn.PERIOD
+            ),
+            layout.columnOrder
+        )
+    }
+
+    @Test
     fun datePickerLayout_rejectsDuplicateColumnOrder() {
         assertFailsWith<IllegalArgumentException> {
             PickerDefaults.datePickerLayout(

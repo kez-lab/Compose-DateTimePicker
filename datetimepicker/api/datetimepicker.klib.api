@@ -294,10 +294,10 @@ final class com.kez.picker/DatePickerItems { // com.kez.picker/DatePickerItems|n
 }
 
 final class com.kez.picker/DatePickerLayout { // com.kez.picker/DatePickerLayout|null[0]
-    constructor <init>(kotlin/Float?, kotlin/Float?, kotlin/Float?, kotlin.collections/List<com.kez.picker/DatePickerColumn> = ...) // com.kez.picker/DatePickerLayout.<init>|<init>(kotlin.Float?;kotlin.Float?;kotlin.Float?;kotlin.collections.List<com.kez.picker.DatePickerColumn>){}[0]
+    constructor <init>(kotlin/Float?, kotlin/Float?, kotlin/Float?, kotlinx.collections.immutable/ImmutableList<com.kez.picker/DatePickerColumn> = ...) // com.kez.picker/DatePickerLayout.<init>|<init>(kotlin.Float?;kotlin.Float?;kotlin.Float?;kotlinx.collections.immutable.ImmutableList<com.kez.picker.DatePickerColumn>){}[0]
 
     final val columnOrder // com.kez.picker/DatePickerLayout.columnOrder|{}columnOrder[0]
-        final fun <get-columnOrder>(): kotlin.collections/List<com.kez.picker/DatePickerColumn> // com.kez.picker/DatePickerLayout.columnOrder.<get-columnOrder>|<get-columnOrder>(){}[0]
+        final fun <get-columnOrder>(): kotlinx.collections.immutable/ImmutableList<com.kez.picker/DatePickerColumn> // com.kez.picker/DatePickerLayout.columnOrder.<get-columnOrder>|<get-columnOrder>(){}[0]
     final val dayWeight // com.kez.picker/DatePickerLayout.dayWeight|{}dayWeight[0]
         final fun <get-dayWeight>(): kotlin/Float? // com.kez.picker/DatePickerLayout.dayWeight.<get-dayWeight>|<get-dayWeight>(){}[0]
     final val monthWeight // com.kez.picker/DatePickerLayout.monthWeight|{}monthWeight[0]
@@ -308,8 +308,8 @@ final class com.kez.picker/DatePickerLayout { // com.kez.picker/DatePickerLayout
     final fun component1(): kotlin/Float? // com.kez.picker/DatePickerLayout.component1|component1(){}[0]
     final fun component2(): kotlin/Float? // com.kez.picker/DatePickerLayout.component2|component2(){}[0]
     final fun component3(): kotlin/Float? // com.kez.picker/DatePickerLayout.component3|component3(){}[0]
-    final fun component4(): kotlin.collections/List<com.kez.picker/DatePickerColumn> // com.kez.picker/DatePickerLayout.component4|component4(){}[0]
-    final fun copy(kotlin/Float? = ..., kotlin/Float? = ..., kotlin/Float? = ..., kotlin.collections/List<com.kez.picker/DatePickerColumn> = ...): com.kez.picker/DatePickerLayout // com.kez.picker/DatePickerLayout.copy|copy(kotlin.Float?;kotlin.Float?;kotlin.Float?;kotlin.collections.List<com.kez.picker.DatePickerColumn>){}[0]
+    final fun component4(): kotlinx.collections.immutable/ImmutableList<com.kez.picker/DatePickerColumn> // com.kez.picker/DatePickerLayout.component4|component4(){}[0]
+    final fun copy(kotlin/Float? = ..., kotlin/Float? = ..., kotlin/Float? = ..., kotlinx.collections.immutable/ImmutableList<com.kez.picker/DatePickerColumn> = ...): com.kez.picker/DatePickerLayout // com.kez.picker/DatePickerLayout.copy|copy(kotlin.Float?;kotlin.Float?;kotlin.Float?;kotlinx.collections.immutable.ImmutableList<com.kez.picker.DatePickerColumn>){}[0]
     final fun equals(kotlin/Any?): kotlin/Boolean // com.kez.picker/DatePickerLayout.equals|equals(kotlin.Any?){}[0]
     final fun hashCode(): kotlin/Int // com.kez.picker/DatePickerLayout.hashCode|hashCode(){}[0]
     final fun toString(): kotlin/String // com.kez.picker/DatePickerLayout.toString|toString(){}[0]
@@ -491,10 +491,10 @@ final class com.kez.picker/TimePickerItems { // com.kez.picker/TimePickerItems|n
 }
 
 final class com.kez.picker/TimePickerLayout { // com.kez.picker/TimePickerLayout|null[0]
-    constructor <init>(kotlin/Float?, kotlin/Float?, kotlin/Float?, kotlin.collections/List<com.kez.picker/TimePickerColumn> = ...) // com.kez.picker/TimePickerLayout.<init>|<init>(kotlin.Float?;kotlin.Float?;kotlin.Float?;kotlin.collections.List<com.kez.picker.TimePickerColumn>){}[0]
+    constructor <init>(kotlin/Float?, kotlin/Float?, kotlin/Float?, kotlinx.collections.immutable/ImmutableList<com.kez.picker/TimePickerColumn> = ...) // com.kez.picker/TimePickerLayout.<init>|<init>(kotlin.Float?;kotlin.Float?;kotlin.Float?;kotlinx.collections.immutable.ImmutableList<com.kez.picker.TimePickerColumn>){}[0]
 
     final val columnOrder // com.kez.picker/TimePickerLayout.columnOrder|{}columnOrder[0]
-        final fun <get-columnOrder>(): kotlin.collections/List<com.kez.picker/TimePickerColumn> // com.kez.picker/TimePickerLayout.columnOrder.<get-columnOrder>|<get-columnOrder>(){}[0]
+        final fun <get-columnOrder>(): kotlinx.collections.immutable/ImmutableList<com.kez.picker/TimePickerColumn> // com.kez.picker/TimePickerLayout.columnOrder.<get-columnOrder>|<get-columnOrder>(){}[0]
     final val hourWeight // com.kez.picker/TimePickerLayout.hourWeight|{}hourWeight[0]
         final fun <get-hourWeight>(): kotlin/Float? // com.kez.picker/TimePickerLayout.hourWeight.<get-hourWeight>|<get-hourWeight>(){}[0]
     final val minuteWeight // com.kez.picker/TimePickerLayout.minuteWeight|{}minuteWeight[0]
@@ -505,8 +505,8 @@ final class com.kez.picker/TimePickerLayout { // com.kez.picker/TimePickerLayout
     final fun component1(): kotlin/Float? // com.kez.picker/TimePickerLayout.component1|component1(){}[0]
     final fun component2(): kotlin/Float? // com.kez.picker/TimePickerLayout.component2|component2(){}[0]
     final fun component3(): kotlin/Float? // com.kez.picker/TimePickerLayout.component3|component3(){}[0]
-    final fun component4(): kotlin.collections/List<com.kez.picker/TimePickerColumn> // com.kez.picker/TimePickerLayout.component4|component4(){}[0]
-    final fun copy(kotlin/Float? = ..., kotlin/Float? = ..., kotlin/Float? = ..., kotlin.collections/List<com.kez.picker/TimePickerColumn> = ...): com.kez.picker/TimePickerLayout // com.kez.picker/TimePickerLayout.copy|copy(kotlin.Float?;kotlin.Float?;kotlin.Float?;kotlin.collections.List<com.kez.picker.TimePickerColumn>){}[0]
+    final fun component4(): kotlinx.collections.immutable/ImmutableList<com.kez.picker/TimePickerColumn> // com.kez.picker/TimePickerLayout.component4|component4(){}[0]
+    final fun copy(kotlin/Float? = ..., kotlin/Float? = ..., kotlin/Float? = ..., kotlinx.collections.immutable/ImmutableList<com.kez.picker/TimePickerColumn> = ...): com.kez.picker/TimePickerLayout // com.kez.picker/TimePickerLayout.copy|copy(kotlin.Float?;kotlin.Float?;kotlin.Float?;kotlinx.collections.immutable.ImmutableList<com.kez.picker.TimePickerColumn>){}[0]
     final fun equals(kotlin/Any?): kotlin/Boolean // com.kez.picker/TimePickerLayout.equals|equals(kotlin.Any?){}[0]
     final fun hashCode(): kotlin/Int // com.kez.picker/TimePickerLayout.hashCode|hashCode(){}[0]
     final fun toString(): kotlin/String // com.kez.picker/TimePickerLayout.toString|toString(){}[0]
@@ -587,10 +587,10 @@ final class com.kez.picker/YearMonthPickerItems { // com.kez.picker/YearMonthPic
 }
 
 final class com.kez.picker/YearMonthPickerLayout { // com.kez.picker/YearMonthPickerLayout|null[0]
-    constructor <init>(kotlin/Float?, kotlin/Float?, kotlin.collections/List<com.kez.picker/YearMonthPickerColumn> = ...) // com.kez.picker/YearMonthPickerLayout.<init>|<init>(kotlin.Float?;kotlin.Float?;kotlin.collections.List<com.kez.picker.YearMonthPickerColumn>){}[0]
+    constructor <init>(kotlin/Float?, kotlin/Float?, kotlinx.collections.immutable/ImmutableList<com.kez.picker/YearMonthPickerColumn> = ...) // com.kez.picker/YearMonthPickerLayout.<init>|<init>(kotlin.Float?;kotlin.Float?;kotlinx.collections.immutable.ImmutableList<com.kez.picker.YearMonthPickerColumn>){}[0]
 
     final val columnOrder // com.kez.picker/YearMonthPickerLayout.columnOrder|{}columnOrder[0]
-        final fun <get-columnOrder>(): kotlin.collections/List<com.kez.picker/YearMonthPickerColumn> // com.kez.picker/YearMonthPickerLayout.columnOrder.<get-columnOrder>|<get-columnOrder>(){}[0]
+        final fun <get-columnOrder>(): kotlinx.collections.immutable/ImmutableList<com.kez.picker/YearMonthPickerColumn> // com.kez.picker/YearMonthPickerLayout.columnOrder.<get-columnOrder>|<get-columnOrder>(){}[0]
     final val monthWeight // com.kez.picker/YearMonthPickerLayout.monthWeight|{}monthWeight[0]
         final fun <get-monthWeight>(): kotlin/Float? // com.kez.picker/YearMonthPickerLayout.monthWeight.<get-monthWeight>|<get-monthWeight>(){}[0]
     final val yearWeight // com.kez.picker/YearMonthPickerLayout.yearWeight|{}yearWeight[0]
@@ -598,8 +598,8 @@ final class com.kez.picker/YearMonthPickerLayout { // com.kez.picker/YearMonthPi
 
     final fun component1(): kotlin/Float? // com.kez.picker/YearMonthPickerLayout.component1|component1(){}[0]
     final fun component2(): kotlin/Float? // com.kez.picker/YearMonthPickerLayout.component2|component2(){}[0]
-    final fun component3(): kotlin.collections/List<com.kez.picker/YearMonthPickerColumn> // com.kez.picker/YearMonthPickerLayout.component3|component3(){}[0]
-    final fun copy(kotlin/Float? = ..., kotlin/Float? = ..., kotlin.collections/List<com.kez.picker/YearMonthPickerColumn> = ...): com.kez.picker/YearMonthPickerLayout // com.kez.picker/YearMonthPickerLayout.copy|copy(kotlin.Float?;kotlin.Float?;kotlin.collections.List<com.kez.picker.YearMonthPickerColumn>){}[0]
+    final fun component3(): kotlinx.collections.immutable/ImmutableList<com.kez.picker/YearMonthPickerColumn> // com.kez.picker/YearMonthPickerLayout.component3|component3(){}[0]
+    final fun copy(kotlin/Float? = ..., kotlin/Float? = ..., kotlinx.collections.immutable/ImmutableList<com.kez.picker/YearMonthPickerColumn> = ...): com.kez.picker/YearMonthPickerLayout // com.kez.picker/YearMonthPickerLayout.copy|copy(kotlin.Float?;kotlin.Float?;kotlinx.collections.immutable.ImmutableList<com.kez.picker.YearMonthPickerColumn>){}[0]
     final fun equals(kotlin/Any?): kotlin/Boolean // com.kez.picker/YearMonthPickerLayout.equals|equals(kotlin.Any?){}[0]
     final fun hashCode(): kotlin/Int // com.kez.picker/YearMonthPickerLayout.hashCode|hashCode(){}[0]
     final fun toString(): kotlin/String // com.kez.picker/YearMonthPickerLayout.toString|toString(){}[0]

@@ -191,6 +191,7 @@ internal fun TimePickerSampleScreen(
                             minuteItemText = { it.toString().padStart(2, '0') },
                             periodItemText = { getTimePeriodContentDescription(it) }
                         ),
+                        // Demonstrates rendering the 12-hour picker as hour, minute, then period.
                         layout = PickerDefaults.timePickerLayout(
                             columnOrder = listOf(
                                 TimePickerColumn.HOUR,
