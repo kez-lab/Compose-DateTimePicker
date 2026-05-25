@@ -545,9 +545,10 @@ to the closest selectable value before rendering the picker.
 For first composition, use `remember*State(items = items, initial... = value)` to apply the same coercion
 before the picker is rendered.
 
-`onSelectedTimeChange`, `onSelectedDateChange`, and `onSelectedYearMonthChange` are called for
-user-driven picker changes. Programmatic `state.select*` calls update the state directly; update your
-app-owned value in the same event handler when you trigger programmatic changes.
+`onSelectedTimeChange`, `onSelectedDateChange`, `onSelectedDateRangeChange`, and
+`onSelectedYearMonthChange` are called for user-driven picker changes. Programmatic `state.select*`
+calls update the state directly; update your app-owned value in the same event handler when you
+trigger programmatic changes.
 
 Use `PickerDefaults.timePickerLayout(...)`, `datePickerLayout(...)`, or `yearMonthPickerLayout(...)`
 when a composite picker needs different column proportions. Pass `null` for a column weight to let
@@ -646,6 +647,8 @@ Invalid custom item values, duplicate items, empty lists, or current selected ye
 | `display` | Visible item text formatters for each picker column. | `PickerDefaults.datePickerDisplay()` |
 | `style` | Visual and layout styling for each picker column. | `PickerDefaults.style()` |
 | `layout` | Column weights and visual order for each child `DatePicker`. | `PickerDefaults.datePickerLayout()` |
+| `spacingBetweenPickers` | Horizontal spacing between columns inside each child `DatePicker`. | `0.dp` |
+| `spacingBetweenDatePickers` | Vertical spacing between the start and end child pickers. | `16.dp` |
 | `startLabel` / `endLabel` | Optional visible labels above each child picker. | `"Start date"` / `"End date"` |
 | `accessibility` | Accessibility labels for the start and end child pickers. | `PickerDefaults.dateRangePickerAccessibility()` |
 

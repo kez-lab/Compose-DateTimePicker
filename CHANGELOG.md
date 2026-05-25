@@ -60,6 +60,7 @@ This project tracks notable user-facing and maintainer-facing changes here. The 
 
 - Ensured `DateRangePicker` dispatches `onSelectedDateRangeChange` when a child date picker changes
   the start or end date.
+- Clarified `DateRangePicker` callback and spacing parameter documentation in both READMEs.
 - Updated the sample app to show programmatic selection buttons, a `DatePicker` example that derives
   selectable years from the current year and a nearby leap-day target, and Korean localized picker
   accessibility labels across the `TimePicker`, `BackgroundStyle`, `Integrated`, and `BottomSheet`
