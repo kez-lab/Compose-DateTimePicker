@@ -62,6 +62,44 @@ fun rememberDatePickerState(
 }
 
 /**
+ * Creates and remembers a [DatePickerState] whose explicit initial date parts are coerced by [items].
+ *
+ * Initial values and [items] are read when the state is first created. If [initialDay] is greater
+ * than the maximum day for [initialYear] and [initialMonth], it is clamped before applying [items].
+ *
+ * @param items Selectable values used to coerce [initialYear], [initialMonth], and [initialDay].
+ * @param initialYear The requested initial year. Must be in 1000..9999.
+ * @param initialMonth The requested initial month. Must be in 1..12.
+ * @param initialDay The requested initial day. Must be at least 1.
+ * @return A [DatePickerState] initialized to the closest selectable date.
+ */
+@Composable
+fun rememberDatePickerState(
+    items: DatePickerItems,
+    initialYear: Int,
+    initialMonth: Int,
+    initialDay: Int
+): DatePickerState {
+    val rememberedInitialYear = remember { initialYear }
+    val rememberedInitialMonth = remember { initialMonth }
+    val rememberedInitialDay = remember { initialDay }
+    val rememberedItems = remember { items }
+    val coercedInitialDate = remember(
+        rememberedInitialYear,
+        rememberedInitialMonth,
+        rememberedInitialDay,
+        rememberedItems
+    ) {
+        rememberedItems.coerceDate(
+            year = rememberedInitialYear,
+            month = rememberedInitialMonth,
+            day = rememberedInitialDay
+        )
+    }
+    return rememberDatePickerState(initialDate = coercedInitialDate)
+}
+
+/**
  * Creates and remembers a [DatePickerState] with explicit year, month, and day values.
  *
  * Initial values are read only when the state is first created.
@@ -198,8 +236,7 @@ class DatePickerState(
      * [items].
      */
     fun selectDate(year: Int, month: Int, day: Int, items: DatePickerItems) {
-        val clampedDate = dateFromParts(year = year, month = month, day = day)
-        selectDate(items.coerceDate(clampedDate))
+        selectDate(items.coerceDate(year = year, month = month, day = day))
     }
 
     /**

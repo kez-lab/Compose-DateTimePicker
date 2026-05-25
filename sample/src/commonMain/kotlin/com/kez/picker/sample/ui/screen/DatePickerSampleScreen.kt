@@ -37,6 +37,7 @@ import compose.icons.FeatherIcons
 import compose.icons.feathericons.Calendar
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.Month
+import kotlinx.datetime.number
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -79,7 +80,9 @@ fun DatePickerSampleScreen(
             }
             val state = rememberDatePickerState(
                 items = pickerItems,
-                initialDate = today
+                initialYear = today.year,
+                initialMonth = today.month.number,
+                initialDay = today.day
             )
             var selectedDateText by rememberSaveable { mutableStateOf(today.toString()) }
 

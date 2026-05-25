@@ -166,6 +166,7 @@ import com.kez.picker.date.DatePicker
 import com.kez.picker.date.rememberDatePickerState
 import com.kez.picker.util.currentDate
 import kotlinx.datetime.LocalDate
+import kotlinx.datetime.number
 
 @Composable
 fun DatePickerExample() {
@@ -192,7 +193,9 @@ fun DatePickerExample() {
     }
     val state = rememberDatePickerState(
         items = items,
-        initialDate = initialDate
+        initialYear = initialDate.year,
+        initialMonth = initialDate.month.number,
+        initialDay = initialDate.day
     )
 
     DatePicker(
@@ -209,9 +212,11 @@ fun DatePickerExample() {
 
 When you restrict selectable item lists or date bounds with `PickerDefaults.*Items(...)`, keep the
 remembered initial or restored state value inside those rules, or create state with
-`rememberDatePickerState(items = items, initialDate = value)` to coerce it before first composition.
-If an external date changes after composition, call `state.selectDate(newDate, items)` instead of
-relying on a new `initialDate` argument.
+`rememberDatePickerState(items = items, initialDate = value)` or
+`rememberDatePickerState(items = items, initialYear = year, initialMonth = month, initialDay = day)`
+to coerce it before first composition. If an external date changes after composition, call
+`state.selectDate(newDate, items)` or `state.selectDate(year, month, day, items)` instead of relying
+on new initial arguments.
 
 ### DateRangePicker
 
@@ -627,12 +632,14 @@ Invalid custom item values, duplicate items, empty required lists, or current se
 `rememberDatePickerState` uses saveable state. On Android, selected values can be restored across Activity recreation when the platform saveable registry is available.
 
 For initial values, use either `rememberDatePickerState(initialDate = LocalDate(...))` or the
-explicit `initialYear`/`initialMonth`/`initialDay` parameters. Initial years must be in
-`1000..9999`, months in `1..12`, and days must be at least `1`. If `initialDay` is greater than
-the maximum valid day for the initial year/month, it is clamped to that maximum.
+explicit `initialYear`/`initialMonth`/`initialDay` parameters. Pass the same `items` object when the
+initial value or parts should be coerced before first composition. Initial years must be in
+`1000..9999`, months in `1..12`, and days must be at least `1`. If `initialDay` is greater than the
+maximum valid day for the initial year/month, it is clamped to that maximum.
 
 To change the selection after state creation, call `state.selectDate(LocalDate(...))` or
-`state.selectDate(year, month, day)`.
+`state.selectDate(year, month, day)`. Use the overloads that accept `items` when custom item lists
+or date bounds should be applied at the same time.
 
 Invalid custom item values, duplicate items, empty lists, or current selected year/month/day values missing from custom lists or date bounds throw `IllegalArgumentException` during composition. If a year/month change makes the selected month or day unavailable, the picker selects the closest available value for the configured constraints.
 
