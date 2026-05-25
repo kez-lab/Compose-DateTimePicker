@@ -23,6 +23,9 @@ This project tracks notable user-facing and maintainer-facing changes here. The 
   year/month-only state can be initialized without routing through `LocalDate`.
 - Added `TimePickerState.selectTime(hour, minute)` and `DatePickerState.selectDate(year, month, day)`
   overloads for apps that store primitive form values.
+- Added `DateRange`, `DateRangePickerState`, `rememberDateRangePickerState`, and `DateRangePicker`
+  for ordered start/end date selection without manually wiring two `DatePicker` instances. Date
+  range state also supports year/month/day overloads for apps that store primitive form values.
 - Added value-first state constructors: `TimePickerState(LocalTime, ...)`,
   `DatePickerState(LocalDate)`, `YearMonthPickerState(YearMonth)`, and
   `YearMonthPickerState(LocalDate)`.
@@ -53,6 +56,8 @@ This project tracks notable user-facing and maintainer-facing changes here. The 
 
 ### Changed
 
+- Ensured `DateRangePicker` dispatches `onSelectedDateRangeChange` when a child date picker changes
+  the start or end date.
 - Updated the sample app to show programmatic selection buttons, a `DatePicker` example that derives
   selectable years from the current year and a nearby leap-day target, and Korean localized picker
   accessibility labels across the `TimePicker`, `BackgroundStyle`, `Integrated`, and `BottomSheet`

@@ -213,6 +213,51 @@ remembered initial or restored state value inside those rules, or create state w
 If an external date changes after composition, call `state.selectDate(newDate, items)` instead of
 relying on a new `initialDate` argument.
 
+### DateRangePicker
+
+Use `DateRangePicker` when users need to select an ordered start and end date.
+
+```kotlin
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
+import com.kez.picker.PickerDefaults
+import com.kez.picker.date.DateRange
+import com.kez.picker.date.DateRangePicker
+import com.kez.picker.date.rememberDateRangePickerState
+import com.kez.picker.util.currentDate
+import kotlinx.datetime.LocalDate
+import kotlinx.datetime.number
+
+@Composable
+fun DateRangePickerExample() {
+    val today = remember { currentDate() }
+    val items = remember(today.year) {
+        PickerDefaults.datePickerItems(
+            yearItems = listOf(today.year),
+            minDate = LocalDate(today.year, 1, 1),
+            maxDate = LocalDate(today.year, 12, 31)
+        )
+    }
+    val state = rememberDateRangePickerState(
+        items = items,
+        initialStartYear = today.year,
+        initialStartMonth = today.month.number,
+        initialStartDay = today.day,
+        initialEndYear = today.year,
+        initialEndMonth = today.month.number,
+        initialEndDay = today.day
+    )
+
+    DateRangePicker(
+        state = state,
+        items = items,
+        onSelectedDateRangeChange = { selectedRange: DateRange ->
+            // Update app state, ViewModel, or form data here.
+        }
+    )
+}
+```
+
 ### YearMonthPicker
 
 Use `YearMonthPicker` for selecting a specific month in a year.
@@ -467,6 +512,7 @@ selection.
 | Generic `Picker<T>` | Update the app-owned `selectedItem` value |
 | `time.TimePickerState` | `selectTime(LocalTime(...))`, `selectTime(hour, minute)`, or the matching `items` overloads |
 | `date.DatePickerState` | `selectDate(LocalDate(...))`, `selectDate(year, month, day)`, or the matching `items` overloads |
+| `date.DateRangePickerState` | `selectDateRange(startDate, endDate)`, `selectDateRange(startYear, startMonth, startDay, endYear, endMonth, endDay)`, `selectStartDate(...)`, `selectEndDate(...)`, or the matching `items` overloads |
 | `date.YearMonthPickerState` | `selectYearMonth(YearMonth(...))`, `selectYearMonth(year, month)`, `selectDate(LocalDate(...))`, or the matching `items` overloads |
 
 ```kotlin
@@ -591,6 +637,30 @@ To change the selection after state creation, call `state.selectDate(LocalDate(.
 `state.selectDate(year, month, day)`.
 
 Invalid custom item values, duplicate items, empty lists, or current selected year/month/day values missing from custom lists or date bounds throw `IllegalArgumentException` during composition. If a year/month change makes the selected month or day unavailable, the picker selects the closest available value for the configured constraints.
+
+### DateRangePicker
+
+| Parameter | Description | Default |
+| :--- | :--- | :--- |
+| `state` | The state object to control the selected start and end dates. | `rememberDateRangePickerState()` |
+| `onSelectedDateRangeChange` | Called after user interaction changes the selected `DateRange`. | `{}` |
+| `enabled` | Whether user scroll, click, and accessibility selection actions are enabled. | `true` |
+| `items` | Shared selectable year/month/day item lists plus optional inclusive `minDate`/`maxDate` bounds. | `PickerDefaults.datePickerItems()` |
+| `display` | Visible item text formatters for each picker column. | `PickerDefaults.datePickerDisplay()` |
+| `style` | Visual and layout styling for each picker column. | `PickerDefaults.style()` |
+| `layout` | Column weights and visual order for each child `DatePicker`. | `PickerDefaults.datePickerLayout()` |
+| `startLabel` / `endLabel` | Optional visible labels above each child picker. | `"Start date"` / `"End date"` |
+| `accessibility` | Accessibility labels for the start and end child pickers. | `PickerDefaults.dateRangePickerAccessibility()` |
+
+`DateRangePickerState` keeps `selectedStartDate <= selectedEndDate`. If a user moves the start after
+the current end, the end moves to the same date. If a user moves the end before the current start,
+the start moves to the same date.
+
+For initial values, use either `rememberDateRangePickerState(initialStartDate = ..., initialEndDate = ...)`
+or the explicit `initialStartYear`/`initialStartMonth`/`initialStartDay` and matching end-date
+parameters. To change the selection after state creation, call `state.selectDateRange(...)`,
+`state.selectStartDate(...)`, or `state.selectEndDate(...)` with either `LocalDate` values or
+explicit year/month/day parts.
 
 ### YearMonthPicker
 

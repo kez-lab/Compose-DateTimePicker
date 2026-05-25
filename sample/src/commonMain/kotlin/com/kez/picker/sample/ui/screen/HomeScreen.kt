@@ -104,6 +104,15 @@ internal fun HomeScreen(navController: NavController) {
             }
             item {
                 MenuListItem(
+                    title = "DateRangePicker Sample",
+                    description = "Ordered start and end date selection",
+                    icon = FeatherIcons.Calendar,
+                    modifier = Modifier.testTag("sample-menu-date-range-picker"),
+                    onClick = { navController.navigate(Screen.DateRangePicker.route) }
+                )
+            }
+            item {
+                MenuListItem(
                     title = "BottomSheet Sample",
                     description = "Committed value plus draft sheet state",
                     icon = FeatherIcons.Layers,

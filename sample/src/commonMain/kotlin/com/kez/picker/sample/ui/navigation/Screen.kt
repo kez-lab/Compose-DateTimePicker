@@ -6,6 +6,7 @@ sealed class Screen(val route: String) {
     object TimePicker : Screen("time_picker")
     object YearMonthPicker : Screen("year_month_picker")
     object DatePicker : Screen("date_picker")
+    object DateRangePicker : Screen("date_range_picker")
     object BottomSheet : Screen("bottom_sheet")
     object BackgroundStyle : Screen("background_style")
 }

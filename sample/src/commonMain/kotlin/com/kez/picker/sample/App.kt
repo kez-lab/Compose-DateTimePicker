@@ -11,6 +11,7 @@ import com.kez.picker.sample.ui.navigation.Screen
 import com.kez.picker.sample.ui.screen.BackgroundStylePickerScreen
 import com.kez.picker.sample.ui.screen.BottomSheetSampleScreen
 import com.kez.picker.sample.ui.screen.DatePickerSampleScreen
+import com.kez.picker.sample.ui.screen.DateRangePickerSampleScreen
 import com.kez.picker.sample.ui.screen.HomeScreen
 import com.kez.picker.sample.ui.screen.IntegratedPickerScreen
 import com.kez.picker.sample.ui.screen.TimePickerSampleScreen
@@ -54,6 +55,11 @@ fun App() {
             }
             composable(Screen.DatePicker.route) {
                 DatePickerSampleScreen(
+                    onBackPressed = { handleNavigateBack(navController) }
+                )
+            }
+            composable(Screen.DateRangePicker.route) {
+                DateRangePickerSampleScreen(
                     onBackPressed = { handleNavigateBack(navController) }
                 )
             }

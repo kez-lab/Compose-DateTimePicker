@@ -209,6 +209,51 @@ fun DatePickerExample() {
 `rememberDatePickerState(items = items, initialDate = value)`를 사용하세요. composition 이후 외부
 날짜가 바뀐다면 새 `initialDate` 인자에 의존하지 말고 `state.selectDate(newDate, items)`를 호출하세요.
 
+### DateRangePicker
+
+사용자가 시작일과 종료일을 순서가 보장된 범위로 선택해야 한다면 `DateRangePicker`를 사용합니다.
+
+```kotlin
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
+import com.kez.picker.PickerDefaults
+import com.kez.picker.date.DateRange
+import com.kez.picker.date.DateRangePicker
+import com.kez.picker.date.rememberDateRangePickerState
+import com.kez.picker.util.currentDate
+import kotlinx.datetime.LocalDate
+import kotlinx.datetime.number
+
+@Composable
+fun DateRangePickerExample() {
+    val today = remember { currentDate() }
+    val items = remember(today.year) {
+        PickerDefaults.datePickerItems(
+            yearItems = listOf(today.year),
+            minDate = LocalDate(today.year, 1, 1),
+            maxDate = LocalDate(today.year, 12, 31)
+        )
+    }
+    val state = rememberDateRangePickerState(
+        items = items,
+        initialStartYear = today.year,
+        initialStartMonth = today.month.number,
+        initialStartDay = today.day,
+        initialEndYear = today.year,
+        initialEndMonth = today.month.number,
+        initialEndDay = today.day
+    )
+
+    DateRangePicker(
+        state = state,
+        items = items,
+        onSelectedDateRangeChange = { selectedRange: DateRange ->
+            // 앱 state, ViewModel, form data를 여기서 갱신합니다.
+        }
+    )
+}
+```
+
 ### YearMonthPicker
 
 특정 연도와 월을 선택할 때 `YearMonthPicker`를 사용합니다.
@@ -464,6 +509,7 @@ state를 새로 만들 필요는 없습니다.
 | Generic `Picker<T>` | 앱이 소유한 `selectedItem` 값을 갱신 |
 | `time.TimePickerState` | `selectTime(LocalTime(...))`, `selectTime(hour, minute)` 또는 대응되는 `items` overload |
 | `date.DatePickerState` | `selectDate(LocalDate(...))`, `selectDate(year, month, day)` 또는 대응되는 `items` overload |
+| `date.DateRangePickerState` | `selectDateRange(startDate, endDate)`, `selectDateRange(startYear, startMonth, startDay, endYear, endMonth, endDay)`, `selectStartDate(...)`, `selectEndDate(...)` 또는 대응되는 `items` overload |
 | `date.YearMonthPickerState` | `selectYearMonth(YearMonth(...))`, `selectYearMonth(year, month)`, `selectDate(LocalDate(...))`, 또는 대응되는 `items` overload |
 
 ```kotlin
@@ -588,6 +634,29 @@ custom item 값이 유효 범위를 벗어나거나, 중복이 있거나, 필수
 `state.selectDate(year, month, day)`를 호출합니다.
 
 custom item 값이 유효 범위를 벗어나거나, 중복이 있거나, 목록이 비어 있거나, 현재 선택된 연도/월/일이 custom 목록 또는 날짜 범위 밖이면 composition 중 `IllegalArgumentException`이 발생합니다. 연/월 변경으로 현재 월 또는 일이 선택 불가능해지면 설정된 제약 안에서 가장 가까운 선택 가능 값으로 이동합니다.
+
+### DateRangePicker
+
+| 파라미터 | 설명 | 기본값 |
+| :--- | :--- | :--- |
+| `state` | 선택된 시작일과 종료일을 제어하는 상태 객체입니다. | `rememberDateRangePickerState()` |
+| `onSelectedDateRangeChange` | 사용자 조작으로 선택된 `DateRange`가 바뀐 뒤 호출됩니다. | `{}` |
+| `enabled` | 사용자 scroll, click, accessibility 선택 action을 허용할지 여부입니다. | `true` |
+| `items` | 공유되는 연도/월/일 선택 목록과 선택적 `minDate`/`maxDate` inclusive 범위입니다. | `PickerDefaults.datePickerItems()` |
+| `display` | 각 picker column의 화면 표시 텍스트 formatter입니다. | `PickerDefaults.datePickerDisplay()` |
+| `style` | 각 picker column의 시각/레이아웃 스타일입니다. | `PickerDefaults.style()` |
+| `layout` | 각 child `DatePicker`의 column weight와 표시 순서입니다. | `PickerDefaults.datePickerLayout()` |
+| `startLabel` / `endLabel` | 각 child picker 위에 표시할 선택적 label입니다. | `"Start date"` / `"End date"` |
+| `accessibility` | 시작/종료 child picker의 접근성 label입니다. | `PickerDefaults.dateRangePickerAccessibility()` |
+
+`DateRangePickerState`는 `selectedStartDate <= selectedEndDate`를 항상 유지합니다. 사용자가 시작일을
+현재 종료일 뒤로 이동하면 종료일도 같은 날짜로 이동하고, 종료일을 현재 시작일 앞으로 이동하면 시작일도
+같은 날짜로 이동합니다.
+
+초기값은 `rememberDateRangePickerState(initialStartDate = ..., initialEndDate = ...)` 또는
+명시적인 `initialStartYear`/`initialStartMonth`/`initialStartDay`와 대응되는 종료일 파라미터로
+설정합니다. 상태 생성 이후 선택값을 바꾸려면 `LocalDate` 값이나 명시적인 year/month/day 값을 사용해
+`state.selectDateRange(...)`, `state.selectStartDate(...)`, `state.selectEndDate(...)`를 호출합니다.
 
 ### YearMonthPicker
 
