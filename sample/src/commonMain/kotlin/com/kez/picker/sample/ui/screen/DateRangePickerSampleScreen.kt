@@ -81,8 +81,12 @@ internal fun DateRangePickerSampleScreen(
             }
             val state = rememberDateRangePickerState(
                 items = items,
-                initialStartDate = today,
-                initialEndDate = today
+                initialStartYear = today.year,
+                initialStartMonth = today.month.number,
+                initialStartDay = today.day,
+                initialEndYear = today.year,
+                initialEndMonth = today.month.number,
+                initialEndDay = today.day
             )
             var selectedRangeText by rememberSaveable {
                 mutableStateOf("${today}..${today}")
@@ -101,8 +105,12 @@ internal fun DateRangePickerSampleScreen(
                 Button(
                     onClick = {
                         state.selectDateRange(
-                            startDate = monthStart,
-                            endDate = monthEnd,
+                            startYear = monthStart.year,
+                            startMonth = monthStart.month.number,
+                            startDay = monthStart.day,
+                            endYear = monthEnd.year,
+                            endMonth = monthEnd.month.number,
+                            endDay = monthEnd.day,
                             items = items
                         )
                         selectedRangeText = state.selectedDateRange.asText()
@@ -120,8 +128,12 @@ internal fun DateRangePickerSampleScreen(
                 OutlinedButton(
                     onClick = {
                         state.selectDateRange(
-                            startDate = today,
-                            endDate = today,
+                            startYear = today.year,
+                            startMonth = today.month.number,
+                            startDay = today.day,
+                            endYear = today.year,
+                            endMonth = today.month.number,
+                            endDay = today.day,
                             items = items
                         )
                         selectedRangeText = state.selectedDateRange.asText()

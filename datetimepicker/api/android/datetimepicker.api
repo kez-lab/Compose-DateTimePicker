@@ -539,14 +539,22 @@ public final class com/kez/picker/date/DateRangePickerKt {
 public final class com/kez/picker/date/DateRangePickerState {
 	public static final field $stable I
 	public static final field Companion Lcom/kez/picker/date/DateRangePickerState$Companion;
+	public fun <init> (IIIIII)V
+	public synthetic fun <init> (IIIIIIILkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public fun <init> (Lkotlinx/datetime/LocalDate;Lkotlinx/datetime/LocalDate;)V
 	public final fun getSelectedDateRange ()Lcom/kez/picker/date/DateRange;
 	public final fun getSelectedEndDate ()Lkotlinx/datetime/LocalDate;
 	public final fun getSelectedStartDate ()Lkotlinx/datetime/LocalDate;
+	public final fun selectDateRange (IIIIII)V
+	public final fun selectDateRange (IIIIIILcom/kez/picker/DatePickerItems;)V
 	public final fun selectDateRange (Lkotlinx/datetime/LocalDate;Lkotlinx/datetime/LocalDate;)V
 	public final fun selectDateRange (Lkotlinx/datetime/LocalDate;Lkotlinx/datetime/LocalDate;Lcom/kez/picker/DatePickerItems;)V
+	public final fun selectEndDate (III)V
+	public final fun selectEndDate (IIILcom/kez/picker/DatePickerItems;)V
 	public final fun selectEndDate (Lkotlinx/datetime/LocalDate;)V
 	public final fun selectEndDate (Lkotlinx/datetime/LocalDate;Lcom/kez/picker/DatePickerItems;)V
+	public final fun selectStartDate (III)V
+	public final fun selectStartDate (IIILcom/kez/picker/DatePickerItems;)V
 	public final fun selectStartDate (Lkotlinx/datetime/LocalDate;)V
 	public final fun selectStartDate (Lkotlinx/datetime/LocalDate;Lcom/kez/picker/DatePickerItems;)V
 }
@@ -556,6 +564,8 @@ public final class com/kez/picker/date/DateRangePickerState$Companion {
 }
 
 public final class com/kez/picker/date/DateRangePickerStateKt {
+	public static final fun rememberDateRangePickerState (IIIIIILandroidx/compose/runtime/Composer;II)Lcom/kez/picker/date/DateRangePickerState;
+	public static final fun rememberDateRangePickerState (Lcom/kez/picker/DatePickerItems;IIIIIILandroidx/compose/runtime/Composer;II)Lcom/kez/picker/date/DateRangePickerState;
 	public static final fun rememberDateRangePickerState (Lcom/kez/picker/DatePickerItems;Lkotlinx/datetime/LocalDate;Lkotlinx/datetime/LocalDate;Landroidx/compose/runtime/Composer;II)Lcom/kez/picker/date/DateRangePickerState;
 	public static final fun rememberDateRangePickerState (Lkotlinx/datetime/LocalDate;Lkotlinx/datetime/LocalDate;Landroidx/compose/runtime/Composer;II)Lcom/kez/picker/date/DateRangePickerState;
 }

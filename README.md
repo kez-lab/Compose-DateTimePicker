@@ -226,6 +226,7 @@ import com.kez.picker.date.DateRangePicker
 import com.kez.picker.date.rememberDateRangePickerState
 import com.kez.picker.util.currentDate
 import kotlinx.datetime.LocalDate
+import kotlinx.datetime.number
 
 @Composable
 fun DateRangePickerExample() {
@@ -239,8 +240,12 @@ fun DateRangePickerExample() {
     }
     val state = rememberDateRangePickerState(
         items = items,
-        initialStartDate = today,
-        initialEndDate = today
+        initialStartYear = today.year,
+        initialStartMonth = today.month.number,
+        initialStartDay = today.day,
+        initialEndYear = today.year,
+        initialEndMonth = today.month.number,
+        initialEndDay = today.day
     )
 
     DateRangePicker(
@@ -507,7 +512,7 @@ selection.
 | Generic `Picker<T>` | Update the app-owned `selectedItem` value |
 | `time.TimePickerState` | `selectTime(LocalTime(...))`, `selectTime(hour, minute)`, or the matching `items` overloads |
 | `date.DatePickerState` | `selectDate(LocalDate(...))`, `selectDate(year, month, day)`, or the matching `items` overloads |
-| `date.DateRangePickerState` | `selectDateRange(startDate, endDate)`, `selectStartDate(date)`, `selectEndDate(date)`, or the matching `items` overloads |
+| `date.DateRangePickerState` | `selectDateRange(startDate, endDate)`, `selectDateRange(startYear, startMonth, startDay, endYear, endMonth, endDay)`, `selectStartDate(...)`, `selectEndDate(...)`, or the matching `items` overloads |
 | `date.YearMonthPickerState` | `selectYearMonth(YearMonth(...))`, `selectYearMonth(year, month)`, `selectDate(LocalDate(...))`, or the matching `items` overloads |
 
 ```kotlin
@@ -650,6 +655,12 @@ Invalid custom item values, duplicate items, empty lists, or current selected ye
 `DateRangePickerState` keeps `selectedStartDate <= selectedEndDate`. If a user moves the start after
 the current end, the end moves to the same date. If a user moves the end before the current start,
 the start moves to the same date.
+
+For initial values, use either `rememberDateRangePickerState(initialStartDate = ..., initialEndDate = ...)`
+or the explicit `initialStartYear`/`initialStartMonth`/`initialStartDay` and matching end-date
+parameters. To change the selection after state creation, call `state.selectDateRange(...)`,
+`state.selectStartDate(...)`, or `state.selectEndDate(...)` with either `LocalDate` values or
+explicit year/month/day parts.
 
 ### YearMonthPicker
 

@@ -60,6 +60,47 @@ fun rememberDateRangePickerState(
 }
 
 /**
+ * Creates and remembers a [DateRangePickerState] with explicit start and end date parts.
+ *
+ * Initial values are read when the state is first created. If a day is greater than the maximum day
+ * for its year/month, it is clamped to that maximum.
+ *
+ * @param initialStartYear The initial range start year. Must be in 1000..9999.
+ * @param initialStartMonth The initial range start month. Must be in 1..12.
+ * @param initialStartDay The initial range start day. Must be at least 1.
+ * @param initialEndYear The initial range end year. Must be in 1000..9999.
+ * @param initialEndMonth The initial range end month. Must be in 1..12.
+ * @param initialEndDay The initial range end day. Must be at least 1.
+ * @return A [DateRangePickerState] initialized with the requested date range.
+ */
+@Composable
+fun rememberDateRangePickerState(
+    initialStartYear: Int,
+    initialStartMonth: Int,
+    initialStartDay: Int,
+    initialEndYear: Int = initialStartYear,
+    initialEndMonth: Int = initialStartMonth,
+    initialEndDay: Int = initialStartDay
+): DateRangePickerState {
+    val rememberedInitialStartYear = remember { initialStartYear }
+    val rememberedInitialStartMonth = remember { initialStartMonth }
+    val rememberedInitialStartDay = remember { initialStartDay }
+    val rememberedInitialEndYear = remember { initialEndYear }
+    val rememberedInitialEndMonth = remember { initialEndMonth }
+    val rememberedInitialEndDay = remember { initialEndDay }
+    return rememberSaveable(saver = DateRangePickerState.Saver) {
+        DateRangePickerState(
+            initialStartYear = rememberedInitialStartYear,
+            initialStartMonth = rememberedInitialStartMonth,
+            initialStartDay = rememberedInitialStartDay,
+            initialEndYear = rememberedInitialEndYear,
+            initialEndMonth = rememberedInitialEndMonth,
+            initialEndDay = rememberedInitialEndDay
+        )
+    }
+}
+
+/**
  * Creates and remembers a [DateRangePickerState] whose initial values are coerced by [items].
  *
  * Initial values and [items] are read when the state is first created.
@@ -100,6 +141,67 @@ fun rememberDateRangePickerState(
 }
 
 /**
+ * Creates and remembers a [DateRangePickerState] with explicit start and end date parts coerced by
+ * [items].
+ *
+ * Initial values and [items] are read when the state is first created. If a day is greater than the
+ * maximum day for its year/month, it is clamped before [items] coercion.
+ *
+ * @param items Selectable values used to coerce the requested start and end dates.
+ * @param initialStartYear The requested range start year.
+ * @param initialStartMonth The requested range start month.
+ * @param initialStartDay The requested range start day.
+ * @param initialEndYear The requested range end year.
+ * @param initialEndMonth The requested range end month.
+ * @param initialEndDay The requested range end day.
+ * @return A [DateRangePickerState] initialized to the closest selectable date range.
+ */
+@Composable
+fun rememberDateRangePickerState(
+    items: DatePickerItems,
+    initialStartYear: Int,
+    initialStartMonth: Int,
+    initialStartDay: Int,
+    initialEndYear: Int = initialStartYear,
+    initialEndMonth: Int = initialStartMonth,
+    initialEndDay: Int = initialStartDay
+): DateRangePickerState {
+    val rememberedInitialStartYear = remember { initialStartYear }
+    val rememberedInitialStartMonth = remember { initialStartMonth }
+    val rememberedInitialStartDay = remember { initialStartDay }
+    val rememberedInitialEndYear = remember { initialEndYear }
+    val rememberedInitialEndMonth = remember { initialEndMonth }
+    val rememberedInitialEndDay = remember { initialEndDay }
+    val initialStartDate = remember(
+        rememberedInitialStartYear,
+        rememberedInitialStartMonth,
+        rememberedInitialStartDay
+    ) {
+        dateFromParts(
+            year = rememberedInitialStartYear,
+            month = rememberedInitialStartMonth,
+            day = rememberedInitialStartDay
+        )
+    }
+    val initialEndDate = remember(
+        rememberedInitialEndYear,
+        rememberedInitialEndMonth,
+        rememberedInitialEndDay
+    ) {
+        dateFromParts(
+            year = rememberedInitialEndYear,
+            month = rememberedInitialEndMonth,
+            day = rememberedInitialEndDay
+        )
+    }
+    return rememberDateRangePickerState(
+        items = items,
+        initialStartDate = initialStartDate,
+        initialEndDate = initialEndDate
+    )
+}
+
+/**
  * State holder for [DateRangePicker].
  *
  * The selected range is always inclusive and ordered. If [selectStartDate] moves the start after
@@ -115,6 +217,31 @@ class DateRangePickerState(
     initialStartDate: LocalDate,
     initialEndDate: LocalDate
 ) {
+    /**
+     * Creates a [DateRangePickerState] with explicit start and end date parts.
+     *
+     * If a day is greater than the maximum day for its year/month, it is clamped to that maximum.
+     */
+    constructor(
+        initialStartYear: Int,
+        initialStartMonth: Int,
+        initialStartDay: Int,
+        initialEndYear: Int = initialStartYear,
+        initialEndMonth: Int = initialStartMonth,
+        initialEndDay: Int = initialStartDay
+    ) : this(
+        initialStartDate = dateFromParts(
+            year = initialStartYear,
+            month = initialStartMonth,
+            day = initialStartDay
+        ),
+        initialEndDate = dateFromParts(
+            year = initialEndYear,
+            month = initialEndMonth,
+            day = initialEndDay
+        )
+    )
+
     init {
         require(initialStartDate <= initialEndDate) {
             "initialStartDate must be on or before initialEndDate. " +
@@ -157,6 +284,27 @@ class DateRangePickerState(
     }
 
     /**
+     * Programmatically selects the range from explicit start and end date parts.
+     *
+     * If a day is greater than the maximum day for its year/month, it is clamped to that maximum.
+     *
+     * @throws IllegalArgumentException if the resulting start date is after the resulting end date.
+     */
+    fun selectDateRange(
+        startYear: Int,
+        startMonth: Int,
+        startDay: Int,
+        endYear: Int,
+        endMonth: Int,
+        endDay: Int
+    ) {
+        selectDateRange(
+            startDate = dateFromParts(year = startYear, month = startMonth, day = startDay),
+            endDate = dateFromParts(year = endYear, month = endMonth, day = endDay)
+        )
+    }
+
+    /**
      * Programmatically selects the closest date range allowed by [items].
      */
     fun selectDateRange(startDate: LocalDate, endDate: LocalDate, items: DatePickerItems) {
@@ -174,6 +322,28 @@ class DateRangePickerState(
     }
 
     /**
+     * Programmatically selects the closest date range to the requested date parts allowed by [items].
+     *
+     * If a day is greater than the maximum day for its year/month, it is clamped before [items]
+     * coercion.
+     */
+    fun selectDateRange(
+        startYear: Int,
+        startMonth: Int,
+        startDay: Int,
+        endYear: Int,
+        endMonth: Int,
+        endDay: Int,
+        items: DatePickerItems
+    ) {
+        selectDateRange(
+            startDate = dateFromParts(year = startYear, month = startMonth, day = startDay),
+            endDate = dateFromParts(year = endYear, month = endMonth, day = endDay),
+            items = items
+        )
+    }
+
+    /**
      * Programmatically selects the range start date.
      */
     fun selectStartDate(date: LocalDate) {
@@ -184,10 +354,28 @@ class DateRangePickerState(
     }
 
     /**
+     * Programmatically selects the range start date from explicit date parts.
+     *
+     * If [day] is greater than the maximum day for [year] and [month], it is clamped to that
+     * maximum.
+     */
+    fun selectStartDate(year: Int, month: Int, day: Int) {
+        selectStartDate(dateFromParts(year = year, month = month, day = day))
+    }
+
+    /**
      * Programmatically selects the closest range start date allowed by [items].
      */
     fun selectStartDate(date: LocalDate, items: DatePickerItems) {
         selectStartDate(items.coerceDate(date))
+    }
+
+    /**
+     * Programmatically selects the closest range start date to [year], [month], and [day] allowed by
+     * [items].
+     */
+    fun selectStartDate(year: Int, month: Int, day: Int, items: DatePickerItems) {
+        selectStartDate(dateFromParts(year = year, month = month, day = day), items)
     }
 
     /**
@@ -201,10 +389,28 @@ class DateRangePickerState(
     }
 
     /**
+     * Programmatically selects the range end date from explicit date parts.
+     *
+     * If [day] is greater than the maximum day for [year] and [month], it is clamped to that
+     * maximum.
+     */
+    fun selectEndDate(year: Int, month: Int, day: Int) {
+        selectEndDate(dateFromParts(year = year, month = month, day = day))
+    }
+
+    /**
      * Programmatically selects the closest range end date allowed by [items].
      */
     fun selectEndDate(date: LocalDate, items: DatePickerItems) {
         selectEndDate(items.coerceDate(date))
+    }
+
+    /**
+     * Programmatically selects the closest range end date to [year], [month], and [day] allowed by
+     * [items].
+     */
+    fun selectEndDate(year: Int, month: Int, day: Int, items: DatePickerItems) {
+        selectEndDate(dateFromParts(year = year, month = month, day = day), items)
     }
 
     companion object {
@@ -238,6 +444,23 @@ class DateRangePickerState(
             }
         )
     }
+}
+
+private fun dateFromParts(year: Int, month: Int, day: Int): LocalDate {
+    require(year in 1000..9999) {
+        "year must be in range [1000, 9999], but was $year"
+    }
+    require(month in 1..12) {
+        "month must be in range [1, 12], but was $month"
+    }
+    require(day >= 1) {
+        "day must be greater than or equal to 1, but was $day"
+    }
+    return LocalDate(
+        year = year,
+        month = month,
+        day = day.coerceAtMost(daysInMonth(year, month))
+    )
 }
 
 private fun orderedDateRange(startDate: LocalDate, endDate: LocalDate): DateRange =
