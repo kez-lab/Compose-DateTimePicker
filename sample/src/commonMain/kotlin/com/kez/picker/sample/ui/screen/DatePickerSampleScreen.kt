@@ -149,9 +149,9 @@ fun DatePickerSampleScreen(
                         )
                     ),
                     layout = PickerDefaults.datePickerLayout(
-                        yearWeight = 1.3f,
-                        monthWeight = 1f,
-                        dayWeight = 0.8f
+                        yearWeight = 1.05f,
+                        monthWeight = 1.55f,
+                        dayWeight = 0.75f
                     ),
                     spacingBetweenPickers = 8.dp,
                     accessibility = PickerDefaults.datePickerAccessibility(

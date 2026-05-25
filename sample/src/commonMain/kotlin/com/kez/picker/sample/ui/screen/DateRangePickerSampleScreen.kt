@@ -87,10 +87,10 @@ internal fun DateRangePickerSampleScreen(
             }
             val state = rememberDateRangePickerState(
                 items = items,
-                initialDateRange = todayRange
+                initialDateRange = monthRange
             )
             var selectedRangeText by rememberSaveable {
-                mutableStateOf("${today}..${today}")
+                mutableStateOf(monthRange.asText())
             }
 
             SelectedValueCard(
@@ -146,6 +146,11 @@ internal fun DateRangePickerSampleScreen(
                         yearItemText = { "${it}년" },
                         monthItemText = { getMonthName(it) },
                         dayItemText = { "${it}일" }
+                    ),
+                    layout = PickerDefaults.datePickerLayout(
+                        yearWeight = 1.05f,
+                        monthWeight = 1.55f,
+                        dayWeight = 0.75f
                     ),
                     spacingBetweenPickers = 8.dp,
                     startLabel = { Text("시작일") },
