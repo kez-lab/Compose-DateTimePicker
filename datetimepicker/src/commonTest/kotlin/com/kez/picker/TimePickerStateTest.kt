@@ -796,6 +796,25 @@ class TimePickerStateTest {
     }
 
     @Test
+    fun timePickerItems_coerceTimeParts_respects24HourConstraints() {
+        val items = TimePickerItems(
+            minuteItems = listOf(0, 30),
+            hour24Items = (0..23).toList(),
+            hour12Items = emptyList(),
+            periodItems = emptyList(),
+            constraints = TimePickerConstraints(
+                minTime = LocalTime(9, 30),
+                maxTime = LocalTime(17, 0)
+            )
+        )
+
+        assertEquals(
+            LocalTime(9, 30),
+            items.coerceTime(hour = 8, minute = 0, timeFormat = TimeFormat.HOUR_24)
+        )
+    }
+
+    @Test
     fun timePickerItems_contains_checks24HourMembership() {
         val items = TimePickerItems(
             minuteItems = listOf(0, 30),
@@ -855,6 +874,21 @@ class TimePickerStateTest {
 
         assertEquals(LocalTime(13, 30), items.coerceTime(LocalTime(8, 0), TimeFormat.HOUR_12))
         assertEquals(LocalTime(16, 0), items.coerceTime(LocalTime(21, 30), TimeFormat.HOUR_12))
+    }
+
+    @Test
+    fun timePickerItems_coerceTimeParts_uses12HourDisplayItems() {
+        val items = TimePickerItems(
+            minuteItems = listOf(0),
+            hour24Items = emptyList(),
+            hour12Items = listOf(1),
+            periodItems = listOf(TimePeriod.PM)
+        )
+
+        assertEquals(
+            LocalTime(13, 0),
+            items.coerceTime(hour = 13, minute = 20, timeFormat = TimeFormat.HOUR_12)
+        )
     }
 
     @Test

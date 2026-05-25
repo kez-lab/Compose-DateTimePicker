@@ -64,7 +64,8 @@ internal fun TimePickerSampleScreen(
     )
     val timeState24 = rememberTimePickerState(
         items = businessHoursItems,
-        initialTime = currentTime
+        initialHour = currentTime.hour,
+        initialMinute = currentTime.minute
     )
     val demoTime = LocalTime(hour = 9, minute = 30)
     var lastChangedHour by rememberSaveable { mutableIntStateOf(currentTime.hour) }

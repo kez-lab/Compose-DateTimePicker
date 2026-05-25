@@ -141,7 +141,8 @@ fun BusinessHoursTimePickerExample() {
     }
     val state = rememberTimePickerState(
         items = items,
-        initialTime = LocalTime(7, 30)
+        initialHour = 7,
+        initialMinute = 30
     )
 
     TimePicker(
@@ -597,10 +598,13 @@ DatePicker(
 
 `rememberTimePickerState`는 saveable state를 사용합니다. Android에서는 플랫폼 saveable registry가 제공될 때 Activity 재생성 이후에도 선택값을 복원할 수 있습니다.
 
-초기값은 `rememberTimePickerState(initialTime = LocalTime(...))` 또는 `initialHour`/`initialMinute` 파라미터로 설정합니다.
+초기값은 `rememberTimePickerState(initialTime = LocalTime(...))` 또는
+`initialHour`/`initialMinute` 파라미터로 설정합니다. 초기 시간 또는 primitive parts를 첫 composition
+전에 보정해야 한다면 같은 `items` 객체를 함께 전달하세요.
 
 상태 생성 이후 선택값을 바꾸려면 `state.selectTime(LocalTime(...))` 또는
-`state.selectTime(hour, minute)`을 호출합니다. 정수 `hour`는 `0..23` 범위의 hour-of-day로 해석됩니다.
+`state.selectTime(hour, minute)`을 호출합니다. custom item 목록이나 시간 범위를 함께 적용해야 한다면
+`items`를 받는 overload를 사용하세요. 정수 `hour`는 `0..23` 범위의 hour-of-day로 해석됩니다.
 
 custom item 값이 유효 범위를 벗어나거나, 중복이 있거나, 필수 목록이 비어 있거나, 현재 선택값이 custom 목록 또는 시간 범위 밖이면 composition 중 `IllegalArgumentException`이 발생합니다. 12시간 형식의 `PickerDefaults.timePickerItems(hour12Items = ...)`는 표시 시간 기준(`1..12`)입니다. 예를 들어 `initialHour = 13`은 `state.selectedHour == 1`, `PM`으로 변환됩니다.
 

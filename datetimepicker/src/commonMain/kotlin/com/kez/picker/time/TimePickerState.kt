@@ -108,6 +108,58 @@ fun rememberTimePickerState(
     )
 }
 
+/**
+ * Creates and remembers a [TimePickerState] whose explicit initial time parts are coerced by [items].
+ *
+ * Initial values and [items] are read when the state is first created. [initialHour] is interpreted
+ * the same way as [rememberTimePickerState] without [items]: as an hour-of-day in `0..23`, then
+ * converted to the active [timeFormat]. In 12-hour mode, [initialPeriod] can override the period
+ * derived from [initialHour].
+ *
+ * @param items Selectable values used to coerce [initialHour] and [initialMinute].
+ * @param initialHour The requested initial hour-of-day. Must be in 0..23.
+ * @param initialMinute The requested initial minute. Must be in 0..59.
+ * @param initialPeriod The requested AM/PM period when [timeFormat] is [TimeFormat.HOUR_12].
+ * @param timeFormat The time format (12-hour or 24-hour). Defaults to [TimeFormat.HOUR_24].
+ * @return A [TimePickerState] initialized to the closest selectable time.
+ */
+@Composable
+fun rememberTimePickerState(
+    items: TimePickerItems,
+    initialHour: Int,
+    initialMinute: Int,
+    initialPeriod: TimePeriod = if (initialHour >= 12) TimePeriod.PM else TimePeriod.AM,
+    timeFormat: TimeFormat = TimeFormat.HOUR_24
+): TimePickerState {
+    val rememberedInitialHour = remember { initialHour }
+    val rememberedInitialMinute = remember { initialMinute }
+    val rememberedInitialPeriod = remember { initialPeriod }
+    val rememberedItems = remember { items }
+    val requestedInitialTime = remember(
+        rememberedInitialHour,
+        rememberedInitialMinute,
+        rememberedInitialPeriod,
+        timeFormat
+    ) {
+        initialTimeFromParts(
+            initialHour = rememberedInitialHour,
+            initialMinute = rememberedInitialMinute,
+            initialPeriod = rememberedInitialPeriod,
+            timeFormat = timeFormat
+        )
+    }
+    val coercedInitialTime = remember(requestedInitialTime, rememberedItems, timeFormat) {
+        rememberedItems.coerceTime(
+            time = requestedInitialTime,
+            timeFormat = timeFormat
+        )
+    }
+    return rememberTimePickerState(
+        initialTime = coercedInitialTime,
+        timeFormat = timeFormat
+    )
+}
+
 internal fun initialHourForTimeFormat(initialHour: Int, timeFormat: TimeFormat): Int {
     require(initialHour in 0..23) {
         "initialHour must be in range [0, 23], but was $initialHour"
@@ -118,6 +170,27 @@ internal fun initialHourForTimeFormat(initialHour: Int, timeFormat: TimeFormat):
     } else {
         initialHour
     }
+}
+
+private fun initialTimeFromParts(
+    initialHour: Int,
+    initialMinute: Int,
+    initialPeriod: TimePeriod,
+    timeFormat: TimeFormat
+): LocalTime {
+    require(initialMinute in 0..59) {
+        "initialMinute must be in range [0, 59], but was $initialMinute"
+    }
+    val hour = initialHourForTimeFormat(initialHour, timeFormat)
+    val hourOfDay = when (timeFormat) {
+        TimeFormat.HOUR_24 -> hour
+        TimeFormat.HOUR_12 -> when {
+            initialPeriod == TimePeriod.AM && hour == 12 -> 0
+            initialPeriod == TimePeriod.PM && hour != 12 -> hour + 12
+            else -> hour
+        }
+    }
+    return LocalTime(hour = hourOfDay, minute = initialMinute)
 }
 
 private fun timePickerStateSaver(timeFormat: TimeFormat): Saver<TimePickerState, Any> {

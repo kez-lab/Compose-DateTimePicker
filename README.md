@@ -143,7 +143,8 @@ fun BusinessHoursTimePickerExample() {
     }
     val state = rememberTimePickerState(
         items = items,
-        initialTime = LocalTime(7, 30)
+        initialHour = 7,
+        initialMinute = 30
     )
 
     TimePicker(
@@ -600,10 +601,14 @@ is rendered only in 12-hour mode and ignored in 24-hour mode.
 
 `rememberTimePickerState` uses saveable state. On Android, selected values can be restored across Activity recreation when the platform saveable registry is available.
 
-For initial values, use either `rememberTimePickerState(initialTime = LocalTime(...))` or the explicit `initialHour`/`initialMinute` parameters.
+For initial values, use either `rememberTimePickerState(initialTime = LocalTime(...))` or the
+explicit `initialHour`/`initialMinute` parameters. Pass the same `items` object when the initial time
+or parts should be coerced before first composition.
 
 To change the selection after state creation, call `state.selectTime(LocalTime(...))` or
-`state.selectTime(hour, minute)`. The integer hour is interpreted as hour-of-day in `0..23`.
+`state.selectTime(hour, minute)`. Use the overloads that accept `items` when custom item lists or
+time bounds should be applied at the same time. The integer hour is interpreted as hour-of-day in
+`0..23`.
 
 Invalid custom item values, duplicate items, empty required lists, or current selections missing from custom lists or time bounds throw `IllegalArgumentException` during composition. In 12-hour mode, `PickerDefaults.timePickerItems(hour12Items = ...)` uses display-hour values (`1..12`): `initialHour = 13` becomes `state.selectedHour == 1` with `PM`.
 

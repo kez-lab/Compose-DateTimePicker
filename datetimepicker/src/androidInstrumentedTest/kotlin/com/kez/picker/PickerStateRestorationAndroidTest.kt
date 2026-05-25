@@ -83,6 +83,28 @@ class PickerStateRestorationAndroidTest {
     }
 
     @Test
+    fun rememberTimePickerState_withItemsAndPartsCoercesInitialSelection() {
+        lateinit var state: TimePickerState
+        val items = PickerDefaults.timePickerItems(
+            minuteItems = listOf(0, 30),
+            minTime = LocalTime(9, 30),
+            maxTime = LocalTime(17, 0)
+        )
+
+        composeRule.setContent {
+            state = rememberTimePickerState(
+                items = items,
+                initialHour = 8,
+                initialMinute = 0
+            )
+        }
+
+        composeRule.runOnIdle {
+            assertEquals(LocalTime(9, 30), state.selectedTime)
+        }
+    }
+
+    @Test
     fun timePicker_restoresSelectionIntoRenderedSemanticsAfterSaveRestore() {
         lateinit var state: TimePickerState
         val restorationTester = StateRestorationTester(composeRule)

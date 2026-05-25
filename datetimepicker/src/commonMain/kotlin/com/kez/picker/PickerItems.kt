@@ -86,6 +86,24 @@ data class TimePickerItems(
         return selectableTimesFor(timeFormat).closestTo(time)
     }
 
+    /**
+     * Returns the closest selectable time for [hour] and [minute] under [timeFormat].
+     *
+     * [hour] is interpreted as hour-of-day in `0..23`.
+     *
+     * @throws IllegalArgumentException if [hour] or [minute] is outside the supported range, or if
+     * the item lists needed by [timeFormat] are invalid.
+     */
+    fun coerceTime(
+        hour: Int,
+        minute: Int,
+        timeFormat: TimeFormat = TimeFormat.HOUR_24
+    ): LocalTime =
+        coerceTime(
+            time = LocalTime(hour = hour, minute = minute),
+            timeFormat = timeFormat
+        )
+
     internal fun hourItemsFor(timeFormat: TimeFormat): List<Int> =
         when (timeFormat) {
             TimeFormat.HOUR_12 -> hour12Items
