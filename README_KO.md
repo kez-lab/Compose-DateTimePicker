@@ -542,9 +542,10 @@ column을 필터링합니다. `DatePicker`는 `dayItems`를 선택된 연/월의
 첫 composition의 초기값에도 같은 보정이 필요하면 `remember*State(items = items, initial... = value)`를
 사용하세요.
 
-`onSelectedTimeChange`, `onSelectedDateChange`, `onSelectedYearMonthChange`는 사용자가 picker를
-조작해서 값이 바뀔 때 호출됩니다. 프로그래밍 방식의 `state.select*` 호출은 state를 직접 변경하므로,
-그 이벤트 핸들러 안에서 앱이 소유한 값도 함께 갱신하세요.
+`onSelectedTimeChange`, `onSelectedDateChange`, `onSelectedDateRangeChange`,
+`onSelectedYearMonthChange`는 사용자가 picker를 조작해서 값이 바뀔 때 호출됩니다. 프로그래밍 방식의
+`state.select*` 호출은 state를 직접 변경하므로, 그 이벤트 핸들러 안에서 앱이 소유한 값도 함께
+갱신하세요.
 
 composite picker의 column 비율을 조정해야 한다면 `PickerDefaults.timePickerLayout(...)`,
 `datePickerLayout(...)`, `yearMonthPickerLayout(...)`을 사용하세요. 특정 column의 weight를
@@ -643,6 +644,8 @@ custom item 값이 유효 범위를 벗어나거나, 중복이 있거나, 목록
 | `display` | 각 picker column의 화면 표시 텍스트 formatter입니다. | `PickerDefaults.datePickerDisplay()` |
 | `style` | 각 picker column의 시각/레이아웃 스타일입니다. | `PickerDefaults.style()` |
 | `layout` | 각 child `DatePicker`의 column weight와 표시 순서입니다. | `PickerDefaults.datePickerLayout()` |
+| `spacingBetweenPickers` | 각 child `DatePicker` 내부 column 사이의 가로 간격입니다. | `0.dp` |
+| `spacingBetweenDatePickers` | 시작/종료 child picker 사이의 세로 간격입니다. | `16.dp` |
 | `startLabel` / `endLabel` | 각 child picker 위에 표시할 선택적 label입니다. | `"Start date"` / `"End date"` |
 | `accessibility` | 시작/종료 child picker의 접근성 label입니다. | `PickerDefaults.dateRangePickerAccessibility()` |
 
