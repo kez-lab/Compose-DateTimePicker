@@ -543,8 +543,9 @@ fun ProgrammaticTimePickerExample() {
 반드시 포함해야 합니다. `TimePicker`는 선택적 `minTime`/`maxTime` 범위에 맞춰 시간, 분, 오전/오후
 column을 필터링합니다. `DatePicker`는 `dayItems`를 선택된 연/월의 최대 일수로 필터링하고,
 선택적 `minDate`/`maxDate` 범위도 함께 적용합니다. 앱이 custom list나 설정된 범위 밖의 값을 복원하거나
-요청할 수 있다면 `state.select*(value, items)` overload나 `items.coerce*` helper로 가장 가까운 선택
-가능 값으로 이동한 뒤 picker를 렌더링하세요.
+요청할 수 있다면 먼저 `items.contains(...)`로 primitive 또는 value 객체가 선택 가능한지 검사하고, 값을
+보정해야 한다면 `state.select*(value, items)` overload나 `items.coerce*` helper로 가장 가까운 선택 가능
+값으로 이동한 뒤 picker를 렌더링하세요.
 첫 composition의 초기값에도 같은 보정이 필요하면 `remember*State(items = items, initial... = value)`를
 사용하세요.
 

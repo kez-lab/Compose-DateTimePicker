@@ -360,6 +360,21 @@ class DatePickerStateTest {
     }
 
     @Test
+    fun datePickerItems_containsParts_checksMembership() {
+        val items = DatePickerItems(
+            yearItems = listOf(2024, 2026),
+            monthItems = listOf(2, 12),
+            dayItems = listOf(1, 15, 31)
+        )
+
+        assertEquals(true, items.contains(year = 2024, month = 12, day = 31))
+        assertEquals(false, items.contains(year = 2025, month = 12, day = 31))
+        assertEquals(false, items.contains(year = 2024, month = 2, day = 29))
+        assertEquals(false, items.contains(year = 2024, month = 2, day = 30))
+        assertEquals(false, items.contains(year = 2024, month = 13, day = 1))
+    }
+
+    @Test
     fun datePickerConstraints_throwsWhenMinimumIsAfterMaximum() {
         assertFailsWith<IllegalArgumentException> {
             DatePickerConstraints(
