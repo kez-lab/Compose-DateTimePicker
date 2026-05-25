@@ -44,6 +44,7 @@ kotlin {
             api(libs.compose.runtime.saveable)
             api(libs.compose.foundation)
             api(libs.compose.ui)
+            api(libs.kotlinx.collections.immutable)
             api(libs.kotlinx.datetime)
 
             implementation(libs.compose.material3)

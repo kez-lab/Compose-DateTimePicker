@@ -505,7 +505,24 @@ column을 필터링합니다. `DatePicker`는 `dayItems`를 선택된 연/월의
 
 composite picker의 column 비율을 조정해야 한다면 `PickerDefaults.timePickerLayout(...)`,
 `datePickerLayout(...)`, `yearMonthPickerLayout(...)`을 사용하세요. 특정 column의 weight를
-`null`로 전달하면 그 column은 `pickerModifier`의 명시적 width를 사용할 수 있습니다.
+`null`로 전달하면 그 column은 `pickerModifier`의 명시적 width를 사용할 수 있습니다. locale,
+제품, form 규칙에 따라 month/day/year처럼 다른 순서가 필요하면 `columnOrder`를 사용하세요.
+
+```kotlin
+DatePicker(
+    state = state,
+    layout = PickerDefaults.datePickerLayout(
+        columnOrder = listOf(
+            DatePickerColumn.MONTH,
+            DatePickerColumn.DAY,
+            DatePickerColumn.YEAR
+        )
+    )
+)
+```
+
+`columnOrder`는 각 column을 정확히 한 번씩 포함해야 합니다. `TimePicker`에서
+`TimePickerColumn.PERIOD`는 12시간 형식에서만 렌더링되고 24시간 형식에서는 무시됩니다.
 
 ### TimePicker
 
@@ -517,7 +534,7 @@ composite picker의 column 비율을 조정해야 한다면 `PickerDefaults.time
 | `items` | 선택 가능한 분, 24시간제 시간, 12시간제 표시 시간, 오전/오후 목록과 선택적 `minTime`/`maxTime` 범위입니다. | `PickerDefaults.timePickerItems()` |
 | `display` | 각 picker column의 화면 표시 텍스트 formatter입니다. | `PickerDefaults.timePickerDisplay()` |
 | `style` | 각 picker column의 시각/레이아웃 스타일입니다. | `PickerDefaults.style()` |
-| `layout` | period, hour, minute picker column의 weight입니다. 명시적 width가 필요한 column은 weight를 `null`로 설정하세요. | `PickerDefaults.timePickerLayout()` |
+| `layout` | period, hour, minute picker column의 weight와 표시 순서입니다. 명시적 width가 필요한 column은 weight를 `null`로 설정하세요. | `PickerDefaults.timePickerLayout()` |
 | `spacingBetweenPickers` | picker column 사이의 가로 간격입니다. | `0.dp` |
 | `accessibility` | 각 picker column의 접근성 label, 값 설명, custom action label입니다. | `PickerDefaults.timePickerAccessibility()` |
 
@@ -547,7 +564,7 @@ custom item 값이 유효 범위를 벗어나거나, 중복이 있거나, 필수
 | `items` | 선택 가능한 연도/월/일 목록과 선택적 `minDate`/`maxDate` inclusive 범위입니다. 값은 `1000..9999`, `1..12`, `1..31` 범위여야 합니다. | `PickerDefaults.datePickerItems()` |
 | `display` | 각 picker column의 화면 표시 텍스트 formatter입니다. | `PickerDefaults.datePickerDisplay()` |
 | `style` | 각 picker column의 시각/레이아웃 스타일입니다. | `PickerDefaults.style()` |
-| `layout` | year, month, day picker column의 weight입니다. 명시적 width가 필요한 column은 weight를 `null`로 설정하세요. | `PickerDefaults.datePickerLayout()` |
+| `layout` | year, month, day picker column의 weight와 표시 순서입니다. 명시적 width가 필요한 column은 weight를 `null`로 설정하세요. | `PickerDefaults.datePickerLayout()` |
 | `spacingBetweenPickers` | picker column 사이의 가로 간격입니다. | `0.dp` |
 | `accessibility` | 각 picker column의 접근성 label, 값 설명, custom action label입니다. | `PickerDefaults.datePickerAccessibility()` |
 
@@ -580,7 +597,7 @@ custom item 값이 유효 범위를 벗어나거나, 중복이 있거나, 목록
 | `items` | 선택 가능한 연도/월 목록과 선택적 `minYearMonth`/`maxYearMonth` 범위입니다. 값은 `1000..9999`와 `1..12` 범위여야 합니다. | `PickerDefaults.yearMonthPickerItems()` |
 | `display` | 각 picker column의 화면 표시 텍스트 formatter입니다. | `PickerDefaults.yearMonthPickerDisplay()` |
 | `style` | 각 picker column의 시각/레이아웃 스타일입니다. | `PickerDefaults.style()` |
-| `layout` | year, month picker column의 weight입니다. 명시적 width가 필요한 column은 weight를 `null`로 설정하세요. | `PickerDefaults.yearMonthPickerLayout()` |
+| `layout` | year, month picker column의 weight와 표시 순서입니다. 명시적 width가 필요한 column은 weight를 `null`로 설정하세요. | `PickerDefaults.yearMonthPickerLayout()` |
 | `spacingBetweenPickers` | picker column 사이의 가로 간격입니다. | `0.dp` |
 | `accessibility` | 각 picker column의 접근성 label, 값 설명, custom action label입니다. | `PickerDefaults.yearMonthPickerAccessibility()` |
 

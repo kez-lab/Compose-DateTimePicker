@@ -30,6 +30,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.kez.picker.PickerDefaults
+import com.kez.picker.TimePickerColumn
 import com.kez.picker.sample.getTimePeriodContentDescription
 import com.kez.picker.time.TimePicker
 import com.kez.picker.time.rememberTimePickerState
@@ -189,6 +190,14 @@ internal fun TimePickerSampleScreen(
                             hourItemText = { it.toString().padStart(2, '0') },
                             minuteItemText = { it.toString().padStart(2, '0') },
                             periodItemText = { getTimePeriodContentDescription(it) }
+                        ),
+                        // Demonstrates rendering the 12-hour picker as hour, minute, then period.
+                        layout = PickerDefaults.timePickerLayout(
+                            columnOrder = listOf(
+                                TimePickerColumn.HOUR,
+                                TimePickerColumn.MINUTE,
+                                TimePickerColumn.PERIOD
+                            )
                         ),
                         accessibility = PickerDefaults.timePickerAccessibility(
                             hourPickerLabel = "시간",

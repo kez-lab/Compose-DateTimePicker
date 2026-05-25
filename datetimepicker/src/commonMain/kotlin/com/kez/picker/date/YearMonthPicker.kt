@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.key
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -15,6 +16,7 @@ import androidx.compose.ui.unit.sp
 import com.kez.picker.Picker
 import com.kez.picker.PickerDefaults
 import com.kez.picker.PickerStyle
+import com.kez.picker.YearMonthPickerColumn
 import com.kez.picker.YearMonthPickerAccessibility
 import com.kez.picker.YearMonthPickerDisplay
 import com.kez.picker.YearMonthPickerItems
@@ -32,7 +34,7 @@ import com.kez.picker.pickerColumnModifier
  * @param items Selectable year and month item lists plus optional year/month bounds for the picker.
  * @param display Visible item text formatters for each picker column.
  * @param style Visual and layout styling for each picker column.
- * @param layout Column layout weights for each picker column.
+ * @param layout Column layout weights and visual order for each picker column.
  * @param spacingBetweenPickers The spacing between the pickers.
  * @param accessibility Accessibility labels, item descriptions, and custom action labels for each picker column.
  * @throws IllegalArgumentException if custom item lists are empty, contain duplicates, contain values outside the supported ranges, or omit the current selected year/month after year/month constraints are applied.
@@ -85,32 +87,43 @@ fun YearMonthPicker(
                     Alignment.CenterHorizontally
                 ),
             ) {
-                val yearItems = items.selectableYearItems()
-                Picker(
-                    items = yearItems,
-                    selectedItem = state.selectedYear,
-                    onSelectedItemChange = { year ->
-                        updateSelectedYearMonth { state.selectYear(year) }
-                    },
-                    modifier = pickerColumnModifier(pickerModifier, layout.yearWeight),
-                    enabled = enabled,
-                    style = style,
-                    accessibility = accessibility.year,
-                    display = display.year
-                )
-                val monthItems = items.selectableMonthItemsFor(state.selectedYear)
-                Picker(
-                    items = monthItems,
-                    selectedItem = state.selectedMonth,
-                    onSelectedItemChange = { month ->
-                        updateSelectedYearMonth { state.selectMonth(month) }
-                    },
-                    modifier = pickerColumnModifier(pickerModifier, layout.monthWeight),
-                    enabled = enabled,
-                    style = style,
-                    accessibility = accessibility.month,
-                    display = display.month
-                )
+                layout.columnOrder.forEach { column ->
+                    key(column) {
+                        when (column) {
+                            YearMonthPickerColumn.YEAR -> {
+                                val yearItems = items.selectableYearItems()
+                                Picker(
+                                    items = yearItems,
+                                    selectedItem = state.selectedYear,
+                                    onSelectedItemChange = { year ->
+                                        updateSelectedYearMonth { state.selectYear(year) }
+                                    },
+                                    modifier = pickerColumnModifier(pickerModifier, layout.yearWeight),
+                                    enabled = enabled,
+                                    style = style,
+                                    accessibility = accessibility.year,
+                                    display = display.year
+                                )
+                            }
+
+                            YearMonthPickerColumn.MONTH -> {
+                                val monthItems = items.selectableMonthItemsFor(state.selectedYear)
+                                Picker(
+                                    items = monthItems,
+                                    selectedItem = state.selectedMonth,
+                                    onSelectedItemChange = { month ->
+                                        updateSelectedYearMonth { state.selectMonth(month) }
+                                    },
+                                    modifier = pickerColumnModifier(pickerModifier, layout.monthWeight),
+                                    enabled = enabled,
+                                    style = style,
+                                    accessibility = accessibility.month,
+                                    display = display.month
+                                )
+                            }
+                        }
+                    }
+                }
             }
         }
     }
