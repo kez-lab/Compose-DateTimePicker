@@ -526,9 +526,12 @@ public final class com/kez/picker/date/DatePickerStateKt {
 
 public final class com/kez/picker/date/DateRange {
 	public static final field $stable I
+	public fun <init> (IIIIII)V
+	public synthetic fun <init> (IIIIIIILkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public fun <init> (Lkotlinx/datetime/LocalDate;Lkotlinx/datetime/LocalDate;)V
 	public final fun component1 ()Lkotlinx/datetime/LocalDate;
 	public final fun component2 ()Lkotlinx/datetime/LocalDate;
+	public final fun contains (III)Z
 	public final fun contains (Lkotlinx/datetime/LocalDate;)Z
 	public final fun copy (Lkotlinx/datetime/LocalDate;Lkotlinx/datetime/LocalDate;)Lcom/kez/picker/date/DateRange;
 	public static synthetic fun copy$default (Lcom/kez/picker/date/DateRange;Lkotlinx/datetime/LocalDate;Lkotlinx/datetime/LocalDate;ILjava/lang/Object;)Lcom/kez/picker/date/DateRange;

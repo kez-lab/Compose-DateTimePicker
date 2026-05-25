@@ -31,7 +31,8 @@ This project tracks notable user-facing and maintainer-facing changes here. The 
   overloads for apps that store primitive form values.
 - Added `DateRange`, `DateRangePickerState`, `rememberDateRangePickerState`, and `DateRangePicker`
   for ordered start/end date selection without manually wiring two `DatePicker` instances. Date
-  range state also supports year/month/day overloads for apps that store primitive form values.
+  range values and state also support year/month/day overloads for apps that store primitive form
+  values.
 - Added `DateRangePickerState` and `rememberDateRangePickerState` overloads that accept a `DateRange`
   value directly.
 - Added value-first state constructors: `TimePickerState(LocalTime, ...)`,

@@ -22,6 +22,32 @@ data class DateRange(
     val startDate: LocalDate,
     val endDate: LocalDate
 ) {
+    /**
+     * Creates a [DateRange] with explicit start and end date parts.
+     *
+     * If a day is greater than the maximum day for its year/month, it is clamped to that maximum.
+     *
+     * @param startYear The range start year. Must be in 1000..9999.
+     * @param startMonth The range start month. Must be in 1..12.
+     * @param startDay The range start day. Must be at least 1.
+     * @param endYear The range end year. Must be in 1000..9999.
+     * @param endMonth The range end month. Must be in 1..12.
+     * @param endDay The range end day. Must be at least 1.
+     * @throws IllegalArgumentException if any date part is outside its supported range, or if the
+     * resulting start date is after the resulting end date.
+     */
+    constructor(
+        startYear: Int,
+        startMonth: Int,
+        startDay: Int,
+        endYear: Int = startYear,
+        endMonth: Int = startMonth,
+        endDay: Int = startDay
+    ) : this(
+        startDate = dateFromParts(year = startYear, month = startMonth, day = startDay),
+        endDate = dateFromParts(year = endYear, month = endMonth, day = endDay)
+    )
+
     init {
         require(startDate <= endDate) {
             "startDate must be on or before endDate. startDate=$startDate, endDate=$endDate"
@@ -33,6 +59,18 @@ data class DateRange(
      */
     operator fun contains(date: LocalDate): Boolean =
         date in startDate..endDate
+
+    /**
+     * Returns whether [year], [month], and [day] are inside this inclusive range.
+     *
+     * Values outside the supported year, month, or day ranges return false. A [day] greater than the
+     * maximum valid day for [year] and [month] also returns false.
+     */
+    fun contains(year: Int, month: Int, day: Int): Boolean {
+        if (year !in 1000..9999 || month !in 1..12 || day < 1) return false
+        if (day > daysInMonth(year, month)) return false
+        return LocalDate(year = year, month = month, day = day) in this
+    }
 }
 
 /**
