@@ -829,6 +829,21 @@ class TimePickerStateTest {
     }
 
     @Test
+    fun timePickerItems_containsParts_checks24HourMembership() {
+        val items = TimePickerItems(
+            minuteItems = listOf(0, 30),
+            hour24Items = listOf(9, 17),
+            hour12Items = emptyList(),
+            periodItems = emptyList()
+        )
+
+        assertTrue(items.contains(hour = 17, minute = 30, timeFormat = TimeFormat.HOUR_24))
+        assertTrue(!items.contains(hour = 14, minute = 30, timeFormat = TimeFormat.HOUR_24))
+        assertTrue(!items.contains(hour = 17, minute = 45, timeFormat = TimeFormat.HOUR_24))
+        assertTrue(!items.contains(hour = 24, minute = 0, timeFormat = TimeFormat.HOUR_24))
+    }
+
+    @Test
     fun timePickerItems_contains_respectsTimeConstraints() {
         val items = TimePickerItems(
             minuteItems = listOf(0, 30),
@@ -903,6 +918,20 @@ class TimePickerStateTest {
         assertTrue(items.contains(LocalTime(9, 30), TimeFormat.HOUR_12))
         assertTrue(!items.contains(LocalTime(21, 30), TimeFormat.HOUR_12))
         assertTrue(!items.contains(LocalTime(9, 45), TimeFormat.HOUR_12))
+    }
+
+    @Test
+    fun timePickerItems_containsParts_checks12HourDisplayAndPeriodMembership() {
+        val items = TimePickerItems(
+            minuteItems = listOf(0, 30),
+            hour24Items = emptyList(),
+            hour12Items = listOf(9),
+            periodItems = listOf(TimePeriod.AM)
+        )
+
+        assertTrue(items.contains(hour = 9, minute = 30, timeFormat = TimeFormat.HOUR_12))
+        assertTrue(!items.contains(hour = 21, minute = 30, timeFormat = TimeFormat.HOUR_12))
+        assertTrue(!items.contains(hour = 9, minute = 45, timeFormat = TimeFormat.HOUR_12))
     }
 
     @Test

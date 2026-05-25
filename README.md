@@ -546,8 +546,9 @@ item lists are strict: they must be non-empty, distinct, within the supported va
 current selected value. `TimePicker` filters hour, minute, and AM/PM columns through optional
 `minTime`/`maxTime` bounds. `DatePicker` filters `dayItems` by the selected year/month maximum day and
 optional `minDate`/`maxDate` bounds. If an app can restore or request values outside a custom list or
-configured bounds, call the `state.select*(value, items)` overload or `items.coerce*` helper to move
-to the closest selectable value before rendering the picker.
+configured bounds, call `items.contains(...)` to check primitive or value objects before rejecting a
+value, or call the `state.select*(value, items)` overload or `items.coerce*` helper to move to the
+closest selectable value before rendering the picker.
 For first composition, use `remember*State(items = items, initial... = value)` to apply the same coercion
 before the picker is rendered.
 

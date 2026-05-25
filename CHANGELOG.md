@@ -37,8 +37,8 @@ This project tracks notable user-facing and maintainer-facing changes here. The 
 - Added value-first state constructors: `TimePickerState(LocalTime, ...)`,
   `DatePickerState(LocalDate)`, `YearMonthPickerState(YearMonth)`, and
   `YearMonthPickerState(LocalDate)`.
-- Added `contains(...)` predicates to picker item option objects so apps can check whether a value is
-  already directly selectable before deciding to reject or coerce it.
+- Added `contains(...)` predicates to picker item option objects so apps can check whether a value
+  object or primitive parts are already directly selectable before deciding to reject or coerce them.
 - Added `PickerDefaults.itemText(...)` plus `TimePickerDisplay`, `DatePickerDisplay`, and
   `YearMonthPickerDisplay` option objects so apps can customize visible item text separately from
   accessibility descriptions.

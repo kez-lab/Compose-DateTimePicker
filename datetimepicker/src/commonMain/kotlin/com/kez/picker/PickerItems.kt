@@ -73,6 +73,24 @@ data class TimePickerItems(
     }
 
     /**
+     * Returns whether [hour] and [minute] are directly selectable under [timeFormat].
+     *
+     * [hour] is interpreted as hour-of-day in `0..23`. Values outside the supported hour or minute
+     * ranges return false.
+     */
+    fun contains(
+        hour: Int,
+        minute: Int,
+        timeFormat: TimeFormat = TimeFormat.HOUR_24
+    ): Boolean {
+        if (hour !in 0..23 || minute !in 0..59) return false
+        return contains(
+            time = LocalTime(hour = hour, minute = minute),
+            timeFormat = timeFormat
+        )
+    }
+
+    /**
      * Returns the closest selectable time for [time] under [timeFormat].
      *
      * This is useful before calling [com.kez.picker.time.TimePickerState.selectTime] when app-owned
@@ -245,6 +263,18 @@ data class DatePickerItems(
                 date.day <= daysInMonth(date.year, month) &&
                 date.day in dayItems &&
                 constraints.contains(date)
+    }
+
+    /**
+     * Returns whether [year], [month], and [day] are directly selectable.
+     *
+     * Values outside the supported year, month, or day ranges return false. A [day] greater than the
+     * maximum valid day for [year] and [month] also returns false.
+     */
+    fun contains(year: Int, month: Int, day: Int): Boolean {
+        if (year !in 1000..9999 || month !in 1..12 || day < 1) return false
+        if (day > daysInMonth(year, month)) return false
+        return contains(LocalDate(year = year, month = month, day = day))
     }
 
     /**
