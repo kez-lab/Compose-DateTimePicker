@@ -9,7 +9,10 @@ import androidx.compose.ui.test.isSelected
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithText
 import com.kez.picker.date.DatePicker
+import com.kez.picker.date.DateRangePicker
+import com.kez.picker.date.DateRangePickerState
 import com.kez.picker.date.rememberDatePickerState
+import com.kez.picker.date.rememberDateRangePickerState
 import com.kez.picker.date.rememberYearMonthPickerState
 import com.kez.picker.date.YearMonthPicker
 import com.kez.picker.time.TimePicker
@@ -108,6 +111,58 @@ class PickerDisplayAndroidTest {
         composeRule.onNodeWithText("2026년").assertExists()
         composeRule.onNodeWithText("5월").assertExists()
         composeRule.onNodeWithText("20일").assertExists()
+    }
+
+    @Test
+    fun dateRangePicker_startSelectionChangeKeepsEndPickerSelectionRendered() {
+        lateinit var state: DateRangePickerState
+        val items = PickerDefaults.datePickerItems(
+            yearItems = listOf(2026),
+            monthItems = listOf(5),
+            dayItems = listOf(24, 25, 26)
+        )
+
+        composeRule.setContent {
+            state = rememberDateRangePickerState(
+                items = items,
+                initialStartDate = LocalDate(year = 2026, month = 5, day = 24),
+                initialEndDate = LocalDate(year = 2026, month = 5, day = 26)
+            )
+
+            DateRangePicker(
+                state = state,
+                items = items,
+                style = PickerDefaults.style(visibleItemsCount = 3),
+                startLabel = null,
+                endLabel = null,
+                accessibility = PickerDefaults.dateRangePickerAccessibility(
+                    start = PickerDefaults.datePickerAccessibility(
+                        yearPickerLabel = "Start year",
+                        monthPickerLabel = "Start month",
+                        dayPickerLabel = "Start day",
+                        dayItemContentDescription = { "$it day" }
+                    ),
+                    end = PickerDefaults.datePickerAccessibility(
+                        yearPickerLabel = "End year",
+                        monthPickerLabel = "End month",
+                        dayPickerLabel = "End day",
+                        dayItemContentDescription = { "$it day" }
+                    )
+                )
+            )
+        }
+
+        composeRule.runOnIdle {
+            state.selectStartDate(LocalDate(year = 2026, month = 5, day = 25), items)
+        }
+        composeRule.waitForIdle()
+
+        composeRule
+            .onNode(hasContentDescription("Start day: 25 day") and isSelected())
+            .assertExists()
+        composeRule
+            .onNode(hasContentDescription("End day: 26 day") and isSelected())
+            .assertExists()
     }
 
     @Test

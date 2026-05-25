@@ -7,6 +7,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -77,42 +78,46 @@ fun DateRangePicker(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(spacingBetweenDatePickers)
     ) {
-        DateRangePickerSection(label = startLabel) {
-            DatePicker(
-                pickerModifier = pickerModifier,
-                state = state.startDatePickerState,
-                onSelectedDateChange = { date: LocalDate ->
-                    updateSelectedDateRange {
-                        state.selectStartDate(date, items)
-                    }
-                },
-                enabled = enabled,
-                items = items,
-                display = display,
-                style = style,
-                layout = layout,
-                spacingBetweenPickers = spacingBetweenPickers,
-                accessibility = accessibility.start
-            )
+        key("start-date-picker") {
+            DateRangePickerSection(label = startLabel) {
+                DatePicker(
+                    pickerModifier = pickerModifier,
+                    state = state.startDatePickerState,
+                    onSelectedDateChange = { date: LocalDate ->
+                        updateSelectedDateRange {
+                            state.selectStartDate(date, items)
+                        }
+                    },
+                    enabled = enabled,
+                    items = items,
+                    display = display,
+                    style = style,
+                    layout = layout,
+                    spacingBetweenPickers = spacingBetweenPickers,
+                    accessibility = accessibility.start
+                )
+            }
         }
 
-        DateRangePickerSection(label = endLabel) {
-            DatePicker(
-                pickerModifier = pickerModifier,
-                state = state.endDatePickerState,
-                onSelectedDateChange = { date: LocalDate ->
-                    updateSelectedDateRange {
-                        state.selectEndDate(date, items)
-                    }
-                },
-                enabled = enabled,
-                items = items,
-                display = display,
-                style = style,
-                layout = layout,
-                spacingBetweenPickers = spacingBetweenPickers,
-                accessibility = accessibility.end
-            )
+        key("end-date-picker") {
+            DateRangePickerSection(label = endLabel) {
+                DatePicker(
+                    pickerModifier = pickerModifier,
+                    state = state.endDatePickerState,
+                    onSelectedDateChange = { date: LocalDate ->
+                        updateSelectedDateRange {
+                            state.selectEndDate(date, items)
+                        }
+                    },
+                    enabled = enabled,
+                    items = items,
+                    display = display,
+                    style = style,
+                    layout = layout,
+                    spacingBetweenPickers = spacingBetweenPickers,
+                    accessibility = accessibility.end
+                )
+            }
         }
     }
 }

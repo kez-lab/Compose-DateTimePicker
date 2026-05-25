@@ -46,7 +46,7 @@ object PickerDefaults {
     /**
      * Default padding around each item.
      */
-    val ItemPadding: PaddingValues = PaddingValues(horizontal = 8.dp, vertical = 12.dp)
+    val ItemPadding: PaddingValues = PaddingValues(horizontal = 8.dp, vertical = 14.dp)
 
     /**
      * Default thickness of the dividers.

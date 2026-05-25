@@ -54,6 +54,7 @@ import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.lerp
 import androidx.compose.ui.unit.sp
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -68,6 +69,15 @@ import kotlin.math.max
  * while still providing a virtually infinite scrolling experience.
  */
 private const val INFINITE_SCROLL_MULTIPLIER = 1000
+
+private val ItemHeightProbeTexts = listOf(
+    "0123456789",
+    "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz",
+    "가나다라마바사아자차카타파하",
+    "년월일"
+)
+
+private val ItemHeightSafetyPadding = 4.dp
 
 /**
  * Information passed to custom [Picker] item content.
@@ -206,8 +216,9 @@ fun <T : Any> Picker(
     }
 
     val measuredTextHeight = remember(items, display, textStyle, selectedTextStyle, textMeasurer) {
-        items.maxOf { item ->
-            val text = AnnotatedString(display.itemText(item))
+        val itemTexts = items.map(display.itemText)
+        (itemTexts + ItemHeightProbeTexts).maxOf { itemText ->
+            val text = AnnotatedString(itemText)
             max(
                 textMeasurer.measure(
                     text = text,
@@ -230,7 +241,8 @@ fun <T : Any> Picker(
     val itemHeight = with(density) {
         measuredTextHeight.toDp() +
             itemPadding.calculateTopPadding() +
-            itemPadding.calculateBottomPadding()
+            itemPadding.calculateBottomPadding() +
+            ItemHeightSafetyPadding
     }
     val itemHeightPx = with(density) { itemHeight.toPx() }
 
@@ -402,120 +414,122 @@ fun <T : Any> Picker(
 
         val sharedInteractionSource = remember { MutableInteractionSource() }
 
-        LazyColumn(
-            state = listState,
-            flingBehavior = flingBehavior,
-            userScrollEnabled = enabled,
-            horizontalAlignment = horizontalAlignment,
-            modifier = Modifier
-                .align(Alignment.Center)
-                .fillMaxWidth()
-                .height(itemHeight * visibleItemsCount)
-                .fadingEdge(fadingEdgeGradient)
-        ) {
-            items(
-                listScrollCount,
-                key = { it },
-            ) { index ->
-                val item = getItem(index)
-                val isSelected = item == selectedItem
-                val fraction by remember(listState, index, itemHeightPx, visibleItemsMiddle) {
-                    derivedStateOf {
-                        val currentItem =
-                            listState.layoutInfo.visibleItemsInfo.firstOrNull { it.key == index }
-                        currentItem?.offset?.let { offset ->
-                            if (itemHeightPx <= 0f) {
-                                fallbackDistanceFractionFor(index)
-                            } else {
-                                val fraction =
-                                    (offset - itemHeightPx * visibleItemsMiddle) / itemHeightPx
-                                abs(fraction.coerceIn(-1f, 1f))
-                            }
-                        } ?: fallbackDistanceFractionFor(index)
-                    }
-                }
-
-                val itemText = item?.let(display.itemText) ?: ""
-                val itemDescription = item?.let(accessibility.itemContentDescription) ?: ""
-                val itemContentColor = lerp(
-                    start = selectedTextColor,
-                    stop = textColor,
-                    fraction = fraction
-                )
-                val itemTextStyle = textStyle.copy(
-                    fontSize = lerp(
-                        start = selectedTextStyle.fontSize,
-                        stop = textStyle.fontSize,
-                        fraction
-                    ),
-                    color = itemContentColor,
-                )
-                val itemIndex = if (isInfinity) {
-                    index % items.size
-                } else {
-                    (index - visibleItemsMiddle).coerceAtLeast(0)
-                }
-
-                Box(
-                    modifier = Modifier
-                        .height(itemHeight)
-                        .fillMaxWidth()
-                        .semantics {
-                            if (item != null) {
-                                role = Role.Button
-                                // Enhanced content description with picker context
-                                contentDescription =
-                                    pickerAccessibilityDescription(normalizedPickerLabel, itemDescription)
-                                selected = isSelected
-                                collectionItemInfo = CollectionItemInfo(
-                                    rowIndex = itemIndex,
-                                    rowSpan = 1,
-                                    columnIndex = 0,
-                                    columnSpan = 1
-                                )
-                            }
+        key(adjustedItems, listScrollCount) {
+            LazyColumn(
+                state = listState,
+                flingBehavior = flingBehavior,
+                userScrollEnabled = enabled,
+                horizontalAlignment = horizontalAlignment,
+                modifier = Modifier
+                    .align(Alignment.Center)
+                    .fillMaxWidth()
+                    .height(itemHeight * visibleItemsCount)
+                    .fadingEdge(fadingEdgeGradient)
+            ) {
+                items(
+                    listScrollCount,
+                    key = { it },
+                ) { index ->
+                    val item = getItem(index)
+                    val isSelected = item == selectedItem
+                    val fraction by remember(listState, index, itemHeightPx, visibleItemsMiddle) {
+                        derivedStateOf {
+                            val currentItem =
+                                listState.layoutInfo.visibleItemsInfo.firstOrNull { it.key == index }
+                            currentItem?.offset?.let { offset ->
+                                if (itemHeightPx <= 0f) {
+                                    fallbackDistanceFractionFor(index)
+                                } else {
+                                    val fraction =
+                                        (offset - itemHeightPx * visibleItemsMiddle) / itemHeightPx
+                                    abs(fraction.coerceIn(-1f, 1f))
+                                }
+                            } ?: fallbackDistanceFractionFor(index)
                         }
-                        .clickable(
-                            enabled = enabled && item != null,
-                            role = Role.Button,
-                            indication = null,
-                            interactionSource = sharedInteractionSource,
-                            onClick = {
-                                val currentCenterIndex =
-                                    listState.firstVisibleItemIndex + visibleItemsMiddle
-                                if (index != currentCenterIndex) {
-                                    scope.launch {
-                                        val targetIndex = (index - visibleItemsMiddle)
-                                            .coerceIn(0, listScrollCount - 1)
-                                        listState.animateScrollToItem(targetIndex)
-                                    }
+                    }
+
+                    val itemText = item?.let(display.itemText) ?: ""
+                    val itemDescription = item?.let(accessibility.itemContentDescription) ?: ""
+                    val itemContentColor = lerp(
+                        start = selectedTextColor,
+                        stop = textColor,
+                        fraction = fraction
+                    )
+                    val itemTextStyle = textStyle.copy(
+                        fontSize = lerp(
+                            start = selectedTextStyle.fontSize,
+                            stop = textStyle.fontSize,
+                            fraction
+                        ),
+                        color = itemContentColor,
+                    )
+                    val itemIndex = if (isInfinity) {
+                        index % items.size
+                    } else {
+                        (index - visibleItemsMiddle).coerceAtLeast(0)
+                    }
+
+                    Box(
+                        modifier = Modifier
+                            .height(itemHeight)
+                            .fillMaxWidth()
+                            .semantics {
+                                if (item != null) {
+                                    role = Role.Button
+                                    // Enhanced content description with picker context
+                                    contentDescription =
+                                        pickerAccessibilityDescription(normalizedPickerLabel, itemDescription)
+                                    selected = isSelected
+                                    collectionItemInfo = CollectionItemInfo(
+                                        rowIndex = itemIndex,
+                                        rowSpan = 1,
+                                        columnIndex = 0,
+                                        columnSpan = 1
+                                    )
                                 }
                             }
-                        )
-                        .padding(itemPadding),
-                    contentAlignment = Alignment.Center
-                ) {
-                    if (item != null) {
-                        if (content != null) {
-                            content(
-                                PickerItemScope(
-                                    item = item,
-                                    text = itemText,
-                                    isSelected = isSelected,
-                                    isEnabled = enabled,
-                                    distanceFraction = fraction,
-                                    textStyle = itemTextStyle,
-                                    contentColor = itemContentColor
+                            .clickable(
+                                enabled = enabled && item != null,
+                                role = Role.Button,
+                                indication = null,
+                                interactionSource = sharedInteractionSource,
+                                onClick = {
+                                    val currentCenterIndex =
+                                        listState.firstVisibleItemIndex + visibleItemsMiddle
+                                    if (index != currentCenterIndex) {
+                                        scope.launch {
+                                            val targetIndex = (index - visibleItemsMiddle)
+                                                .coerceIn(0, listScrollCount - 1)
+                                            listState.animateScrollToItem(targetIndex)
+                                        }
+                                    }
+                                }
+                            )
+                            .padding(itemPadding),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        if (item != null) {
+                            if (content != null) {
+                                content(
+                                    PickerItemScope(
+                                        item = item,
+                                        text = itemText,
+                                        isSelected = isSelected,
+                                        isEnabled = enabled,
+                                        distanceFraction = fraction,
+                                        textStyle = itemTextStyle,
+                                        contentColor = itemContentColor
+                                    )
                                 )
-                            )
-                        } else {
-                            Text(
-                                text = itemText,
-                                maxLines = 1,
-                                overflow = TextOverflow.Ellipsis,
-                                style = itemTextStyle,
-                                textAlign = TextAlign.Center
-                            )
+                            } else {
+                                Text(
+                                    text = itemText,
+                                    maxLines = 1,
+                                    overflow = TextOverflow.Ellipsis,
+                                    style = itemTextStyle,
+                                    textAlign = TextAlign.Center
+                                )
+                            }
                         }
                     }
                 }

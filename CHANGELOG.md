@@ -48,6 +48,9 @@ This project tracks notable user-facing and maintainer-facing changes here. The 
   one-day range that made end-date movement look like a reset on the first start-date change.
 - Fixed picker row height calculation and default vertical item padding so selected text no longer
   appears clipped against the selection dividers.
+- Fixed picker row height consistency across mixed Korean, numeric, and Latin font fallback so
+  composite picker dividers stay aligned and constrained day columns do not disappear during item
+  list changes.
 - Simplified the basic date, date range, and year/month samples so the picker state is the single
   source of truth for displayed selections.
 - Added inclusive `DatePicker` bounds through `DatePickerConstraints` and
