@@ -60,6 +60,24 @@ fun rememberDateRangePickerState(
 }
 
 /**
+ * Creates and remembers a [DateRangePickerState] from an initial [DateRange].
+ *
+ * Initial values are read when the state is first created.
+ *
+ * @param initialDateRange The initial range to be selected.
+ * @return A [DateRangePickerState] initialized with [initialDateRange].
+ */
+@Composable
+fun rememberDateRangePickerState(
+    initialDateRange: DateRange
+): DateRangePickerState {
+    return rememberDateRangePickerState(
+        initialStartDate = initialDateRange.startDate,
+        initialEndDate = initialDateRange.endDate
+    )
+}
+
+/**
  * Creates and remembers a [DateRangePickerState] with explicit start and end date parts.
  *
  * Initial values are read when the state is first created. If a day is greater than the maximum day
@@ -141,6 +159,27 @@ fun rememberDateRangePickerState(
 }
 
 /**
+ * Creates and remembers a [DateRangePickerState] from an initial [DateRange] coerced by [items].
+ *
+ * Initial values and [items] are read when the state is first created.
+ *
+ * @param items Selectable values used to coerce [initialDateRange].
+ * @param initialDateRange The requested initial range.
+ * @return A [DateRangePickerState] initialized to the closest selectable date range.
+ */
+@Composable
+fun rememberDateRangePickerState(
+    items: DatePickerItems,
+    initialDateRange: DateRange
+): DateRangePickerState {
+    return rememberDateRangePickerState(
+        items = items,
+        initialStartDate = initialDateRange.startDate,
+        initialEndDate = initialDateRange.endDate
+    )
+}
+
+/**
  * Creates and remembers a [DateRangePickerState] with explicit start and end date parts coerced by
  * [items].
  *
@@ -218,6 +257,14 @@ class DateRangePickerState(
     initialEndDate: LocalDate
 ) {
     /**
+     * Creates a [DateRangePickerState] from [initialDateRange].
+     */
+    constructor(initialDateRange: DateRange) : this(
+        initialStartDate = initialDateRange.startDate,
+        initialEndDate = initialDateRange.endDate
+    )
+
+    /**
      * Creates a [DateRangePickerState] with explicit start and end date parts.
      *
      * If a day is greater than the maximum day for its year/month, it is clamped to that maximum.
@@ -284,6 +331,16 @@ class DateRangePickerState(
     }
 
     /**
+     * Programmatically selects [dateRange].
+     */
+    fun selectDateRange(dateRange: DateRange) {
+        selectDateRange(
+            startDate = dateRange.startDate,
+            endDate = dateRange.endDate
+        )
+    }
+
+    /**
      * Programmatically selects the range from explicit start and end date parts.
      *
      * If a day is greater than the maximum day for its year/month, it is clamped to that maximum.
@@ -318,6 +375,17 @@ class DateRangePickerState(
         selectDateRange(
             startDate = coercedRange.startDate,
             endDate = coercedRange.endDate
+        )
+    }
+
+    /**
+     * Programmatically selects the closest date range to [dateRange] allowed by [items].
+     */
+    fun selectDateRange(dateRange: DateRange, items: DatePickerItems) {
+        selectDateRange(
+            startDate = dateRange.startDate,
+            endDate = dateRange.endDate,
+            items = items
         )
     }
 
