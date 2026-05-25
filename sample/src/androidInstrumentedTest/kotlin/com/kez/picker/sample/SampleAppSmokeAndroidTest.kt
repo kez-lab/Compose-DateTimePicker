@@ -11,6 +11,7 @@ import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performScrollTo
+import com.kez.picker.util.currentDate
 import org.junit.Rule
 import org.junit.Test
 
@@ -55,6 +56,28 @@ class SampleAppSmokeAndroidTest {
     }
 
     @Test
+    fun dateRangePickerMenuAction_updatesSelectedRangeFromButtons() {
+        val today = currentDate()
+
+        composeRule
+            .onNodeWithTag("sample-menu-date-range-picker")
+            .performScrollTo()
+            .performClick()
+
+        composeRule
+            .onNodeWithText("DateRangePicker Sample")
+            .assertIsDisplayed()
+
+        composeRule
+            .onNodeWithText("Today only")
+            .performClick()
+
+        composeRule
+            .onNode(hasContentDescriptionStartingWith("Selected range, $today..$today"))
+            .assertIsDisplayed()
+    }
+
+    @Test
     fun integratedMenuAction_opensAccessibleSelectionSummaryAndReturnsHome() {
         composeRule
             .onNodeWithTag("sample-menu-integrated")
@@ -83,6 +106,7 @@ private val sampleMenuTags = listOf(
     "sample-menu-time-picker",
     "sample-menu-year-month-picker",
     "sample-menu-date-picker",
+    "sample-menu-date-range-picker",
     "sample-menu-bottom-sheet",
     "sample-menu-background-style"
 )
