@@ -348,7 +348,9 @@ public final class com/kez/picker/TimePickerItems {
 	public static final field $stable I
 	public fun <init> (Ljava/util/List;Ljava/util/List;Ljava/util/List;Ljava/util/List;Lcom/kez/picker/TimePickerConstraints;)V
 	public synthetic fun <init> (Ljava/util/List;Ljava/util/List;Ljava/util/List;Ljava/util/List;Lcom/kez/picker/TimePickerConstraints;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun coerceTime (IILcom/kez/picker/util/TimeFormat;)Lkotlinx/datetime/LocalTime;
 	public final fun coerceTime (Lkotlinx/datetime/LocalTime;Lcom/kez/picker/util/TimeFormat;)Lkotlinx/datetime/LocalTime;
+	public static synthetic fun coerceTime$default (Lcom/kez/picker/TimePickerItems;IILcom/kez/picker/util/TimeFormat;ILjava/lang/Object;)Lkotlinx/datetime/LocalTime;
 	public static synthetic fun coerceTime$default (Lcom/kez/picker/TimePickerItems;Lkotlinx/datetime/LocalTime;Lcom/kez/picker/util/TimeFormat;ILjava/lang/Object;)Lkotlinx/datetime/LocalTime;
 	public final fun component1 ()Ljava/util/List;
 	public final fun component2 ()Ljava/util/List;
@@ -703,6 +705,7 @@ public final class com/kez/picker/time/TimePickerState$Companion {
 
 public final class com/kez/picker/time/TimePickerStateKt {
 	public static final fun rememberTimePickerState (IILcom/kez/picker/util/TimePeriod;Lcom/kez/picker/util/TimeFormat;Landroidx/compose/runtime/Composer;II)Lcom/kez/picker/time/TimePickerState;
+	public static final fun rememberTimePickerState (Lcom/kez/picker/TimePickerItems;IILcom/kez/picker/util/TimePeriod;Lcom/kez/picker/util/TimeFormat;Landroidx/compose/runtime/Composer;II)Lcom/kez/picker/time/TimePickerState;
 	public static final fun rememberTimePickerState (Lcom/kez/picker/TimePickerItems;Lkotlinx/datetime/LocalTime;Lcom/kez/picker/util/TimeFormat;Landroidx/compose/runtime/Composer;II)Lcom/kez/picker/time/TimePickerState;
 	public static final fun rememberTimePickerState (Lkotlinx/datetime/LocalTime;Lcom/kez/picker/util/TimeFormat;Landroidx/compose/runtime/Composer;II)Lcom/kez/picker/time/TimePickerState;
 }
