@@ -247,6 +247,18 @@ data class DatePickerItems(
         return LocalDate(year = year, month = monthFor(month), day = day)
     }
 
+    /**
+     * Returns the closest selectable date for [year], [month], and [day].
+     *
+     * If [day] is greater than the maximum day for [year] and [month], it is clamped before applying
+     * this item's selectable values and date bounds.
+     *
+     * @throws IllegalArgumentException if [year] or [month] is outside the supported range, if [day]
+     * is less than 1, or if the configured item lists are invalid.
+     */
+    fun coerceDate(year: Int, month: Int, day: Int): LocalDate =
+        coerceDate(dateFromParts(year = year, month = month, day = day))
+
     internal fun selectableYearItems(): List<Int> =
         yearItems.filter { year ->
             monthItems.any { month -> selectableDayItemsFor(year = year, month = month).isNotEmpty() }
@@ -433,6 +445,23 @@ private fun displayHourFor(hourOfDay: Int): Int {
 
 private fun monthFor(monthNumber: Int): Month =
     Month.entries.first { it.number == monthNumber }
+
+private fun dateFromParts(year: Int, month: Int, day: Int): LocalDate {
+    require(year in 1000..9999) {
+        "year must be in range [1000, 9999], but was $year"
+    }
+    require(month in 1..12) {
+        "month must be in range [1, 12], but was $month"
+    }
+    require(day >= 1) {
+        "day must be greater than or equal to 1, but was $day"
+    }
+    return LocalDate(
+        year = year,
+        month = month,
+        day = day.coerceAtMost(daysInMonth(year, month))
+    )
+}
 
 private fun periodFor(hourOfDay: Int): TimePeriod =
     if (hourOfDay >= 12) TimePeriod.PM else TimePeriod.AM

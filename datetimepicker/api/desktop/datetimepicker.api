@@ -60,6 +60,7 @@ public final class com/kez/picker/DatePickerItems {
 	public static final field $stable I
 	public fun <init> (Ljava/util/List;Ljava/util/List;Ljava/util/List;Lcom/kez/picker/DatePickerConstraints;)V
 	public synthetic fun <init> (Ljava/util/List;Ljava/util/List;Ljava/util/List;Lcom/kez/picker/DatePickerConstraints;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun coerceDate (III)Lkotlinx/datetime/LocalDate;
 	public final fun coerceDate (Lkotlinx/datetime/LocalDate;)Lkotlinx/datetime/LocalDate;
 	public final fun component1 ()Ljava/util/List;
 	public final fun component2 ()Ljava/util/List;
@@ -513,6 +514,7 @@ public final class com/kez/picker/date/DatePickerState$Companion {
 
 public final class com/kez/picker/date/DatePickerStateKt {
 	public static final fun rememberDatePickerState (IIILandroidx/compose/runtime/Composer;I)Lcom/kez/picker/date/DatePickerState;
+	public static final fun rememberDatePickerState (Lcom/kez/picker/DatePickerItems;IIILandroidx/compose/runtime/Composer;I)Lcom/kez/picker/date/DatePickerState;
 	public static final fun rememberDatePickerState (Lcom/kez/picker/DatePickerItems;Lkotlinx/datetime/LocalDate;Landroidx/compose/runtime/Composer;II)Lcom/kez/picker/date/DatePickerState;
 	public static final fun rememberDatePickerState (Lkotlinx/datetime/LocalDate;Landroidx/compose/runtime/Composer;II)Lcom/kez/picker/date/DatePickerState;
 }

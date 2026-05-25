@@ -17,6 +17,9 @@ This project tracks notable user-facing and maintainer-facing changes here. The 
 - Added `TimePickerItems.coerceTime(...)`, `DatePickerItems.coerceDate(...)`, and
   `YearMonthPickerItems.coerceYearMonth(...)` plus matching state-selection overloads so apps can
   move restored or preset values to the closest selectable value before rendering custom item lists.
+- Added `DatePickerItems.coerceDate(year, month, day)` and
+  `rememberDatePickerState(items = ..., initialYear = ..., initialMonth = ..., initialDay = ...)`
+  for apps that store date form state as primitive fields.
 - Added `remember*State(items = ..., initial... = ...)` overloads so initial picker state can be
   coerced by the same custom item lists before first composition.
 - Added `rememberYearMonthPickerState(initialYearMonth = ...)` and the matching `items` overload so

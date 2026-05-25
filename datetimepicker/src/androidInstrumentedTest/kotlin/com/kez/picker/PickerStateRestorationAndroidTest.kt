@@ -157,6 +157,31 @@ class PickerStateRestorationAndroidTest {
     }
 
     @Test
+    fun rememberDatePickerState_withItemsAndPartsCoercesInitialSelection() {
+        lateinit var state: DatePickerState
+        val items = PickerDefaults.datePickerItems(
+            yearItems = listOf(2026),
+            monthItems = (1..12).toList(),
+            dayItems = (1..31).toList(),
+            minDate = LocalDate(year = 2026, month = 5, day = 10),
+            maxDate = LocalDate(year = 2026, month = 6, day = 20)
+        )
+
+        composeRule.setContent {
+            state = rememberDatePickerState(
+                items = items,
+                initialYear = 2026,
+                initialMonth = 1,
+                initialDay = 1
+            )
+        }
+
+        composeRule.runOnIdle {
+            assertEquals(LocalDate(year = 2026, month = 5, day = 10), state.selectedDate)
+        }
+    }
+
+    @Test
     fun datePicker_restoresSelectionIntoRenderedSemanticsAfterSaveRestore() {
         lateinit var state: DatePickerState
         val restorationTester = StateRestorationTester(composeRule)

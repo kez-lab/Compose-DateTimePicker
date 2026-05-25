@@ -464,6 +464,20 @@ class DatePickerStateTest {
     }
 
     @Test
+    fun datePickerItems_coerceDateParts_clampsInvalidDayBeforeCoercing() {
+        val items = DatePickerItems(
+            yearItems = listOf(2025),
+            monthItems = listOf(2),
+            dayItems = listOf(15, 28)
+        )
+
+        assertEquals(
+            LocalDate(year = 2025, month = Month.FEBRUARY, day = 28),
+            items.coerceDate(year = 2025, month = 2, day = 31)
+        )
+    }
+
+    @Test
     fun datePickerState_selectDateWithItems_coercesSelection() {
         val state = DatePickerState(initialYear = 2024, initialMonth = 2, initialDay = 1)
         val items = DatePickerItems(

@@ -163,6 +163,7 @@ import com.kez.picker.date.DatePicker
 import com.kez.picker.date.rememberDatePickerState
 import com.kez.picker.util.currentDate
 import kotlinx.datetime.LocalDate
+import kotlinx.datetime.number
 
 @Composable
 fun DatePickerExample() {
@@ -189,7 +190,9 @@ fun DatePickerExample() {
     }
     val state = rememberDatePickerState(
         items = items,
-        initialDate = initialDate
+        initialYear = initialDate.year,
+        initialMonth = initialDate.month.number,
+        initialDay = initialDate.day
     )
 
     DatePicker(
@@ -206,8 +209,10 @@ fun DatePickerExample() {
 
 `PickerDefaults.*Items(...)`로 선택 가능한 목록이나 날짜 범위를 제한할 때는 기억된 초기값 또는
 복원된 state 값이 해당 규칙 안에 들어가도록 함께 설계하세요. 첫 composition 전에 보정해야 한다면
-`rememberDatePickerState(items = items, initialDate = value)`를 사용하세요. composition 이후 외부
-날짜가 바뀐다면 새 `initialDate` 인자에 의존하지 말고 `state.selectDate(newDate, items)`를 호출하세요.
+`rememberDatePickerState(items = items, initialDate = value)` 또는
+`rememberDatePickerState(items = items, initialYear = year, initialMonth = month, initialDay = day)`를
+사용하세요. composition 이후 외부 날짜가 바뀐다면 새 초기값 인자에 의존하지 말고
+`state.selectDate(newDate, items)` 또는 `state.selectDate(year, month, day, items)`를 호출하세요.
 
 ### DateRangePicker
 
@@ -624,12 +629,14 @@ custom item 값이 유효 범위를 벗어나거나, 중복이 있거나, 필수
 `rememberDatePickerState`는 saveable state를 사용합니다. Android에서는 플랫폼 saveable registry가 제공될 때 Activity 재생성 이후에도 선택값을 복원할 수 있습니다.
 
 초기값은 `rememberDatePickerState(initialDate = LocalDate(...))` 또는
-`initialYear`/`initialMonth`/`initialDay` 파라미터로 설정합니다. 초기 연도는 `1000..9999`,
-월은 `1..12` 범위여야 하고 일은 최소 `1`이어야 합니다. `initialDay`가 초기 연/월의 최대 일수보다
-크면 그 최대 일수로 보정됩니다.
+`initialYear`/`initialMonth`/`initialDay` 파라미터로 설정합니다. 초기값 또는 primitive parts를 첫
+composition 전에 보정해야 한다면 같은 `items` 객체를 함께 전달하세요. 초기 연도는 `1000..9999`,
+월은 `1..12` 범위여야 하고 일은 최소 `1`이어야 합니다. `initialDay`가 초기 연/월의 최대 일수보다 크면
+그 최대 일수로 보정됩니다.
 
 상태 생성 이후 선택값을 바꾸려면 `state.selectDate(LocalDate(...))` 또는
-`state.selectDate(year, month, day)`를 호출합니다.
+`state.selectDate(year, month, day)`를 호출합니다. custom item 목록이나 날짜 범위를 함께 적용해야
+한다면 `items`를 받는 overload를 사용하세요.
 
 custom item 값이 유효 범위를 벗어나거나, 중복이 있거나, 목록이 비어 있거나, 현재 선택된 연도/월/일이 custom 목록 또는 날짜 범위 밖이면 composition 중 `IllegalArgumentException`이 발생합니다. 연/월 변경으로 현재 월 또는 일이 선택 불가능해지면 설정된 제약 안에서 가장 가까운 선택 가능 값으로 이동합니다.
 
