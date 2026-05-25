@@ -43,6 +43,9 @@ This project tracks notable user-facing and maintainer-facing changes here. The 
 - Added `PickerDefaults.itemText(...)` plus `TimePickerDisplay`, `DatePickerDisplay`, and
   `YearMonthPickerDisplay` option objects so apps can customize visible item text separately from
   accessibility descriptions.
+- Fixed sample picker interaction issues where long month labels were clipped, dependent date columns
+  could refresh while another column was still scrolling, and the date range sample started from a
+  one-day range that made end-date movement look like a reset on the first start-date change.
 - Added inclusive `DatePicker` bounds through `DatePickerConstraints` and
   `PickerDefaults.datePickerItems(minDate = ..., maxDate = ...)`.
 - Added inclusive `TimePicker` bounds through `TimePickerConstraints` and

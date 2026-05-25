@@ -137,21 +137,19 @@ fun DatePicker(
                             }
 
                             DatePickerColumn.DAY -> {
-                                key(dayItems) {
-                                    Picker(
-                                        items = dayItems,
-                                        selectedItem = state.selectedDay,
-                                        onSelectedItemChange = { day ->
-                                            updateSelectedDate { state.selectDay(day) }
-                                        },
-                                        modifier = pickerColumnModifier(pickerModifier, layout.dayWeight),
-                                        enabled = enabled,
-                                        style = style,
-                                        isInfinity = false,
-                                        accessibility = accessibility.day,
-                                        display = display.day
-                                    )
-                                }
+                                Picker(
+                                    items = dayItems,
+                                    selectedItem = state.selectedDay,
+                                    onSelectedItemChange = { day ->
+                                        updateSelectedDate { state.selectDay(day) }
+                                    },
+                                    modifier = pickerColumnModifier(pickerModifier, layout.dayWeight),
+                                    enabled = enabled,
+                                    style = style,
+                                    isInfinity = false,
+                                    accessibility = accessibility.day,
+                                    display = display.day
+                                )
                             }
                         }
                     }

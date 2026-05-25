@@ -228,7 +228,7 @@ fun <T : Any> Picker(
             }
             .distinctUntilChanged()
             .collect { (item, isScrollInProgress) ->
-                if (enabled && isScrollInProgress && item != currentSelectedItem) {
+                if (enabled && !isScrollInProgress && item != currentSelectedItem) {
                     currentOnSelectedItemChange(item)
                 }
             }
