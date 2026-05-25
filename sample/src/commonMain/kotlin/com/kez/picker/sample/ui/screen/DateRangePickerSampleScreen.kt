@@ -72,6 +72,12 @@ internal fun DateRangePickerSampleScreen(
             val monthEnd = remember(today, monthEndDay) {
                 LocalDate(today.year, today.month, monthEndDay)
             }
+            val todayRange = remember(today) {
+                DateRange(startDate = today, endDate = today)
+            }
+            val monthRange = remember(monthStart, monthEnd) {
+                DateRange(startDate = monthStart, endDate = monthEnd)
+            }
             val items = remember(today.year, yearStart, yearEnd) {
                 PickerDefaults.datePickerItems(
                     yearItems = listOf(today.year),
@@ -81,12 +87,7 @@ internal fun DateRangePickerSampleScreen(
             }
             val state = rememberDateRangePickerState(
                 items = items,
-                initialStartYear = today.year,
-                initialStartMonth = today.month.number,
-                initialStartDay = today.day,
-                initialEndYear = today.year,
-                initialEndMonth = today.month.number,
-                initialEndDay = today.day
+                initialDateRange = todayRange
             )
             var selectedRangeText by rememberSaveable {
                 mutableStateOf("${today}..${today}")
@@ -105,12 +106,7 @@ internal fun DateRangePickerSampleScreen(
                 Button(
                     onClick = {
                         state.selectDateRange(
-                            startYear = monthStart.year,
-                            startMonth = monthStart.month.number,
-                            startDay = monthStart.day,
-                            endYear = monthEnd.year,
-                            endMonth = monthEnd.month.number,
-                            endDay = monthEnd.day,
+                            dateRange = monthRange,
                             items = items
                         )
                         selectedRangeText = state.selectedDateRange.asText()
@@ -128,12 +124,7 @@ internal fun DateRangePickerSampleScreen(
                 OutlinedButton(
                     onClick = {
                         state.selectDateRange(
-                            startYear = today.year,
-                            startMonth = today.month.number,
-                            startDay = today.day,
-                            endYear = today.year,
-                            endMonth = today.month.number,
-                            endDay = today.day,
+                            dateRange = todayRange,
                             items = items
                         )
                         selectedRangeText = state.selectedDateRange.asText()

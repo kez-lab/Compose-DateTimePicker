@@ -53,6 +53,19 @@ class DateRangePickerStateTest {
     }
 
     @Test
+    fun dateRangePickerState_initializesFromDateRange() {
+        val state = DateRangePickerState(
+            initialDateRange = DateRange(
+                startDate = LocalDate(2026, 5, 1),
+                endDate = LocalDate(2026, 5, 3)
+            )
+        )
+
+        assertEquals(LocalDate(2026, 5, 1), state.selectedStartDate)
+        assertEquals(LocalDate(2026, 5, 3), state.selectedEndDate)
+    }
+
+    @Test
     fun dateRangePickerState_initializesFromDateParts() {
         val state = DateRangePickerState(
             initialStartYear = 2026,
@@ -165,6 +178,24 @@ class DateRangePickerStateTest {
     }
 
     @Test
+    fun dateRangePickerState_selectDateRangeValue_updatesSelection() {
+        val state = DateRangePickerState(
+            initialStartDate = LocalDate(2026, 5, 1),
+            initialEndDate = LocalDate(2026, 5, 3)
+        )
+
+        state.selectDateRange(
+            DateRange(
+                startDate = LocalDate(2027, 1, 2),
+                endDate = LocalDate(2027, 1, 5)
+            )
+        )
+
+        assertEquals(LocalDate(2027, 1, 2), state.selectedStartDate)
+        assertEquals(LocalDate(2027, 1, 5), state.selectedEndDate)
+    }
+
+    @Test
     fun dateRangePickerState_selectDateRangeWithItems_coercesSelection() {
         val state = DateRangePickerState(
             initialStartDate = LocalDate(2026, 5, 10),
@@ -213,6 +244,34 @@ class DateRangePickerStateTest {
             endYear = 2026,
             endMonth = 12,
             endDay = 31,
+            items = items
+        )
+
+        assertEquals(LocalDate(2026, Month.MAY, 10), state.selectedStartDate)
+        assertEquals(LocalDate(2026, Month.JUNE, 20), state.selectedEndDate)
+    }
+
+    @Test
+    fun dateRangePickerState_selectDateRangeValueWithItems_coercesSelection() {
+        val state = DateRangePickerState(
+            initialStartDate = LocalDate(2026, 5, 10),
+            initialEndDate = LocalDate(2026, 6, 10)
+        )
+        val items = DatePickerItems(
+            yearItems = listOf(2026),
+            monthItems = (1..12).toList(),
+            dayItems = (1..31).toList(),
+            constraints = DatePickerConstraints(
+                minDate = LocalDate(2026, Month.MAY, 10),
+                maxDate = LocalDate(2026, Month.JUNE, 20)
+            )
+        )
+
+        state.selectDateRange(
+            dateRange = DateRange(
+                startDate = LocalDate(2026, Month.JANUARY, 1),
+                endDate = LocalDate(2026, Month.DECEMBER, 31)
+            ),
             items = items
         )
 

@@ -222,11 +222,13 @@ import com.kez.picker.date.DateRangePicker
 import com.kez.picker.date.rememberDateRangePickerState
 import com.kez.picker.util.currentDate
 import kotlinx.datetime.LocalDate
-import kotlinx.datetime.number
 
 @Composable
 fun DateRangePickerExample() {
     val today = remember { currentDate() }
+    val todayRange = remember(today) {
+        DateRange(startDate = today, endDate = today)
+    }
     val items = remember(today.year) {
         PickerDefaults.datePickerItems(
             yearItems = listOf(today.year),
@@ -236,12 +238,7 @@ fun DateRangePickerExample() {
     }
     val state = rememberDateRangePickerState(
         items = items,
-        initialStartYear = today.year,
-        initialStartMonth = today.month.number,
-        initialStartDay = today.day,
-        initialEndYear = today.year,
-        initialEndMonth = today.month.number,
-        initialEndDay = today.day
+        initialDateRange = todayRange
     )
 
     DateRangePicker(
@@ -509,7 +506,7 @@ state를 새로 만들 필요는 없습니다.
 | Generic `Picker<T>` | 앱이 소유한 `selectedItem` 값을 갱신 |
 | `time.TimePickerState` | `selectTime(LocalTime(...))`, `selectTime(hour, minute)` 또는 대응되는 `items` overload |
 | `date.DatePickerState` | `selectDate(LocalDate(...))`, `selectDate(year, month, day)` 또는 대응되는 `items` overload |
-| `date.DateRangePickerState` | `selectDateRange(startDate, endDate)`, `selectDateRange(startYear, startMonth, startDay, endYear, endMonth, endDay)`, `selectStartDate(...)`, `selectEndDate(...)` 또는 대응되는 `items` overload |
+| `date.DateRangePickerState` | `selectDateRange(DateRange(...))`, `selectDateRange(startDate, endDate)`, `selectDateRange(startYear, startMonth, startDay, endYear, endMonth, endDay)`, `selectStartDate(...)`, `selectEndDate(...)` 또는 대응되는 `items` overload |
 | `date.YearMonthPickerState` | `selectYearMonth(YearMonth(...))`, `selectYearMonth(year, month)`, `selectDate(LocalDate(...))`, 또는 대응되는 `items` overload |
 
 ```kotlin
@@ -653,10 +650,12 @@ custom item 값이 유효 범위를 벗어나거나, 중복이 있거나, 목록
 현재 종료일 뒤로 이동하면 종료일도 같은 날짜로 이동하고, 종료일을 현재 시작일 앞으로 이동하면 시작일도
 같은 날짜로 이동합니다.
 
-초기값은 `rememberDateRangePickerState(initialStartDate = ..., initialEndDate = ...)` 또는
-명시적인 `initialStartYear`/`initialStartMonth`/`initialStartDay`와 대응되는 종료일 파라미터로
-설정합니다. 상태 생성 이후 선택값을 바꾸려면 `LocalDate` 값이나 명시적인 year/month/day 값을 사용해
-`state.selectDateRange(...)`, `state.selectStartDate(...)`, `state.selectEndDate(...)`를 호출합니다.
+초기값은 `rememberDateRangePickerState(initialDateRange = DateRange(...))`,
+`rememberDateRangePickerState(initialStartDate = ..., initialEndDate = ...)`, 또는 명시적인
+`initialStartYear`/`initialStartMonth`/`initialStartDay`와 대응되는 종료일 파라미터로 설정합니다.
+상태 생성 이후 선택값을 바꾸려면 `DateRange`, `LocalDate`, 또는 명시적인 year/month/day 값을
+사용해 `state.selectDateRange(...)`, `state.selectStartDate(...)`, `state.selectEndDate(...)`를
+호출합니다.
 
 ### YearMonthPicker
 
