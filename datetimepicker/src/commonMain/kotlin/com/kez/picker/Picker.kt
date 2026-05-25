@@ -48,17 +48,19 @@ import androidx.compose.ui.semantics.role
 import androidx.compose.ui.semantics.selected
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.stateDescription
+import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.isSpecified
 import androidx.compose.ui.unit.lerp
 import androidx.compose.ui.unit.sp
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.mapNotNull
 import kotlinx.coroutines.launch
 import kotlin.math.abs
+import kotlin.math.max
 
 /**
  * Multiplier for infinite scroll list size.
@@ -132,6 +134,7 @@ fun <T : Any> Picker(
     }
 
     val density = LocalDensity.current
+    val textMeasurer = rememberTextMeasurer(cacheSize = 16)
     val visibleItemsMiddle = remember(visibleItemsCount) { visibleItemsCount / 2 }
     val scope = rememberCoroutineScope()
     val currentOnSelectedItemChange by rememberUpdatedState(onSelectedItemChange)
@@ -202,22 +205,32 @@ fun <T : Any> Picker(
         colors.disabledSelectedTextColor
     }
 
-    val selectedLineHeight = selectedTextStyle.lineHeight.takeIf { it.isSpecified } ?: 0.sp
-    val unselectedLineHeight = textStyle.lineHeight.takeIf { it.isSpecified } ?: 0.sp
-    val largestLineHeight =
-        if (selectedLineHeight > unselectedLineHeight) selectedLineHeight else unselectedLineHeight
-
-    val selectedFontSize = selectedTextStyle.fontSize.takeIf { it.isSpecified } ?: 0.sp
-    val unselectedFontSize = textStyle.fontSize.takeIf { it.isSpecified } ?: 0.sp
-    val largestFontSize =
-        if (selectedFontSize > unselectedFontSize) selectedFontSize else unselectedFontSize
-
-    val textHeightSp = if (largestLineHeight > 0.sp) largestLineHeight else largestFontSize
+    val measuredTextHeight = remember(items, display, textStyle, selectedTextStyle, textMeasurer) {
+        items.maxOf { item ->
+            val text = AnnotatedString(display.itemText(item))
+            max(
+                textMeasurer.measure(
+                    text = text,
+                    style = textStyle,
+                    overflow = TextOverflow.Clip,
+                    softWrap = false,
+                    maxLines = 1
+                ).size.height,
+                textMeasurer.measure(
+                    text = text,
+                    style = selectedTextStyle,
+                    overflow = TextOverflow.Clip,
+                    softWrap = false,
+                    maxLines = 1
+                ).size.height
+            )
+        }
+    }
 
     val itemHeight = with(density) {
-        textHeightSp.toDp() +
-                itemPadding.calculateTopPadding() +
-                itemPadding.calculateBottomPadding()
+        measuredTextHeight.toDp() +
+            itemPadding.calculateTopPadding() +
+            itemPadding.calculateBottomPadding()
     }
     val itemHeightPx = with(density) { itemHeight.toPx() }
 
