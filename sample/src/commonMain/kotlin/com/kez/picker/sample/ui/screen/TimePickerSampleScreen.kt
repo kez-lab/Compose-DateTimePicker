@@ -146,8 +146,12 @@ internal fun TimePickerSampleScreen(
                 }
                 OutlinedButton(
                     onClick = {
-                        timeState12.selectTime(demoTime)
-                        timeState24.selectTime(demoTime, businessHoursItems)
+                        timeState12.selectTime(hour = demoTime.hour, minute = demoTime.minute)
+                        timeState24.selectTime(
+                            hour = demoTime.hour,
+                            minute = demoTime.minute,
+                            items = businessHoursItems
+                        )
                         val selectedTime = if (selectedFormat == 0) {
                             timeState12.selectedTime
                         } else {

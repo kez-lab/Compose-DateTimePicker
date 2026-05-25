@@ -465,8 +465,8 @@ selection.
 | State | Method |
 | :--- | :--- |
 | Generic `Picker<T>` | Update the app-owned `selectedItem` value |
-| `time.TimePickerState` | `selectTime(LocalTime(...))` or `selectTime(LocalTime(...), items)` |
-| `date.DatePickerState` | `selectDate(LocalDate(...))` or `selectDate(LocalDate(...), items)` |
+| `time.TimePickerState` | `selectTime(LocalTime(...))`, `selectTime(hour, minute)`, or the matching `items` overloads |
+| `date.DatePickerState` | `selectDate(LocalDate(...))`, `selectDate(year, month, day)`, or the matching `items` overloads |
 | `date.YearMonthPickerState` | `selectYearMonth(YearMonth(...))`, `selectYearMonth(year, month)`, `selectDate(LocalDate(...))`, or the matching `items` overloads |
 
 ```kotlin
@@ -483,7 +483,7 @@ fun ProgrammaticTimePickerExample() {
     val state = rememberTimePickerState(initialTime = LocalTime(8, 0))
 
     Column {
-        Button(onClick = { state.selectTime(LocalTime(9, 30)) }) {
+        Button(onClick = { state.selectTime(hour = 9, minute = 30) }) {
             Text("Set 09:30")
         }
 
@@ -553,7 +553,8 @@ is rendered only in 12-hour mode and ignored in 24-hour mode.
 
 For initial values, use either `rememberTimePickerState(initialTime = LocalTime(...))` or the explicit `initialHour`/`initialMinute` parameters.
 
-To change the selection after state creation, call `state.selectTime(LocalTime(...))`.
+To change the selection after state creation, call `state.selectTime(LocalTime(...))` or
+`state.selectTime(hour, minute)`. The integer hour is interpreted as hour-of-day in `0..23`.
 
 Invalid custom item values, duplicate items, empty required lists, or current selections missing from custom lists or time bounds throw `IllegalArgumentException` during composition. In 12-hour mode, `PickerDefaults.timePickerItems(hour12Items = ...)` uses display-hour values (`1..12`): `initialHour = 13` becomes `state.selectedHour == 1` with `PM`.
 
@@ -586,7 +587,8 @@ explicit `initialYear`/`initialMonth`/`initialDay` parameters. Initial years mus
 `1000..9999`, months in `1..12`, and days must be at least `1`. If `initialDay` is greater than
 the maximum valid day for the initial year/month, it is clamped to that maximum.
 
-To change the selection after state creation, call `state.selectDate(LocalDate(...))`.
+To change the selection after state creation, call `state.selectDate(LocalDate(...))` or
+`state.selectDate(year, month, day)`.
 
 Invalid custom item values, duplicate items, empty lists, or current selected year/month/day values missing from custom lists or date bounds throw `IllegalArgumentException` during composition. If a year/month change makes the selected month or day unavailable, the picker selects the closest available value for the configured constraints.
 
