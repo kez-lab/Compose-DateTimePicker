@@ -17,10 +17,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.TextStyle
@@ -84,12 +81,11 @@ fun DatePickerSampleScreen(
                 initialMonth = today.month.number,
                 initialDay = today.day
             )
-            var selectedDateText by rememberSaveable { mutableStateOf(today.toString()) }
 
             SelectedValueCard(
                 icon = FeatherIcons.Calendar,
                 label = "Selected date",
-                value = selectedDateText,
+                value = state.selectedDate.toString(),
                 supportingText = "Range: $today..$leapDate · Days: ${allowedDays.joinToString()}"
             )
 
@@ -99,7 +95,6 @@ fun DatePickerSampleScreen(
                 Button(
                     onClick = {
                         state.selectDate(today, pickerItems)
-                        selectedDateText = state.selectedDate.toString()
                     },
                     modifier = Modifier.fillMaxWidth()
                 ) {
@@ -114,7 +109,6 @@ fun DatePickerSampleScreen(
                 OutlinedButton(
                     onClick = {
                         state.selectDate(leapDate, pickerItems)
-                        selectedDateText = state.selectedDate.toString()
                     },
                     modifier = Modifier.fillMaxWidth()
                 ) {
@@ -127,7 +121,6 @@ fun DatePickerSampleScreen(
             PickerPanel {
                 DatePicker(
                     state = state,
-                    onSelectedDateChange = { selectedDateText = it.toString() },
                     items = pickerItems,
                     display = PickerDefaults.datePickerDisplay(
                         yearItemText = { "${it}년" },

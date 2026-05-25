@@ -17,10 +17,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -61,13 +58,11 @@ internal fun YearMonthPickerSampleScreen(
         items = items,
         initialDate = currentDate
     )
-    var selectedYear by rememberSaveable { mutableIntStateOf(state.selectedYear) }
-    var selectedMonth by rememberSaveable { mutableIntStateOf(state.selectedMonth) }
 
     // Calculate selected date text
     val selectedDateText by remember {
         derivedStateOf {
-            "${selectedYear}년 ${getMonthName(selectedMonth)}"
+            "${state.selectedYear}년 ${getMonthName(state.selectedMonth)}"
         }
     }
 
@@ -91,7 +86,7 @@ internal fun YearMonthPickerSampleScreen(
                 icon = FeatherIcons.Calendar,
                 label = "Selected month",
                 value = selectedDateText,
-                supportingText = "Stored as ${YearMonth(selectedYear, selectedMonth).atDay()}"
+                supportingText = "Stored as ${state.selectedYearMonth.atDay()}"
             )
 
             Spacer(modifier = Modifier.height(16.dp))
@@ -101,8 +96,6 @@ internal fun YearMonthPickerSampleScreen(
                     onClick = {
                         val yearMonth = YearMonth.from(currentDate())
                         state.selectYearMonth(yearMonth, items)
-                        selectedYear = state.selectedYear
-                        selectedMonth = state.selectedMonth
                     },
                     modifier = Modifier.fillMaxWidth()
                 ) {
@@ -120,8 +113,6 @@ internal fun YearMonthPickerSampleScreen(
                             month = currentDate.month.number
                         )
                         state.selectYearMonth(yearMonth, items)
-                        selectedYear = state.selectedYear
-                        selectedMonth = state.selectedMonth
                     },
                     modifier = Modifier.fillMaxWidth()
                 ) {
@@ -135,10 +126,6 @@ internal fun YearMonthPickerSampleScreen(
                 YearMonthPicker(
                     modifier = Modifier.padding(horizontal = 12.dp),
                     state = state,
-                    onSelectedYearMonthChange = {
-                        selectedYear = it.year
-                        selectedMonth = it.month
-                    },
                     items = items,
                     display = PickerDefaults.yearMonthPickerDisplay(
                         yearItemText = { "${it}년" },

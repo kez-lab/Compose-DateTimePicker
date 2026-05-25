@@ -16,10 +16,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -89,14 +86,11 @@ internal fun DateRangePickerSampleScreen(
                 items = items,
                 initialDateRange = monthRange
             )
-            var selectedRangeText by rememberSaveable {
-                mutableStateOf(monthRange.asText())
-            }
 
             SelectedValueCard(
                 icon = FeatherIcons.Calendar,
                 label = "Selected range",
-                value = selectedRangeText,
+                value = state.selectedDateRange.asText(),
                 supportingText = "Selectable year: ${today.year}"
             )
 
@@ -109,7 +103,6 @@ internal fun DateRangePickerSampleScreen(
                             dateRange = monthRange,
                             items = items
                         )
-                        selectedRangeText = state.selectedDateRange.asText()
                     },
                     modifier = Modifier.fillMaxWidth()
                 ) {
@@ -127,7 +120,6 @@ internal fun DateRangePickerSampleScreen(
                             dateRange = todayRange,
                             items = items
                         )
-                        selectedRangeText = state.selectedDateRange.asText()
                     },
                     modifier = Modifier.fillMaxWidth()
                 ) {
@@ -140,7 +132,6 @@ internal fun DateRangePickerSampleScreen(
             PickerPanel {
                 DateRangePicker(
                     state = state,
-                    onSelectedDateRangeChange = { selectedRangeText = it.asText() },
                     items = items,
                     display = PickerDefaults.datePickerDisplay(
                         yearItemText = { "${it}년" },
