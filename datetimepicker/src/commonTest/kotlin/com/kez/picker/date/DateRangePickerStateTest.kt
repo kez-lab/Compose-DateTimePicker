@@ -35,6 +35,55 @@ class DateRangePickerStateTest {
     }
 
     @Test
+    fun dateRange_initializesFromDateParts() {
+        val range = DateRange(
+            startYear = 2026,
+            startMonth = 5,
+            startDay = 1,
+            endYear = 2026,
+            endMonth = 5,
+            endDay = 3
+        )
+
+        assertEquals(LocalDate(2026, 5, 1), range.startDate)
+        assertEquals(LocalDate(2026, 5, 3), range.endDate)
+    }
+
+    @Test
+    fun dateRange_datePartsClampInvalidDayForMonth() {
+        val range = DateRange(
+            startYear = 2026,
+            startMonth = 2,
+            startDay = 31,
+            endYear = 2026,
+            endMonth = 3,
+            endDay = 31
+        )
+
+        assertEquals(LocalDate(2026, 2, 28), range.startDate)
+        assertEquals(LocalDate(2026, 3, 31), range.endDate)
+    }
+
+    @Test
+    fun dateRange_containsPartsChecksInclusiveDatesAndInvalidParts() {
+        val range = DateRange(
+            startYear = 2026,
+            startMonth = 5,
+            startDay = 1,
+            endYear = 2026,
+            endMonth = 5,
+            endDay = 3
+        )
+
+        assertEquals(true, range.contains(year = 2026, month = 5, day = 1))
+        assertEquals(true, range.contains(year = 2026, month = 5, day = 2))
+        assertEquals(true, range.contains(year = 2026, month = 5, day = 3))
+        assertEquals(false, range.contains(year = 2026, month = 5, day = 4))
+        assertEquals(false, range.contains(year = 2026, month = 13, day = 1))
+        assertEquals(false, range.contains(year = 2026, month = 2, day = 29))
+    }
+
+    @Test
     fun dateRangePickerState_initializesSelectedRange() {
         val state = DateRangePickerState(
             initialStartDate = LocalDate(2026, 5, 1),

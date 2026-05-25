@@ -674,6 +674,9 @@ For initial values, use `rememberDateRangePickerState(initialDateRange = DateRan
 `initialStartYear`/`initialStartMonth`/`initialStartDay` and matching end-date parameters. To change
 the selection after state creation, call `state.selectDateRange(...)`, `state.selectStartDate(...)`,
 or `state.selectEndDate(...)` with `DateRange`, `LocalDate`, or explicit year/month/day values.
+`DateRange` can also be created from explicit start/end year, month, and day parts. Use
+`range.contains(year, month, day)` when app-owned form fields need an inclusive range check before
+creating a `LocalDate`.
 
 ### YearMonthPicker
 
