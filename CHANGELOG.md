@@ -99,6 +99,8 @@ This project tracks notable user-facing and maintainer-facing changes here. The 
   `minYearMonth`/`maxYearMonth` bounds are configured.
 - Disabled pickers now expose disabled semantics, omit previous/next accessibility selection actions,
   and use disabled text, divider, and selected-item background colors.
+- Picker row scaling now stays stable while constrained item lists change, and the scroll gesture
+  area fills the picker column instead of shrinking to the visible text.
 - `DatePicker.spacingBetweenPickers` now applies actual horizontal spacing between year, month, and
   day columns.
 - Custom item lists are now strict: required lists must be non-empty and distinct, values must be in range, and the current selected value must be present before composition proceeds.

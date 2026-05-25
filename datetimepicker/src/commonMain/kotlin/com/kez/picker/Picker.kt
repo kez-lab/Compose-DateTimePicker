@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.HorizontalDivider
@@ -149,10 +148,12 @@ fun <T : Any> Picker(
     val dividerShape = style.dividerShape
     val isDividerVisible = style.isDividerVisible
 
-    val adjustedItems = if (!isInfinity) {
-        List(visibleItemsMiddle) { null } + items + List(visibleItemsMiddle) { null }
-    } else {
-        items
+    val adjustedItems: List<T?> = remember(items, isInfinity, visibleItemsMiddle) {
+        if (!isInfinity) {
+            List(visibleItemsMiddle) { null } + items + List(visibleItemsMiddle) { null }
+        } else {
+            items
+        }
     }
 
     val listScrollCount = if (isInfinity) {
@@ -218,6 +219,7 @@ fun <T : Any> Picker(
                 itemPadding.calculateTopPadding() +
                 itemPadding.calculateBottomPadding()
     }
+    val itemHeightPx = with(density) { itemHeight.toPx() }
 
     LaunchedEffect(listState, adjustedItems, visibleItemsMiddle, enabled) {
         snapshotFlow { listState.firstVisibleItemIndex to listState.isScrollInProgress }
@@ -306,6 +308,12 @@ fun <T : Any> Picker(
         return true
     }
 
+    fun fallbackDistanceFractionFor(index: Int): Float {
+        val centerIndex = listState.firstVisibleItemIndex + visibleItemsMiddle
+        val itemDistance = (index - centerIndex).coerceIn(-1, 1)
+        return abs(itemDistance).toFloat()
+    }
+
     val accessibilityActions = buildList {
         if (enabled && normalizedPreviousItemActionLabel != null && adjacentFirstVisibleItemIndex(offset = -1) != null) {
             add(
@@ -388,7 +396,7 @@ fun <T : Any> Picker(
             horizontalAlignment = horizontalAlignment,
             modifier = Modifier
                 .align(Alignment.Center)
-                .wrapContentSize()
+                .fillMaxWidth()
                 .height(itemHeight * visibleItemsCount)
                 .fadingEdge(fadingEdgeGradient)
         ) {
@@ -396,21 +404,24 @@ fun <T : Any> Picker(
                 listScrollCount,
                 key = { it },
             ) { index ->
-                val fraction by remember {
+                val item = getItem(index)
+                val isSelected = item == selectedItem
+                val fraction by remember(listState, index, itemHeightPx, visibleItemsMiddle) {
                     derivedStateOf {
                         val currentItem =
                             listState.layoutInfo.visibleItemsInfo.firstOrNull { it.key == index }
                         currentItem?.offset?.let { offset ->
-                            val itemHeightPx = with(density) { itemHeight.toPx() }
-                            val fraction =
-                                (offset - itemHeightPx * visibleItemsMiddle) / itemHeightPx
-                            abs(fraction.coerceIn(-1f, 1f))
-                        } ?: 0f
+                            if (itemHeightPx <= 0f) {
+                                fallbackDistanceFractionFor(index)
+                            } else {
+                                val fraction =
+                                    (offset - itemHeightPx * visibleItemsMiddle) / itemHeightPx
+                                abs(fraction.coerceIn(-1f, 1f))
+                            }
+                        } ?: fallbackDistanceFractionFor(index)
                     }
                 }
 
-                val item = getItem(index)
-                val isSelected = item == selectedItem
                 val itemText = item?.let(display.itemText) ?: ""
                 val itemDescription = item?.let(accessibility.itemContentDescription) ?: ""
                 val itemContentColor = lerp(
