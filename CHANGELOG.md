@@ -46,6 +46,8 @@ This project tracks notable user-facing and maintainer-facing changes here. The 
 - Fixed sample picker interaction issues where long month labels were clipped, dependent date columns
   could refresh while another column was still scrolling, and the date range sample started from a
   one-day range that made end-date movement look like a reset on the first start-date change.
+- Fixed picker row height calculation and default vertical item padding so selected text no longer
+  appears clipped against the selection dividers.
 - Simplified the basic date, date range, and year/month samples so the picker state is the single
   source of truth for displayed selections.
 - Added inclusive `DatePicker` bounds through `DatePickerConstraints` and
