@@ -5,6 +5,11 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.SideEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.Dp
@@ -52,11 +57,17 @@ fun DateRangePicker(
     endLabel: (@Composable () -> Unit)? = { DateRangePickerLabel("End date") },
     accessibility: DateRangePickerAccessibility = PickerDefaults.dateRangePickerAccessibility()
 ) {
+    var lastObservedRange by remember(state) { mutableStateOf(state.selectedDateRange) }
+
+    SideEffect {
+        lastObservedRange = state.selectedDateRange
+    }
+
     fun updateSelectedDateRange(update: () -> Unit) {
-        val previousRange = state.selectedDateRange
         update()
         val nextRange = state.selectedDateRange
-        if (nextRange != previousRange) {
+        if (nextRange != lastObservedRange) {
+            lastObservedRange = nextRange
             onSelectedDateRangeChange(nextRange)
         }
     }

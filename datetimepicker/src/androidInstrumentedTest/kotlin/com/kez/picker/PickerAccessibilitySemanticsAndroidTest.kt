@@ -17,9 +17,12 @@ import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.performClick
 import com.kez.picker.date.DatePicker
 import com.kez.picker.date.DatePickerState
+import com.kez.picker.date.DateRange
+import com.kez.picker.date.DateRangePicker
 import com.kez.picker.date.YearMonth
 import com.kez.picker.date.YearMonthPicker
 import com.kez.picker.date.YearMonthPickerState
+import com.kez.picker.date.rememberDateRangePickerState
 import com.kez.picker.date.rememberDatePickerState
 import com.kez.picker.date.rememberYearMonthPickerState
 import com.kez.picker.time.TimePicker
@@ -858,6 +861,53 @@ class PickerAccessibilitySemanticsAndroidTest {
 
         composeRule.runOnIdle {
             assertEquals(LocalDate(year = 2026, month = Month.FEBRUARY, day = 28), changedDateState.value)
+        }
+    }
+
+    @Test
+    fun dateRangePicker_callsOnSelectedDateRangeChangeAfterStartSelection() {
+        lateinit var changedRangeState: MutableState<DateRange?>
+
+        composeRule.setContent {
+            val state = rememberDateRangePickerState(
+                initialStartDate = LocalDate(2026, 1, 10),
+                initialEndDate = LocalDate(2026, 1, 20)
+            )
+            changedRangeState = remember { mutableStateOf(null) }
+
+            DateRangePicker(
+                state = state,
+                onSelectedDateRangeChange = { changedRangeState.value = it },
+                items = PickerDefaults.datePickerItems(
+                    yearItems = listOf(2026),
+                    monthItems = listOf(1),
+                    dayItems = listOf(10, 11, 20)
+                ),
+                style = PickerDefaults.style(visibleItemsCount = 3),
+                accessibility = PickerDefaults.dateRangePickerAccessibility(
+                    start = PickerDefaults.datePickerAccessibility(
+                        dayPickerLabel = "시작 일",
+                        dayItemContentDescription = { "${it}일" },
+                        nextItemActionLabel = NEXT_VALUE_ACTION_LABEL
+                    )
+                )
+            )
+        }
+
+        performCustomAccessibilityAction(
+            contentDescription = "시작 일: 10일",
+            actionLabel = NEXT_VALUE_ACTION_LABEL
+        )
+        waitUntilSelectedItem("시작 일: 11일")
+
+        composeRule.runOnIdle {
+            assertEquals(
+                DateRange(
+                    startDate = LocalDate(2026, 1, 11),
+                    endDate = LocalDate(2026, 1, 20)
+                ),
+                changedRangeState.value
+            )
         }
     }
 
