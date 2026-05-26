@@ -33,6 +33,8 @@ This project tracks notable user-facing and maintainer-facing changes here. The 
   for ordered start/end date selection without manually wiring two `DatePicker` instances. Date
   range values and state also support year/month/day overloads for apps that store primitive form
   values.
+- Added `DateRange.ordered(...)` factories so apps can normalize unordered start/end inputs from
+  forms, presets, or restored state before passing them to `DateRangePickerState`.
 - Added `DateRangePickerState` and `rememberDateRangePickerState` overloads that accept a `DateRange`
   value directly.
 - Added value-first state constructors: `TimePickerState(LocalTime, ...)`,

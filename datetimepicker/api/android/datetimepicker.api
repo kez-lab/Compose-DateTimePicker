@@ -526,6 +526,7 @@ public final class com/kez/picker/date/DatePickerStateKt {
 
 public final class com/kez/picker/date/DateRange {
 	public static final field $stable I
+	public static final field Companion Lcom/kez/picker/date/DateRange$Companion;
 	public fun <init> (IIIIII)V
 	public synthetic fun <init> (IIIIIIILkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public fun <init> (Lkotlinx/datetime/LocalDate;Lkotlinx/datetime/LocalDate;)V
@@ -540,6 +541,12 @@ public final class com/kez/picker/date/DateRange {
 	public final fun getStartDate ()Lkotlinx/datetime/LocalDate;
 	public fun hashCode ()I
 	public fun toString ()Ljava/lang/String;
+}
+
+public final class com/kez/picker/date/DateRange$Companion {
+	public final fun ordered (IIIIII)Lcom/kez/picker/date/DateRange;
+	public final fun ordered (Lkotlinx/datetime/LocalDate;Lkotlinx/datetime/LocalDate;)Lcom/kez/picker/date/DateRange;
+	public static synthetic fun ordered$default (Lcom/kez/picker/date/DateRange$Companion;IIIIIIILjava/lang/Object;)Lcom/kez/picker/date/DateRange;
 }
 
 public final class com/kez/picker/date/DateRangePickerKt {

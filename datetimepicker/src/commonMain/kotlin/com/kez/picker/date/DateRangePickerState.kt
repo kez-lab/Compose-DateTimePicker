@@ -13,6 +13,7 @@ import kotlinx.datetime.number
 
 /**
  * Inclusive date range selected by [DateRangePicker].
+ * Use [ordered] when app-owned start/end inputs may arrive in either order.
  *
  * @param startDate The first selected date.
  * @param endDate The last selected date.
@@ -50,7 +51,8 @@ data class DateRange(
 
     init {
         require(startDate <= endDate) {
-            "startDate must be on or before endDate. startDate=$startDate, endDate=$endDate"
+            "startDate must be on or before endDate. startDate=$startDate, endDate=$endDate. " +
+                    dateRangeOrderedAdvice()
         }
     }
 
@@ -70,6 +72,40 @@ data class DateRange(
         if (year !in 1000..9999 || month !in 1..12 || day < 1) return false
         if (day > daysInMonth(year, month)) return false
         return LocalDate(year = year, month = month, day = day) in this
+    }
+
+    companion object {
+        /**
+         * Creates a [DateRange] from two dates, ordering them if [startDate] is after [endDate].
+         *
+         * This is useful when a form, preset, or restored value supplies two dates without a
+         * guaranteed start/end order.
+         */
+        fun ordered(startDate: LocalDate, endDate: LocalDate): DateRange =
+            if (startDate <= endDate) {
+                DateRange(startDate = startDate, endDate = endDate)
+            } else {
+                DateRange(startDate = endDate, endDate = startDate)
+            }
+
+        /**
+         * Creates a [DateRange] from explicit date parts, ordering the resulting dates if needed.
+         *
+         * If a day is greater than the maximum day for its year/month, it is clamped before the
+         * dates are ordered.
+         */
+        fun ordered(
+            startYear: Int,
+            startMonth: Int,
+            startDay: Int,
+            endYear: Int = startYear,
+            endMonth: Int = startMonth,
+            endDay: Int = startDay
+        ): DateRange =
+            ordered(
+                startDate = dateFromParts(year = startYear, month = startMonth, day = startDay),
+                endDate = dateFromParts(year = endYear, month = endMonth, day = endDay)
+            )
     }
 }
 
@@ -183,7 +219,8 @@ fun rememberDateRangePickerState(
         require(rememberedInitialStartDate <= rememberedInitialEndDate) {
             "initialStartDate must be on or before initialEndDate. " +
                     "initialStartDate=$rememberedInitialStartDate, " +
-                    "initialEndDate=$rememberedInitialEndDate"
+                    "initialEndDate=$rememberedInitialEndDate. " +
+                    dateRangeOrderedAdvice()
         }
         orderedDateRange(
             startDate = rememberedItems.coerceDate(rememberedInitialStartDate),
@@ -330,7 +367,8 @@ class DateRangePickerState(
     init {
         require(initialStartDate <= initialEndDate) {
             "initialStartDate must be on or before initialEndDate. " +
-                    "initialStartDate=$initialStartDate, initialEndDate=$initialEndDate"
+                    "initialStartDate=$initialStartDate, initialEndDate=$initialEndDate. " +
+                    dateRangeOrderedAdvice()
         }
     }
 
@@ -362,7 +400,8 @@ class DateRangePickerState(
      */
     fun selectDateRange(startDate: LocalDate, endDate: LocalDate) {
         require(startDate <= endDate) {
-            "startDate must be on or before endDate. startDate=$startDate, endDate=$endDate"
+            "startDate must be on or before endDate. startDate=$startDate, endDate=$endDate. " +
+                    dateRangeOrderedAdvice()
         }
         startDatePickerState.selectDate(startDate)
         endDatePickerState.selectDate(endDate)
@@ -404,7 +443,8 @@ class DateRangePickerState(
      */
     fun selectDateRange(startDate: LocalDate, endDate: LocalDate, items: DatePickerItems) {
         require(startDate <= endDate) {
-            "startDate must be on or before endDate. startDate=$startDate, endDate=$endDate"
+            "startDate must be on or before endDate. startDate=$startDate, endDate=$endDate. " +
+                    dateRangeOrderedAdvice()
         }
         val coercedRange = orderedDateRange(
             startDate = items.coerceDate(startDate),
@@ -570,8 +610,8 @@ private fun dateFromParts(year: Int, month: Int, day: Int): LocalDate {
 }
 
 private fun orderedDateRange(startDate: LocalDate, endDate: LocalDate): DateRange =
-    if (startDate <= endDate) {
-        DateRange(startDate = startDate, endDate = endDate)
-    } else {
-        DateRange(startDate = endDate, endDate = startDate)
-    }
+    DateRange.ordered(startDate = startDate, endDate = endDate)
+
+private fun dateRangeOrderedAdvice(): String =
+    "If app-owned start/end inputs may arrive in either order, use DateRange.ordered(...) before " +
+            "creating or selecting a DateRange."
