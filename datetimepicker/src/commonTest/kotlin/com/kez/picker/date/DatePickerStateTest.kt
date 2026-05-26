@@ -8,6 +8,7 @@ import kotlinx.datetime.Month
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
+import kotlin.test.assertTrue
 
 class DatePickerStateTest {
 
@@ -192,13 +193,18 @@ class DatePickerStateTest {
     fun testValidateDatePickerItems_ThrowsWhenYearItemsMissingCurrentSelection() {
         val state = DatePickerState(initialYear = 2025, initialMonth = 6, initialDay = 15)
 
-        assertFailsWith<IllegalArgumentException> {
+        val error = assertFailsWith<IllegalArgumentException> {
             validateDatePickerItems(
                 state = state,
                 yearItems = (2026..2030).toList(),
                 monthItems = listOf(3, 6, 9, 12)
             )
         }
+
+        val message = error.message.orEmpty()
+        assertTrue(message.contains("rememberDatePickerState(items = items"))
+        assertTrue(message.contains("items.coerceDate"))
+        assertTrue(message.contains("state.selectDate(date, items)"))
     }
 
     @Test
@@ -456,12 +462,18 @@ class DatePickerStateTest {
             )
         )
 
-        assertFailsWith<IllegalArgumentException> {
+        val error = assertFailsWith<IllegalArgumentException> {
             validateDatePickerItems(
                 state = state,
                 items = items
             )
         }
+
+        val message = error.message.orEmpty()
+        assertTrue(message.contains("constraints"))
+        assertTrue(message.contains("rememberDatePickerState(items = items"))
+        assertTrue(message.contains("items.coerceDate"))
+        assertTrue(message.contains("state.selectDate(date, items)"))
     }
 
     @Test

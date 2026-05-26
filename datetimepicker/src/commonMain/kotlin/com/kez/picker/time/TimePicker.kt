@@ -199,7 +199,8 @@ internal fun validateTimePickerItems(
                 "Invalid values: $invalidMinutes"
     }
     require(state.selectedMinute in minuteItems) {
-        "TimePicker minuteItems must contain state.selectedMinute=${state.selectedMinute}."
+        "TimePicker minuteItems must contain state.selectedMinute=${state.selectedMinute}. " +
+                timePickerStateItemsAdvice()
     }
 
     val isHour12 = state.timeFormat == TimeFormat.HOUR_12
@@ -217,7 +218,8 @@ internal fun validateTimePickerItems(
     }
     require(state.selectedHour in hourItems) {
         "TimePicker $hourItemsName must contain state.selectedHour=${state.selectedHour} " +
-                "for timeFormat=${state.timeFormat}."
+                "for timeFormat=${state.timeFormat}. " +
+                timePickerStateItemsAdvice()
     }
 
     if (isHour12) {
@@ -228,11 +230,13 @@ internal fun validateTimePickerItems(
             "TimePicker periodItems must not contain duplicate values."
         }
         require(state.selectedPeriod in periodItems) {
-            "TimePicker periodItems must contain state.selectedPeriod=${state.selectedPeriod}."
+            "TimePicker periodItems must contain state.selectedPeriod=${state.selectedPeriod}. " +
+                    timePickerStateItemsAdvice()
         }
         val availablePeriodItems = items.selectablePeriodItems()
         require(state.selectedPeriod in availablePeriodItems) {
-            "TimePicker constraints must allow state.selectedPeriod=${state.selectedPeriod}."
+            "TimePicker constraints must allow state.selectedPeriod=${state.selectedPeriod}. " +
+                    timePickerStateItemsAdvice()
         }
     }
 
@@ -242,16 +246,23 @@ internal fun validateTimePickerItems(
     )
     require(state.selectedHour in availableHourItems) {
         "TimePicker constraints must allow state.selectedHour=${state.selectedHour} " +
-                "for timeFormat=${state.timeFormat}."
+                "for timeFormat=${state.timeFormat}. " +
+                timePickerStateItemsAdvice()
     }
     val availableMinuteItems = items.selectableMinuteItemsFor(
         hourOfDay = state.selectedHourOfDay
     )
     require(state.selectedMinute in availableMinuteItems) {
         "TimePicker minuteItems and constraints must allow state.selectedMinute=${state.selectedMinute} " +
-                "for selectedHourOfDay=${state.selectedHourOfDay}."
+                "for selectedHourOfDay=${state.selectedHourOfDay}. " +
+                timePickerStateItemsAdvice()
     }
 }
+
+private fun timePickerStateItemsAdvice(): String =
+    "Use rememberTimePickerState(items = items, initialTime = ...) for initial values. For later " +
+            "programmatic changes, coerce app values with items.coerceTime(...) and call " +
+            "state.selectTime(time, items) before composing TimePicker."
 
 private fun List<Int>.invalidValuesFor(range: IntRange): List<Int> =
     filterNot { it in range }.distinct()

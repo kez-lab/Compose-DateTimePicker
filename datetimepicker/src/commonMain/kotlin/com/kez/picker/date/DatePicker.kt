@@ -217,10 +217,12 @@ internal fun validateDatePickerItems(
                 "Invalid values: $invalidDays"
     }
     require(state.selectedYear in yearItems) {
-        "DatePicker yearItems must contain state.selectedYear=${state.selectedYear}."
+        "DatePicker yearItems must contain state.selectedYear=${state.selectedYear}. " +
+                datePickerStateItemsAdvice()
     }
     require(state.selectedMonth in monthItems) {
-        "DatePicker monthItems must contain state.selectedMonth=${state.selectedMonth}."
+        "DatePicker monthItems must contain state.selectedMonth=${state.selectedMonth}. " +
+                datePickerStateItemsAdvice()
     }
     if (items.constraints.isUnbounded) {
         val minimumMaxDay = minimumMaxDayFor(yearItems, monthItems)
@@ -231,12 +233,14 @@ internal fun validateDatePickerItems(
     }
     val availableYearItems = items.selectableYearItems()
     require(state.selectedYear in availableYearItems) {
-        "DatePicker constraints must allow state.selectedYear=${state.selectedYear}."
+        "DatePicker constraints must allow state.selectedYear=${state.selectedYear}. " +
+                datePickerStateItemsAdvice()
     }
     val availableMonthItems = items.selectableMonthItemsFor(state.selectedYear)
     require(state.selectedMonth in availableMonthItems) {
         "DatePicker constraints must allow state.selectedMonth=${state.selectedMonth} " +
-                "for selectedYear=${state.selectedYear}."
+                "for selectedYear=${state.selectedYear}. " +
+                datePickerStateItemsAdvice()
     }
     val availableDayItems = items.selectableDayItemsFor(
         year = state.selectedYear,
@@ -244,9 +248,15 @@ internal fun validateDatePickerItems(
     )
     require(state.selectedDay in availableDayItems) {
         "DatePicker dayItems and constraints must allow state.selectedDay=${state.selectedDay} " +
-                "for selectedYear=${state.selectedYear} and selectedMonth=${state.selectedMonth}."
+                "for selectedYear=${state.selectedYear} and selectedMonth=${state.selectedMonth}. " +
+                datePickerStateItemsAdvice()
     }
 }
+
+private fun datePickerStateItemsAdvice(): String =
+    "Use rememberDatePickerState(items = items, initialDate = ...) for initial values. For later " +
+            "programmatic changes, coerce app values with items.coerceDate(...) and call " +
+            "state.selectDate(date, items) before composing DatePicker."
 
 private fun List<Int>.invalidValuesFor(range: IntRange): List<Int> =
     filterNot { it in range }.distinct()
