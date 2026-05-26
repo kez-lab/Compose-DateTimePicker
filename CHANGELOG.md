@@ -77,6 +77,8 @@ This project tracks notable user-facing and maintainer-facing changes here. The 
 
 ### Changed
 
+- Made `YearMonthPickerItems.contains(year, month)` return `false` for raw year/month values outside
+  the supported ranges instead of constructing an invalid `YearMonth`.
 - Clarified the state and callback usage pattern in README and picker KDoc so apps can distinguish
   user-driven `onSelected*Change` callbacks from programmatic `state.select*` changes.
 - Made custom item-list and constraint validation errors for date, time, and year/month pickers

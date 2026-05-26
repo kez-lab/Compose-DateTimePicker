@@ -397,11 +397,15 @@ data class YearMonthPickerItems(
 
     /**
      * Returns whether [year] and [month] are directly selectable.
+     *
+     * Values outside the supported year or month ranges return false.
      */
-    fun contains(year: Int, month: Int): Boolean =
-        year in yearItems &&
+    fun contains(year: Int, month: Int): Boolean {
+        if (year !in 1000..9999 || month !in 1..12) return false
+        return year in yearItems &&
                 month in monthItems &&
                 constraints.contains(YearMonth(year = year, month = month))
+    }
 
     /**
      * Returns whether the year/month portion of [date] is directly selectable.
