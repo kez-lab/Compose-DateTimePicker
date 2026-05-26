@@ -9,6 +9,7 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
 import kotlin.test.assertNotEquals
+import kotlin.test.assertTrue
 
 /**
  * Unit tests for [YearMonthPickerState] class.
@@ -430,13 +431,18 @@ class YearMonthPickerStateTest {
             initialMonth = 6
         )
 
-        assertFailsWith<IllegalArgumentException> {
+        val error = assertFailsWith<IllegalArgumentException> {
             validateYearMonthPickerItems(
                 state = state,
                 yearItems = (2025..2030).toList(),
                 monthItems = listOf(3, 6, 9, 12)
             )
         }
+
+        val message = error.message.orEmpty()
+        assertTrue(message.contains("rememberYearMonthPickerState(items = items"))
+        assertTrue(message.contains("items.coerceYearMonth"))
+        assertTrue(message.contains("state.selectYearMonth(yearMonth, items)"))
     }
 
     @Test
@@ -491,6 +497,9 @@ class YearMonthPickerStateTest {
         }
 
         assertEquals(true, error.message.orEmpty().contains("constraints"))
+        assertTrue(error.message.orEmpty().contains("rememberYearMonthPickerState(items = items"))
+        assertTrue(error.message.orEmpty().contains("items.coerceYearMonth"))
+        assertTrue(error.message.orEmpty().contains("state.selectYearMonth(yearMonth, items)"))
     }
 
     @Test

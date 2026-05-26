@@ -364,7 +364,7 @@ class TimePickerStateTest {
             timeFormat = TimeFormat.HOUR_24
         )
 
-        assertFailsWith<IllegalArgumentException> {
+        val error = assertFailsWith<IllegalArgumentException> {
             validateTimePickerItems(
                 state = state,
                 minuteItems = listOf(0, 15, 45),
@@ -372,6 +372,11 @@ class TimePickerStateTest {
                 periodItems = emptyList()
             )
         }
+
+        val message = error.message.orEmpty()
+        assertTrue(message.contains("rememberTimePickerState(items = items"))
+        assertTrue(message.contains("items.coerceTime"))
+        assertTrue(message.contains("state.selectTime(time, items)"))
     }
 
     @Test
@@ -958,6 +963,9 @@ class TimePickerStateTest {
         }
 
         assertTrue(error.message.orEmpty().contains("constraints"))
+        assertTrue(error.message.orEmpty().contains("rememberTimePickerState(items = items"))
+        assertTrue(error.message.orEmpty().contains("items.coerceTime"))
+        assertTrue(error.message.orEmpty().contains("state.selectTime(time, items)"))
     }
 
     @Test

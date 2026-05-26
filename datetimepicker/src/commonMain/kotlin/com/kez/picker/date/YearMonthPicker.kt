@@ -175,21 +175,30 @@ internal fun validateYearMonthPickerItems(
                 "Invalid values: $invalidMonths"
     }
     require(state.selectedYear in yearItems) {
-        "YearMonthPicker yearItems must contain state.selectedYear=${state.selectedYear}."
+        "YearMonthPicker yearItems must contain state.selectedYear=${state.selectedYear}. " +
+                yearMonthPickerStateItemsAdvice()
     }
     require(state.selectedMonth in monthItems) {
-        "YearMonthPicker monthItems must contain state.selectedMonth=${state.selectedMonth}."
+        "YearMonthPicker monthItems must contain state.selectedMonth=${state.selectedMonth}. " +
+                yearMonthPickerStateItemsAdvice()
     }
     val availableYearItems = items.selectableYearItems()
     require(state.selectedYear in availableYearItems) {
-        "YearMonthPicker constraints must allow state.selectedYear=${state.selectedYear}."
+        "YearMonthPicker constraints must allow state.selectedYear=${state.selectedYear}. " +
+                yearMonthPickerStateItemsAdvice()
     }
     val availableMonthItems = items.selectableMonthItemsFor(state.selectedYear)
     require(state.selectedMonth in availableMonthItems) {
         "YearMonthPicker constraints must allow state.selectedMonth=${state.selectedMonth} " +
-                "for selectedYear=${state.selectedYear}."
+                "for selectedYear=${state.selectedYear}. " +
+                yearMonthPickerStateItemsAdvice()
     }
 }
+
+private fun yearMonthPickerStateItemsAdvice(): String =
+    "Use rememberYearMonthPickerState(items = items, initialYearMonth = ...) for initial values. " +
+            "For later programmatic changes, coerce app values with items.coerceYearMonth(...) and " +
+            "call state.selectYearMonth(yearMonth, items) before composing YearMonthPicker."
 
 private fun List<Int>.invalidValuesFor(range: IntRange): List<Int> =
     filterNot { it in range }.distinct()
