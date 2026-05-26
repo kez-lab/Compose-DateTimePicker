@@ -30,6 +30,10 @@ import kotlinx.datetime.LocalDate
  * @param pickerModifier The modifier to be applied to each child picker column.
  * @param state The state object to control the selected date range.
  * @param onSelectedDateRangeChange Called after user interaction changes the selected range.
+ * Programmatic [DateRangePickerState.selectDateRange], [DateRangePickerState.selectStartDate], and
+ * [DateRangePickerState.selectEndDate] calls update [state] directly and do not invoke this
+ * callback. When app code changes the picker from a button, preset, or external value, update any
+ * app-owned state in the same handler.
  * @param enabled Whether user scroll, click, and accessibility selection actions are enabled.
  * @param items Selectable year/month/day item lists plus optional inclusive date bounds.
  * @param display Visible item text formatters for each picker column.

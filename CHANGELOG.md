@@ -75,6 +75,8 @@ This project tracks notable user-facing and maintainer-facing changes here. The 
 
 ### Changed
 
+- Clarified the state and callback usage pattern in README and picker KDoc so apps can distinguish
+  user-driven `onSelected*Change` callbacks from programmatic `state.select*` changes.
 - Ensured `DateRangePicker` dispatches `onSelectedDateRangeChange` when a child date picker changes
   the start or end date.
 - Clarified `DateRangePicker` callback and spacing parameter documentation in both READMEs.

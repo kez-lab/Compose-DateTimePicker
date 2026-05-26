@@ -30,6 +30,9 @@ import com.kez.picker.pickerColumnModifier
  * @param pickerModifier The modifier to be applied to each picker.
  * @param state The state object to control the picker.
  * @param onSelectedYearMonthChange Called after user interaction changes the selected year/month.
+ * Programmatic [YearMonthPickerState.selectYearMonth] and [YearMonthPickerState.selectDate] calls
+ * update [state] directly and do not invoke this callback. When app code changes the picker from a
+ * button, preset, or external value, update any app-owned state in the same handler.
  * @param enabled Whether user scroll, click, and accessibility selection actions are enabled.
  * @param items Selectable year and month item lists plus optional year/month bounds for the picker.
  * @param display Visible item text formatters for each picker column.

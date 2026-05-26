@@ -58,6 +58,22 @@ For release notes and upgrade-impact details, see [CHANGELOG.md](CHANGELOG.md).
 
 > The examples below target the current `main` branch API. They may require unreleased `0.6.0` APIs rather than the public `0.4.0` dependency shown above.
 
+### State and Callback Pattern
+
+For `TimePicker`, `DatePicker`, `DateRangePicker`, and `YearMonthPicker`, create the picker state
+once with `remember*State(...)` and pass that same state object to the composable. Inside the picker
+UI, that state object is the source of truth for the currently selected value.
+
+- Read the current value from `state.selectedTime`, `state.selectedDate`,
+  `state.selectedDateRange`, or `state.selectedYearMonth`.
+- Use `onSelected*Change` when you need to mirror user-driven picker changes into app state,
+  a `ViewModel`, or form data.
+- `onSelected*Change` is not called when your app calls `state.select*` programmatically. If a
+  button, preset, or external value changes the picker, call `state.select*(...)` and update your
+  app-owned value in the same handler.
+- Do not recreate `remember*State` just to reset the picker. Keep the state instance and call its
+  public `select*` method.
+
 ### TimePicker
 
 Use `TimePicker` for time selection. It supports both 12-hour and 24-hour formats.
