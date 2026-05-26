@@ -56,6 +56,21 @@ dependencies {
 
 > 아래 예제는 현재 `main` 브랜치 API를 기준으로 합니다. 위 설치 스니펫의 공개 `0.4.0` 의존성이 아니라, 아직 릴리스되지 않은 `0.6.0` API가 필요할 수 있습니다.
 
+### State와 Callback 사용 패턴
+
+`TimePicker`, `DatePicker`, `DateRangePicker`, `YearMonthPicker`는 `remember*State(...)`로 만든
+picker state 객체를 composable에 전달해서 사용합니다. Picker UI 내부에서 현재 선택값의 단일 source of
+truth는 이 state 객체입니다.
+
+- 현재 값은 `state.selectedTime`, `state.selectedDate`, `state.selectedDateRange`,
+  `state.selectedYearMonth`에서 읽습니다.
+- 사용자 조작으로 바뀐 값을 앱 state, `ViewModel`, form data에 반영해야 할 때만 `onSelected*Change`를
+  사용합니다.
+- 앱이 버튼, preset, 외부 값 변경으로 `state.select*`를 직접 호출할 때는 `onSelected*Change`가 호출되지
+  않습니다. 이 경우 같은 이벤트 핸들러 안에서 `state.select*(...)`와 앱이 소유한 값 갱신을 함께 수행하세요.
+- picker를 reset하려고 `remember*State`를 새로 만들지 마세요. 기존 state 객체를 유지하고 public
+  `select*` 메서드를 호출합니다.
+
 ### TimePicker
 
 시간 선택을 위해 `TimePicker`를 사용합니다. 12시간 및 24시간 형식을 지원합니다.
