@@ -686,9 +686,10 @@ custom item 값이 유효 범위를 벗어나거나, 중복이 있거나, 목록
 상태 생성 이후 선택값을 바꾸려면 `DateRange`, `LocalDate`, 또는 명시적인 year/month/day 값을
 사용해 `state.selectDateRange(...)`, `state.selectStartDate(...)`, `state.selectEndDate(...)`를
 호출합니다.
-`DateRange`도 명시적인 시작/종료 year, month, day 값으로 만들 수 있습니다. 앱이 form field 값을
-`LocalDate`로 만들기 전에 inclusive range 포함 여부를 확인해야 한다면 `range.contains(year, month, day)`를
-사용하세요.
+`DateRange`도 명시적인 시작/종료 year, month, day 값으로 만들 수 있습니다. 앱의 시작/종료 field가
+어느 순서로든 입력될 수 있다면 state에 전달하기 전에 `DateRange.ordered(startDate, endDate)` 또는
+대응되는 year/month/day overload를 사용하세요. 앱이 form field 값을 `LocalDate`로 만들기 전에
+inclusive range 포함 여부를 확인해야 한다면 `range.contains(year, month, day)`를 사용하세요.
 
 ### YearMonthPicker
 

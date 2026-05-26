@@ -14,12 +14,14 @@ class DateRangePickerStateTest {
 
     @Test
     fun dateRange_requiresOrderedDates() {
-        assertFailsWith<IllegalArgumentException> {
+        val error = assertFailsWith<IllegalArgumentException> {
             DateRange(
                 startDate = LocalDate(2026, 5, 2),
                 endDate = LocalDate(2026, 5, 1)
             )
         }
+
+        assertTrue(error.message.orEmpty().contains("DateRange.ordered"))
     }
 
     @Test
@@ -57,6 +59,32 @@ class DateRangePickerStateTest {
             startDay = 31,
             endYear = 2026,
             endMonth = 3,
+            endDay = 31
+        )
+
+        assertEquals(LocalDate(2026, 2, 28), range.startDate)
+        assertEquals(LocalDate(2026, 3, 31), range.endDate)
+    }
+
+    @Test
+    fun dateRange_ordered_ordersReversedDates() {
+        val range = DateRange.ordered(
+            startDate = LocalDate(2026, 5, 3),
+            endDate = LocalDate(2026, 5, 1)
+        )
+
+        assertEquals(LocalDate(2026, 5, 1), range.startDate)
+        assertEquals(LocalDate(2026, 5, 3), range.endDate)
+    }
+
+    @Test
+    fun dateRange_orderedDateParts_clampsInvalidDaysBeforeOrdering() {
+        val range = DateRange.ordered(
+            startYear = 2026,
+            startMonth = 3,
+            startDay = 31,
+            endYear = 2026,
+            endMonth = 2,
             endDay = 31
         )
 
@@ -146,12 +174,31 @@ class DateRangePickerStateTest {
 
     @Test
     fun dateRangePickerState_rejectsInitialStartAfterEnd() {
-        assertFailsWith<IllegalArgumentException> {
+        val error = assertFailsWith<IllegalArgumentException> {
             DateRangePickerState(
                 initialStartDate = LocalDate(2026, 5, 3),
                 initialEndDate = LocalDate(2026, 5, 1)
             )
         }
+
+        assertTrue(error.message.orEmpty().contains("DateRange.ordered"))
+    }
+
+    @Test
+    fun dateRangePickerState_selectDateRangeRejectsReversedRangeWithOrderedAdvice() {
+        val state = DateRangePickerState(
+            initialStartDate = LocalDate(2026, 5, 1),
+            initialEndDate = LocalDate(2026, 5, 3)
+        )
+
+        val error = assertFailsWith<IllegalArgumentException> {
+            state.selectDateRange(
+                startDate = LocalDate(2026, 5, 3),
+                endDate = LocalDate(2026, 5, 1)
+            )
+        }
+
+        assertTrue(error.message.orEmpty().contains("DateRange.ordered"))
     }
 
     @Test

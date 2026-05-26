@@ -158,6 +158,11 @@ final class com.kez.picker.date/DateRange { // com.kez.picker.date/DateRange|nul
     final fun equals(kotlin/Any?): kotlin/Boolean // com.kez.picker.date/DateRange.equals|equals(kotlin.Any?){}[0]
     final fun hashCode(): kotlin/Int // com.kez.picker.date/DateRange.hashCode|hashCode(){}[0]
     final fun toString(): kotlin/String // com.kez.picker.date/DateRange.toString|toString(){}[0]
+
+    final object Companion { // com.kez.picker.date/DateRange.Companion|null[0]
+        final fun ordered(kotlin/Int, kotlin/Int, kotlin/Int, kotlin/Int = ..., kotlin/Int = ..., kotlin/Int = ...): com.kez.picker.date/DateRange // com.kez.picker.date/DateRange.Companion.ordered|ordered(kotlin.Int;kotlin.Int;kotlin.Int;kotlin.Int;kotlin.Int;kotlin.Int){}[0]
+        final fun ordered(kotlinx.datetime/LocalDate, kotlinx.datetime/LocalDate): com.kez.picker.date/DateRange // com.kez.picker.date/DateRange.Companion.ordered|ordered(kotlinx.datetime.LocalDate;kotlinx.datetime.LocalDate){}[0]
+    }
 }
 
 final class com.kez.picker.date/DateRangePickerState { // com.kez.picker.date/DateRangePickerState|null[0]
