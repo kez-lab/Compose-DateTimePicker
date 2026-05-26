@@ -2,6 +2,7 @@ package com.kez.picker
 
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertFailsWith
 import kotlin.test.assertTrue
 
 /**
@@ -66,6 +67,65 @@ class PickerUtilsTest {
         for (count in invalidCounts) {
             assertTrue(count % 2 == 0, "Count $count should be an even number")
         }
+    }
+
+    @Test
+    fun validatePickerInput_throwsActionableMessageWhenItemsEmpty() {
+        val error = assertFailsWith<IllegalArgumentException> {
+            validatePickerInput(
+                items = emptyList(),
+                selectedItem = "Small",
+                visibleItemsCount = 3
+            )
+        }
+
+        val message = error.message.orEmpty()
+        assertTrue(message.contains("Picker items must not be empty"))
+        assertTrue(message.contains("keep selectedItem from that list"))
+    }
+
+    @Test
+    fun validatePickerInput_throwsActionableMessageWhenItemsContainDuplicates() {
+        val error = assertFailsWith<IllegalArgumentException> {
+            validatePickerInput(
+                items = listOf("Small", "Small"),
+                selectedItem = "Small",
+                visibleItemsCount = 3
+            )
+        }
+
+        val message = error.message.orEmpty()
+        assertTrue(message.contains("item equality"))
+        assertTrue(message.contains("stable unique item values"))
+    }
+
+    @Test
+    fun validatePickerInput_throwsActionableMessageWhenSelectedItemMissing() {
+        val error = assertFailsWith<IllegalArgumentException> {
+            validatePickerInput(
+                items = listOf("Small", "Medium", "Large"),
+                selectedItem = "Extra Large",
+                visibleItemsCount = 3
+            )
+        }
+
+        val message = error.message.orEmpty()
+        assertTrue(message.contains("Picker<T> is controlled"))
+        assertTrue(message.contains("update the app-owned selectedItem when items change"))
+        assertTrue(message.contains("coerce it to one of items"))
+    }
+
+    @Test
+    fun validatePickerInput_throwsActionableMessageWhenVisibleItemsCountInvalid() {
+        val error = assertFailsWith<IllegalArgumentException> {
+            validatePickerInput(
+                items = listOf("Small", "Medium", "Large"),
+                selectedItem = "Medium",
+                visibleItemsCount = 4
+            )
+        }
+
+        assertTrue(error.message.orEmpty().contains("PickerDefaults.style(visibleItemsCount = ...)"))
     }
 
     // ==================== List Middle Calculation Tests ====================
