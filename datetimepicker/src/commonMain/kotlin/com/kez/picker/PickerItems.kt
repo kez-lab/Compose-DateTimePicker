@@ -23,7 +23,9 @@ data class TimePickerConstraints(
     init {
         if (minTime != null && maxTime != null) {
             require(minTime <= maxTime) {
-                "TimePicker minTime must be on or before maxTime. minTime=$minTime, maxTime=$maxTime"
+                "TimePicker minTime must be on or before maxTime. minTime=$minTime, " +
+                        "maxTime=$maxTime. If app input can arrive in either order, sort it " +
+                        "before creating TimePickerConstraints."
             }
         }
     }
@@ -198,7 +200,9 @@ data class TimePickerItems(
             TimeFormat.HOUR_12 -> selectablePeriodItems().isNotEmpty()
         }
         require(hasSelectableTime) {
-            "TimePicker items must contain at least one time allowed by constraints."
+            "TimePicker items must contain at least one time allowed by constraints. Adjust " +
+                    "minTime/maxTime or include at least one hour/minute/period combination " +
+                    "inside the allowed range."
         }
     }
 }
@@ -216,7 +220,9 @@ data class DatePickerConstraints(
     init {
         if (minDate != null && maxDate != null) {
             require(minDate <= maxDate) {
-                "DatePicker minDate must be on or before maxDate. minDate=$minDate, maxDate=$maxDate"
+                "DatePicker minDate must be on or before maxDate. minDate=$minDate, " +
+                        "maxDate=$maxDate. If app input can arrive in either order, sort it " +
+                        "before creating DatePickerConstraints."
             }
         }
     }
@@ -341,7 +347,9 @@ data class DatePickerItems(
             }
         }
         require(selectableYearItems().isNotEmpty()) {
-            "DatePicker items must contain at least one date allowed by constraints."
+            "DatePicker items must contain at least one date allowed by constraints. Adjust " +
+                    "minDate/maxDate or include at least one matching year/month/day item " +
+                    "inside the allowed range."
         }
     }
 }
@@ -360,7 +368,9 @@ data class YearMonthPickerConstraints(
         if (minYearMonth != null && maxYearMonth != null) {
             require(minYearMonth <= maxYearMonth) {
                 "YearMonthPicker minYearMonth must be on or before maxYearMonth. " +
-                        "minYearMonth=$minYearMonth, maxYearMonth=$maxYearMonth"
+                        "minYearMonth=$minYearMonth, maxYearMonth=$maxYearMonth. If app input " +
+                        "can arrive in either order, sort it before creating " +
+                        "YearMonthPickerConstraints."
             }
         }
     }
@@ -464,7 +474,9 @@ data class YearMonthPickerItems(
         yearItems.requireIntItems(name = "YearMonthPicker yearItems", range = 1000..9999)
         monthItems.requireIntItems(name = "YearMonthPicker monthItems", range = 1..12)
         require(selectableYearItems().isNotEmpty()) {
-            "YearMonthPicker items must contain at least one year/month allowed by constraints."
+            "YearMonthPicker items must contain at least one year/month allowed by constraints. " +
+                    "Adjust minYearMonth/maxYearMonth or include at least one matching " +
+                    "year/month item pair inside the allowed range."
         }
     }
 }

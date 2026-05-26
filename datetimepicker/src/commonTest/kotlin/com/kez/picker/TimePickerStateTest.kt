@@ -763,12 +763,14 @@ class TimePickerStateTest {
 
     @Test
     fun timePickerConstraints_throwsWhenMinimumIsAfterMaximum() {
-        assertFailsWith<IllegalArgumentException> {
+        val error = assertFailsWith<IllegalArgumentException> {
             TimePickerConstraints(
                 minTime = LocalTime(18, 0),
                 maxTime = LocalTime(9, 0)
             )
         }
+
+        assertTrue(error.message.orEmpty().contains("sort it before creating TimePickerConstraints"))
     }
 
     @Test
@@ -817,6 +819,28 @@ class TimePickerStateTest {
             LocalTime(9, 30),
             items.coerceTime(hour = 8, minute = 0, timeFormat = TimeFormat.HOUR_24)
         )
+    }
+
+    @Test
+    fun timePickerItems_coerceTime_throwsActionableMessageWhenConstraintsFilterEveryTime() {
+        val items = TimePickerItems(
+            minuteItems = listOf(0),
+            hour24Items = listOf(9),
+            hour12Items = emptyList(),
+            periodItems = emptyList(),
+            constraints = TimePickerConstraints(
+                minTime = LocalTime(10, 0),
+                maxTime = LocalTime(11, 0)
+            )
+        )
+
+        val error = assertFailsWith<IllegalArgumentException> {
+            items.coerceTime(LocalTime(9, 0), TimeFormat.HOUR_24)
+        }
+
+        val message = error.message.orEmpty()
+        assertTrue(message.contains("minTime/maxTime"))
+        assertTrue(message.contains("hour/minute/period"))
     }
 
     @Test
