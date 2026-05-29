@@ -131,17 +131,12 @@ fun <T : Any> Picker(
     isInfinity: Boolean = true,
     content: @Composable ((PickerItemScope<T>) -> Unit)? = null
 ) {
-    require(items.isNotEmpty()) { "Items list must not be empty" }
-    require(items.distinct().size == items.size) {
-        "Items list must not contain duplicate values because Picker uses item equality as its selection key."
-    }
-    require(selectedItem in items) {
-        "selectedItem must exist in items. selectedItem=$selectedItem, items=$items"
-    }
     val visibleItemsCount = style.visibleItemsCount
-    require(visibleItemsCount > 0 && visibleItemsCount % 2 == 1) {
-        "visibleItemsCount must be a positive odd number, but was $visibleItemsCount"
-    }
+    validatePickerInput(
+        items = items,
+        selectedItem = selectedItem,
+        visibleItemsCount = visibleItemsCount
+    )
 
     val density = LocalDensity.current
     val textMeasurer = rememberTextMeasurer(cacheSize = 16)
@@ -535,6 +530,30 @@ fun <T : Any> Picker(
                 }
             }
         }
+    }
+}
+
+internal fun <T : Any> validatePickerInput(
+    items: List<T>,
+    selectedItem: T,
+    visibleItemsCount: Int
+) {
+    require(items.isNotEmpty()) {
+        "Picker items must not be empty. Provide at least one item and keep selectedItem from that list."
+    }
+    require(items.distinct().size == items.size) {
+        "Picker items must not contain duplicate values because Picker uses item equality as its " +
+                "selection key. Use stable unique item values or pass unique IDs as items when " +
+                "display labels repeat."
+    }
+    require(selectedItem in items) {
+        "selectedItem must exist in items. Picker<T> is controlled, so update the app-owned " +
+                "selectedItem when items change or coerce it to one of items before composing " +
+                "Picker. selectedItem=$selectedItem, items=$items"
+    }
+    require(visibleItemsCount > 0 && visibleItemsCount % 2 == 1) {
+        "PickerDefaults.style(visibleItemsCount = ...) must use a positive odd number, but was " +
+                "$visibleItemsCount."
     }
 }
 

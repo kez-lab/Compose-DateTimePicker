@@ -77,6 +77,8 @@ This project tracks notable user-facing and maintainer-facing changes here. The 
 
 ### Changed
 
+- Made generic `Picker<T>` validation errors explain how to recover from empty lists, duplicate
+  values, invalid `selectedItem`, and invalid `visibleItemsCount` configuration.
 - Clarified the state and callback usage pattern in README and picker KDoc so apps can distinguish
   user-driven `onSelected*Change` callbacks from programmatic `state.select*` changes.
 - Made custom item-list and constraint validation errors for date, time, and year/month pickers

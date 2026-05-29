@@ -487,8 +487,9 @@ fun SizePickerExample() {
 
 `Picker<T>`는 controlled component입니다. 선택값은 앱 state에 보관하고, 그 값을 `selectedItem`으로
 전달하며, `onSelectedItemChange`에서 앱 state를 갱신하세요. `items`는 비어 있으면 안 되고 중복값이
-없어야 하며, `selectedItem`은 반드시 `items` 안에 있어야 합니다. `T`가 saveable하지 않다면 앱 state에는
-saveable한 key를 저장한 뒤 렌더링 전에 그 key를 item으로 매핑하세요.
+없어야 하며, `selectedItem`은 반드시 `items` 안에 있어야 합니다. `items`가 바뀔 수 있다면 렌더링 전에
+앱이 소유한 `selectedItem`을 새 목록의 값으로 갱신하거나 보정하세요. `T`가 saveable하지 않다면 앱
+state에는 saveable한 key를 저장한 뒤 렌더링 전에 그 key를 item으로 매핑하세요.
 현재 값을 표시하되 사용자의 scroll, click, accessibility 선택 action을 막아야 한다면 `enabled = false`를
 전달하세요. Disabled picker는 기본 텍스트, divider, 선택 영역 배경에 `PickerDefaults.colors(...)`의
 disabled 색상 슬롯을 사용합니다.
