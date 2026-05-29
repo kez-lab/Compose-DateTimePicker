@@ -382,12 +382,14 @@ class DatePickerStateTest {
 
     @Test
     fun datePickerConstraints_throwsWhenMinimumIsAfterMaximum() {
-        assertFailsWith<IllegalArgumentException> {
+        val error = assertFailsWith<IllegalArgumentException> {
             DatePickerConstraints(
                 minDate = LocalDate(year = 2026, month = Month.JUNE, day = 20),
                 maxDate = LocalDate(year = 2026, month = Month.MAY, day = 10)
             )
         }
+
+        assertTrue(error.message.orEmpty().contains("sort it before creating DatePickerConstraints"))
     }
 
     @Test
@@ -428,6 +430,27 @@ class DatePickerStateTest {
             LocalDate(year = 2026, month = Month.JUNE, day = 20),
             items.coerceDate(LocalDate(year = 2026, month = Month.DECEMBER, day = 31))
         )
+    }
+
+    @Test
+    fun datePickerItems_coerceDate_throwsActionableMessageWhenConstraintsFilterEveryDate() {
+        val items = DatePickerItems(
+            yearItems = listOf(2026),
+            monthItems = listOf(1),
+            dayItems = listOf(1),
+            constraints = DatePickerConstraints(
+                minDate = LocalDate(year = 2026, month = Month.MAY, day = 10),
+                maxDate = LocalDate(year = 2026, month = Month.JUNE, day = 20)
+            )
+        )
+
+        val error = assertFailsWith<IllegalArgumentException> {
+            items.coerceDate(LocalDate(year = 2026, month = Month.JANUARY, day = 1))
+        }
+
+        val message = error.message.orEmpty()
+        assertTrue(message.contains("minDate/maxDate"))
+        assertTrue(message.contains("year/month/day"))
     }
 
     @Test

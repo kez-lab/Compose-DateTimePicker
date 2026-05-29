@@ -491,8 +491,10 @@ fun SizePickerExample() {
 
 `Picker<T>` is a controlled component. Keep the selected value in app state, pass it through
 `selectedItem`, and update that state from `onSelectedItemChange`. `items` must be non-empty and
-distinct, and `selectedItem` must exist in `items`. If `T` is not saveable, store a saveable key in
-your app state and map that key back to an item before rendering the picker.
+distinct, and `selectedItem` must exist in `items`. If `items` can change, update or coerce the
+app-owned `selectedItem` to one of the new values before rendering the picker. If `T` is not
+saveable, store a saveable key in your app state and map that key back to an item before rendering
+the picker.
 Pass `enabled = false` to prevent user scroll, click, and accessibility selection actions while still
 showing the current value. Disabled pickers use the disabled slots from `PickerDefaults.colors(...)`
 for default text, dividers, and selected-item backgrounds.
