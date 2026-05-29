@@ -15,10 +15,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import com.kez.picker.DatePickerDisplay
+import com.kez.picker.DatePickerFormat
 import com.kez.picker.DatePickerItems
 import com.kez.picker.DatePickerLayout
-import com.kez.picker.DateRangePickerAccessibility
+import com.kez.picker.DateRangePickerSemantics
 import com.kez.picker.PickerDefaults
 import com.kez.picker.PickerStyle
 import kotlinx.datetime.LocalDate
@@ -34,16 +34,16 @@ import kotlinx.datetime.LocalDate
  * [DateRangePickerState.selectEndDate] calls update [state] directly and do not invoke this
  * callback. When app code changes the picker from a button, preset, or external value, update any
  * app-owned state in the same handler.
- * @param enabled Whether user scroll, click, and accessibility selection actions are enabled.
+ * @param enabled Whether user scroll, click, and semantics selection actions are enabled.
  * @param items Selectable year/month/day item lists plus optional inclusive date bounds.
- * @param display Visible item text formatters for each picker column.
+ * @param format Visible item text and optional accessibility value descriptions shared by both child pickers.
  * @param style Visual and layout styling for each picker column.
  * @param layout Column layout weights and visual order for each child [DatePicker].
  * @param spacingBetweenPickers Horizontal spacing between columns inside each child [DatePicker].
  * @param spacingBetweenDatePickers Vertical spacing between start and end pickers.
  * @param startLabel Optional visible label displayed above the start picker.
  * @param endLabel Optional visible label displayed above the end picker.
- * @param accessibility Accessibility labels for the start and end pickers.
+ * @param semantics Accessibility labels for the start and end pickers.
  */
 @Composable
 fun DateRangePicker(
@@ -53,14 +53,14 @@ fun DateRangePicker(
     onSelectedDateRangeChange: (DateRange) -> Unit = {},
     enabled: Boolean = true,
     items: DatePickerItems = PickerDefaults.datePickerItems(),
-    display: DatePickerDisplay = PickerDefaults.datePickerDisplay(),
+    format: DatePickerFormat = PickerDefaults.datePickerFormat(),
     style: PickerStyle = PickerDefaults.style(),
     layout: DatePickerLayout = PickerDefaults.datePickerLayout(),
     spacingBetweenPickers: Dp = PickerDefaults.SpacingBetweenPickers,
     spacingBetweenDatePickers: Dp = 16.dp,
     startLabel: (@Composable () -> Unit)? = { DateRangePickerLabel("Start date") },
     endLabel: (@Composable () -> Unit)? = { DateRangePickerLabel("End date") },
-    accessibility: DateRangePickerAccessibility = PickerDefaults.dateRangePickerAccessibility()
+    semantics: DateRangePickerSemantics = PickerDefaults.dateRangePickerSemantics()
 ) {
     var lastObservedRange by remember(state) { mutableStateOf(state.selectedDateRange) }
 
@@ -94,11 +94,11 @@ fun DateRangePicker(
                     },
                     enabled = enabled,
                     items = items,
-                    display = display,
+                    format = format,
                     style = style,
                     layout = layout,
                     spacingBetweenPickers = spacingBetweenPickers,
-                    accessibility = accessibility.start
+                    semantics = semantics.start
                 )
             }
         }
@@ -115,11 +115,11 @@ fun DateRangePicker(
                     },
                     enabled = enabled,
                     items = items,
-                    display = display,
+                    format = format,
                     style = style,
                     layout = layout,
                     spacingBetweenPickers = spacingBetweenPickers,
-                    accessibility = accessibility.end
+                    semantics = semantics.end
                 )
             }
         }

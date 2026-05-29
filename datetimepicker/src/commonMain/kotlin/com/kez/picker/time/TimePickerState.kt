@@ -56,7 +56,7 @@ fun rememberTimePickerState(
 /**
  * Creates and remembers a [TimePickerState] from a [LocalTime].
  *
- * When [timeFormat] is [TimeFormat.HOUR_12], the hour is converted to the display-hour range (1-12)
+ * When [timeFormat] is [TimeFormat.HOUR_12], the hour is converted to the format-hour range (1-12)
  * and the AM/PM period is derived from [initialTime].
  *
  * @param initialTime The initial time to be selected.
@@ -229,7 +229,7 @@ class TimePickerState(
     /**
      * Creates a [TimePickerState] from a [LocalTime].
      *
-     * When [timeFormat] is [TimeFormat.HOUR_12], the hour is converted to the display-hour range
+     * When [timeFormat] is [TimeFormat.HOUR_12], the hour is converted to the format-hour range
      * and the AM/PM period is derived from [initialTime].
      */
     constructor(
@@ -300,7 +300,7 @@ class TimePickerState(
      * Programmatically selects [time].
      *
      * The hour is converted to the current [timeFormat]. In 12-hour mode, the AM/PM period is derived from
-     * [time]. In 24-hour mode, [selectedPeriod] is still updated for consistency but is not displayed by
+     * [time]. In 24-hour mode, [selectedPeriod] is still updated for consistency but is not formatted by
      * [TimePicker].
      */
     fun selectTime(time: LocalTime) {
@@ -312,7 +312,7 @@ class TimePickerState(
     /**
      * Programmatically selects a time from 24-hour clock parts.
      *
-     * [hour] is interpreted as hour-of-day in `0..23`. In 12-hour mode, the display hour and AM/PM
+     * [hour] is interpreted as hour-of-day in `0..23`. In 12-hour mode, the format hour and AM/PM
      * period are derived from [hour].
      *
      * @throws IllegalArgumentException if [hour] or [minute] is outside the supported range.

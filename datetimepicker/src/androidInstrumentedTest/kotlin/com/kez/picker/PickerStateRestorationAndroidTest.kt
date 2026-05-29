@@ -118,13 +118,15 @@ class PickerStateRestorationAndroidTest {
             TimePicker(
                 state = state,
                 style = PickerDefaults.style(visibleItemsCount = 3),
-                accessibility = PickerDefaults.timePickerAccessibility(
-                    hourPickerLabel = "Hour",
-                    minutePickerLabel = "Minute",
-                    periodPickerLabel = "Period",
+                format = PickerDefaults.timePickerFormat(
                     hourItemContentDescription = { "$it hour" },
                     minuteItemContentDescription = { "$it minute" },
                     periodItemContentDescription = { "$it period" }
+                ),
+                semantics = PickerDefaults.timePickerSemantics(
+                    hourPickerLabel = "Hour",
+                    minutePickerLabel = "Minute",
+                    periodPickerLabel = "Period"
                 )
             )
         }
@@ -218,13 +220,15 @@ class PickerStateRestorationAndroidTest {
                     monthItems = listOf(1, 2)
                 ),
                 style = PickerDefaults.style(visibleItemsCount = 3),
-                accessibility = PickerDefaults.datePickerAccessibility(
-                    yearPickerLabel = "Year",
-                    monthPickerLabel = "Month",
-                    dayPickerLabel = "Day",
+                format = PickerDefaults.datePickerFormat(
                     yearItemContentDescription = { "$it year" },
                     monthItemContentDescription = { "$it month" },
                     dayItemContentDescription = { "$it day" }
+                ),
+                semantics = PickerDefaults.datePickerSemantics(
+                    yearPickerLabel = "Year",
+                    monthPickerLabel = "Month",
+                    dayPickerLabel = "Day"
                 )
             )
         }
@@ -289,11 +293,13 @@ class PickerStateRestorationAndroidTest {
                     monthItems = listOf(5, 12)
                 ),
                 style = PickerDefaults.style(visibleItemsCount = 3),
-                accessibility = PickerDefaults.yearMonthPickerAccessibility(
-                    yearPickerLabel = "Year",
-                    monthPickerLabel = "Month",
+                format = PickerDefaults.yearMonthPickerFormat(
                     yearItemContentDescription = { "$it year" },
                     monthItemContentDescription = { "$it month" }
+                ),
+                semantics = PickerDefaults.yearMonthPickerSemantics(
+                    yearPickerLabel = "Year",
+                    monthPickerLabel = "Month"
                 )
             )
         }

@@ -35,13 +35,14 @@ import kotlinx.datetime.LocalTime
 import kotlinx.datetime.Month
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
+import org.junit.Assert.fail
 import org.junit.Rule
 import org.junit.Test
 
 private const val PREVIOUS_VALUE_ACTION_LABEL = "Previous value"
 private const val NEXT_VALUE_ACTION_LABEL = "Next value"
 
-class PickerAccessibilitySemanticsAndroidTest {
+class PickerSemanticsAndroidTest {
 
     @get:Rule
     val composeRule = createComposeRule()
@@ -55,9 +56,8 @@ class PickerAccessibilitySemanticsAndroidTest {
                 selectedItem = selectedItem,
                 onSelectedItemChange = { selectedItem = it },
                 isInfinity = false,
-                accessibility = PickerDefaults.accessibility(
-                    pickerLabel = "Hour",
-                    itemContentDescription = { "$it" }
+                semantics = PickerDefaults.semantics(
+                    pickerLabel = "Hour"
                 )
             )
         }
@@ -81,9 +81,11 @@ class PickerAccessibilitySemanticsAndroidTest {
                 onSelectedItemChange = { selectedItem = it },
                 style = PickerDefaults.style(visibleItemsCount = 3),
                 isInfinity = false,
-                accessibility = PickerDefaults.accessibility(
-                    pickerLabel = "Day",
+                format = PickerDefaults.itemFormat(
                     itemContentDescription = { "$it day" }
+                ),
+                semantics = PickerDefaults.semantics(
+                    pickerLabel = "Day"
                 )
             )
         }
@@ -115,9 +117,8 @@ class PickerAccessibilitySemanticsAndroidTest {
                 onSelectedItemChange = { selectedItemState.value = it },
                 style = PickerDefaults.style(visibleItemsCount = 3),
                 isInfinity = false,
-                accessibility = PickerDefaults.accessibility(
+                semantics = PickerDefaults.semantics(
                     pickerLabel = "Value",
-                    itemContentDescription = { "$it" },
                     previousItemActionLabel = PREVIOUS_VALUE_ACTION_LABEL,
                     nextItemActionLabel = NEXT_VALUE_ACTION_LABEL
                 )
@@ -163,9 +164,8 @@ class PickerAccessibilitySemanticsAndroidTest {
                 onSelectedItemChange = { selectedItem = it },
                 style = PickerDefaults.style(visibleItemsCount = 3),
                 isInfinity = false,
-                accessibility = PickerDefaults.accessibility(
+                semantics = PickerDefaults.semantics(
                     pickerLabel = "Value",
-                    itemContentDescription = { "$it" },
                     previousItemActionLabel = PREVIOUS_VALUE_ACTION_LABEL,
                     nextItemActionLabel = NEXT_VALUE_ACTION_LABEL
                 )
@@ -192,6 +192,102 @@ class PickerAccessibilitySemanticsAndroidTest {
     }
 
     @Test
+    fun datePicker_yearColumnCustomAccessibilityActionsRespectBoundedEdges() {
+        composeRule.setContent {
+            val items = PickerDefaults.datePickerItems(
+                yearItems = listOf(2026, 2027),
+                monthItems = listOf(1),
+                dayItems = listOf(1)
+            )
+            val state = rememberDatePickerState(
+                items = items,
+                initialDate = LocalDate(2026, 1, 1)
+            )
+            DatePicker(
+                state = state,
+                items = items,
+                style = PickerDefaults.style(visibleItemsCount = 3),
+                semantics = PickerDefaults.datePickerSemantics(
+                    yearPickerLabel = "Year",
+                    previousItemActionLabel = PREVIOUS_VALUE_ACTION_LABEL,
+                    nextItemActionLabel = NEXT_VALUE_ACTION_LABEL
+                )
+            )
+        }
+
+        assertNoCustomAccessibilityAction("Year: 2026", PREVIOUS_VALUE_ACTION_LABEL)
+        assertCustomAccessibilityAction("Year: 2026", NEXT_VALUE_ACTION_LABEL)
+
+        performCustomAccessibilityAction(
+            contentDescription = "Year: 2026",
+            actionLabel = NEXT_VALUE_ACTION_LABEL
+        )
+        waitUntilSelectedItem("Year: 2027")
+
+        assertCustomAccessibilityAction("Year: 2027", PREVIOUS_VALUE_ACTION_LABEL)
+        assertNoCustomAccessibilityAction("Year: 2027", NEXT_VALUE_ACTION_LABEL)
+    }
+
+    @Test
+    fun yearMonthPicker_yearColumnCustomAccessibilityActionsRespectBoundedEdges() {
+        composeRule.setContent {
+            val items = PickerDefaults.yearMonthPickerItems(
+                yearItems = listOf(2026, 2027),
+                monthItems = listOf(5)
+            )
+            val state = rememberYearMonthPickerState(
+                items = items,
+                initialYearMonth = YearMonth(2026, 5)
+            )
+            YearMonthPicker(
+                state = state,
+                items = items,
+                style = PickerDefaults.style(visibleItemsCount = 3),
+                semantics = PickerDefaults.yearMonthPickerSemantics(
+                    yearPickerLabel = "Year",
+                    previousItemActionLabel = PREVIOUS_VALUE_ACTION_LABEL,
+                    nextItemActionLabel = NEXT_VALUE_ACTION_LABEL
+                )
+            )
+        }
+
+        assertNoCustomAccessibilityAction("Year: 2026", PREVIOUS_VALUE_ACTION_LABEL)
+        assertCustomAccessibilityAction("Year: 2026", NEXT_VALUE_ACTION_LABEL)
+
+        performCustomAccessibilityAction(
+            contentDescription = "Year: 2026",
+            actionLabel = NEXT_VALUE_ACTION_LABEL
+        )
+        waitUntilSelectedItem("Year: 2027")
+
+        assertCustomAccessibilityAction("Year: 2027", PREVIOUS_VALUE_ACTION_LABEL)
+        assertNoCustomAccessibilityAction("Year: 2027", NEXT_VALUE_ACTION_LABEL)
+    }
+
+    @Test
+    fun datePicker_stillThrowsWhenCurrentSelectionIsOutsideItems() {
+        val error = try {
+            composeRule.setContent {
+                val state = rememberDatePickerState(initialDate = LocalDate(2026, 1, 1))
+                DatePicker(
+                    state = state,
+                    items = PickerDefaults.datePickerItems(
+                        yearItems = listOf(2027),
+                        monthItems = listOf(1),
+                        dayItems = listOf(1)
+                    )
+                )
+            }
+            fail("Expected DatePicker to reject a selected year outside yearItems.")
+            null
+        } catch (error: IllegalArgumentException) {
+            error
+        }
+
+        assertTrue(error?.message.orEmpty().contains("DatePicker yearItems must contain state.selectedYear=2026"))
+    }
+
+    @Test
     fun picker_customAccessibilityActionsWrapInInfiniteMode() {
         composeRule.setContent {
             var selectedItem by remember { mutableStateOf(1) }
@@ -201,9 +297,8 @@ class PickerAccessibilitySemanticsAndroidTest {
                 onSelectedItemChange = { selectedItem = it },
                 style = PickerDefaults.style(visibleItemsCount = 3),
                 isInfinity = true,
-                accessibility = PickerDefaults.accessibility(
+                semantics = PickerDefaults.semantics(
                     pickerLabel = "Value",
-                    itemContentDescription = { "$it" },
                     previousItemActionLabel = PREVIOUS_VALUE_ACTION_LABEL,
                     nextItemActionLabel = NEXT_VALUE_ACTION_LABEL
                 )
@@ -233,9 +328,8 @@ class PickerAccessibilitySemanticsAndroidTest {
                 onSelectedItemChange = { selectedItem = it },
                 style = PickerDefaults.style(visibleItemsCount = 3),
                 isInfinity = true,
-                accessibility = PickerDefaults.accessibility(
+                semantics = PickerDefaults.semantics(
                     pickerLabel = "Value",
-                    itemContentDescription = { "$it" },
                     previousItemActionLabel = PREVIOUS_VALUE_ACTION_LABEL,
                     nextItemActionLabel = NEXT_VALUE_ACTION_LABEL
                 )
@@ -256,9 +350,11 @@ class PickerAccessibilitySemanticsAndroidTest {
                 onSelectedItemChange = { selectedItem = it },
                 style = PickerDefaults.style(visibleItemsCount = 3),
                 isInfinity = false,
-                accessibility = PickerDefaults.accessibility(
+                format = PickerDefaults.itemFormat(
+                    itemContentDescription = { "$it item" }
+                ),
+                semantics = PickerDefaults.semantics(
                     pickerLabel = null,
-                    itemContentDescription = { "$it item" },
                     previousItemActionLabel = PREVIOUS_VALUE_ACTION_LABEL,
                     nextItemActionLabel = NEXT_VALUE_ACTION_LABEL
                 )
@@ -286,9 +382,8 @@ class PickerAccessibilitySemanticsAndroidTest {
                 enabled = false,
                 style = PickerDefaults.style(visibleItemsCount = 3),
                 isInfinity = false,
-                accessibility = PickerDefaults.accessibility(
+                semantics = PickerDefaults.semantics(
                     pickerLabel = "Value",
-                    itemContentDescription = { "$it" },
                     previousItemActionLabel = PREVIOUS_VALUE_ACTION_LABEL,
                     nextItemActionLabel = NEXT_VALUE_ACTION_LABEL
                 )
@@ -312,9 +407,8 @@ class PickerAccessibilitySemanticsAndroidTest {
                 onSelectedItemChange = { selectedItem = it },
                 style = PickerDefaults.style(visibleItemsCount = 3),
                 isInfinity = false,
-                accessibility = PickerDefaults.accessibility(
+                semantics = PickerDefaults.semantics(
                     pickerLabel = "Value",
-                    itemContentDescription = { "$it" },
                     previousItemActionLabel = null,
                     nextItemActionLabel = " "
                 )
@@ -336,9 +430,8 @@ class PickerAccessibilitySemanticsAndroidTest {
                 onSelectedItemChange = { selectedItemState.value = it },
                 style = PickerDefaults.style(visibleItemsCount = 3),
                 isInfinity = false,
-                accessibility = PickerDefaults.accessibility(
-                    pickerLabel = "Value",
-                    itemContentDescription = { "$it" }
+                semantics = PickerDefaults.semantics(
+                    pickerLabel = "Value"
                 )
             )
         }
@@ -376,10 +469,7 @@ class PickerAccessibilitySemanticsAndroidTest {
                     periodItems = listOf(TimePeriod.AM, TimePeriod.PM)
                 ),
                 style = PickerDefaults.style(visibleItemsCount = 3),
-                accessibility = PickerDefaults.timePickerAccessibility(
-                    hourPickerLabel = "시간",
-                    minutePickerLabel = "분",
-                    periodPickerLabel = "오전/오후",
+                format = PickerDefaults.timePickerFormat(
                     hourItemContentDescription = { "${it}시" },
                     minuteItemContentDescription = { "${it}분" },
                     periodItemContentDescription = {
@@ -388,6 +478,11 @@ class PickerAccessibilitySemanticsAndroidTest {
                             TimePeriod.PM -> "오후"
                         }
                     }
+                ),
+                semantics = PickerDefaults.timePickerSemantics(
+                    hourPickerLabel = "시간",
+                    minutePickerLabel = "분",
+                    periodPickerLabel = "오전/오후"
                 )
             )
         }
@@ -419,13 +514,15 @@ class PickerAccessibilitySemanticsAndroidTest {
                     monthItems = listOf(1, 5)
                 ),
                 style = PickerDefaults.style(visibleItemsCount = 3),
-                accessibility = PickerDefaults.datePickerAccessibility(
-                    yearPickerLabel = "연도",
-                    monthPickerLabel = "월",
-                    dayPickerLabel = "일",
+                format = PickerDefaults.datePickerFormat(
                     yearItemContentDescription = { "${it}년" },
                     monthItemContentDescription = { "${it}월" },
                     dayItemContentDescription = { "${it}일" }
+                ),
+                semantics = PickerDefaults.datePickerSemantics(
+                    yearPickerLabel = "연도",
+                    monthPickerLabel = "월",
+                    dayPickerLabel = "일"
                 )
             )
         }
@@ -448,9 +545,11 @@ class PickerAccessibilitySemanticsAndroidTest {
                 selectedItem = selectedItem,
                 onSelectedItemChange = { selectedItem = it },
                 isInfinity = false,
-                accessibility = PickerDefaults.accessibility(
-                    pickerLabel = "   ",
+                format = PickerDefaults.itemFormat(
                     itemContentDescription = { "$it item" }
+                ),
+                semantics = PickerDefaults.semantics(
+                    pickerLabel = "   "
                 )
             )
         }
@@ -475,11 +574,13 @@ class PickerAccessibilitySemanticsAndroidTest {
                     hour24Items = listOf(10, 11)
                 ),
                 style = PickerDefaults.style(visibleItemsCount = 3),
-                accessibility = PickerDefaults.timePickerAccessibility(
-                    hourPickerLabel = "시간",
-                    minutePickerLabel = "분",
+                format = PickerDefaults.timePickerFormat(
                     hourItemContentDescription = { "${it}시" },
                     minuteItemContentDescription = { "${it}분" }
+                ),
+                semantics = PickerDefaults.timePickerSemantics(
+                    hourPickerLabel = "시간",
+                    minutePickerLabel = "분"
                 )
             )
         }
@@ -508,11 +609,13 @@ class PickerAccessibilitySemanticsAndroidTest {
                     hour24Items = listOf(10, 11)
                 ),
                 style = PickerDefaults.style(visibleItemsCount = 3),
-                accessibility = PickerDefaults.timePickerAccessibility(
+                format = PickerDefaults.timePickerFormat(
+                    hourItemContentDescription = { "${it}시" },
+                    minuteItemContentDescription = { "${it}분" }
+                ),
+                semantics = PickerDefaults.timePickerSemantics(
                     hourPickerLabel = "시간",
                     minutePickerLabel = "분",
-                    hourItemContentDescription = { "${it}시" },
-                    minuteItemContentDescription = { "${it}분" },
                     previousItemActionLabel = "이전 항목 선택",
                     nextItemActionLabel = "다음 항목 선택"
                 )
@@ -551,10 +654,7 @@ class PickerAccessibilitySemanticsAndroidTest {
                     periodItems = listOf(TimePeriod.AM, TimePeriod.PM)
                 ),
                 style = PickerDefaults.style(visibleItemsCount = 3),
-                accessibility = PickerDefaults.timePickerAccessibility(
-                    hourPickerLabel = "시간",
-                    minutePickerLabel = "분",
-                    periodPickerLabel = "오전/오후",
+                format = PickerDefaults.timePickerFormat(
                     hourItemContentDescription = { "${it}시" },
                     minuteItemContentDescription = { "${it}분" },
                     periodItemContentDescription = {
@@ -562,7 +662,12 @@ class PickerAccessibilitySemanticsAndroidTest {
                             TimePeriod.AM -> "오전"
                             TimePeriod.PM -> "오후"
                         }
-                    },
+                    }
+                ),
+                semantics = PickerDefaults.timePickerSemantics(
+                    hourPickerLabel = "시간",
+                    minutePickerLabel = "분",
+                    periodPickerLabel = "오전/오후",
                     previousItemActionLabel = PREVIOUS_VALUE_ACTION_LABEL,
                     nextItemActionLabel = NEXT_VALUE_ACTION_LABEL
                 )
@@ -621,11 +726,13 @@ class PickerAccessibilitySemanticsAndroidTest {
                     hour24Items = listOf(10, 11)
                 ),
                 style = PickerDefaults.style(visibleItemsCount = 3),
-                accessibility = PickerDefaults.timePickerAccessibility(
+                format = PickerDefaults.timePickerFormat(
+                    hourItemContentDescription = { "${it}시" },
+                    minuteItemContentDescription = { "${it}분" }
+                ),
+                semantics = PickerDefaults.timePickerSemantics(
                     hourPickerLabel = "시간",
                     minutePickerLabel = "분",
-                    hourItemContentDescription = { "${it}시" },
-                    minuteItemContentDescription = { "${it}분" },
                     nextItemActionLabel = NEXT_VALUE_ACTION_LABEL
                 )
             )
@@ -658,14 +765,16 @@ class PickerAccessibilitySemanticsAndroidTest {
                     periodItems = listOf(TimePeriod.AM, TimePeriod.PM)
                 ),
                 style = PickerDefaults.style(visibleItemsCount = 3),
-                accessibility = PickerDefaults.timePickerAccessibility(
-                    periodPickerLabel = "오전/오후",
+                format = PickerDefaults.timePickerFormat(
                     periodItemContentDescription = {
                         when (it) {
                             TimePeriod.AM -> "오전"
                             TimePeriod.PM -> "오후"
                         }
                     }
+                ),
+                semantics = PickerDefaults.timePickerSemantics(
+                    periodPickerLabel = "오전/오후"
                 )
             )
         }
@@ -691,13 +800,15 @@ class PickerAccessibilitySemanticsAndroidTest {
                     monthItems = listOf(5)
                 ),
                 style = PickerDefaults.style(visibleItemsCount = 3),
-                accessibility = PickerDefaults.datePickerAccessibility(
-                    yearPickerLabel = "연도",
-                    monthPickerLabel = "월",
-                    dayPickerLabel = "일",
+                format = PickerDefaults.datePickerFormat(
                     yearItemContentDescription = { "${it}년" },
                     monthItemContentDescription = { "${it}월" },
                     dayItemContentDescription = { "${it}일" }
+                ),
+                semantics = PickerDefaults.datePickerSemantics(
+                    yearPickerLabel = "연도",
+                    monthPickerLabel = "월",
+                    dayPickerLabel = "일"
                 )
             )
         }
@@ -733,13 +844,15 @@ class PickerAccessibilitySemanticsAndroidTest {
                     monthItems = listOf(1, 2)
                 ),
                 style = PickerDefaults.style(visibleItemsCount = 3),
-                accessibility = PickerDefaults.datePickerAccessibility(
+                format = PickerDefaults.datePickerFormat(
+                    yearItemContentDescription = { "${it}년" },
+                    monthItemContentDescription = { "${it}월" },
+                    dayItemContentDescription = { "${it}일" }
+                ),
+                semantics = PickerDefaults.datePickerSemantics(
                     yearPickerLabel = "연도",
                     monthPickerLabel = "월",
                     dayPickerLabel = "일",
-                    yearItemContentDescription = { "${it}년" },
-                    monthItemContentDescription = { "${it}월" },
-                    dayItemContentDescription = { "${it}일" },
                     previousItemActionLabel = PREVIOUS_VALUE_ACTION_LABEL,
                     nextItemActionLabel = NEXT_VALUE_ACTION_LABEL
                 )
@@ -803,11 +916,13 @@ class PickerAccessibilitySemanticsAndroidTest {
                     dayItems = listOf(15, 31)
                 ),
                 style = PickerDefaults.style(visibleItemsCount = 3),
-                accessibility = PickerDefaults.datePickerAccessibility(
+                format = PickerDefaults.datePickerFormat(
+                    monthItemContentDescription = { "${it}월" },
+                    dayItemContentDescription = { "${it}일" }
+                ),
+                semantics = PickerDefaults.datePickerSemantics(
                     monthPickerLabel = "월",
                     dayPickerLabel = "일",
-                    monthItemContentDescription = { "${it}월" },
-                    dayItemContentDescription = { "${it}일" },
                     nextItemActionLabel = NEXT_VALUE_ACTION_LABEL
                 )
             )
@@ -845,9 +960,11 @@ class PickerAccessibilitySemanticsAndroidTest {
                     monthItems = listOf(1, 2)
                 ),
                 style = PickerDefaults.style(visibleItemsCount = 3),
-                accessibility = PickerDefaults.datePickerAccessibility(
+                format = PickerDefaults.datePickerFormat(
+                    monthItemContentDescription = { "${it}월" }
+                ),
+                semantics = PickerDefaults.datePickerSemantics(
                     monthPickerLabel = "월",
-                    monthItemContentDescription = { "${it}월" },
                     nextItemActionLabel = NEXT_VALUE_ACTION_LABEL
                 )
             )
@@ -884,10 +1001,12 @@ class PickerAccessibilitySemanticsAndroidTest {
                     dayItems = listOf(10, 11, 20)
                 ),
                 style = PickerDefaults.style(visibleItemsCount = 3),
-                accessibility = PickerDefaults.dateRangePickerAccessibility(
-                    start = PickerDefaults.datePickerAccessibility(
+                format = PickerDefaults.datePickerFormat(
+                    dayItemContentDescription = { "${it}일" }
+                ),
+                semantics = PickerDefaults.dateRangePickerSemantics(
+                    start = PickerDefaults.datePickerSemantics(
                         dayPickerLabel = "시작 일",
-                        dayItemContentDescription = { "${it}일" },
                         nextItemActionLabel = NEXT_VALUE_ACTION_LABEL
                     )
                 )
@@ -926,11 +1045,13 @@ class PickerAccessibilitySemanticsAndroidTest {
                     monthItems = listOf(5)
                 ),
                 style = PickerDefaults.style(visibleItemsCount = 3),
-                accessibility = PickerDefaults.yearMonthPickerAccessibility(
-                    yearPickerLabel = "연도",
-                    monthPickerLabel = "월",
+                format = PickerDefaults.yearMonthPickerFormat(
                     yearItemContentDescription = { "${it}년" },
                     monthItemContentDescription = { "${it}월" }
+                ),
+                semantics = PickerDefaults.yearMonthPickerSemantics(
+                    yearPickerLabel = "연도",
+                    monthPickerLabel = "월"
                 )
             )
         }
@@ -961,11 +1082,13 @@ class PickerAccessibilitySemanticsAndroidTest {
                     monthItems = listOf(5, 6)
                 ),
                 style = PickerDefaults.style(visibleItemsCount = 3),
-                accessibility = PickerDefaults.yearMonthPickerAccessibility(
+                format = PickerDefaults.yearMonthPickerFormat(
+                    yearItemContentDescription = { "${it}년" },
+                    monthItemContentDescription = { "${it}월" }
+                ),
+                semantics = PickerDefaults.yearMonthPickerSemantics(
                     yearPickerLabel = "연도",
                     monthPickerLabel = "월",
-                    yearItemContentDescription = { "${it}년" },
-                    monthItemContentDescription = { "${it}월" },
                     previousItemActionLabel = PREVIOUS_VALUE_ACTION_LABEL,
                     nextItemActionLabel = NEXT_VALUE_ACTION_LABEL
                 )
@@ -1017,9 +1140,11 @@ class PickerAccessibilitySemanticsAndroidTest {
                     monthItems = listOf(5, 6)
                 ),
                 style = PickerDefaults.style(visibleItemsCount = 3),
-                accessibility = PickerDefaults.yearMonthPickerAccessibility(
+                format = PickerDefaults.yearMonthPickerFormat(
+                    monthItemContentDescription = { "${it}월" }
+                ),
+                semantics = PickerDefaults.yearMonthPickerSemantics(
                     monthPickerLabel = "월",
-                    monthItemContentDescription = { "${it}월" },
                     nextItemActionLabel = NEXT_VALUE_ACTION_LABEL
                 )
             )
@@ -1101,7 +1226,7 @@ private fun hasStateDescription(value: String): SemanticsMatcher =
     SemanticsMatcher.expectValue(SemanticsProperties.StateDescription, value)
 
 private fun hasCustomAccessibilityAction(label: String): SemanticsMatcher =
-    SemanticsMatcher("has custom accessibility action '$label'") { node ->
+    SemanticsMatcher("has custom semantics action '$label'") { node ->
         node.config.getOrNull(SemanticsActions.CustomActions)
             ?.any { action -> action.label == label } == true
     }

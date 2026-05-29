@@ -64,12 +64,12 @@ object PickerDefaults {
     val SelectedItemBackgroundShape: Shape = RoundedCornerShape(12.dp)
 
     /**
-     * Default accessibility action label for selecting the previous picker item.
+     * Default semantics action label for selecting the previous picker item.
      */
     const val PreviousItemActionLabel: String = "Select previous item"
 
     /**
-     * Default accessibility action label for selecting the next picker item.
+     * Default semantics action label for selecting the next picker item.
      */
     const val NextItemActionLabel: String = "Select next item"
 
@@ -142,7 +142,6 @@ object PickerDefaults {
      * @param itemPadding The padding around each item.
      * @param fadingEdgeGradient The gradient used for fading edges.
      * @param horizontalAlignment The horizontal alignment of items.
-     * @param verticalAlignment The vertical alignment of item content.
      * @param dividerThickness The thickness of the selection dividers.
      * @param dividerShape The shape of the selection dividers.
      * @param isDividerVisible Whether selection dividers are visible.
@@ -157,7 +156,6 @@ object PickerDefaults {
         itemPadding: PaddingValues = ItemPadding,
         fadingEdgeGradient: Brush = fadingEdgeGradient(),
         horizontalAlignment: Alignment.Horizontal = Alignment.CenterHorizontally,
-        verticalAlignment: Alignment.Vertical = Alignment.CenterVertically,
         dividerThickness: Dp = DividerThickness,
         dividerShape: Shape = DividerShape,
         isDividerVisible: Boolean = true
@@ -169,7 +167,6 @@ object PickerDefaults {
         itemPadding = itemPadding,
         fadingEdgeGradient = fadingEdgeGradient,
         horizontalAlignment = horizontalAlignment,
-        verticalAlignment = verticalAlignment,
         dividerThickness = dividerThickness,
         dividerShape = dividerShape,
         isDividerVisible = isDividerVisible
@@ -257,227 +254,248 @@ object PickerDefaults {
     )
 
     /**
-     * Creates accessibility configuration for one picker column.
+     * Creates semantics configuration for one picker column.
+     *
+     * Value descriptions are configured with [itemFormat].
      *
      * @param pickerLabel Optional label used as the accessibility prefix for the picker column.
-     * @param itemContentDescription Accessibility description for each item value.
      * @param previousItemActionLabel Accessibility action label for selecting the previous item. Pass null or blank to omit the action.
      * @param nextItemActionLabel Accessibility action label for selecting the next item. Pass null or blank to omit the action.
-     * @return A [PickerAccessibility] instance with the specified semantics behavior.
+     * @return A [PickerSemantics] instance with the specified semantics behavior.
      */
-    fun <T : Any> accessibility(
+    fun semantics(
         pickerLabel: String? = null,
-        itemContentDescription: (T) -> String = { it.toString() },
         previousItemActionLabel: String? = PreviousItemActionLabel,
         nextItemActionLabel: String? = NextItemActionLabel
-    ): PickerAccessibility<T> = PickerAccessibility(
+    ): PickerSemantics = PickerSemantics(
         pickerLabel = pickerLabel,
-        itemContentDescription = itemContentDescription,
         previousItemActionLabel = previousItemActionLabel,
         nextItemActionLabel = nextItemActionLabel
     )
 
     /**
-     * Creates visible item text configuration for one picker column.
+     * Creates value formatting for one picker column.
      *
      * @param itemText Text displayed for each item value.
-     * @return A [PickerItemText] instance with the specified visible text formatter.
+     * @param itemContentDescription Optional accessibility description for each item value. When null,
+     * [itemText] is used as the default value description.
+     * @return A [PickerItemFormat] instance with the specified value formatters.
      */
-    fun <T : Any> itemText(
-        itemText: (T) -> String = { it.toString() }
-    ): PickerItemText<T> = PickerItemText(itemText = itemText)
+    fun <T : Any> itemFormat(
+        itemText: (T) -> String = { it.toString() },
+        itemContentDescription: ((T) -> String)? = null
+    ): PickerItemFormat<T> = PickerItemFormat(
+        itemText = itemText,
+        itemContentDescription = itemContentDescription
+    )
 
     /**
-     * Creates visible item text configuration for a time picker.
+     * Creates value formatting for a time picker.
      *
      * @param hourItemText Text displayed for each hour value.
      * @param minuteItemText Text displayed for each minute value.
      * @param periodItemText Text displayed for each AM/PM value.
-     * @return A [TimePickerDisplay] instance with the specified visible text formatters.
+     * @param hourItemContentDescription Optional accessibility description for each hour value.
+     * @param minuteItemContentDescription Optional accessibility description for each minute value.
+     * @param periodItemContentDescription Optional accessibility description for each AM/PM value.
+     * @return A [TimePickerFormat] instance with the specified value formatters.
      */
-    fun timePickerDisplay(
+    fun timePickerFormat(
         hourItemText: (Int) -> String = { it.toString() },
         minuteItemText: (Int) -> String = { it.toString() },
-        periodItemText: (TimePeriod) -> String = { it.name }
-    ): TimePickerDisplay = TimePickerDisplay(
-        hour = itemText(itemText = hourItemText),
-        minute = itemText(itemText = minuteItemText),
-        period = itemText(itemText = periodItemText)
+        periodItemText: (TimePeriod) -> String = { it.name },
+        hourItemContentDescription: ((Int) -> String)? = null,
+        minuteItemContentDescription: ((Int) -> String)? = null,
+        periodItemContentDescription: ((TimePeriod) -> String)? = null
+    ): TimePickerFormat = TimePickerFormat(
+        hour = itemFormat(
+            itemText = hourItemText,
+            itemContentDescription = hourItemContentDescription
+        ),
+        minute = itemFormat(
+            itemText = minuteItemText,
+            itemContentDescription = minuteItemContentDescription
+        ),
+        period = itemFormat(
+            itemText = periodItemText,
+            itemContentDescription = periodItemContentDescription
+        )
     )
 
     /**
-     * Creates visible item text configuration for a date picker.
+     * Creates value formatting for a date picker.
      *
      * @param yearItemText Text displayed for each year value.
      * @param monthItemText Text displayed for each month value.
      * @param dayItemText Text displayed for each day value.
-     * @return A [DatePickerDisplay] instance with the specified visible text formatters.
+     * @param yearItemContentDescription Optional accessibility description for each year value.
+     * @param monthItemContentDescription Optional accessibility description for each month value.
+     * @param dayItemContentDescription Optional accessibility description for each day value.
+     * @return A [DatePickerFormat] instance with the specified value formatters.
      */
-    fun datePickerDisplay(
+    fun datePickerFormat(
         yearItemText: (Int) -> String = { it.toString() },
         monthItemText: (Int) -> String = { it.toString() },
-        dayItemText: (Int) -> String = { it.toString() }
-    ): DatePickerDisplay = DatePickerDisplay(
-        year = itemText(itemText = yearItemText),
-        month = itemText(itemText = monthItemText),
-        day = itemText(itemText = dayItemText)
+        dayItemText: (Int) -> String = { it.toString() },
+        yearItemContentDescription: ((Int) -> String)? = null,
+        monthItemContentDescription: ((Int) -> String)? = null,
+        dayItemContentDescription: ((Int) -> String)? = null
+    ): DatePickerFormat = DatePickerFormat(
+        year = itemFormat(
+            itemText = yearItemText,
+            itemContentDescription = yearItemContentDescription
+        ),
+        month = itemFormat(
+            itemText = monthItemText,
+            itemContentDescription = monthItemContentDescription
+        ),
+        day = itemFormat(
+            itemText = dayItemText,
+            itemContentDescription = dayItemContentDescription
+        )
     )
 
     /**
-     * Creates visible item text configuration for a year-month picker.
+     * Creates value formatting for a year-month picker.
      *
      * @param yearItemText Text displayed for each year value.
      * @param monthItemText Text displayed for each month value.
-     * @return A [YearMonthPickerDisplay] instance with the specified visible text formatters.
+     * @param yearItemContentDescription Optional accessibility description for each year value.
+     * @param monthItemContentDescription Optional accessibility description for each month value.
+     * @return A [YearMonthPickerFormat] instance with the specified value formatters.
      */
-    fun yearMonthPickerDisplay(
+    fun yearMonthPickerFormat(
         yearItemText: (Int) -> String = { it.toString() },
-        monthItemText: (Int) -> String = { it.toString() }
-    ): YearMonthPickerDisplay = YearMonthPickerDisplay(
-        year = itemText(itemText = yearItemText),
-        month = itemText(itemText = monthItemText)
+        monthItemText: (Int) -> String = { it.toString() },
+        yearItemContentDescription: ((Int) -> String)? = null,
+        monthItemContentDescription: ((Int) -> String)? = null
+    ): YearMonthPickerFormat = YearMonthPickerFormat(
+        year = itemFormat(
+            itemText = yearItemText,
+            itemContentDescription = yearItemContentDescription
+        ),
+        month = itemFormat(
+            itemText = monthItemText,
+            itemContentDescription = monthItemContentDescription
+        )
     )
 
     /**
-     * Creates accessibility configuration for a time picker.
+     * Creates semantics configuration for a time picker.
      *
      * Shared previous/next action labels are applied to all child picker columns. Use
-     * [TimePickerAccessibility.copy] with [accessibility] when one column needs a custom label or formatter.
+     * [TimePickerSemantics.copy] with [semantics] when one column needs a custom label.
      *
      * @param hourPickerLabel Accessibility label for the hour picker. Pass null to omit the picker label prefix.
      * @param minutePickerLabel Accessibility label for the minute picker. Pass null to omit the picker label prefix.
      * @param periodPickerLabel Accessibility label for the AM/PM picker in 12-hour time. Pass null to omit the picker label prefix.
-     * @param hourItemContentDescription Accessibility description for each hour value.
-     * @param minuteItemContentDescription Accessibility description for each minute value.
-     * @param periodItemContentDescription Accessibility description for each AM/PM value.
      * @param previousItemActionLabel Accessibility action label used by child pickers to select the previous item.
      * @param nextItemActionLabel Accessibility action label used by child pickers to select the next item.
-     * @return A [TimePickerAccessibility] instance with the specified semantics behavior.
+     * @return A [TimePickerSemantics] instance with the specified semantics behavior.
      */
-    fun timePickerAccessibility(
+    fun timePickerSemantics(
         hourPickerLabel: String? = "Hour",
         minutePickerLabel: String? = "Minute",
         periodPickerLabel: String? = "AM/PM",
-        hourItemContentDescription: (Int) -> String = { it.toString() },
-        minuteItemContentDescription: (Int) -> String = { it.toString() },
-        periodItemContentDescription: (TimePeriod) -> String = { it.name },
         previousItemActionLabel: String? = PreviousItemActionLabel,
         nextItemActionLabel: String? = NextItemActionLabel
-    ): TimePickerAccessibility = TimePickerAccessibility(
-        hour = accessibility(
+    ): TimePickerSemantics = TimePickerSemantics(
+        hour = semantics(
             pickerLabel = hourPickerLabel,
-            itemContentDescription = hourItemContentDescription,
             previousItemActionLabel = previousItemActionLabel,
             nextItemActionLabel = nextItemActionLabel
         ),
-        minute = accessibility(
+        minute = semantics(
             pickerLabel = minutePickerLabel,
-            itemContentDescription = minuteItemContentDescription,
             previousItemActionLabel = previousItemActionLabel,
             nextItemActionLabel = nextItemActionLabel
         ),
-        period = accessibility(
+        period = semantics(
             pickerLabel = periodPickerLabel,
-            itemContentDescription = periodItemContentDescription,
             previousItemActionLabel = previousItemActionLabel,
             nextItemActionLabel = nextItemActionLabel
         )
     )
 
     /**
-     * Creates accessibility configuration for a date picker.
+     * Creates semantics configuration for a date picker.
      *
      * @param yearPickerLabel Accessibility label for the year picker. Pass null to omit the picker label prefix.
      * @param monthPickerLabel Accessibility label for the month picker. Pass null to omit the picker label prefix.
      * @param dayPickerLabel Accessibility label for the day picker. Pass null to omit the picker label prefix.
-     * @param yearItemContentDescription Accessibility description for each year value.
-     * @param monthItemContentDescription Accessibility description for each month value.
-     * @param dayItemContentDescription Accessibility description for each day value.
      * @param previousItemActionLabel Accessibility action label used by child pickers to select the previous item.
      * @param nextItemActionLabel Accessibility action label used by child pickers to select the next item.
-     * @return A [DatePickerAccessibility] instance with the specified semantics behavior.
+     * @return A [DatePickerSemantics] instance with the specified semantics behavior.
      */
-    fun datePickerAccessibility(
+    fun datePickerSemantics(
         yearPickerLabel: String? = "Year",
         monthPickerLabel: String? = "Month",
         dayPickerLabel: String? = "Day",
-        yearItemContentDescription: (Int) -> String = { it.toString() },
-        monthItemContentDescription: (Int) -> String = { it.toString() },
-        dayItemContentDescription: (Int) -> String = { it.toString() },
         previousItemActionLabel: String? = PreviousItemActionLabel,
         nextItemActionLabel: String? = NextItemActionLabel
-    ): DatePickerAccessibility = DatePickerAccessibility(
-        year = accessibility(
+    ): DatePickerSemantics = DatePickerSemantics(
+        year = semantics(
             pickerLabel = yearPickerLabel,
-            itemContentDescription = yearItemContentDescription,
             previousItemActionLabel = previousItemActionLabel,
             nextItemActionLabel = nextItemActionLabel
         ),
-        month = accessibility(
+        month = semantics(
             pickerLabel = monthPickerLabel,
-            itemContentDescription = monthItemContentDescription,
             previousItemActionLabel = previousItemActionLabel,
             nextItemActionLabel = nextItemActionLabel
         ),
-        day = accessibility(
+        day = semantics(
             pickerLabel = dayPickerLabel,
-            itemContentDescription = dayItemContentDescription,
             previousItemActionLabel = previousItemActionLabel,
             nextItemActionLabel = nextItemActionLabel
         )
     )
 
     /**
-     * Creates accessibility configuration for a date range picker.
+     * Creates semantics configuration for a date range picker.
      *
      * @param start Accessibility configuration for the start date picker.
      * @param end Accessibility configuration for the end date picker.
-     * @return A [DateRangePickerAccessibility] instance with the specified semantics behavior.
+     * @return A [DateRangePickerSemantics] instance with the specified semantics behavior.
      */
-    fun dateRangePickerAccessibility(
-        start: DatePickerAccessibility = datePickerAccessibility(
+    fun dateRangePickerSemantics(
+        start: DatePickerSemantics = datePickerSemantics(
             yearPickerLabel = "Start year",
             monthPickerLabel = "Start month",
             dayPickerLabel = "Start day"
         ),
-        end: DatePickerAccessibility = datePickerAccessibility(
+        end: DatePickerSemantics = datePickerSemantics(
             yearPickerLabel = "End year",
             monthPickerLabel = "End month",
             dayPickerLabel = "End day"
         )
-    ): DateRangePickerAccessibility = DateRangePickerAccessibility(
+    ): DateRangePickerSemantics = DateRangePickerSemantics(
         start = start,
         end = end
     )
 
     /**
-     * Creates accessibility configuration for a year-month picker.
+     * Creates semantics configuration for a year-month picker.
      *
      * @param yearPickerLabel Accessibility label for the year picker. Pass null to omit the picker label prefix.
      * @param monthPickerLabel Accessibility label for the month picker. Pass null to omit the picker label prefix.
-     * @param yearItemContentDescription Accessibility description for each year value.
-     * @param monthItemContentDescription Accessibility description for each month value.
      * @param previousItemActionLabel Accessibility action label used by child pickers to select the previous item.
      * @param nextItemActionLabel Accessibility action label used by child pickers to select the next item.
-     * @return A [YearMonthPickerAccessibility] instance with the specified semantics behavior.
+     * @return A [YearMonthPickerSemantics] instance with the specified semantics behavior.
      */
-    fun yearMonthPickerAccessibility(
+    fun yearMonthPickerSemantics(
         yearPickerLabel: String? = "Year",
         monthPickerLabel: String? = "Month",
-        yearItemContentDescription: (Int) -> String = { it.toString() },
-        monthItemContentDescription: (Int) -> String = { it.toString() },
         previousItemActionLabel: String? = PreviousItemActionLabel,
         nextItemActionLabel: String? = NextItemActionLabel
-    ): YearMonthPickerAccessibility = YearMonthPickerAccessibility(
-        year = accessibility(
+    ): YearMonthPickerSemantics = YearMonthPickerSemantics(
+        year = semantics(
             pickerLabel = yearPickerLabel,
-            itemContentDescription = yearItemContentDescription,
             previousItemActionLabel = previousItemActionLabel,
             nextItemActionLabel = nextItemActionLabel
         ),
-        month = accessibility(
+        month = semantics(
             pickerLabel = monthPickerLabel,
-            itemContentDescription = monthItemContentDescription,
             previousItemActionLabel = previousItemActionLabel,
             nextItemActionLabel = nextItemActionLabel
         )
@@ -670,7 +688,6 @@ data class PickerTextStyles(
  * @param itemPadding The padding around each item.
  * @param fadingEdgeGradient The gradient used for fading edges.
  * @param horizontalAlignment The horizontal alignment of items.
- * @param verticalAlignment The vertical alignment of item content.
  * @param dividerThickness The thickness of the selection dividers.
  * @param dividerShape The shape of the selection dividers.
  * @param isDividerVisible Whether selection dividers are visible.
@@ -685,7 +702,6 @@ data class PickerStyle(
     val itemPadding: PaddingValues,
     val fadingEdgeGradient: Brush,
     val horizontalAlignment: Alignment.Horizontal,
-    val verticalAlignment: Alignment.Vertical,
     val dividerThickness: Dp,
     val dividerShape: Shape,
     val isDividerVisible: Boolean

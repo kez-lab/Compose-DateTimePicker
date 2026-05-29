@@ -133,10 +133,11 @@ internal fun DateRangePickerSampleScreen(
                 DateRangePicker(
                     state = state,
                     items = items,
-                    display = PickerDefaults.datePickerDisplay(
+                    format = PickerDefaults.datePickerFormat(
                         yearItemText = { "${it}년" },
                         monthItemText = { getMonthName(it) },
-                        dayItemText = { "${it}일" }
+                        dayItemText = { "${it}일" },
+                        monthItemContentDescription = { getMonthContentDescription(it) }
                     ),
                     layout = PickerDefaults.datePickerLayout(
                         yearWeight = 1.05f,
@@ -146,18 +147,16 @@ internal fun DateRangePickerSampleScreen(
                     spacingBetweenPickers = 8.dp,
                     startLabel = { Text("시작일") },
                     endLabel = { Text("종료일") },
-                    accessibility = PickerDefaults.dateRangePickerAccessibility(
-                        start = PickerDefaults.datePickerAccessibility(
+                    semantics = PickerDefaults.dateRangePickerSemantics(
+                        start = PickerDefaults.datePickerSemantics(
                             yearPickerLabel = "시작 연도",
                             monthPickerLabel = "시작 월",
-                            dayPickerLabel = "시작 일",
-                            monthItemContentDescription = { getMonthContentDescription(it) }
+                            dayPickerLabel = "시작 일"
                         ),
-                        end = PickerDefaults.datePickerAccessibility(
+                        end = PickerDefaults.datePickerSemantics(
                             yearPickerLabel = "종료 연도",
                             monthPickerLabel = "종료 월",
-                            dayPickerLabel = "종료 일",
-                            monthItemContentDescription = { getMonthContentDescription(it) }
+                            dayPickerLabel = "종료 일"
                         )
                     )
                 )

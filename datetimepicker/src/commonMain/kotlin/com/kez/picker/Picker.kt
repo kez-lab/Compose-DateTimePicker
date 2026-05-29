@@ -84,7 +84,7 @@ private val ItemHeightSafetyPadding = 4.dp
  *
  * @param T The picker item type.
  * @property item The item value represented by this row.
- * @property text The visible text produced by [PickerItemText] for this item.
+ * @property text The visible text produced by [PickerItemFormat] for this item.
  * @property isSelected Whether this item is the currently selected item.
  * @property isEnabled Whether the picker currently allows user interaction.
  * @property distanceFraction A value from `0f` to `1f` where `0f` is the centered selected row and
@@ -110,11 +110,11 @@ class PickerItemScope<T : Any> internal constructor(
  * @param selectedItem The currently selected item. It must exist in [items].
  * @param onSelectedItemChange Called when scroll or click interaction selects a new item.
  * @param modifier The modifier to be applied to the picker.
- * @param enabled Whether user scroll, click, and accessibility selection actions are enabled.
- * @param display Visible item text configuration. When [content] is provided, this text is still
- * exposed through [PickerItemScope.text].
+ * @param enabled Whether user scroll, click, and semantics selection actions are enabled.
+ * @param format Visible item text and optional accessibility value descriptions. When [content] is
+ * provided, visible text is still exposed through [PickerItemScope.text].
  * @param style Visual and layout styling for the picker.
- * @param accessibility Accessibility labels, item descriptions, and custom action labels for the picker.
+ * @param semantics Accessibility label and custom action labels for the picker.
  * @param isInfinity Whether the picker should loop infinitely.
  * @param content Optional custom content composable for rendering each item.
  */
@@ -125,18 +125,20 @@ fun <T : Any> Picker(
     onSelectedItemChange: (T) -> Unit,
     modifier: Modifier = Modifier,
     enabled: Boolean = true,
-    display: PickerItemText<T> = PickerDefaults.itemText(),
+    format: PickerItemFormat<T> = PickerDefaults.itemFormat(),
     style: PickerStyle = PickerDefaults.style(),
-    accessibility: PickerAccessibility<T> = PickerDefaults.accessibility(),
+    semantics: PickerSemantics = PickerDefaults.semantics(),
     isInfinity: Boolean = true,
     content: @Composable ((PickerItemScope<T>) -> Unit)? = null
 ) {
     val visibleItemsCount = style.visibleItemsCount
-    validatePickerInput(
-        items = items,
-        selectedItem = selectedItem,
-        visibleItemsCount = visibleItemsCount
-    )
+    remember(items, selectedItem, visibleItemsCount) {
+        validatePickerInput(
+            items = items,
+            selectedItem = selectedItem,
+            visibleItemsCount = visibleItemsCount
+        )
+    }
 
     val density = LocalDensity.current
     val textMeasurer = rememberTextMeasurer(cacheSize = 16)
@@ -151,7 +153,6 @@ fun <T : Any> Picker(
     val itemPadding = style.itemPadding
     val fadingEdgeGradient = style.fadingEdgeGradient
     val horizontalAlignment = style.horizontalAlignment
-    val verticalAlignment = style.verticalAlignment
     val dividerThickness = style.dividerThickness
     val dividerShape = style.dividerShape
     val isDividerVisible = style.isDividerVisible
@@ -210,8 +211,8 @@ fun <T : Any> Picker(
         colors.disabledSelectedTextColor
     }
 
-    val measuredTextHeight = remember(items, display, textStyle, selectedTextStyle, textMeasurer) {
-        val itemTexts = items.map(display.itemText)
+    val measuredTextHeight = remember(items, format, textStyle, selectedTextStyle, textMeasurer) {
+        val itemTexts = items.map(format.itemText)
         (itemTexts + ItemHeightProbeTexts).maxOf { itemText ->
             val text = AnnotatedString(itemText)
             max(
@@ -293,13 +294,14 @@ fun <T : Any> Picker(
         }
     }
 
-    val normalizedPickerLabel = accessibility.pickerLabel.asPickerAccessibilityLabelOrNull()
+    val normalizedPickerLabel = semantics.pickerLabel.asPickerSemanticsLabelOrNull()
     val normalizedPreviousItemActionLabel =
-        accessibility.previousItemActionLabel.asPickerAccessibilityLabelOrNull()
+        semantics.previousItemActionLabel.asPickerSemanticsLabelOrNull()
     val normalizedNextItemActionLabel =
-        accessibility.nextItemActionLabel.asPickerAccessibilityLabelOrNull()
-    val selectedItemDescription = accessibility.itemContentDescription(selectedItem)
-    val pickerDescription = pickerAccessibilityDescription(normalizedPickerLabel, selectedItemDescription)
+        semantics.nextItemActionLabel.asPickerSemanticsLabelOrNull()
+    val selectedItemText = format.itemText(selectedItem)
+    val selectedItemDescription = format.itemContentDescription?.invoke(selectedItem) ?: selectedItemText
+    val pickerDescription = pickerSemanticsDescription(normalizedPickerLabel, selectedItemDescription)
     val hasPickerDescription = pickerDescription.isNotBlank()
 
     fun adjacentFirstVisibleItemIndex(offset: Int): Int? {
@@ -334,7 +336,7 @@ fun <T : Any> Picker(
         return abs(itemDistance).toFloat()
     }
 
-    val accessibilityActions = buildList {
+    val semanticsActions = buildList {
         if (enabled && normalizedPreviousItemActionLabel != null && adjacentFirstVisibleItemIndex(offset = -1) != null) {
             add(
                 CustomAccessibilityAction(
@@ -355,7 +357,7 @@ fun <T : Any> Picker(
 
     Box(
         modifier = modifier.semantics {
-            // Provide picker-level accessibility information
+            // Provide picker-level semantics information
             if (hasPickerDescription) {
                 contentDescription = pickerDescription
                 stateDescription = selectedItemDescription
@@ -365,8 +367,8 @@ fun <T : Any> Picker(
                 disabled()
             }
             collectionInfo = CollectionInfo(rowCount = items.size, columnCount = 1)
-            if (hasPickerDescription && accessibilityActions.isNotEmpty()) {
-                customActions = accessibilityActions
+            if (hasPickerDescription && semanticsActions.isNotEmpty()) {
+                customActions = semanticsActions
             }
         }
     ) {
@@ -443,8 +445,10 @@ fun <T : Any> Picker(
                         }
                     }
 
-                    val itemText = item?.let(display.itemText) ?: ""
-                    val itemDescription = item?.let(accessibility.itemContentDescription) ?: ""
+                    val itemText = item?.let(format.itemText) ?: ""
+                    val itemDescription = item?.let { value ->
+                        format.itemContentDescription?.invoke(value) ?: itemText
+                    } ?: ""
                     val itemContentColor = lerp(
                         start = selectedTextColor,
                         stop = textColor,
@@ -473,7 +477,7 @@ fun <T : Any> Picker(
                                     role = Role.Button
                                     // Enhanced content description with picker context
                                     contentDescription =
-                                        pickerAccessibilityDescription(normalizedPickerLabel, itemDescription)
+                                        pickerSemanticsDescription(normalizedPickerLabel, itemDescription)
                                     selected = isSelected
                                     collectionItemInfo = CollectionItemInfo(
                                         rowIndex = itemIndex,
@@ -557,11 +561,11 @@ internal fun <T : Any> validatePickerInput(
     }
 }
 
-private fun String?.asPickerAccessibilityLabelOrNull(): String? =
+private fun String?.asPickerSemanticsLabelOrNull(): String? =
     this?.trim()?.takeIf { it.isNotEmpty() }
 
-internal fun pickerAccessibilityDescription(label: String?, value: String): String {
-    val normalizedLabel = label.asPickerAccessibilityLabelOrNull()
+internal fun pickerSemanticsDescription(label: String?, value: String): String {
+    val normalizedLabel = label.asPickerSemanticsLabelOrNull()
     return when {
         normalizedLabel != null && value.isNotBlank() -> "$normalizedLabel: $value"
         normalizedLabel != null -> normalizedLabel
