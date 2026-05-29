@@ -358,6 +358,17 @@ class YearMonthPickerStateTest {
     }
 
     @Test
+    fun yearMonthPickerItems_containsParts_returnsFalseForInvalidRawValues() {
+        val items = YearMonthPickerItems(
+            yearItems = listOf(2024, 2026),
+            monthItems = listOf(3, 12, 13)
+        )
+
+        assertEquals(false, items.contains(year = 999, month = 3))
+        assertEquals(false, items.contains(year = 2024, month = 13))
+    }
+
+    @Test
     fun yearMonthPickerItems_coerceYearMonth_respectsConstraints() {
         val items = YearMonthPickerItems(
             yearItems = listOf(2024, 2025, 2026),

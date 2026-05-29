@@ -77,6 +77,8 @@ This project tracks notable user-facing and maintainer-facing changes here. The 
 
 ### Changed
 
+- Made `YearMonthPickerItems.contains(year, month)` return `false` for raw year/month values outside
+  the supported ranges instead of constructing an invalid `YearMonth`.
 - Made picker item-list and constraint construction errors explain which min/max bounds or custom
   item lists to adjust when no selectable value remains.
 - Made generic `Picker<T>` validation errors explain how to recover from empty lists, duplicate
