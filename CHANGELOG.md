@@ -77,6 +77,8 @@ This project tracks notable user-facing and maintainer-facing changes here. The 
 
 ### Changed
 
+- Made picker item-list and constraint construction errors explain which min/max bounds or custom
+  item lists to adjust when no selectable value remains.
 - Made generic `Picker<T>` validation errors explain how to recover from empty lists, duplicate
   values, invalid `selectedItem`, and invalid `visibleItemsCount` configuration.
 - Clarified the state and callback usage pattern in README and picker KDoc so apps can distinguish

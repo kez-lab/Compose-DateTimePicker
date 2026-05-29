@@ -295,12 +295,36 @@ class YearMonthPickerStateTest {
 
     @Test
     fun yearMonthPickerConstraints_throwsWhenMinimumIsAfterMaximum() {
-        assertFailsWith<IllegalArgumentException> {
+        val error = assertFailsWith<IllegalArgumentException> {
             YearMonthPickerConstraints(
                 minYearMonth = YearMonth(year = 2025, month = 1),
                 maxYearMonth = YearMonth(year = 2024, month = 12)
             )
         }
+
+        assertTrue(
+            error.message.orEmpty().contains("sort it before creating YearMonthPickerConstraints")
+        )
+    }
+
+    @Test
+    fun yearMonthPickerItems_coerceYearMonth_throwsActionableMessageWhenConstraintsFilterEveryMonth() {
+        val items = YearMonthPickerItems(
+            yearItems = listOf(2024),
+            monthItems = listOf(1),
+            constraints = YearMonthPickerConstraints(
+                minYearMonth = YearMonth(year = 2025, month = 1),
+                maxYearMonth = YearMonth(year = 2025, month = 12)
+            )
+        )
+
+        val error = assertFailsWith<IllegalArgumentException> {
+            items.coerceYearMonth(YearMonth(year = 2024, month = 1))
+        }
+
+        val message = error.message.orEmpty()
+        assertTrue(message.contains("minYearMonth/maxYearMonth"))
+        assertTrue(message.contains("year/month item pair"))
     }
 
     @Test
