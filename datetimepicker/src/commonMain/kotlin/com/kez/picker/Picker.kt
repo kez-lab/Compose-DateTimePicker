@@ -106,7 +106,8 @@ class PickerItemScope<T : Any> internal constructor(
  * A generic picker component that displays a list of items and allows the user to select one.
  * Follows Material3 component design patterns.
  *
- * @param items The list of items to display.
+ * @param items The list of items to display. Treat this list as immutable while the picker is
+ * composed; create and pass a new list when available values change.
  * @param selectedItem The currently selected item. It must exist in [items].
  * @param onSelectedItemChange Called when scroll or click interaction selects a new item.
  * @param modifier The modifier to be applied to the picker.

@@ -70,6 +70,14 @@ kotlin {
             }
         }
 
+        val androidUnitTest by getting {
+            dependencies {
+                implementation(libs.androidx.uitest.junit4)
+                implementation(libs.androidx.uitest.testManifest)
+                implementation(libs.robolectric)
+            }
+        }
+
         iosMain.dependencies {
 
         }
@@ -115,6 +123,10 @@ android {
     }
 
     testOptions {
+        unitTests {
+            isIncludeAndroidResources = true
+        }
+
         managedDevices {
             localDevices {
                 create("pixel2Api35") {

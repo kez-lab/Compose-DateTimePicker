@@ -20,8 +20,13 @@ import kotlinx.datetime.LocalTime
 import org.junit.Assert.assertEquals
 import org.junit.Rule
 import org.junit.Test
+import org.junit.runner.RunWith
+import org.robolectric.RobolectricTestRunner
+import org.robolectric.annotation.Config
 
-class PickerStateRestorationAndroidTest {
+@RunWith(RobolectricTestRunner::class)
+@Config(sdk = [35])
+class PickerStateRestorationRobolectricTest {
 
     @get:Rule
     val composeRule = createComposeRule()

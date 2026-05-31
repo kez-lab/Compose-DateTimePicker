@@ -495,7 +495,8 @@ fun SizePickerExample() {
 `Picker<T>` is a controlled component. Keep the selected value in app state, pass it through
 `selectedItem`, and update that state from `onSelectedItemChange`. `items` must be non-empty and
 distinct, and `selectedItem` must exist in `items`. If `items` can change, update or coerce the
-app-owned `selectedItem` to one of the new values before rendering the picker. If `T` is not
+app-owned `selectedItem` to one of the new values before rendering the picker. Treat `items` as
+immutable while the picker is composed; create and pass a new list when available values change. If `T` is not
 saveable, store a saveable key in your app state and map that key back to an item before rendering
 the picker.
 Pass `enabled = false` to prevent user scroll, click, and semantics selection actions while still
@@ -632,7 +633,7 @@ To change the selection after state creation, call `state.selectTime(LocalTime(.
 time bounds should be applied at the same time. The integer hour is interpreted as hour-of-day in
 `0..23`.
 
-Invalid custom item values, duplicate items, empty required lists, or current selections missing from custom lists or time bounds throw `IllegalArgumentException` during composition. In 12-hour mode, `PickerDefaults.timePickerItems(hour12Items = ...)` uses format-hour values (`1..12`): `initialHour = 13` becomes `state.selectedHour == 1` with `PM`.
+Invalid custom item values, duplicate items, empty required lists, or current selections missing from custom lists or time bounds throw `IllegalArgumentException` during composition. Treat custom item lists as immutable after passing them to the picker; create a new `items` object when available values change. In 12-hour mode, `PickerDefaults.timePickerItems(hour12Items = ...)` uses format-hour values (`1..12`): `initialHour = 13` becomes `state.selectedHour == 1` with `PM`.
 
 ### DatePicker
 
@@ -668,7 +669,7 @@ To change the selection after state creation, call `state.selectDate(LocalDate(.
 `state.selectDate(year, month, day)`. Use the overloads that accept `items` when custom item lists
 or date bounds should be applied at the same time.
 
-Invalid custom item values, duplicate items, empty lists, or current selected year/month/day values missing from custom lists or date bounds throw `IllegalArgumentException` during composition. If a year/month change makes the selected month or day unavailable, the picker selects the closest available value for the configured constraints.
+Invalid custom item values, duplicate items, empty lists, or current selected year/month/day values missing from custom lists or date bounds throw `IllegalArgumentException` during composition. Treat custom item lists as immutable after passing them to the picker; create a new `items` object when available values change. If a year/month change makes the selected month or day unavailable, the picker selects the closest available value for the configured constraints.
 
 ### DateRangePicker
 
@@ -728,7 +729,7 @@ For initial values, prefer `rememberYearMonthPickerState(initialYearMonth = Year
 To change the selection after state creation, call `state.selectYearMonth(YearMonth(...))`,
 `state.selectYearMonth(year, month)`, or `state.selectDate(LocalDate(...))`.
 
-Invalid custom item values, duplicate items, empty lists, or current selected year/month values missing from custom lists or year/month bounds throw `IllegalArgumentException` during composition. If a year change makes the current month unavailable, the picker moves to the closest available `YearMonth`.
+Invalid custom item values, duplicate items, empty lists, or current selected year/month values missing from custom lists or year/month bounds throw `IllegalArgumentException` during composition. Treat custom item lists as immutable after passing them to the picker; create a new `items` object when available values change. If a year change makes the current month unavailable, the picker moves to the closest available `YearMonth`.
 
 ## License
 

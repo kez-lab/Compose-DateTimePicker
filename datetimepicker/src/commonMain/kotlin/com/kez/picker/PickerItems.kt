@@ -43,7 +43,8 @@ data class TimePickerConstraints(
  *
  * Lists must be non-empty, contain distinct values, stay within their documented ranges, and contain
  * the current state selection for the active time format. [constraints] are applied after the hour,
- * minute, and period item lists.
+ * minute, and period item lists. Treat item lists as immutable after passing them to a picker; create
+ * a new [TimePickerItems] when available values change.
  *
  * @param minuteItems Minute values available for selection. Values must be in 0..59.
  * @param hour24Items Hour values available when using 24-hour time. Values must be in 0..23.
@@ -243,7 +244,8 @@ data class DatePickerConstraints(
  *
  * Lists must be non-empty, contain distinct values, stay within their documented ranges, and contain
  * the current state selection. [dayItems] is filtered by the selected year/month maximum day and
- * [constraints] before rendering.
+ * [constraints] before rendering. Treat item lists as immutable after passing them to a picker; create
+ * a new [DatePickerItems] when available values change.
  *
  * @param yearItems Year values available for selection. Values must be in 1000..9999.
  * @param monthItems Month values available for selection. Values must be in 1..12.
@@ -286,8 +288,8 @@ data class DatePickerItems(
     /**
      * Returns the closest selectable date for [date].
      *
-     * The year and month are coerced to the closest configured values, then [dayItems] is filtered by
-     * that coerced year/month maximum day before the day is coerced.
+     * Candidate dates are compared as whole [LocalDate] values instead of independently coercing
+     * year, month, and day. If two dates are equally close, the earlier date is returned.
      *
      * @throws IllegalArgumentException if the configured item lists are empty, contain duplicates,
      * contain values outside their supported ranges, or cannot provide at least one valid day for every
@@ -295,10 +297,7 @@ data class DatePickerItems(
      */
     fun coerceDate(date: LocalDate): LocalDate {
         requireValid()
-        val year = selectableYearItems().closestTo(date.year)
-        val month = selectableMonthItemsFor(year).closestTo(date.month.number)
-        val day = selectableDayItemsFor(year = year, month = month).closestTo(date.day)
-        return LocalDate(year = year, month = monthFor(month), day = day)
+        return closestSelectableDateTo(date)
     }
 
     /**
@@ -329,6 +328,63 @@ data class DatePickerItems(
                     constraints.contains(LocalDate(year = year, month = monthFor(month), day = day))
         }
 
+    private fun closestSelectableDateTo(date: LocalDate): LocalDate {
+        val targetEpochDay = date.toEpochDays()
+        return candidateYearsNear(date.year)
+            .flatMap { selectableDatesForYear(it) }
+            .minWith(
+                compareBy<LocalDate> { abs(it.toEpochDays() - targetEpochDay) }
+                    .thenBy { it.toEpochDays() }
+            )
+    }
+
+    private fun candidateYearsNear(year: Int): List<Int> {
+        val sortedYears = yearItems.sorted()
+        val sameYearIndex = sortedYears.binarySearch(year)
+        val insertionIndex = if (sameYearIndex >= 0) sameYearIndex else -sameYearIndex - 1
+        val sameYear = sortedYears.getOrNull(sameYearIndex)
+            ?.takeIf { hasSelectableDateInYear(it) }
+        val previousYear = sortedYears.closestSelectableYearBefore(
+            startIndex = if (sameYearIndex >= 0) sameYearIndex - 1 else insertionIndex - 1
+        )
+        val nextYear = sortedYears.closestSelectableYearAfter(
+            startIndex = if (sameYearIndex >= 0) sameYearIndex + 1 else insertionIndex
+        )
+        return listOfNotNull(previousYear, sameYear, nextYear)
+    }
+
+    private fun List<Int>.closestSelectableYearBefore(startIndex: Int): Int? {
+        var index = startIndex
+        while (index >= 0) {
+            val candidateYear = this[index]
+            if (hasSelectableDateInYear(candidateYear)) return candidateYear
+            index--
+        }
+        return null
+    }
+
+    private fun List<Int>.closestSelectableYearAfter(startIndex: Int): Int? {
+        var index = startIndex
+        while (index < size) {
+            val candidateYear = this[index]
+            if (hasSelectableDateInYear(candidateYear)) return candidateYear
+            index++
+        }
+        return null
+    }
+
+    private fun hasSelectableDateInYear(year: Int): Boolean =
+        monthItems.any { month ->
+            selectableDayItemsFor(year = year, month = month).isNotEmpty()
+        }
+
+    private fun selectableDatesForYear(year: Int): List<LocalDate> =
+        monthItems.flatMap { month ->
+            selectableDayItemsFor(year = year, month = month).map { day ->
+                LocalDate(year = year, month = monthFor(month), day = day)
+            }
+        }
+
     private fun requireValid() {
         yearItems.requireIntItems(name = "DatePicker yearItems", range = 1000..9999)
         monthItems.requireIntItems(name = "DatePicker monthItems", range = 1..12)
@@ -346,7 +402,7 @@ data class DatePickerItems(
                         "year/month combination. Smallest maximum day is $minimumMaxDay."
             }
         }
-        require(selectableYearItems().isNotEmpty()) {
+        require(yearItems.any { hasSelectableDateInYear(it) }) {
             "DatePicker items must contain at least one date allowed by constraints. Adjust " +
                     "minDate/maxDate or include at least one matching year/month/day item " +
                     "inside the allowed range."
@@ -387,7 +443,9 @@ data class YearMonthPickerConstraints(
  * Selectable item lists for [com.kez.picker.date.YearMonthPicker].
  *
  * Lists must be non-empty, contain distinct values, stay within their documented ranges, and contain
- * the current state selection. [constraints] are applied after year and month item lists.
+ * the current state selection. [constraints] are applied after year and month item lists. Treat item
+ * lists as immutable after passing them to a picker; create a new [YearMonthPickerItems] when
+ * available values change.
  *
  * @param yearItems Year values available for selection. Values must be in 1000..9999.
  * @param monthItems Month values available for selection. Values must be in 1..12.
@@ -434,8 +492,17 @@ data class YearMonthPickerItems(
 
     /**
      * Returns the closest selectable [YearMonth] for [year] and [month].
+     *
+     * @throws IllegalArgumentException if [year] or [month] is outside the supported range, or if
+     * the configured item lists are invalid.
      */
     fun coerceYearMonth(year: Int, month: Int): YearMonth {
+        require(year in 1000..9999) {
+            "year must be in range [1000, 9999], but was $year"
+        }
+        require(month in 1..12) {
+            "month must be in range [1, 12], but was $month"
+        }
         requireValid()
         return selectableYearMonths().closestTo(year = year, month = month)
     }

@@ -347,8 +347,22 @@ class DatePickerStateTest {
         )
 
         assertEquals(
-            LocalDate(year = 2024, month = Month.DECEMBER, day = 31),
+            LocalDate(year = 2026, month = Month.FEBRUARY, day = 1),
             items.coerceDate(LocalDate(year = 2025, month = Month.NOVEMBER, day = 30))
+        )
+    }
+
+    @Test
+    fun datePickerItems_coerceDate_comparesAdjacentYearsWhenRequestedYearIsSelectable() {
+        val items = DatePickerItems(
+            yearItems = listOf(2025, 2026),
+            monthItems = listOf(1, 12),
+            dayItems = listOf(1)
+        )
+
+        assertEquals(
+            LocalDate(year = 2026, month = Month.JANUARY, day = 1),
+            items.coerceDate(LocalDate(year = 2025, month = Month.DECEMBER, day = 31))
         )
     }
 
@@ -541,7 +555,7 @@ class DatePickerStateTest {
             items = items
         )
 
-        assertEquals(LocalDate(year = 2024, month = Month.DECEMBER, day = 31), state.selectedDate)
+        assertEquals(LocalDate(year = 2026, month = Month.FEBRUARY, day = 1), state.selectedDate)
     }
 
     @Test
@@ -560,7 +574,7 @@ class DatePickerStateTest {
             items = items
         )
 
-        assertEquals(LocalDate(year = 2024, month = Month.DECEMBER, day = 31), state.selectedDate)
+        assertEquals(LocalDate(year = 2026, month = Month.FEBRUARY, day = 1), state.selectedDate)
     }
 
     @Test

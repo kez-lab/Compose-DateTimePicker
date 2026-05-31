@@ -488,7 +488,8 @@ fun SizePickerExample() {
 `Picker<T>`는 controlled component입니다. 선택값은 앱 state에 보관하고, 그 값을 `selectedItem`으로
 전달하며, `onSelectedItemChange`에서 앱 state를 갱신하세요. `items`는 비어 있으면 안 되고 중복값이
 없어야 하며, `selectedItem`은 반드시 `items` 안에 있어야 합니다. `items`가 바뀔 수 있다면 렌더링 전에
-앱이 소유한 `selectedItem`을 새 목록의 값으로 갱신하거나 보정하세요. `T`가 saveable하지 않다면 앱
+앱이 소유한 `selectedItem`을 새 목록의 값으로 갱신하거나 보정하세요. Picker가 composition 중일 때는
+`items`를 불변 목록처럼 다루고, 선택 가능한 값이 바뀌면 새 목록을 만들어 전달하세요. `T`가 saveable하지 않다면 앱
 state에는 saveable한 key를 저장한 뒤 렌더링 전에 그 key를 item으로 매핑하세요.
 현재 값을 표시하되 사용자의 scroll, click, semantics 선택 action을 막아야 한다면 `enabled = false`를
 전달하세요. Disabled picker는 기본 텍스트, divider, 선택 영역 배경에 `PickerDefaults.colors(...)`의
@@ -623,7 +624,7 @@ DatePicker(
 `state.selectTime(hour, minute)`을 호출합니다. custom item 목록이나 시간 범위를 함께 적용해야 한다면
 `items`를 받는 overload를 사용하세요. 정수 `hour`는 `0..23` 범위의 hour-of-day로 해석됩니다.
 
-custom item 값이 유효 범위를 벗어나거나, 중복이 있거나, 필수 목록이 비어 있거나, 현재 선택값이 custom 목록 또는 시간 범위 밖이면 composition 중 `IllegalArgumentException`이 발생합니다. 12시간 형식의 `PickerDefaults.timePickerItems(hour12Items = ...)`는 표시 시간 기준(`1..12`)입니다. 예를 들어 `initialHour = 13`은 `state.selectedHour == 1`, `PM`으로 변환됩니다.
+custom item 값이 유효 범위를 벗어나거나, 중복이 있거나, 필수 목록이 비어 있거나, 현재 선택값이 custom 목록 또는 시간 범위 밖이면 composition 중 `IllegalArgumentException`이 발생합니다. custom item 목록은 picker에 전달한 뒤 불변으로 다루고, 선택 가능한 값이 바뀌면 새 `items` 객체를 만들어 전달하세요. 12시간 형식의 `PickerDefaults.timePickerItems(hour12Items = ...)`는 표시 시간 기준(`1..12`)입니다. 예를 들어 `initialHour = 13`은 `state.selectedHour == 1`, `PM`으로 변환됩니다.
 
 ### DatePicker
 
@@ -659,7 +660,7 @@ composition 전에 보정해야 한다면 같은 `items` 객체를 함께 전달
 `state.selectDate(year, month, day)`를 호출합니다. custom item 목록이나 날짜 범위를 함께 적용해야
 한다면 `items`를 받는 overload를 사용하세요.
 
-custom item 값이 유효 범위를 벗어나거나, 중복이 있거나, 목록이 비어 있거나, 현재 선택된 연도/월/일이 custom 목록 또는 날짜 범위 밖이면 composition 중 `IllegalArgumentException`이 발생합니다. 연/월 변경으로 현재 월 또는 일이 선택 불가능해지면 설정된 제약 안에서 가장 가까운 선택 가능 값으로 이동합니다.
+custom item 값이 유효 범위를 벗어나거나, 중복이 있거나, 목록이 비어 있거나, 현재 선택된 연도/월/일이 custom 목록 또는 날짜 범위 밖이면 composition 중 `IllegalArgumentException`이 발생합니다. custom item 목록은 picker에 전달한 뒤 불변으로 다루고, 선택 가능한 값이 바뀌면 새 `items` 객체를 만들어 전달하세요. 연/월 변경으로 현재 월 또는 일이 선택 불가능해지면 설정된 제약 안에서 가장 가까운 선택 가능 값으로 이동합니다.
 
 ### DateRangePicker
 
@@ -720,7 +721,7 @@ inclusive range 포함 여부를 확인해야 한다면 `range.contains(year, mo
 상태 생성 이후 선택값을 바꾸려면 `state.selectYearMonth(YearMonth(...))`,
 `state.selectYearMonth(year, month)`, 또는 `state.selectDate(LocalDate(...))`를 호출합니다.
 
-custom item 값이 유효 범위를 벗어나거나, 중복이 있거나, 목록이 비어 있거나, 현재 선택된 연도/월이 custom 목록 또는 연/월 범위 밖이면 composition 중 `IllegalArgumentException`이 발생합니다. 연도 변경으로 현재 월이 선택 불가능해지면 가장 가까운 선택 가능 `YearMonth`로 이동합니다.
+custom item 값이 유효 범위를 벗어나거나, 중복이 있거나, 목록이 비어 있거나, 현재 선택된 연도/월이 custom 목록 또는 연/월 범위 밖이면 composition 중 `IllegalArgumentException`이 발생합니다. custom item 목록은 picker에 전달한 뒤 불변으로 다루고, 선택 가능한 값이 바뀌면 새 `items` 객체를 만들어 전달하세요. 연도 변경으로 현재 월이 선택 불가능해지면 가장 가까운 선택 가능 `YearMonth`로 이동합니다.
 
 ## 라이선스
 

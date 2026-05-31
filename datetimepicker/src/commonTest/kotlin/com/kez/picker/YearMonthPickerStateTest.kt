@@ -390,16 +390,15 @@ class YearMonthPickerStateTest {
     }
 
     @Test
-    fun yearMonthPickerItems_coerceYearMonth_allowsRawValuesOutsidePickerRange() {
+    fun yearMonthPickerItems_coerceYearMonth_throwsWhenRawValuesAreOutsideSupportedRange() {
         val items = YearMonthPickerItems(
             yearItems = listOf(2024, 2026),
             monthItems = listOf(3, 12)
         )
 
-        assertEquals(
-            YearMonth(year = 2024, month = 3),
+        assertFailsWith<IllegalArgumentException> {
             items.coerceYearMonth(year = 999, month = 13)
-        )
+        }
     }
 
     @Test
@@ -416,16 +415,16 @@ class YearMonthPickerStateTest {
     }
 
     @Test
-    fun yearMonthPickerState_selectYearMonthWithItems_allowsRawValuesOutsidePickerRange() {
+    fun yearMonthPickerState_selectYearMonthWithItems_throwsWhenRawValuesAreOutsideSupportedRange() {
         val state = YearMonthPickerState(initialYear = 2024, initialMonth = 3)
         val items = YearMonthPickerItems(
             yearItems = listOf(2024, 2026),
             monthItems = listOf(3, 12)
         )
 
-        state.selectYearMonth(year = 999, month = 13, items = items)
-
-        assertEquals(YearMonth(year = 2024, month = 3), state.selectedYearMonth)
+        assertFailsWith<IllegalArgumentException> {
+            state.selectYearMonth(year = 999, month = 13, items = items)
+        }
     }
 
     @Test

@@ -146,20 +146,20 @@ Most logic lives in `commonMain`. Platform-specific code is minimal.
 # Run all tests
 ./gradlew :datetimepicker:test --no-daemon
 
-# Run specific test suites
+# Run library Android component UI tests on Robolectric
 ./gradlew :datetimepicker:testDebugUnitTest --no-daemon
 ./gradlew :datetimepicker:testReleaseUnitTest --no-daemon
 
-# Compile Android instrumented tests
-./gradlew :datetimepicker:assembleDebugAndroidTest --no-daemon
+# Compile sample Android instrumented tests
+./gradlew :sample:assembleDebugAndroidTest --no-daemon
 
-# Run Android instrumented tests on the Gradle Managed Device target used by CI
-./gradlew :datetimepicker:pixel2Api35DebugAndroidTest \
+# Run sample Android instrumented tests on the Gradle Managed Device target used by CI
+./gradlew :sample:pixel2Api35DebugAndroidTest \
   -Pandroid.testoptions.manageddevices.emulator.gpu=swiftshader_indirect \
   --no-daemon
 
-# Run Android instrumented tests on an already connected local device or emulator
-./gradlew :datetimepicker:connectedDebugAndroidTest --no-daemon
+# Run sample Android instrumented tests on an already connected local device or emulator
+./gradlew :sample:connectedDebugAndroidTest --no-daemon
 
 # Run checks (tests + lint)
 ./gradlew :datetimepicker:check --no-daemon
@@ -245,18 +245,19 @@ color = lerp(selectedTextStyle.color, textStyle.color, fraction)
 ## Testing Strategy
 
 **Current coverage** (estimated):
-- Unit tests: picker states, date validation, picker index utility behavior, and format/semantics behavior
-- Android instrumented tests: picker accessibility semantics for selected values, custom labels, state descriptions, and higher-level picker forwarding
-- Sample Android smoke tests: home-screen example entry points and a representative navigation path
+- Unit tests: picker states, date validation, picker index utility behavior, and date/time coercion behavior
+- Robolectric Android component UI tests: picker accessibility semantics for selected values, custom labels, state descriptions, state restoration, and higher-level picker forwarding
+- Sample Android instrumented smoke tests: home-screen example entry points and a representative navigation path
 - Missing: broader UI interaction tests, screenshot tests, and full TalkBack/readout validation
 
 **When adding tests**:
 - Unit tests → `datetimepicker/src/commonTest/kotlin/`
-- Android UI/instrumented tests → `datetimepicker/src/androidInstrumentedTest/kotlin/`
+- Library Android component UI tests that do not need a real Activity/app journey → `datetimepicker/src/androidUnitTest/kotlin/` with Robolectric
+- Library Android instrumented tests that must run on a device/emulator → `datetimepicker/src/androidInstrumentedTest/kotlin/`
 - Sample Android smoke tests → `sample/src/androidInstrumentedTest/kotlin/`
-- Use `:datetimepicker:assembleDebugAndroidTest` or `:sample:assembleDebugAndroidTest` to verify Android test APK compilation/packaging. Use `:datetimepicker:pixel2Api35DebugAndroidTest -Pandroid.testoptions.manageddevices.emulator.gpu=swiftshader_indirect` and `:sample:pixel2Api35DebugAndroidTest -Pandroid.testoptions.manageddevices.emulator.gpu=swiftshader_indirect` for the Gradle Managed Device path used by CI; it requires Android Emulator, the API 35 AOSP ATD system image for the host architecture, and local virtualization/KVM. Use `:datetimepicker:connectedDebugAndroidTest` when a local device or emulator is already available. If managed-device prerequisites are unavailable locally, run `assembleDebugAndroidTest` or a managed-device `--dry-run` and rely on CI for the actual emulator run.
+- Use `:datetimepicker:testDebugUnitTest` or `:datetimepicker:testReleaseUnitTest` for library Robolectric component UI tests. Use `:sample:assembleDebugAndroidTest` to verify sample Android test APK compilation/packaging. Use `:sample:pixel2Api35DebugAndroidTest -Pandroid.testoptions.manageddevices.emulator.gpu=swiftshader_indirect` for the Gradle Managed Device path used by CI; it requires Android Emulator, the API 35 AOSP ATD system image for the host architecture, and local virtualization/KVM. Use `:sample:connectedDebugAndroidTest` when a local device or emulator is already available. If managed-device prerequisites are unavailable locally, run `assembleDebugAndroidTest` or a managed-device `--dry-run` and rely on CI for the actual emulator run.
 - Public Kotlin API/ABI changes → run `:datetimepicker:checkLegacyAbi`. If the API change is intentional and SemVer-appropriate, run `:datetimepicker:updateLegacyAbi`, commit the updated `datetimepicker/api/` dumps, and review preview/generated resource changes separately from supported picker/state API changes.
-- Follow naming: `<ComponentName>Test.kt` or `<ComponentName>AndroidTest.kt`
+- Follow naming: `<ComponentName>Test.kt`, `<ComponentName>RobolectricTest.kt`, or `<ComponentName>AndroidTest.kt`
 
 ## Code Style
 

@@ -38,11 +38,16 @@ import org.junit.Assert.assertTrue
 import org.junit.Assert.fail
 import org.junit.Rule
 import org.junit.Test
+import org.junit.runner.RunWith
+import org.robolectric.RobolectricTestRunner
+import org.robolectric.annotation.Config
 
 private const val PREVIOUS_VALUE_ACTION_LABEL = "Previous value"
 private const val NEXT_VALUE_ACTION_LABEL = "Next value"
 
-class PickerSemanticsAndroidTest {
+@RunWith(RobolectricTestRunner::class)
+@Config(sdk = [35])
+class PickerSemanticsRobolectricTest {
 
     @get:Rule
     val composeRule = createComposeRule()

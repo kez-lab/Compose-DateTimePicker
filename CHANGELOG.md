@@ -77,6 +77,13 @@ This project tracks notable user-facing and maintainer-facing changes here. The 
 
 ### Changed
 
+- Made `DatePickerItems.coerceDate(...)` compare whole selectable `LocalDate` values, matching the
+  `coerceTime(...)` and `coerceYearMonth(...)` behavior instead of independently coercing year,
+  month, and day.
+- Made `YearMonthPickerItems.coerceYearMonth(year, month)` reject primitive values outside
+  `1000..9999` and `1..12`, matching the state APIs and date primitive coercion overload.
+- Documented that picker item lists should be treated as immutable after they are passed to a picker;
+  create a new `items` object when available values change.
 - Made `YearMonthPickerItems.contains(year, month)` return `false` for raw year/month values outside
   the supported ranges instead of constructing an invalid `YearMonth`.
 - Made picker item-list and constraint construction errors explain which min/max bounds or custom
