@@ -35,7 +35,7 @@ internal fun formatTime24(hour: Int?, minute: Int?): String {
 internal fun getMonthName(month: Int): String {
     return when (month) {
         1 -> "1월 (Jan)"
-        2 -> "2월 (Feb)" 
+        2 -> "2월 (Feb)"
         3 -> "3월 (Mar)"
         4 -> "4월 (Apr)"
         5 -> "5월 (May)"

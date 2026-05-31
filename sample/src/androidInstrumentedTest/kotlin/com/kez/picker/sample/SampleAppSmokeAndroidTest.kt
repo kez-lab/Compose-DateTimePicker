@@ -56,6 +56,24 @@ class SampleAppSmokeAndroidTest {
     }
 
     @Test
+    fun timePickerMenuAction_opensTimePickerSampleAndRendersDefaultTab() {
+        composeRule
+            .onNodeWithTag("sample-menu-time-picker")
+            .performScrollTo()
+            .performClick()
+
+        composeRule
+            .onNodeWithText("TimePicker Sample")
+            .assertIsDisplayed()
+        composeRule
+            .onNodeWithText("12-Hour")
+            .assertIsDisplayed()
+        composeRule
+            .onNodeWithText("24-Hour")
+            .assertIsDisplayed()
+    }
+
+    @Test
     fun dateRangePickerMenuAction_updatesSelectedRangeFromButtons() {
         val today = currentDate()
 

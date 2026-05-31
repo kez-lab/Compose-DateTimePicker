@@ -105,15 +105,15 @@ internal fun BackgroundStylePickerScreen(
                 ) {
                     YearMonthPicker(
                         state = yearMonthState,
-                        display = PickerDefaults.yearMonthPickerDisplay(
+                        format = PickerDefaults.yearMonthPickerFormat(
                             yearItemText = { "${it}년" },
-                            monthItemText = { getMonthName(it) }
+                            monthItemText = { getMonthName(it) },
+                            yearItemContentDescription = { "${it}년" },
+                            monthItemContentDescription = { getMonthContentDescription(it) }
                         ),
-                        accessibility = PickerDefaults.yearMonthPickerAccessibility(
+                        semantics = PickerDefaults.yearMonthPickerSemantics(
                             yearPickerLabel = "연도",
                             monthPickerLabel = "월",
-                            yearItemContentDescription = { "${it}년" },
-                            monthItemContentDescription = { getMonthContentDescription(it) },
                             previousItemActionLabel = "이전 항목 선택",
                             nextItemActionLabel = "다음 항목 선택"
                         ),
@@ -150,18 +150,18 @@ internal fun BackgroundStylePickerScreen(
                 ) {
                     TimePicker(
                         state = timeState,
-                        display = PickerDefaults.timePickerDisplay(
+                        format = PickerDefaults.timePickerFormat(
                             hourItemText = { it.toString().padStart(2, '0') },
                             minuteItemText = { it.toString().padStart(2, '0') },
-                            periodItemText = { getTimePeriodContentDescription(it) }
+                            periodItemText = { getTimePeriodContentDescription(it) },
+                            hourItemContentDescription = { "${it}시" },
+                            minuteItemContentDescription = { "${it}분" },
+                            periodItemContentDescription = { getTimePeriodContentDescription(it) }
                         ),
-                        accessibility = PickerDefaults.timePickerAccessibility(
+                        semantics = PickerDefaults.timePickerSemantics(
                             hourPickerLabel = "시간",
                             minutePickerLabel = "분",
                             periodPickerLabel = "오전/오후",
-                            hourItemContentDescription = { "${it}시" },
-                            minuteItemContentDescription = { "${it}분" },
-                            periodItemContentDescription = { getTimePeriodContentDescription(it) },
                             previousItemActionLabel = "이전 항목 선택",
                             nextItemActionLabel = "다음 항목 선택"
                         ),

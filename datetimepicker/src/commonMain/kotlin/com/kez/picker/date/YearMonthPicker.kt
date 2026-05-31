@@ -6,7 +6,10 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -17,10 +20,10 @@ import com.kez.picker.Picker
 import com.kez.picker.PickerDefaults
 import com.kez.picker.PickerStyle
 import com.kez.picker.YearMonthPickerColumn
-import com.kez.picker.YearMonthPickerAccessibility
-import com.kez.picker.YearMonthPickerDisplay
+import com.kez.picker.YearMonthPickerFormat
 import com.kez.picker.YearMonthPickerItems
 import com.kez.picker.YearMonthPickerLayout
+import com.kez.picker.YearMonthPickerSemantics
 import com.kez.picker.pickerColumnModifier
 
 /**
@@ -33,13 +36,13 @@ import com.kez.picker.pickerColumnModifier
  * Programmatic [YearMonthPickerState.selectYearMonth] and [YearMonthPickerState.selectDate] calls
  * update [state] directly and do not invoke this callback. When app code changes the picker from a
  * button, preset, or external value, update any app-owned state in the same handler.
- * @param enabled Whether user scroll, click, and accessibility selection actions are enabled.
+ * @param enabled Whether user scroll, click, and semantics selection actions are enabled.
  * @param items Selectable year and month item lists plus optional year/month bounds for the picker.
- * @param display Visible item text formatters for each picker column.
+ * @param format Visible item text and optional accessibility value descriptions for each picker column.
  * @param style Visual and layout styling for each picker column.
  * @param layout Column layout weights and visual order for each picker column.
  * @param spacingBetweenPickers The spacing between the pickers.
- * @param accessibility Accessibility labels, item descriptions, and custom action labels for each picker column.
+ * @param semantics Accessibility labels and custom action labels for each picker column.
  * @throws IllegalArgumentException if custom item lists are empty, contain duplicates, contain values outside the supported ranges, or omit the current selected year/month after year/month constraints are applied.
  */
 @Composable
@@ -50,18 +53,19 @@ fun YearMonthPicker(
     onSelectedYearMonthChange: (YearMonth) -> Unit = {},
     enabled: Boolean = true,
     items: YearMonthPickerItems = PickerDefaults.yearMonthPickerItems(),
-    display: YearMonthPickerDisplay = PickerDefaults.yearMonthPickerDisplay(),
+    format: YearMonthPickerFormat = PickerDefaults.yearMonthPickerFormat(),
     style: PickerStyle = PickerDefaults.style(),
     layout: YearMonthPickerLayout = PickerDefaults.yearMonthPickerLayout(),
     spacingBetweenPickers: Dp = PickerDefaults.SpacingBetweenPickers,
-    accessibility: YearMonthPickerAccessibility = PickerDefaults.yearMonthPickerAccessibility()
+    semantics: YearMonthPickerSemantics = PickerDefaults.yearMonthPickerSemantics()
 ) {
-    validateYearMonthPickerItems(
-        state = state,
-        items = items
-    )
+    remember(items, state, state.selectedYear, state.selectedMonth) {
+        validateYearMonthPickerItems(state = state, items = items)
+    }
 
     fun moveSelectionInsideAvailableItems() {
+        if (items.contains(state.selectedYearMonth)) return
+
         state.selectYearMonth(
             yearMonth = items.coerceYearMonth(state.selectedYearMonth)
         )
@@ -94,7 +98,9 @@ fun YearMonthPicker(
                     key(column) {
                         when (column) {
                             YearMonthPickerColumn.YEAR -> {
-                                val yearItems = items.selectableYearItems()
+                                val yearItems by remember(items) {
+                                    derivedStateOf { items.selectableYearItems() }
+                                }
                                 Picker(
                                     items = yearItems,
                                     selectedItem = state.selectedYear,
@@ -104,13 +110,18 @@ fun YearMonthPicker(
                                     modifier = pickerColumnModifier(pickerModifier, layout.yearWeight),
                                     enabled = enabled,
                                     style = style,
-                                    accessibility = accessibility.year,
-                                    display = display.year
+                                    isInfinity = false,
+                                    semantics = semantics.year,
+                                    format = format.year
                                 )
                             }
 
                             YearMonthPickerColumn.MONTH -> {
-                                val monthItems = items.selectableMonthItemsFor(state.selectedYear)
+                                val monthItems by remember(items, state) {
+                                    derivedStateOf {
+                                        items.selectableMonthItemsFor(state.selectedYear)
+                                    }
+                                }
                                 Picker(
                                     items = monthItems,
                                     selectedItem = state.selectedMonth,
@@ -120,8 +131,8 @@ fun YearMonthPicker(
                                     modifier = pickerColumnModifier(pickerModifier, layout.monthWeight),
                                     enabled = enabled,
                                     style = style,
-                                    accessibility = accessibility.month,
-                                    display = display.month
+                                    semantics = semantics.month,
+                                    format = format.month
                                 )
                             }
                         }
@@ -130,20 +141,6 @@ fun YearMonthPicker(
             }
         }
     }
-}
-
-internal fun validateYearMonthPickerItems(
-    state: YearMonthPickerState,
-    yearItems: List<Int>,
-    monthItems: List<Int>
-) {
-    validateYearMonthPickerItems(
-        state = state,
-        items = YearMonthPickerItems(
-            yearItems = yearItems,
-            monthItems = monthItems
-        )
-    )
 }
 
 internal fun validateYearMonthPickerItems(

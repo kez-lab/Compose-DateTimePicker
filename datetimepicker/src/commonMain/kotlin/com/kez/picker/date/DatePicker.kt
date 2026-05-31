@@ -6,16 +6,19 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
-import com.kez.picker.DatePickerAccessibility
 import com.kez.picker.DatePickerColumn
-import com.kez.picker.DatePickerDisplay
+import com.kez.picker.DatePickerFormat
 import com.kez.picker.DatePickerItems
 import com.kez.picker.DatePickerLayout
+import com.kez.picker.DatePickerSemantics
 import com.kez.picker.Picker
 import com.kez.picker.PickerDefaults
 import com.kez.picker.PickerStyle
@@ -33,13 +36,13 @@ import kotlin.math.abs
  * Programmatic [DatePickerState.selectDate] calls update [state] directly and do not invoke this
  * callback. When app code changes the picker from a button, preset, or external value, update any
  * app-owned state in the same handler.
- * @param enabled Whether user scroll, click, and accessibility selection actions are enabled.
+ * @param enabled Whether user scroll, click, and semantics selection actions are enabled.
  * @param items Selectable year, month, and day item lists for the picker.
- * @param display Visible item text formatters for each picker column.
+ * @param format Visible item text and optional accessibility value descriptions for each picker column.
  * @param style Visual and layout styling for each picker column.
  * @param layout Column layout weights and visual order for each picker column.
  * @param spacingBetweenPickers The spacing between the pickers.
- * @param accessibility Accessibility labels, item descriptions, and custom action labels for each picker column.
+ * @param semantics Accessibility labels and custom action labels for each picker column.
  * @throws IllegalArgumentException if custom item lists are empty, contain duplicates, contain values outside the supported ranges, or omit the current selected year/month/day after date constraints are applied.
  */
 @Composable
@@ -50,16 +53,15 @@ fun DatePicker(
     onSelectedDateChange: (LocalDate) -> Unit = {},
     enabled: Boolean = true,
     items: DatePickerItems = PickerDefaults.datePickerItems(),
-    display: DatePickerDisplay = PickerDefaults.datePickerDisplay(),
+    format: DatePickerFormat = PickerDefaults.datePickerFormat(),
     style: PickerStyle = PickerDefaults.style(),
     layout: DatePickerLayout = PickerDefaults.datePickerLayout(),
     spacingBetweenPickers: Dp = PickerDefaults.SpacingBetweenPickers,
-    accessibility: DatePickerAccessibility = PickerDefaults.datePickerAccessibility()
+    semantics: DatePickerSemantics = PickerDefaults.datePickerSemantics()
 ) {
-    validateDatePickerItems(
-        state = state,
-        items = items
-    )
+    remember(items, state, state.selectedYear, state.selectedMonth, state.selectedDay) {
+        validateDatePickerItems(state = state, items = items)
+    }
 
     fun moveSelectionInsideAvailableItems() {
         val availableMonthItems = items.selectableMonthItemsFor(state.selectedYear)
@@ -91,12 +93,20 @@ fun DatePicker(
             verticalArrangement = Arrangement.Center,
             modifier = Modifier.fillMaxWidth()
         ) {
-            val yearItems = items.selectableYearItems()
-            val monthItems = items.selectableMonthItemsFor(state.selectedYear)
-            val dayItems = items.selectableDayItemsFor(
-                year = state.selectedYear,
-                month = state.selectedMonth
-            )
+            val yearItems by remember(items) {
+                derivedStateOf { items.selectableYearItems() }
+            }
+            val monthItems by remember(items, state) {
+                derivedStateOf { items.selectableMonthItemsFor(state.selectedYear) }
+            }
+            val dayItems by remember(items, state) {
+                derivedStateOf {
+                    items.selectableDayItemsFor(
+                        year = state.selectedYear,
+                        month = state.selectedMonth
+                    )
+                }
+            }
 
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -119,8 +129,9 @@ fun DatePicker(
                                     modifier = pickerColumnModifier(pickerModifier, layout.yearWeight),
                                     enabled = enabled,
                                     style = style,
-                                    accessibility = accessibility.year,
-                                    display = display.year
+                                    isInfinity = false,
+                                    semantics = semantics.year,
+                                    format = format.year
                                 )
                             }
 
@@ -134,8 +145,8 @@ fun DatePicker(
                                     modifier = pickerColumnModifier(pickerModifier, layout.monthWeight),
                                     enabled = enabled,
                                     style = style,
-                                    accessibility = accessibility.month,
-                                    display = display.month
+                                    semantics = semantics.month,
+                                    format = format.month
                                 )
                             }
 
@@ -150,8 +161,8 @@ fun DatePicker(
                                     enabled = enabled,
                                     style = style,
                                     isInfinity = false,
-                                    accessibility = accessibility.day,
-                                    display = display.day
+                                    semantics = semantics.day,
+                                    format = format.day
                                 )
                             }
                         }
@@ -160,21 +171,6 @@ fun DatePicker(
             }
         }
     }
-}
-
-internal fun validateDatePickerItems(
-    state: DatePickerState,
-    yearItems: List<Int>,
-    monthItems: List<Int>
-) {
-    validateDatePickerItems(
-        state = state,
-        items = DatePickerItems(
-            yearItems = yearItems,
-            monthItems = monthItems,
-            dayItems = (1..31).toList()
-        )
-    )
 }
 
 internal fun validateDatePickerItems(

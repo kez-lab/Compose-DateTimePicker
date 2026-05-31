@@ -90,20 +90,24 @@ Most logic lives in `commonMain`. Platform-specific code is minimal.
 - After a substantial implementation step, run a six-agent feedback loop when the maintainer asks for autonomous improvement work: collect feedback, fix actionable issues, verify again, then open or update the PR.
 - Merge PRs only after relevant local verification and GitHub Actions checks pass.
 - Keep improving toward Android developer ergonomics first: state APIs, sample usability, documentation clarity, accessibility, and predictable behavior in real app lifecycles.
+- Before adding custom performance machinery, verify that the standard Compose/runtime primitives are insufficient. Prefer `remember`, `derivedStateOf`, `snapshotFlow`, stable object ownership, and domain helpers before introducing bespoke caches or dirty-check classes. If the reason is performance, record the measured or directly inspected evidence in the PR.
+- Treat bespoke caching, manual invalidation, synchronization, and equality-key logic as high-risk code. If such code remains, add focused regression coverage for stale data, source identity changes, non-default column orders, and state changes that should invalidate derived values. Private code still needs tests when it replaces framework guarantees.
+- When the same invariant appears in multiple components, extract the common rule or deliberately audit every counterpart. Keep `contains`, `coerce*`, validation, rendered item filtering, and selection repair behavior aligned across TimePicker, DatePicker, YearMonthPicker, and DateRangePicker.
+- Before handing off a PR for review, red-team the implementation against the assumptions used to build it: look for unmeasured optimization, duplicated local patterns, missing fast paths, missing tests around non-standard logic, and inconsistent failure contracts.
 - During 0.x API stabilization, prefer the best long-term API shape over source compatibility when the maintainer explicitly authorizes breaking changes. Document every breaking change in README/CHANGELOG and update ABI dumps.
 - Keep public state APIs colocated with their component package unless there is a strong API-design reason not to. For example, `TimePickerState` and `rememberTimePickerState` live in `com.kez.picker.time`; date and year-month state APIs live in `com.kez.picker.date`.
 - Prefer controlled picker APIs with a single source of truth. Avoid APIs where both a state object and positional parameter can initialize or mutate the same selection.
 - For composite pickers, expose a state object for saveable logical selection plus an optional `onSelected*Change` callback for user-driven changes. Document that programmatic `state.select*` calls require the caller to update app-owned state in the same event handler.
 - For year/month-only values, prefer `date.YearMonth` over encoding the selection as the first day of a `LocalDate`; keep `selectedMonthDate` only as an interop convenience.
 - Keep repeated visual/layout picker configuration grouped in `PickerStyle` instead of expanding the public composable parameter list. New visual options should usually be added to `PickerDefaults.style(...)` and documented as a breaking API change while the library is still 0.x.
-- Keep interaction availability as a top-level `enabled` parameter on generic and composite pickers. Disabled pickers should block scroll/click/custom accessibility actions while keeping the selected value visible and exposed as disabled semantics.
-- Keep repeated accessibility/semantics configuration grouped in `PickerAccessibility` or the component-specific accessibility option objects instead of expanding composable signatures with more label/action parameters.
+- Keep interaction availability as a top-level `enabled` parameter on generic and composite pickers. Disabled pickers should block scroll/click/custom semantics actions while keeping the selected value visible and exposed as disabled semantics.
+- Keep repeated structural semantics configuration grouped in `PickerSemantics` or the component-specific semantics option objects instead of expanding composable signatures with more label/action parameters.
 - Keep repeated custom item-list configuration grouped in component-specific item option objects instead of adding separate list parameters to picker composables.
 - When public picker APIs accept custom item-list option objects, validate non-empty lists, duplicate values, supported value ranges, and presence of the current selected value before composing the underlying `Picker`.
 - When app-driven selection can come from restored values or presets, prefer public `items.coerce*` helpers or `state.select*(value, items)` overloads over asking apps to duplicate picker constraint logic.
 - When custom item lists affect first-render validity, provide `remember*State(items = ..., initial... = ...)` examples so apps can normalize initial state before the picker composes.
 - Use `TimePickerConstraints` / `PickerDefaults.timePickerItems(minTime = ..., maxTime = ...)` for exact inclusive time bounds. Ensure examples create state with the same `items` object so restored or preset times are normalized before composition.
-- Keep visible item text configuration (`itemText` / component `display`) separate from accessibility descriptions. When localized visible labels and TalkBack output should differ, update display examples and accessibility examples together.
+- Keep value formatting (`PickerItemFormat` / component `format`) responsible for visible item text and optional value content descriptions. Keep `PickerSemantics` for structural picker labels and action labels. When localized visible labels and TalkBack output should differ, update format examples and semantics examples together.
 - For `DatePickerItems.dayItems`, remember that the list is filtered by the selected year/month maximum day. If a year/month change makes the current day unavailable, keep the component behavior predictable by moving to the closest available valid day and documenting that behavior.
 - For exact `DatePicker` min/max date use cases, prefer `DatePickerConstraints` / `PickerDefaults.datePickerItems(minDate = ..., maxDate = ...)` over asking apps to approximate ranges with independent year/month/day lists. Keep `contains`, `coerceDate`, validation, and rendered column filtering aligned.
 - For exact `YearMonthPicker` min/max use cases, prefer `YearMonthPickerConstraints` / `PickerDefaults.yearMonthPickerItems(minYearMonth = ..., maxYearMonth = ...)`. Keep `contains`, `coerceYearMonth`, validation, and rendered column filtering aligned by whole `YearMonth`, not independent year/month fields.
@@ -112,7 +116,7 @@ Most logic lives in `commonMain`. Platform-specific code is minimal.
 - Treat `remember*State` initial parameters as first-composition defaults. Avoid resetting picker state from changing clock/date expressions during recomposition unless the API explicitly models a reset, and keep internal picker scroll state/effects keyed with state resets.
 - When adding public state mutation APIs, keep logical state and picker scroll position synchronized, and require apps to keep custom item lists consistent with requested values.
 - During programmatic selection sync, do not let intermediate `LazyListState` scroll positions overwrite the requested state value before the picker settles.
-- When higher-level components pass accessibility labels to `Picker`, expose them through component-specific accessibility option objects with sensible defaults so Android apps can localize TalkBack output. Update KDoc and both READMEs in the same PR.
+- When higher-level components pass semantics labels to `Picker`, expose them through component-specific semantics option objects with sensible defaults so Android apps can localize TalkBack output. Update KDoc and both READMEs in the same PR.
 - Kotlin 2.2.21 ABI validation uses `checkLegacyAbi`/`updateLegacyAbi` in this repo. Re-check task names and dump format after Kotlin upgrades.
 - Treat `datetimepicker/api/` as committed release-gate data. Public API changes must include reviewed ABI dump updates, and reviewers should separate intended picker/state API changes from preview/generated resource churn.
 - Keep `@Preview` composables private tooling code so sample previews do not become part of the supported public API surface. Reject ABI dump changes that add `*Preview` symbols back to `datetimepicker/api/`. If accidental preview symbols are removed from ABI dumps, call out the compatibility impact in the PR and release notes.
@@ -142,20 +146,20 @@ Most logic lives in `commonMain`. Platform-specific code is minimal.
 # Run all tests
 ./gradlew :datetimepicker:test --no-daemon
 
-# Run specific test suites
+# Run library Android component UI tests on Robolectric
 ./gradlew :datetimepicker:testDebugUnitTest --no-daemon
 ./gradlew :datetimepicker:testReleaseUnitTest --no-daemon
 
-# Compile Android instrumented tests
-./gradlew :datetimepicker:assembleDebugAndroidTest --no-daemon
+# Compile sample Android instrumented tests
+./gradlew :sample:assembleDebugAndroidTest --no-daemon
 
-# Run Android instrumented tests on the Gradle Managed Device target used by CI
-./gradlew :datetimepicker:pixel2Api35DebugAndroidTest \
+# Run sample Android instrumented tests on the Gradle Managed Device target used by CI
+./gradlew :sample:pixel2Api35DebugAndroidTest \
   -Pandroid.testoptions.manageddevices.emulator.gpu=swiftshader_indirect \
   --no-daemon
 
-# Run Android instrumented tests on an already connected local device or emulator
-./gradlew :datetimepicker:connectedDebugAndroidTest --no-daemon
+# Run sample Android instrumented tests on an already connected local device or emulator
+./gradlew :sample:connectedDebugAndroidTest --no-daemon
 
 # Run checks (tests + lint)
 ./gradlew :datetimepicker:check --no-daemon
@@ -177,7 +181,7 @@ git diff --check origin/main...HEAD
 
 **Run a single test**: Use `--tests` filter:
 ```bash
-./gradlew :datetimepicker:testDebugUnitTest --tests "com.kez.picker.PickerStateTest.pickerState_initialValue_isCorrect" --no-daemon
+./gradlew :datetimepicker:testDebugUnitTest --tests "com.kez.picker.TimePickerStateTest.timePickerState_24HourFormat_initialValues_areCorrect" --no-daemon
 ```
 
 ### Sample App
@@ -241,18 +245,19 @@ color = lerp(selectedTextStyle.color, textStyle.color, fraction)
 ## Testing Strategy
 
 **Current coverage** (estimated):
-- Unit tests: picker states, date validation, time calculation, picker index utility behavior, and accessibility description formatting
-- Android instrumented tests: picker accessibility semantics for selected values, custom labels, state descriptions, and higher-level picker forwarding
-- Sample Android smoke tests: home-screen example entry points and a representative navigation path
+- Unit tests: picker states, date validation, picker index utility behavior, and date/time coercion behavior
+- Robolectric Android component UI tests: picker accessibility semantics for selected values, custom labels, state descriptions, state restoration, and higher-level picker forwarding
+- Sample Android instrumented smoke tests: home-screen example entry points and a representative navigation path
 - Missing: broader UI interaction tests, screenshot tests, and full TalkBack/readout validation
 
 **When adding tests**:
 - Unit tests → `datetimepicker/src/commonTest/kotlin/`
-- Android UI/instrumented tests → `datetimepicker/src/androidInstrumentedTest/kotlin/`
+- Library Android component UI tests that do not need a real Activity/app journey → `datetimepicker/src/androidUnitTest/kotlin/` with Robolectric
+- Library Android instrumented tests that must run on a device/emulator → `datetimepicker/src/androidInstrumentedTest/kotlin/`
 - Sample Android smoke tests → `sample/src/androidInstrumentedTest/kotlin/`
-- Use `:datetimepicker:assembleDebugAndroidTest` or `:sample:assembleDebugAndroidTest` to verify Android test APK compilation/packaging. Use `:datetimepicker:pixel2Api35DebugAndroidTest -Pandroid.testoptions.manageddevices.emulator.gpu=swiftshader_indirect` and `:sample:pixel2Api35DebugAndroidTest -Pandroid.testoptions.manageddevices.emulator.gpu=swiftshader_indirect` for the Gradle Managed Device path used by CI; it requires Android Emulator, the API 35 AOSP ATD system image for the host architecture, and local virtualization/KVM. Use `:datetimepicker:connectedDebugAndroidTest` when a local device or emulator is already available. If managed-device prerequisites are unavailable locally, run `assembleDebugAndroidTest` or a managed-device `--dry-run` and rely on CI for the actual emulator run.
+- Use `:datetimepicker:testDebugUnitTest` or `:datetimepicker:testReleaseUnitTest` for library Robolectric component UI tests. Use `:sample:assembleDebugAndroidTest` to verify sample Android test APK compilation/packaging. Use `:sample:pixel2Api35DebugAndroidTest -Pandroid.testoptions.manageddevices.emulator.gpu=swiftshader_indirect` for the Gradle Managed Device path used by CI; it requires Android Emulator, the API 35 AOSP ATD system image for the host architecture, and local virtualization/KVM. Use `:sample:connectedDebugAndroidTest` when a local device or emulator is already available. If managed-device prerequisites are unavailable locally, run `assembleDebugAndroidTest` or a managed-device `--dry-run` and rely on CI for the actual emulator run.
 - Public Kotlin API/ABI changes → run `:datetimepicker:checkLegacyAbi`. If the API change is intentional and SemVer-appropriate, run `:datetimepicker:updateLegacyAbi`, commit the updated `datetimepicker/api/` dumps, and review preview/generated resource changes separately from supported picker/state API changes.
-- Follow naming: `<ComponentName>Test.kt` or `<ComponentName>AndroidTest.kt`
+- Follow naming: `<ComponentName>Test.kt`, `<ComponentName>RobolectricTest.kt`, or `<ComponentName>AndroidTest.kt`
 
 ## Code Style
 

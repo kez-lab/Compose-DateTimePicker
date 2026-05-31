@@ -6,7 +6,10 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -17,13 +20,12 @@ import com.kez.picker.Picker
 import com.kez.picker.PickerDefaults
 import com.kez.picker.PickerStyle
 import com.kez.picker.TimePickerColumn
+import com.kez.picker.TimePickerFormat
 import com.kez.picker.TimePickerLayout
-import com.kez.picker.TimePickerAccessibility
-import com.kez.picker.TimePickerDisplay
+import com.kez.picker.TimePickerSemantics
 import com.kez.picker.TimePickerItems
 import com.kez.picker.pickerColumnModifier
 import com.kez.picker.util.TimeFormat
-import com.kez.picker.util.TimePeriod
 import kotlinx.datetime.LocalTime
 
 /**
@@ -36,13 +38,13 @@ import kotlinx.datetime.LocalTime
  * Programmatic [TimePickerState.selectTime] calls update [state] directly and do not invoke this
  * callback. When app code changes the picker from a button, preset, or external value, update any
  * app-owned state in the same handler.
- * @param enabled Whether user scroll, click, and accessibility selection actions are enabled.
+ * @param enabled Whether user scroll, click, and semantics selection actions are enabled.
  * @param items Selectable minute, hour, and period item lists for the picker.
- * @param display Visible item text formatters for each picker column.
+ * @param format Visible item text and optional accessibility value descriptions for each picker column.
  * @param style Visual and layout styling for each picker column.
  * @param layout Column layout weights and visual order for each picker column.
  * @param spacingBetweenPickers The spacing between the pickers.
- * @param accessibility Accessibility labels, item descriptions, and custom action labels for each picker column.
+ * @param semantics Accessibility labels and custom action labels for each picker column.
  * @throws IllegalArgumentException if custom item lists are empty where required, contain duplicates, contain values outside the supported ranges, or omit the current selected value after time constraints are applied.
  */
 @Composable
@@ -53,18 +55,19 @@ fun TimePicker(
     onSelectedTimeChange: (LocalTime) -> Unit = {},
     enabled: Boolean = true,
     items: TimePickerItems = PickerDefaults.timePickerItems(),
-    display: TimePickerDisplay = PickerDefaults.timePickerDisplay(),
+    format: TimePickerFormat = PickerDefaults.timePickerFormat(),
     style: PickerStyle = PickerDefaults.style(),
     layout: TimePickerLayout = PickerDefaults.timePickerLayout(),
     spacingBetweenPickers: Dp = PickerDefaults.SpacingBetweenPickers,
-    accessibility: TimePickerAccessibility = PickerDefaults.timePickerAccessibility()
+    semantics: TimePickerSemantics = PickerDefaults.timePickerSemantics()
 ) {
-    validateTimePickerItems(
-        state = state,
-        items = items
-    )
+    remember(items, state, state.selectedTime, state.selectedHour, state.selectedPeriod, state.timeFormat) {
+        validateTimePickerItems(state = state, items = items)
+    }
 
     fun moveSelectionInsideAvailableItems() {
+        if (items.contains(state.selectedTime, state.timeFormat)) return
+
         state.selectTime(
             time = items.coerceTime(
                 time = state.selectedTime,
@@ -102,7 +105,9 @@ fun TimePicker(
                         when (column) {
                             TimePickerColumn.PERIOD -> {
                                 if (state.timeFormat == TimeFormat.HOUR_12) {
-                                    val periodItems = items.selectablePeriodItems()
+                                    val periodItems by remember(items) {
+                                        derivedStateOf { items.selectablePeriodItems() }
+                                    }
                                     Picker(
                                         items = periodItems,
                                         selectedItem = state.selectedPeriod,
@@ -113,17 +118,21 @@ fun TimePicker(
                                         enabled = enabled,
                                         style = style,
                                         isInfinity = false,
-                                        accessibility = accessibility.period,
-                                        display = display.period
+                                        semantics = semantics.period,
+                                        format = format.period
                                     )
                                 }
                             }
 
                             TimePickerColumn.HOUR -> {
-                                val hourItems = items.selectableHourItemsFor(
-                                    timeFormat = state.timeFormat,
-                                    period = state.selectedPeriod
-                                )
+                                val hourItems by remember(items, state) {
+                                    derivedStateOf {
+                                        items.selectableHourItemsFor(
+                                            timeFormat = state.timeFormat,
+                                            period = state.selectedPeriod
+                                        )
+                                    }
+                                }
                                 Picker(
                                     items = hourItems,
                                     selectedItem = state.selectedHour,
@@ -133,15 +142,17 @@ fun TimePicker(
                                     modifier = pickerColumnModifier(pickerModifier, layout.hourWeight),
                                     enabled = enabled,
                                     style = style,
-                                    accessibility = accessibility.hour,
-                                    display = display.hour
+                                    semantics = semantics.hour,
+                                    format = format.hour
                                 )
                             }
 
                             TimePickerColumn.MINUTE -> {
-                                val minuteItems = items.selectableMinuteItemsFor(
-                                    hourOfDay = state.selectedHourOfDay
-                                )
+                                val minuteItems by remember(items, state) {
+                                    derivedStateOf {
+                                        items.selectableMinuteItemsFor(hourOfDay = state.selectedHourOfDay)
+                                    }
+                                }
                                 Picker(
                                     items = minuteItems,
                                     selectedItem = state.selectedMinute,
@@ -151,8 +162,8 @@ fun TimePicker(
                                     modifier = pickerColumnModifier(pickerModifier, layout.minuteWeight),
                                     enabled = enabled,
                                     style = style,
-                                    accessibility = accessibility.minute,
-                                    display = display.minute
+                                    semantics = semantics.minute,
+                                    format = format.minute
                                 )
                             }
                         }
@@ -161,23 +172,6 @@ fun TimePicker(
             }
         }
     }
-}
-
-internal fun validateTimePickerItems(
-    state: TimePickerState,
-    minuteItems: List<Int>,
-    hourItems: List<Int>,
-    periodItems: List<TimePeriod>
-) {
-    validateTimePickerItems(
-        state = state,
-        items = TimePickerItems(
-            minuteItems = minuteItems,
-            hour24Items = hourItems,
-            hour12Items = hourItems,
-            periodItems = periodItems
-        )
-    )
 }
 
 internal fun validateTimePickerItems(

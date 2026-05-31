@@ -11,7 +11,7 @@ Android, iOS, Desktop (JVM), Web (Wasm) 등 다양한 플랫폼에서 일관된 
 *   **TimePicker**: 12시간(오전/오후) 및 24시간 형식을 모두 지원합니다.
 *   **DatePicker**: 연도, 월, 일을 함께 선택하고 월/윤년에 맞춰 일을 자동 보정합니다.
 *   **YearMonthPicker**: 년도와 월을 선택할 수 있는 전용 컴포넌트를 제공합니다.
-*   **커스터마이징**: 재사용 가능한 UI 설정을 위한 `PickerStyle`과 display 옵션을 제공합니다.
+*   **커스터마이징**: 재사용 가능한 UI 설정을 위한 `PickerStyle`과 format 옵션을 제공합니다.
 *   **상태 관리**: `rememberTimePickerState`, `rememberDatePickerState`, `rememberYearMonthPickerState`를 통해 간편하게 상태를 관리할 수 있습니다.
 *   **접근성**: 스크린 리더 및 내비게이션 지원 등 접근성을 고려하여 설계되었습니다.
 
@@ -420,30 +420,30 @@ fun BottomSheetPickerExample() {
 `YearMonthPicker`, `YearMonthPickerState` 및 관련 `remember*State` 함수는
 `com.kez.picker.date`에 있습니다.
 
-접근성 옵션은 semantics에 들어가는 picker column prefix, 접근성 값 설명, 이전/다음 accessibility action
-label을 한 곳에서 정의합니다. 화면에 보이는 텍스트를 바꾸지 않고 TalkBack 출력만 현지화할 수 있습니다.
-선택 상태는 고정된 영어 문구를 붙이지 않고 Compose `selected` semantics로 전달됩니다.
-`PickerDefaults.accessibility(...)`, `timePickerAccessibility(...)`, `datePickerAccessibility(...)`,
-`yearMonthPickerAccessibility(...)`로 화면별 재사용 가능한 접근성 객체를 만드세요.
+format 옵션은 화면에 보이는 item text와 선택적인 접근성 값 설명을 한 곳에서 정의합니다.
+item별 content description을 생략하면 picker는 화면에 보이는 텍스트를 접근성 값의 기본값으로
+사용합니다. 이 동작은 화면 텍스트와 스크린 리더 값이 조용히 어긋나는 문제를 막지만, TalkBack이
+"1시간", "1월", "오후"처럼 더 자연스럽게 읽어야 한다면 여전히 명시적인 설명을 제공해야 합니다.
 
-display 옵션은 화면에 보이는 item text만 바꾸고 접근성 출력은 바꾸지 않습니다. 단일
-`Picker<T>`에서는 `PickerDefaults.itemText(...)`를, composite picker에서는
-`PickerDefaults.timePickerDisplay(...)`, `datePickerDisplay(...)`,
-`yearMonthPickerDisplay(...)`를 사용하세요. 숫자 zero-padding, 단위 suffix, 현지화된 월/오전오후
-이름처럼 시각적 label과 TalkBack 문구를 분리해야 할 때 유용합니다.
+semantics 옵션은 picker column label과 이전/다음 action label 같은 구조적 semantics를 정의합니다.
+선택 상태는 고정된 영어 문구를 붙이지 않고 Compose `selected` semantics로 전달됩니다. 단일
+`Picker<T>`에서는 `PickerDefaults.itemFormat(...)`를, composite picker value에는
+`PickerDefaults.timePickerFormat(...)`, `datePickerFormat(...)`, `yearMonthPickerFormat(...)`를
+사용하세요. 화면별 재사용 가능한 label/action 객체는 `PickerDefaults.semantics(...)`,
+`timePickerSemantics(...)`, `datePickerSemantics(...)`, `yearMonthPickerSemantics(...)`로 만드세요.
 
 ```kotlin
 TimePicker(
     state = state,
-    display = PickerDefaults.timePickerDisplay(
+    format = PickerDefaults.timePickerFormat(
         hourItemText = { it.toString().padStart(2, '0') },
-        minuteItemText = { it.toString().padStart(2, '0') }
+        minuteItemText = { it.toString().padStart(2, '0') },
+        hourItemContentDescription = { "${it}시" },
+        minuteItemContentDescription = { "${it}분" }
     ),
-    accessibility = PickerDefaults.timePickerAccessibility(
+    semantics = PickerDefaults.timePickerSemantics(
         hourPickerLabel = "시간",
         minutePickerLabel = "분",
-        hourItemContentDescription = { "${it}시" },
-        minuteItemContentDescription = { "${it}분" },
         previousItemActionLabel = "이전 항목 선택",
         nextItemActionLabel = "다음 항목 선택"
     )
@@ -474,12 +474,12 @@ fun SizePickerExample() {
         onSelectedItemChange = { selectedSize = it },
         enabled = true,
         isInfinity = false,
-        display = PickerDefaults.itemText(
-            itemText = { size -> size.uppercase() }
-        ),
-        accessibility = PickerDefaults.accessibility(
-            pickerLabel = "Size",
+        format = PickerDefaults.itemFormat(
+            itemText = { size -> size.uppercase() },
             itemContentDescription = { it }
+        ),
+        semantics = PickerDefaults.semantics(
+            pickerLabel = "Size"
         )
     )
 }
@@ -488,9 +488,10 @@ fun SizePickerExample() {
 `Picker<T>`는 controlled component입니다. 선택값은 앱 state에 보관하고, 그 값을 `selectedItem`으로
 전달하며, `onSelectedItemChange`에서 앱 state를 갱신하세요. `items`는 비어 있으면 안 되고 중복값이
 없어야 하며, `selectedItem`은 반드시 `items` 안에 있어야 합니다. `items`가 바뀔 수 있다면 렌더링 전에
-앱이 소유한 `selectedItem`을 새 목록의 값으로 갱신하거나 보정하세요. `T`가 saveable하지 않다면 앱
+앱이 소유한 `selectedItem`을 새 목록의 값으로 갱신하거나 보정하세요. Picker가 composition 중일 때는
+`items`를 불변 목록처럼 다루고, 선택 가능한 값이 바뀌면 새 목록을 만들어 전달하세요. `T`가 saveable하지 않다면 앱
 state에는 saveable한 key를 저장한 뒤 렌더링 전에 그 key를 item으로 매핑하세요.
-현재 값을 표시하되 사용자의 scroll, click, accessibility 선택 action을 막아야 한다면 `enabled = false`를
+현재 값을 표시하되 사용자의 scroll, click, semantics 선택 action을 막아야 한다면 `enabled = false`를
 전달하세요. Disabled picker는 기본 텍스트, divider, 선택 영역 배경에 `PickerDefaults.colors(...)`의
 disabled 색상 슬롯을 사용합니다.
 
@@ -514,8 +515,8 @@ Picker(
 
 `style = PickerDefaults.style(...)`로 visible item count, 색상, 텍스트 스타일, divider, item padding,
 선택 영역 배경, fading edge 동작을 하나의 재사용 가능한 객체로 커스터마이즈하세요.
-화면에 보이는 텍스트와 스크린 리더 문구가 달라야 한다면 visible text는 `display.itemText`로, 접근성
-문구는 `accessibility.itemContentDescription`으로 분리하세요.
+화면에 보이는 텍스트와 스크린 리더 문구가 달라야 한다면 visible text는 `format.itemText`로, 접근성
+값 설명은 `format.itemContentDescription`으로 분리하세요.
 
 ### 프로그래밍 방식 선택
 
@@ -597,13 +598,13 @@ DatePicker(
 | :--- | :--- | :--- |
 | `state` | Picker를 제어하기 위한 상태 객체입니다. | `rememberTimePickerState()` |
 | `onSelectedTimeChange` | 사용자 조작으로 선택된 `LocalTime`이 바뀐 뒤 호출됩니다. | `{}` |
-| `enabled` | 사용자 scroll, click, accessibility 선택 action을 허용할지 여부입니다. | `true` |
+| `enabled` | 사용자 scroll, click, semantics 선택 action을 허용할지 여부입니다. | `true` |
 | `items` | 선택 가능한 분, 24시간제 시간, 12시간제 표시 시간, 오전/오후 목록과 선택적 `minTime`/`maxTime` 범위입니다. | `PickerDefaults.timePickerItems()` |
-| `display` | 각 picker column의 화면 표시 텍스트 formatter입니다. | `PickerDefaults.timePickerDisplay()` |
+| `format` | 각 picker column의 화면 표시 텍스트와 선택적 접근성 값 설명입니다. | `PickerDefaults.timePickerFormat()` |
 | `style` | 각 picker column의 시각/레이아웃 스타일입니다. | `PickerDefaults.style()` |
 | `layout` | period, hour, minute picker column의 weight와 표시 순서입니다. 명시적 width가 필요한 column은 weight를 `null`로 설정하세요. | `PickerDefaults.timePickerLayout()` |
 | `spacingBetweenPickers` | picker column 사이의 가로 간격입니다. | `0.dp` |
-| `accessibility` | 각 picker column의 접근성 label, 값 설명, custom action label입니다. | `PickerDefaults.timePickerAccessibility()` |
+| `semantics` | 각 picker column의 접근성 label과 custom action label입니다. | `PickerDefaults.timePickerSemantics()` |
 
 **TimePickerState 속성:**
 
@@ -623,7 +624,7 @@ DatePicker(
 `state.selectTime(hour, minute)`을 호출합니다. custom item 목록이나 시간 범위를 함께 적용해야 한다면
 `items`를 받는 overload를 사용하세요. 정수 `hour`는 `0..23` 범위의 hour-of-day로 해석됩니다.
 
-custom item 값이 유효 범위를 벗어나거나, 중복이 있거나, 필수 목록이 비어 있거나, 현재 선택값이 custom 목록 또는 시간 범위 밖이면 composition 중 `IllegalArgumentException`이 발생합니다. 12시간 형식의 `PickerDefaults.timePickerItems(hour12Items = ...)`는 표시 시간 기준(`1..12`)입니다. 예를 들어 `initialHour = 13`은 `state.selectedHour == 1`, `PM`으로 변환됩니다.
+custom item 값이 유효 범위를 벗어나거나, 중복이 있거나, 필수 목록이 비어 있거나, 현재 선택값이 custom 목록 또는 시간 범위 밖이면 composition 중 `IllegalArgumentException`이 발생합니다. custom item 목록은 picker에 전달한 뒤 불변으로 다루고, 선택 가능한 값이 바뀌면 새 `items` 객체를 만들어 전달하세요. 12시간 형식의 `PickerDefaults.timePickerItems(hour12Items = ...)`는 표시 시간 기준(`1..12`)입니다. 예를 들어 `initialHour = 13`은 `state.selectedHour == 1`, `PM`으로 변환됩니다.
 
 ### DatePicker
 
@@ -631,13 +632,13 @@ custom item 값이 유효 범위를 벗어나거나, 중복이 있거나, 필수
 | :--- | :--- | :--- |
 | `state` | Picker를 제어하기 위한 상태 객체입니다. | `rememberDatePickerState()` |
 | `onSelectedDateChange` | 사용자 조작으로 선택된 `LocalDate`가 바뀐 뒤 호출됩니다. | `{}` |
-| `enabled` | 사용자 scroll, click, accessibility 선택 action을 허용할지 여부입니다. | `true` |
+| `enabled` | 사용자 scroll, click, semantics 선택 action을 허용할지 여부입니다. | `true` |
 | `items` | 선택 가능한 연도/월/일 목록과 선택적 `minDate`/`maxDate` inclusive 범위입니다. 값은 `1000..9999`, `1..12`, `1..31` 범위여야 합니다. | `PickerDefaults.datePickerItems()` |
-| `display` | 각 picker column의 화면 표시 텍스트 formatter입니다. | `PickerDefaults.datePickerDisplay()` |
+| `format` | 각 picker column의 화면 표시 텍스트와 선택적 접근성 값 설명입니다. | `PickerDefaults.datePickerFormat()` |
 | `style` | 각 picker column의 시각/레이아웃 스타일입니다. | `PickerDefaults.style()` |
 | `layout` | year, month, day picker column의 weight와 표시 순서입니다. 명시적 width가 필요한 column은 weight를 `null`로 설정하세요. | `PickerDefaults.datePickerLayout()` |
 | `spacingBetweenPickers` | picker column 사이의 가로 간격입니다. | `0.dp` |
-| `accessibility` | 각 picker column의 접근성 label, 값 설명, custom action label입니다. | `PickerDefaults.datePickerAccessibility()` |
+| `semantics` | 각 picker column의 접근성 label과 custom action label입니다. | `PickerDefaults.datePickerSemantics()` |
 
 **DatePickerState 속성:**
 
@@ -659,7 +660,7 @@ composition 전에 보정해야 한다면 같은 `items` 객체를 함께 전달
 `state.selectDate(year, month, day)`를 호출합니다. custom item 목록이나 날짜 범위를 함께 적용해야
 한다면 `items`를 받는 overload를 사용하세요.
 
-custom item 값이 유효 범위를 벗어나거나, 중복이 있거나, 목록이 비어 있거나, 현재 선택된 연도/월/일이 custom 목록 또는 날짜 범위 밖이면 composition 중 `IllegalArgumentException`이 발생합니다. 연/월 변경으로 현재 월 또는 일이 선택 불가능해지면 설정된 제약 안에서 가장 가까운 선택 가능 값으로 이동합니다.
+custom item 값이 유효 범위를 벗어나거나, 중복이 있거나, 목록이 비어 있거나, 현재 선택된 연도/월/일이 custom 목록 또는 날짜 범위 밖이면 composition 중 `IllegalArgumentException`이 발생합니다. custom item 목록은 picker에 전달한 뒤 불변으로 다루고, 선택 가능한 값이 바뀌면 새 `items` 객체를 만들어 전달하세요. 연/월 변경으로 현재 월 또는 일이 선택 불가능해지면 설정된 제약 안에서 가장 가까운 선택 가능 값으로 이동합니다.
 
 ### DateRangePicker
 
@@ -667,15 +668,15 @@ custom item 값이 유효 범위를 벗어나거나, 중복이 있거나, 목록
 | :--- | :--- | :--- |
 | `state` | 선택된 시작일과 종료일을 제어하는 상태 객체입니다. | `rememberDateRangePickerState()` |
 | `onSelectedDateRangeChange` | 사용자 조작으로 선택된 `DateRange`가 바뀐 뒤 호출됩니다. | `{}` |
-| `enabled` | 사용자 scroll, click, accessibility 선택 action을 허용할지 여부입니다. | `true` |
+| `enabled` | 사용자 scroll, click, semantics 선택 action을 허용할지 여부입니다. | `true` |
 | `items` | 공유되는 연도/월/일 선택 목록과 선택적 `minDate`/`maxDate` inclusive 범위입니다. | `PickerDefaults.datePickerItems()` |
-| `display` | 각 picker column의 화면 표시 텍스트 formatter입니다. | `PickerDefaults.datePickerDisplay()` |
+| `format` | 각 picker column의 화면 표시 텍스트와 선택적 접근성 값 설명입니다. | `PickerDefaults.datePickerFormat()` |
 | `style` | 각 picker column의 시각/레이아웃 스타일입니다. | `PickerDefaults.style()` |
 | `layout` | 각 child `DatePicker`의 column weight와 표시 순서입니다. | `PickerDefaults.datePickerLayout()` |
 | `spacingBetweenPickers` | 각 child `DatePicker` 내부 column 사이의 가로 간격입니다. | `0.dp` |
 | `spacingBetweenDatePickers` | 시작/종료 child picker 사이의 세로 간격입니다. | `16.dp` |
 | `startLabel` / `endLabel` | 각 child picker 위에 표시할 선택적 label입니다. | `"Start date"` / `"End date"` |
-| `accessibility` | 시작/종료 child picker의 접근성 label입니다. | `PickerDefaults.dateRangePickerAccessibility()` |
+| `semantics` | 시작/종료 child picker의 접근성 label과 custom action label입니다. | `PickerDefaults.dateRangePickerSemantics()` |
 
 `DateRangePickerState`는 `selectedStartDate <= selectedEndDate`를 항상 유지합니다. 사용자가 시작일을
 현재 종료일 뒤로 이동하면 종료일도 같은 날짜로 이동하고, 종료일을 현재 시작일 앞으로 이동하면 시작일도
@@ -698,13 +699,13 @@ inclusive range 포함 여부를 확인해야 한다면 `range.contains(year, mo
 | :--- | :--- | :--- |
 | `state` | Picker를 제어하기 위한 상태 객체입니다. | `rememberYearMonthPickerState()` |
 | `onSelectedYearMonthChange` | 사용자 조작으로 선택된 `YearMonth`가 바뀐 뒤 호출됩니다. | `{}` |
-| `enabled` | 사용자 scroll, click, accessibility 선택 action을 허용할지 여부입니다. | `true` |
+| `enabled` | 사용자 scroll, click, semantics 선택 action을 허용할지 여부입니다. | `true` |
 | `items` | 선택 가능한 연도/월 목록과 선택적 `minYearMonth`/`maxYearMonth` 범위입니다. 값은 `1000..9999`와 `1..12` 범위여야 합니다. | `PickerDefaults.yearMonthPickerItems()` |
-| `display` | 각 picker column의 화면 표시 텍스트 formatter입니다. | `PickerDefaults.yearMonthPickerDisplay()` |
+| `format` | 각 picker column의 화면 표시 텍스트와 선택적 접근성 값 설명입니다. | `PickerDefaults.yearMonthPickerFormat()` |
 | `style` | 각 picker column의 시각/레이아웃 스타일입니다. | `PickerDefaults.style()` |
 | `layout` | year, month picker column의 weight와 표시 순서입니다. 명시적 width가 필요한 column은 weight를 `null`로 설정하세요. | `PickerDefaults.yearMonthPickerLayout()` |
 | `spacingBetweenPickers` | picker column 사이의 가로 간격입니다. | `0.dp` |
-| `accessibility` | 각 picker column의 접근성 label, 값 설명, custom action label입니다. | `PickerDefaults.yearMonthPickerAccessibility()` |
+| `semantics` | 각 picker column의 접근성 label과 custom action label입니다. | `PickerDefaults.yearMonthPickerSemantics()` |
 
 **YearMonthPickerState 속성:**
 
@@ -720,7 +721,7 @@ inclusive range 포함 여부를 확인해야 한다면 `range.contains(year, mo
 상태 생성 이후 선택값을 바꾸려면 `state.selectYearMonth(YearMonth(...))`,
 `state.selectYearMonth(year, month)`, 또는 `state.selectDate(LocalDate(...))`를 호출합니다.
 
-custom item 값이 유효 범위를 벗어나거나, 중복이 있거나, 목록이 비어 있거나, 현재 선택된 연도/월이 custom 목록 또는 연/월 범위 밖이면 composition 중 `IllegalArgumentException`이 발생합니다. 연도 변경으로 현재 월이 선택 불가능해지면 가장 가까운 선택 가능 `YearMonth`로 이동합니다.
+custom item 값이 유효 범위를 벗어나거나, 중복이 있거나, 목록이 비어 있거나, 현재 선택된 연도/월이 custom 목록 또는 연/월 범위 밖이면 composition 중 `IllegalArgumentException`이 발생합니다. custom item 목록은 picker에 전달한 뒤 불변으로 다루고, 선택 가능한 값이 바뀌면 새 `items` 객체를 만들어 전달하세요. 연도 변경으로 현재 월이 선택 불가능해지면 가장 가까운 선택 가능 `YearMonth`로 이동합니다.
 
 ## 라이선스
 

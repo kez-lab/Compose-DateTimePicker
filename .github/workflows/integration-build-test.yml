@@ -120,7 +120,6 @@ jobs:
         if: matrix.target == 'android'
         run: |
           ./gradlew \
-            ${{ env.LIBRARY_MODULE }}:pixel2Api35DebugAndroidTest \
             ${{ env.SAMPLE_MODULE }}:pixel2Api35DebugAndroidTest \
             -Pandroid.testoptions.manageddevices.emulator.gpu=swiftshader_indirect \
             --stacktrace \

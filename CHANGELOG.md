@@ -42,9 +42,9 @@ This project tracks notable user-facing and maintainer-facing changes here. The 
   `YearMonthPickerState(LocalDate)`.
 - Added `contains(...)` predicates to picker item option objects so apps can check whether a value
   object or primitive parts are already directly selectable before deciding to reject or coerce them.
-- Added `PickerDefaults.itemText(...)` plus `TimePickerDisplay`, `DatePickerDisplay`, and
-  `YearMonthPickerDisplay` option objects so apps can customize visible item text separately from
-  accessibility descriptions.
+- Added `PickerDefaults.itemFormat(...)` plus `TimePickerFormat`, `DatePickerFormat`, and
+  `YearMonthPickerFormat` option objects so apps can customize visible item text separately from
+  semantics descriptions.
 - Fixed sample picker interaction issues where long month labels were clipped, dependent date columns
   could refresh while another column was still scrolling, and the date range sample started from a
   one-day range that made end-date movement look like a reset on the first start-date change.
@@ -54,7 +54,7 @@ This project tracks notable user-facing and maintainer-facing changes here. The 
   composite picker dividers stay aligned and constrained day columns do not disappear during item
   list changes.
 - Simplified the basic date, date range, and year/month samples so the picker state is the single
-  source of truth for displayed selections.
+  source of truth for formatted selections.
 - Added inclusive `DatePicker` bounds through `DatePickerConstraints` and
   `PickerDefaults.datePickerItems(minDate = ..., maxDate = ...)`.
 - Added inclusive `TimePicker` bounds through `TimePickerConstraints` and
@@ -62,7 +62,7 @@ This project tracks notable user-facing and maintainer-facing changes here. The 
 - Added inclusive `YearMonthPicker` bounds through `YearMonthPickerConstraints` and
   `PickerDefaults.yearMonthPickerItems(minYearMonth = ..., maxYearMonth = ...)`.
 - Added `enabled` parameters to `Picker`, `TimePicker`, `DatePicker`, and `YearMonthPicker` so apps
-  can show a selected value while preventing user scroll, click, and accessibility selection actions.
+  can show a selected value while preventing user scroll, click, and semantics selection actions.
 - Added disabled color slots to `PickerColors` / `PickerDefaults.colors(...)` so disabled pickers can
   keep selected values visible while clearly communicating their disabled state.
 - Added `PickerItemScope` for generic `Picker` custom content so row UI can read the formatted text,
@@ -72,11 +72,18 @@ This project tracks notable user-facing and maintainer-facing changes here. The 
   weights.
 - Added `TimePickerColumn`, `DatePickerColumn`, and `YearMonthPickerColumn` order options so apps can
   render picker columns in locale- or form-specific order.
-- Added picker accessibility descriptions and localized item description hooks so Android apps can provide clearer TalkBack output.
-- Added previous/next accessibility actions for picker columns, with public labels that apps can localize.
+- Added picker semantics descriptions and localized item description hooks so Android apps can provide clearer TalkBack output.
+- Added previous/next semantics actions for picker columns, with public labels that apps can localize.
 
 ### Changed
 
+- Made `DatePickerItems.coerceDate(...)` compare whole selectable `LocalDate` values, matching the
+  `coerceTime(...)` and `coerceYearMonth(...)` behavior instead of independently coercing year,
+  month, and day.
+- Made `YearMonthPickerItems.coerceYearMonth(year, month)` reject primitive values outside
+  `1000..9999` and `1..12`, matching the state APIs and date primitive coercion overload.
+- Documented that picker item lists should be treated as immutable after they are passed to a picker;
+  create a new `items` object when available values change.
 - Made `YearMonthPickerItems.contains(year, month)` return `false` for raw year/month values outside
   the supported ranges instead of constructing an invalid `YearMonth`.
 - Made picker item-list and constraint construction errors explain which min/max bounds or custom
@@ -93,11 +100,22 @@ This project tracks notable user-facing and maintainer-facing changes here. The 
 - Clarified `DateRangePicker` callback and spacing parameter documentation in both READMEs.
 - Updated the sample app to show programmatic selection buttons, a `DatePicker` example that derives
   selectable years from the current year and a nearby leap-day target, and Korean localized picker
-  accessibility labels across the `TimePicker`, `BackgroundStyle`, `Integrated`, and `BottomSheet`
+  semantics labels across the `TimePicker`, `BackgroundStyle`, `Integrated`, and `BottomSheet`
   samples.
 - Refined sample screens with shared result cards, picker panels, real reset/confirm actions, and
   bottom-sheet draft state separate from committed selection values.
 - Improved sample accessibility semantics for selected-value cards and home-screen navigation items.
+- Reworked picker value text APIs from `display` to `format`. Value content descriptions now live
+  beside visible item text in `PickerItemFormat` and component `*Format` objects.
+- Reworked picker label/action APIs from generic `PickerAccessibility<T>` to non-generic
+  `PickerSemantics`. Semantics objects now describe structural labels and actions only.
+- When a format does not provide `itemContentDescription`, picker accessibility values now fall back
+  to the visible item text. Apps should still provide explicit descriptions when a screen reader
+  should read a richer phrase than the visible label.
+- `DatePicker` and `YearMonthPicker` year columns are bounded by default instead of wrapping from
+  the last supported year back to the first.
+- Picker item validation and derived selectable lists are cached by cheap structural signals so
+  recomposition no longer re-runs the same validation and list filtering work every frame.
 - Improved the integrated sample summary semantics and covered it in the sample Android smoke test.
 - Removed the redundant Android sample `MaterialTheme` wrapper so the sample entry point uses the shared `AppTheme`.
 - Reworked README bottom-sheet examples to use separate committed and draft picker state.
@@ -112,7 +130,7 @@ This project tracks notable user-facing and maintainer-facing changes here. The 
 - Reworked `TimePickerState`, `DatePickerState`, and `YearMonthPickerState` so they own only logical values instead of exposing or coordinating child picker states.
 - Moved state APIs into the component packages: `TimePickerState` and `rememberTimePickerState` are now in `com.kez.picker.time`, and `YearMonthPickerState` and `rememberYearMonthPickerState` are now in `com.kez.picker.date`.
 - Added `PickerStyle` and `PickerDefaults.style(...)` so repeated picker visual/layout configuration can be passed as one reusable object.
-- Added `PickerAccessibility` plus component-specific accessibility option objects so localized labels,
+- Added `PickerSemantics` plus component-specific semantics option objects so localized labels,
   item descriptions, and previous/next action labels can be passed as one reusable object.
 - Added component-specific item-list option objects so custom selectable values can be passed as one
   reusable `items` object.
@@ -130,7 +148,7 @@ This project tracks notable user-facing and maintainer-facing changes here. The 
   now chooses the closest selectable `YearMonth` as a whole month value.
 - `YearMonthPicker` now filters year and month columns through `YearMonthPickerConstraints` when
   `minYearMonth`/`maxYearMonth` bounds are configured.
-- Disabled pickers now expose disabled semantics, omit previous/next accessibility selection actions,
+- Disabled pickers now expose disabled semantics, omit previous/next semantics selection actions,
   and use disabled text, divider, and selected-item background colors.
 - Picker row scaling now stays stable while constrained item lists change, and the scroll gesture
   area fills the picker column instead of shrinking to the visible text.
@@ -151,13 +169,14 @@ This project tracks notable user-facing and maintainer-facing changes here. The 
 - Picker visual parameters such as `visibleItemsCount`, `colors`, `textStyles`,
   `selectedItemBackgroundShape`, `itemPadding`, `fadingEdgeGradient`, divider configuration, and item
   alignment moved under `style = PickerDefaults.style(...)`.
-- Picker accessibility parameters such as `*PickerLabel`, `*ItemContentDescription`,
+- Picker semantics parameters such as `*PickerLabel`, `*ItemContentDescription`,
   `previousItemActionLabel`, and `nextItemActionLabel` moved under
-  `accessibility = PickerDefaults.*Accessibility(...)`.
+  `semantics = PickerDefaults.*Semantics(...)`; item content descriptions now move to
+  `format = PickerDefaults.*Format(...)`.
 - Picker custom item-list parameters such as `minuteItems`, `hourItems`, `periodItems`, `yearItems`,
   and `monthItems` moved under `items = PickerDefaults.*Items(...)`.
-- Composite picker function signatures now include `display` after `items`. Prefer named arguments
-  when configuring `style`, `spacingBetweenPickers`, `accessibility`, or `display`.
+- Composite picker function signatures now include `format` after `items`. Prefer named arguments
+  when configuring `style`, `layout`, `spacingBetweenPickers`, `semantics`, or `format`.
 - Composite picker function signatures now include user-selection callbacks immediately after `state`.
 - `TimePickerItems` now includes a `constraints` property. Kotlin callers that use named/default
   arguments usually do not need source changes, but direct Java or binary constructor calls must pass
@@ -166,19 +185,29 @@ This project tracks notable user-facing and maintainer-facing changes here. The 
   arguments usually do not need source changes, but direct Java or binary constructor calls must pass
   the new argument after recompilation.
 - Picker function signatures now include `enabled` after the user-selection callback. Prefer named
-  arguments when configuring `items`, `display`, `style`, `spacingBetweenPickers`, or `accessibility`.
+  arguments when configuring `items`, `format`, `style`, `layout`, `spacingBetweenPickers`, or `semantics`.
   Named-argument call sites are straightforward to migrate; positional call sites may need argument
   reordering.
 - Composite picker function signatures now include `layout` after `style`. Prefer named arguments
-  when configuring `spacingBetweenPickers` or `accessibility`.
+  when configuring `spacingBetweenPickers` or `semantics`.
 - Generic `Picker.content` now receives `PickerItemScope<T>` instead of `T`. Replace direct item usage
   with `scope.item`, and use `scope.text`, `scope.textStyle`, or `scope.contentColor` when rendering
   custom rows.
-- Generic `Picker` now accepts `display = PickerDefaults.itemText(...)` instead of a raw `itemText`
-  lambda, matching the composite picker display option pattern.
-- Generic `Picker` optional parameters are ordered as `enabled`, `display`, `style`, `accessibility`,
+- Generic `Picker` now accepts `format = PickerDefaults.itemFormat(...)` instead of a raw `itemText`
+  lambda, matching the composite picker format option pattern.
+- Generic `Picker` optional parameters are ordered as `enabled`, `format`, `style`, `semantics`,
   `isInfinity`, then `content` to match the composite picker option flow more closely. Prefer named
   arguments for optional configuration.
+- Rename `PickerItemText` to `PickerItemFormat`, `TimePickerDisplay` to `TimePickerFormat`,
+  `DatePickerDisplay` to `DatePickerFormat`, and `YearMonthPickerDisplay` to
+  `YearMonthPickerFormat`.
+- Rename `PickerAccessibility` to `PickerSemantics`, `TimePickerAccessibility` to
+  `TimePickerSemantics`, `DatePickerAccessibility` to `DatePickerSemantics`,
+  `YearMonthPickerAccessibility` to `YearMonthPickerSemantics`, and
+  `DateRangePickerAccessibility` to `DateRangePickerSemantics`.
+- `PickerStyle.verticalAlignment` and the public `calculateTime(...)` utility were removed before
+  the 0.6.0 release. Use item content or `PickerStyle.itemAlignment` for row alignment and
+  `TimePickerState.selectedTime` for the selected value.
 - `DatePickerItems` now includes `dayItems`. Direct `DatePickerItems(...)` construction must pass
   day values; `PickerDefaults.datePickerItems(...)` remains the preferred factory.
 - `DatePickerItems` now includes `constraints`. Kotlin callers can omit it because it has a default
@@ -188,9 +217,9 @@ This project tracks notable user-facing and maintainer-facing changes here. The 
 
 - Added Android managed-device smoke coverage for the sample app home screen and `DatePicker` navigation path.
 - Added Android instrumented accessibility semantics coverage and a Gradle Managed Device CI gate.
-- Added Android coverage for omitting picker custom accessibility actions with null or blank labels.
+- Added Android coverage for omitting picker custom semantics actions with null or blank labels.
 - Added Android rendered state-restoration coverage for `DatePicker` and `YearMonthPicker`.
-- Extended Android accessibility action coverage for `TimePicker`, `DatePicker`, and `YearMonthPicker`
+- Extended Android semantics action coverage for `TimePicker`, `DatePicker`, and `YearMonthPicker`
   child picker state updates.
 - Added Android state restoration coverage for `rememberTimePickerState`, including 12-hour noon,
   `rememberDatePickerState`, and `rememberYearMonthPickerState`.
