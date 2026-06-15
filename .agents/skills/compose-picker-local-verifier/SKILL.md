@@ -86,4 +86,4 @@ If managed-device prerequisites are missing, run `:sample:assembleDebugAndroidTe
 
 ## Reporting
 
-Report exact commands and pass/fail results. If a gate is skipped, state why. Never imply hosted GitHub Actions passed when only local checks ran.
+Report exact commands and pass/fail results. If a gate is skipped, state why. Before handoff or moving to the next slice, also report whether the branch was pushed, which PR was opened or updated, and whether it was merged or why merge is blocked. Never imply hosted GitHub Actions passed when only local checks ran.
