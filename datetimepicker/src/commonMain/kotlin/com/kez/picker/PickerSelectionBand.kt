@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.Layout
 import androidx.compose.ui.unit.Constraints
 import androidx.compose.ui.unit.Dp
@@ -80,12 +81,6 @@ private fun SelectionBandLines(
 ) {
     if (!indicator.isVisible) return
 
-    val color = if (enabled) {
-        indicator.color
-    } else {
-        indicator.disabledColor
-    }
-
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -94,8 +89,11 @@ private fun SelectionBandLines(
         val lineModifier = Modifier
             .fillMaxWidth()
             .height(indicator.thickness)
-            .background(color = color, shape = indicator.shape)
+            .background(color = indicator.lineColor(enabled), shape = indicator.shape)
         Box(modifier = Modifier.then(lineModifier).align(Alignment.TopCenter))
         Box(modifier = Modifier.then(lineModifier).align(Alignment.BottomCenter))
     }
 }
+
+internal fun PickerSelectionIndicator.lineColor(enabled: Boolean): Color =
+    if (enabled) color else disabledColor

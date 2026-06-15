@@ -232,4 +232,19 @@ class PickerLayoutTest {
         assertEquals(false, indicator.isVisible)
         assertEquals(Color.Yellow, indicator.disabledColor)
     }
+
+    @Test
+    fun pickerSelectionIndicator_lineColorUsesDisabledColorWhenDisabled() {
+        val indicator = PickerSelectionIndicator(
+            color = Color.Red,
+            disabledColor = Color.Blue,
+            thickness = 1.dp,
+            shape = RectangleShape,
+            horizontalInset = 0.dp,
+            isVisible = true
+        )
+
+        assertEquals(Color.Red, indicator.lineColor(enabled = true))
+        assertEquals(Color.Blue, indicator.lineColor(enabled = false))
+    }
 }
