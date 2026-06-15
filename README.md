@@ -526,6 +526,39 @@ dividers, item padding, selected item background, and fading edge behavior with 
 Use `format.itemText` for visible text and `format.itemContentDescription` for screen-reader value
 text when those two strings should differ.
 
+For a standalone `Picker`, control the selection divider length with `dividerWidth`. Use
+`PickerDividerWidth.Fill` (default) to span the full column width, `PickerDividerWidth.Fraction(0f..1f)`
+for a proportional length, or `PickerDividerWidth.Fixed(Dp)` for an absolute length. The divider stays
+centered horizontally.
+
+```kotlin
+Picker(
+    items = items,
+    selectedItem = selectedItem,
+    onSelectedItemChange = { selectedItem = it },
+    style = PickerDefaults.style(dividerWidth = PickerDividerWidth.Fraction(0.6f))
+)
+```
+
+Composite pickers (`TimePicker`, `DatePicker`, `YearMonthPicker`, `DateRangePicker`) draw a **single
+selection band** spanning the whole picker instead of one divider per column, so the selection lines
+stay aligned regardless of column widths and column spacing. Control it with `selectionIndicator`
+rather than the per-column `style` divider settings (which do not apply to composites). The default
+`selectionIndicator` is derived from `style`, so existing `dividerColor` / `dividerThickness` /
+`isDividerVisible` customizations still take effect. Use `horizontalInset` to inset the band from the
+picker edges.
+
+```kotlin
+val style = PickerDefaults.style()
+TimePicker(
+    style = style,
+    selectionIndicator = PickerDefaults.selectionIndicator(
+        style = style,
+        horizontalInset = 16.dp,
+    ),
+)
+```
+
 ### Programmatic Selection
 
 Create picker state with `remember*State`, pass it to the picker, then call the public selection method
@@ -610,6 +643,7 @@ is rendered only in 12-hour mode and ignored in 24-hour mode.
 | `items` | Selectable minute, 24-hour hour, 12-hour format-hour, and AM/PM item lists plus optional inclusive `minTime`/`maxTime` bounds. | `PickerDefaults.timePickerItems()` |
 | `format` | Visible item text and optional accessibility value descriptions for each picker column. | `PickerDefaults.timePickerFormat()` |
 | `style` | Visual and layout styling for each picker column. | `PickerDefaults.style()` |
+| `selectionIndicator` | Shared selection band drawn across the whole picker. | `PickerDefaults.selectionIndicator(style)` |
 | `layout` | Column weights and visual order for period, hour, and minute picker columns. Use `null` weights for explicit-width columns. | `PickerDefaults.timePickerLayout()` |
 | `spacingBetweenPickers` | Horizontal spacing between picker columns. | `0.dp` |
 | `semantics` | Picker labels and custom action labels for each picker column. | `PickerDefaults.timePickerSemantics()` |
@@ -645,6 +679,7 @@ Invalid custom item values, duplicate items, empty required lists, or current se
 | `items`             | Selectable year/month/day item lists plus optional inclusive `minDate`/`maxDate` bounds. Values must be in `1000..9999`, `1..12`, and `1..31`. | `PickerDefaults.datePickerItems()` |
 | `format` | Visible item text and optional accessibility value descriptions for each picker column. | `PickerDefaults.datePickerFormat()` |
 | `style`             | Visual and layout styling for each picker column. | `PickerDefaults.style()` |
+| `selectionIndicator` | Shared selection band drawn across the whole picker. | `PickerDefaults.selectionIndicator(style)` |
 | `layout` | Column weights and visual order for year, month, and day picker columns. Use `null` weights for explicit-width columns. | `PickerDefaults.datePickerLayout()` |
 | `spacingBetweenPickers` | Horizontal spacing between picker columns. | `0.dp` |
 | `semantics` | Picker labels and custom action labels for each picker column. | `PickerDefaults.datePickerSemantics()` |
@@ -681,6 +716,7 @@ Invalid custom item values, duplicate items, empty lists, or current selected ye
 | `items` | Shared selectable year/month/day item lists plus optional inclusive `minDate`/`maxDate` bounds. | `PickerDefaults.datePickerItems()` |
 | `format` | Visible item text and optional accessibility value descriptions for each picker column. | `PickerDefaults.datePickerFormat()` |
 | `style` | Visual and layout styling for each picker column. | `PickerDefaults.style()` |
+| `selectionIndicator` | Shared selection band drawn across each child `DatePicker`. | `PickerDefaults.selectionIndicator(style)` |
 | `layout` | Column weights and visual order for each child `DatePicker`. | `PickerDefaults.datePickerLayout()` |
 | `spacingBetweenPickers` | Horizontal spacing between columns inside each child `DatePicker`. | `0.dp` |
 | `spacingBetweenDatePickers` | Vertical spacing between the start and end child pickers. | `16.dp` |
@@ -711,6 +747,7 @@ day)` when app-owned form fields need an inclusive range check before creating a
 | `items` | Selectable year/month item lists plus optional inclusive `minYearMonth`/`maxYearMonth` bounds. Values must be in `1000..9999` and `1..12`. | `PickerDefaults.yearMonthPickerItems()` |
 | `format` | Visible item text and optional accessibility value descriptions for each picker column. | `PickerDefaults.yearMonthPickerFormat()` |
 | `style` | Visual and layout styling for each picker column. | `PickerDefaults.style()` |
+| `selectionIndicator` | Shared selection band drawn across the whole picker. | `PickerDefaults.selectionIndicator(style)` |
 | `layout` | Column weights and visual order for year and month picker columns. Use `null` weights for explicit-width columns. | `PickerDefaults.yearMonthPickerLayout()` |
 | `spacingBetweenPickers` | Horizontal spacing between picker columns. | `0.dp` |
 | `semantics` | Picker labels and custom action labels for each picker column. | `PickerDefaults.yearMonthPickerSemantics()` |

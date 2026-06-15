@@ -187,6 +187,7 @@ internal fun TimePickerSampleScreen(
                 if (selectedFormat == 0) {
                     TimePicker(
                         state = timeState12,
+                        spacingBetweenPickers = 8.dp,
                         onSelectedTimeChange = {
                             lastChangedHour = it.hour
                             lastChangedMinute = it.minute
@@ -218,6 +219,7 @@ internal fun TimePickerSampleScreen(
                 } else {
                     TimePicker(
                         state = timeState24,
+                        spacingBetweenPickers = 8.dp,
                         onSelectedTimeChange = {
                             lastChangedHour = it.hour
                             lastChangedMinute = it.minute

@@ -18,6 +18,8 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.sp
 import com.kez.picker.Picker
 import com.kez.picker.PickerDefaults
+import com.kez.picker.PickerSelectionBand
+import com.kez.picker.PickerSelectionIndicator
 import com.kez.picker.PickerStyle
 import com.kez.picker.YearMonthPickerColumn
 import com.kez.picker.YearMonthPickerFormat
@@ -39,7 +41,10 @@ import com.kez.picker.pickerColumnModifier
  * @param enabled Whether user scroll, click, and semantics selection actions are enabled.
  * @param items Selectable year and month item lists plus optional year/month bounds for the picker.
  * @param format Visible item text and optional accessibility value descriptions for each picker column.
- * @param style Visual and layout styling for each picker column.
+ * @param style Visual and layout styling for each picker column. Per-column divider settings do not
+ * apply here; use [selectionIndicator] for the shared selection band instead.
+ * @param selectionIndicator The single selection band drawn across the whole picker. Defaults to a
+ * band derived from [style].
  * @param layout Column layout weights and visual order for each picker column.
  * @param spacingBetweenPickers The spacing between the pickers.
  * @param semantics Accessibility labels and custom action labels for each picker column.
@@ -55,10 +60,13 @@ fun YearMonthPicker(
     items: YearMonthPickerItems = PickerDefaults.yearMonthPickerItems(),
     format: YearMonthPickerFormat = PickerDefaults.yearMonthPickerFormat(),
     style: PickerStyle = PickerDefaults.style(),
+    selectionIndicator: PickerSelectionIndicator = PickerDefaults.selectionIndicator(style),
     layout: YearMonthPickerLayout = PickerDefaults.yearMonthPickerLayout(),
     spacingBetweenPickers: Dp = PickerDefaults.SpacingBetweenPickers,
     semantics: YearMonthPickerSemantics = PickerDefaults.yearMonthPickerSemantics()
 ) {
+    val columnStyle = remember(style) { style.copy(isDividerVisible = false) }
+
     remember(items, state, state.selectedYear, state.selectedMonth) {
         validateYearMonthPickerItems(state = state, items = items)
     }
@@ -87,6 +95,12 @@ fun YearMonthPicker(
             verticalArrangement = Arrangement.Center,
             modifier = Modifier.fillMaxWidth()
         ) {
+            PickerSelectionBand(
+                indicator = selectionIndicator,
+                visibleItemsCount = style.visibleItemsCount,
+                enabled = enabled,
+                modifier = Modifier.fillMaxWidth()
+            ) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(
@@ -109,7 +123,7 @@ fun YearMonthPicker(
                                     },
                                     modifier = pickerColumnModifier(pickerModifier, layout.yearWeight),
                                     enabled = enabled,
-                                    style = style,
+                                    style = columnStyle,
                                     isInfinity = false,
                                     semantics = semantics.year,
                                     format = format.year
@@ -130,7 +144,7 @@ fun YearMonthPicker(
                                     },
                                     modifier = pickerColumnModifier(pickerModifier, layout.monthWeight),
                                     enabled = enabled,
-                                    style = style,
+                                    style = columnStyle,
                                     semantics = semantics.month,
                                     format = format.month
                                 )
@@ -138,6 +152,7 @@ fun YearMonthPicker(
                         }
                     }
                 }
+            }
             }
         }
     }

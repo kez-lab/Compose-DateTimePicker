@@ -15,9 +15,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.kez.picker.Picker
 import com.kez.picker.PickerDefaults
+import com.kez.picker.PickerSelectionBand
+import com.kez.picker.PickerSelectionIndicator
 import com.kez.picker.PickerStyle
 import com.kez.picker.TimePickerColumn
 import com.kez.picker.TimePickerFormat
@@ -41,7 +44,10 @@ import kotlinx.datetime.LocalTime
  * @param enabled Whether user scroll, click, and semantics selection actions are enabled.
  * @param items Selectable minute, hour, and period item lists for the picker.
  * @param format Visible item text and optional accessibility value descriptions for each picker column.
- * @param style Visual and layout styling for each picker column.
+ * @param style Visual and layout styling for each picker column. Per-column divider settings do not
+ * apply here; use [selectionIndicator] for the shared selection band instead.
+ * @param selectionIndicator The single selection band drawn across the whole picker. Defaults to a
+ * band derived from [style].
  * @param layout Column layout weights and visual order for each picker column.
  * @param spacingBetweenPickers The spacing between the pickers.
  * @param semantics Accessibility labels and custom action labels for each picker column.
@@ -57,10 +63,13 @@ fun TimePicker(
     items: TimePickerItems = PickerDefaults.timePickerItems(),
     format: TimePickerFormat = PickerDefaults.timePickerFormat(),
     style: PickerStyle = PickerDefaults.style(),
+    selectionIndicator: PickerSelectionIndicator = PickerDefaults.selectionIndicator(style),
     layout: TimePickerLayout = PickerDefaults.timePickerLayout(),
     spacingBetweenPickers: Dp = PickerDefaults.SpacingBetweenPickers,
     semantics: TimePickerSemantics = PickerDefaults.timePickerSemantics()
 ) {
+    val columnStyle = remember(style) { style.copy(isDividerVisible = false) }
+
     remember(items, state, state.selectedTime, state.selectedHour, state.selectedPeriod, state.timeFormat) {
         validateTimePickerItems(state = state, items = items)
     }
@@ -92,6 +101,12 @@ fun TimePicker(
             verticalArrangement = Arrangement.Center,
             modifier = Modifier.fillMaxWidth()
         ) {
+            PickerSelectionBand(
+                indicator = selectionIndicator,
+                visibleItemsCount = style.visibleItemsCount,
+                enabled = enabled,
+                modifier = Modifier.fillMaxWidth()
+            ) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(
@@ -116,7 +131,7 @@ fun TimePicker(
                                         },
                                         modifier = pickerColumnModifier(pickerModifier, layout.periodWeight),
                                         enabled = enabled,
-                                        style = style,
+                                        style = columnStyle,
                                         isInfinity = false,
                                         semantics = semantics.period,
                                         format = format.period
@@ -141,7 +156,7 @@ fun TimePicker(
                                     },
                                     modifier = pickerColumnModifier(pickerModifier, layout.hourWeight),
                                     enabled = enabled,
-                                    style = style,
+                                    style = columnStyle,
                                     semantics = semantics.hour,
                                     format = format.hour
                                 )
@@ -161,7 +176,7 @@ fun TimePicker(
                                     },
                                     modifier = pickerColumnModifier(pickerModifier, layout.minuteWeight),
                                     enabled = enabled,
-                                    style = style,
+                                    style = columnStyle,
                                     semantics = semantics.minute,
                                     format = format.minute
                                 )
@@ -169,6 +184,7 @@ fun TimePicker(
                         }
                     }
                 }
+            }
             }
         }
     }
@@ -283,6 +299,21 @@ private fun TimePickerNoDividerPreview() {
     TimePicker(
         state = rememberTimePickerState(timeFormat = TimeFormat.HOUR_24),
         style = PickerDefaults.style(isDividerVisible = false)
+    )
+}
+
+@Preview(name = "Inset Selection Band", group = "TimePicker - Styles", showBackground = true)
+@Composable
+private fun TimePickerInsetSelectionBandPreview() {
+    val style = PickerDefaults.style()
+    TimePicker(
+        state = rememberTimePickerState(timeFormat = TimeFormat.HOUR_12),
+        style = style,
+        selectionIndicator = PickerDefaults.selectionIndicator(
+            style = style,
+            horizontalInset = 16.dp
+        ),
+        spacingBetweenPickers = 8.dp
     )
 }
 
