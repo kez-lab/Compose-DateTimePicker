@@ -300,6 +300,36 @@ class PickerStateRestorationRobolectricTest {
     }
 
     @Test
+    fun rememberDateRangePickerState_withItemsAndUnorderedDatesCoercesInitialSelection() {
+        lateinit var state: DateRangePickerState
+        val items = PickerDefaults.datePickerItems(
+            yearItems = listOf(2026),
+            monthItems = (1..12).toList(),
+            dayItems = (1..31).toList(),
+            minDate = LocalDate(2026, 5, 10),
+            maxDate = LocalDate(2026, 6, 20)
+        )
+
+        composeRule.setContent {
+            state = rememberDateRangePickerState(
+                items = items,
+                initialStartDate = LocalDate(2026, 12, 31),
+                initialEndDate = LocalDate(2026, 1, 1)
+            )
+        }
+
+        composeRule.runOnIdle {
+            assertEquals(
+                DateRange(
+                    startDate = LocalDate(2026, 5, 10),
+                    endDate = LocalDate(2026, 6, 20)
+                ),
+                state.selectedDateRange
+            )
+        }
+    }
+
+    @Test
     fun rememberDateRangePickerState_restoresProgrammaticSelectionSummaryAfterSaveRestore() {
         lateinit var state: DateRangePickerState
         val restorationTester = StateRestorationTester(composeRule)

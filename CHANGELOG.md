@@ -71,6 +71,9 @@ This project tracks notable user-facing and maintainer-facing changes here. The 
 - Fixed sample picker interaction issues where long month labels were clipped, dependent date columns
   could refresh while another column was still scrolling, and the date range sample started from a
   one-day range that made end-date movement look like a reset on the first start-date change.
+- `rememberDateRangePickerState(items = ..., initialStartDate = ..., initialEndDate = ...)` now
+  accepts unordered initial boundaries, coerces each boundary with the provided date picker items,
+  and creates an ordered initial range.
 - Fixed picker row height calculation and default vertical item padding so selected text no longer
   appears clipped against the selection dividers.
 - Fixed picker row height consistency across mixed Korean, numeric, and Latin font fallback so
