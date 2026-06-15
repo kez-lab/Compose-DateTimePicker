@@ -132,6 +132,19 @@ internal fun DateRangePickerSampleScreen(
                 ) {
                     Text("Today only")
                 }
+
+                OutlinedButton(
+                    onClick = {
+                        state.selectDateRange(
+                            startDate = yearEnd,
+                            endDate = yearStart,
+                            items = items
+                        )
+                    },
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Text("Year bounds")
+                }
             }
 
             Spacer(modifier = Modifier.height(24.dp))
