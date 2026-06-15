@@ -703,7 +703,10 @@ or parts should be coerced before first composition.
 To change the selection after state creation, call `state.selectTime(LocalTime(...))` or
 `state.selectTime(hour, minute)`. Use the overloads that accept `items` when custom item lists or
 time bounds should be applied at the same time. The integer hour is interpreted as hour-of-day in
-`0..23`.
+`0..23`. If app-owned 12-hour form or preset values are stored as a display hour plus AM/PM, use
+`items.coerceTime(displayHour = ..., minute = ..., period = ...)` or
+`state.selectTime(displayHour = ..., minute = ..., period = ..., items = ...)`; `displayHour` is in
+`1..12`.
 
 Invalid custom item values, duplicate items, empty required lists, or current selections missing from custom lists or time bounds throw `IllegalArgumentException` during composition. Treat custom item lists as immutable after passing them to the picker; create a new `items` object when available values change. In 12-hour mode, `PickerDefaults.timePickerItems(hour12Items = ...)` uses format-hour values (`1..12`): `initialHour = 13` becomes `state.selectedHour == 1` with `PM`.
 

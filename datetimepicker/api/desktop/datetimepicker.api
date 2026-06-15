@@ -400,6 +400,7 @@ public final class com/kez/picker/TimePickerItems {
 	public fun <init> (Ljava/util/List;Ljava/util/List;Ljava/util/List;Ljava/util/List;Lcom/kez/picker/TimePickerConstraints;)V
 	public synthetic fun <init> (Ljava/util/List;Ljava/util/List;Ljava/util/List;Ljava/util/List;Lcom/kez/picker/TimePickerConstraints;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public final fun coerceTime (IILcom/kez/picker/util/TimeFormat;)Lkotlinx/datetime/LocalTime;
+	public final fun coerceTime (IILcom/kez/picker/util/TimePeriod;)Lkotlinx/datetime/LocalTime;
 	public final fun coerceTime (Lkotlinx/datetime/LocalTime;Lcom/kez/picker/util/TimeFormat;)Lkotlinx/datetime/LocalTime;
 	public static synthetic fun coerceTime$default (Lcom/kez/picker/TimePickerItems;IILcom/kez/picker/util/TimeFormat;ILjava/lang/Object;)Lkotlinx/datetime/LocalTime;
 	public static synthetic fun coerceTime$default (Lcom/kez/picker/TimePickerItems;Lkotlinx/datetime/LocalTime;Lcom/kez/picker/util/TimeFormat;ILjava/lang/Object;)Lkotlinx/datetime/LocalTime;
@@ -409,6 +410,7 @@ public final class com/kez/picker/TimePickerItems {
 	public final fun component4 ()Ljava/util/List;
 	public final fun component5 ()Lcom/kez/picker/TimePickerConstraints;
 	public final fun contains (IILcom/kez/picker/util/TimeFormat;)Z
+	public final fun contains (IILcom/kez/picker/util/TimePeriod;)Z
 	public final fun contains (Lkotlinx/datetime/LocalTime;Lcom/kez/picker/util/TimeFormat;)Z
 	public static synthetic fun contains$default (Lcom/kez/picker/TimePickerItems;IILcom/kez/picker/util/TimeFormat;ILjava/lang/Object;)Z
 	public static synthetic fun contains$default (Lcom/kez/picker/TimePickerItems;Lkotlinx/datetime/LocalTime;Lcom/kez/picker/util/TimeFormat;ILjava/lang/Object;)Z
@@ -779,6 +781,8 @@ public final class com/kez/picker/time/TimePickerState {
 	public final fun getTimeFormat ()Lcom/kez/picker/util/TimeFormat;
 	public final fun selectTime (II)V
 	public final fun selectTime (IILcom/kez/picker/TimePickerItems;)V
+	public final fun selectTime (IILcom/kez/picker/util/TimePeriod;)V
+	public final fun selectTime (IILcom/kez/picker/util/TimePeriod;Lcom/kez/picker/TimePickerItems;)V
 	public final fun selectTime (Lkotlinx/datetime/LocalTime;)V
 	public final fun selectTime (Lkotlinx/datetime/LocalTime;Lcom/kez/picker/TimePickerItems;)V
 }

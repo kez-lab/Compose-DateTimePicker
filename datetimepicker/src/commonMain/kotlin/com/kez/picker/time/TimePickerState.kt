@@ -193,6 +193,21 @@ private fun initialTimeFromParts(
     return LocalTime(hour = hourOfDay, minute = initialMinute)
 }
 
+private fun displayTimeFromParts(displayHour: Int, minute: Int, period: TimePeriod): LocalTime {
+    require(displayHour in 1..12) {
+        "displayHour must be in range [1, 12], but was $displayHour"
+    }
+    require(minute in 0..59) {
+        "minute must be in range [0, 59], but was $minute"
+    }
+    val hourOfDay = when {
+        period == TimePeriod.AM && displayHour == 12 -> 0
+        period == TimePeriod.PM && displayHour != 12 -> displayHour + 12
+        else -> displayHour
+    }
+    return LocalTime(hour = hourOfDay, minute = minute)
+}
+
 private fun timePickerStateSaver(timeFormat: TimeFormat): Saver<TimePickerState, Any> {
     return listSaver(
         save = { listOf(it.selectedHourOfDay, it.selectedMinute) },
@@ -322,6 +337,19 @@ class TimePickerState(
     }
 
     /**
+     * Programmatically selects a time from a 12-hour display value.
+     *
+     * [displayHour] is interpreted as the format-hour shown to users in `1..12`; [period] supplies
+     * AM/PM. The resulting time is stored as [selectedTime] and rendered in this state's
+     * [timeFormat].
+     *
+     * @throws IllegalArgumentException if [displayHour] or [minute] is outside the supported range.
+     */
+    fun selectTime(displayHour: Int, minute: Int, period: TimePeriod) {
+        selectTime(displayTimeFromParts(displayHour = displayHour, minute = minute, period = period))
+    }
+
+    /**
      * Programmatically selects the closest time to [time] that is allowed by [items].
      *
      * Use this overload when app-owned state can contain values outside custom picker lists or
@@ -338,6 +366,16 @@ class TimePickerState(
      */
     fun selectTime(hour: Int, minute: Int, items: TimePickerItems) {
         selectTime(LocalTime(hour = hour, minute = minute), items)
+    }
+
+    /**
+     * Programmatically selects the closest time to a 12-hour display value allowed by [items].
+     *
+     * [displayHour] is interpreted as the format-hour shown to users in `1..12`; [period] supplies
+     * AM/PM.
+     */
+    fun selectTime(displayHour: Int, minute: Int, period: TimePeriod, items: TimePickerItems) {
+        selectTime(items.coerceTime(displayHour = displayHour, minute = minute, period = period))
     }
 
     internal fun selectHour(hour: Int) {

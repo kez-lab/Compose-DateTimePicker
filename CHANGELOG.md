@@ -37,6 +37,10 @@ This project tracks notable user-facing and maintainer-facing changes here. The 
 - Added `TimePickerItems.coerceTime(hour, minute, timeFormat)` and
   `rememberTimePickerState(items = ..., initialHour = ..., initialMinute = ...)` for apps that store
   time form state as primitive fields.
+- Added `TimePickerItems.coerceTime(displayHour, minute, period)`,
+  `TimePickerItems.contains(displayHour, minute, period)`, and matching
+  `TimePickerState.selectTime(displayHour, minute, period, ...)` overloads for apps that store
+  12-hour form state as display-hour plus AM/PM values.
 - Added `remember*State(items = ..., initial... = ...)` overloads so initial picker state can be
   coerced by the same custom item lists before first composition.
 - Added `rememberYearMonthPickerState(initialYearMonth = ...)` and the matching `items` overload so

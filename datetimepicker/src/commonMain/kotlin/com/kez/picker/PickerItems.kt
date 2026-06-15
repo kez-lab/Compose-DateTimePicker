@@ -95,6 +95,24 @@ data class TimePickerItems(
     }
 
     /**
+     * Returns whether [displayHour], [minute], and [period] are directly selectable in 12-hour mode.
+     *
+     * [displayHour] is interpreted as the format-hour shown to users in `1..12`. Values outside the
+     * supported display-hour or minute ranges return false.
+     */
+    fun contains(displayHour: Int, minute: Int, period: TimePeriod): Boolean {
+        if (displayHour !in 1..12 || minute !in 0..59) return false
+        return contains(
+            time = displayTimeFromParts(
+                displayHour = displayHour,
+                minute = minute,
+                period = period
+            ),
+            timeFormat = TimeFormat.HOUR_12
+        )
+    }
+
+    /**
      * Returns the closest selectable time for [time] under [timeFormat].
      *
      * This is useful before calling [com.kez.picker.time.TimePickerState.selectTime] when app-owned
@@ -124,6 +142,26 @@ data class TimePickerItems(
         coerceTime(
             time = LocalTime(hour = hour, minute = minute),
             timeFormat = timeFormat
+        )
+
+    /**
+     * Returns the closest selectable time for a 12-hour display value.
+     *
+     * [displayHour] is interpreted as the format-hour shown to users in `1..12`; [period] supplies
+     * AM/PM. This is useful when app-owned form or preset values are stored as a display hour plus
+     * period instead of a 24-hour [LocalTime].
+     *
+     * @throws IllegalArgumentException if [displayHour] is outside `1..12`, [minute] is outside
+     * `0..59`, or the 12-hour item lists are invalid.
+     */
+    fun coerceTime(displayHour: Int, minute: Int, period: TimePeriod): LocalTime =
+        coerceTime(
+            time = displayTimeFromParts(
+                displayHour = displayHour,
+                minute = minute,
+                period = period
+            ),
+            timeFormat = TimeFormat.HOUR_12
         )
 
     internal fun hourItemsFor(timeFormat: TimeFormat): List<Int> =
@@ -656,3 +694,16 @@ private fun hourOfDayFor(displayHour: Int, period: TimePeriod): Int =
         period == TimePeriod.PM && displayHour != 12 -> displayHour + 12
         else -> displayHour
     }
+
+private fun displayTimeFromParts(displayHour: Int, minute: Int, period: TimePeriod): LocalTime {
+    require(displayHour in 1..12) {
+        "displayHour must be in range [1, 12], but was $displayHour"
+    }
+    require(minute in 0..59) {
+        "minute must be in range [0, 59], but was $minute"
+    }
+    return LocalTime(
+        hour = hourOfDayFor(displayHour = displayHour, period = period),
+        minute = minute
+    )
+}
