@@ -76,6 +76,8 @@ class SampleAppSmokeAndroidTest {
     @Test
     fun dateRangePickerMenuAction_updatesSelectedRangeFromButtons() {
         val today = currentDate()
+        val expectedSummary = "Selected range, $today..$today, Days selected: 1. " +
+                "Last user change: No user change. Selectable year: ${today.year}"
 
         composeRule
             .onNodeWithTag("sample-menu-date-range-picker")
@@ -91,7 +93,7 @@ class SampleAppSmokeAndroidTest {
             .performClick()
 
         composeRule
-            .onNode(hasContentDescriptionStartingWith("Selected range, $today..$today"))
+            .onNode(hasContentDescriptionStartingWith(expectedSummary))
             .assertIsDisplayed()
     }
 
