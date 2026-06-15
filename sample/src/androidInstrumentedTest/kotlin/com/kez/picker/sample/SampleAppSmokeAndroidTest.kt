@@ -11,7 +11,9 @@ import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performScrollTo
+import com.kez.picker.date.DateRange
 import com.kez.picker.util.currentDate
+import kotlinx.datetime.LocalDate
 import org.junit.Rule
 import org.junit.Test
 
@@ -76,8 +78,14 @@ class SampleAppSmokeAndroidTest {
     @Test
     fun dateRangePickerMenuAction_updatesSelectedRangeFromButtons() {
         val today = currentDate()
-        val expectedSummary = "Selected range, $today..$today, Single day. Days selected: 1. " +
+        val expectedTodaySummary = "Selected range, $today..$today, Single day. Days selected: 1. " +
                 "Last user change: No user change. Selectable year: ${today.year}"
+        val yearStart = LocalDate(today.year, 1, 1)
+        val yearEnd = LocalDate(today.year, 12, 31)
+        val expectedYearRange = DateRange(startDate = yearStart, endDate = yearEnd)
+        val expectedYearSummary = "Selected range, $yearStart..$yearEnd, Date range. " +
+                "Days selected: ${expectedYearRange.dayCount}. Last user change: No user change. " +
+                "Selectable year: ${today.year}"
 
         composeRule
             .onNodeWithTag("sample-menu-date-range-picker")
@@ -93,7 +101,15 @@ class SampleAppSmokeAndroidTest {
             .performClick()
 
         composeRule
-            .onNode(hasContentDescriptionStartingWith(expectedSummary))
+            .onNode(hasContentDescriptionStartingWith(expectedTodaySummary))
+            .assertIsDisplayed()
+
+        composeRule
+            .onNodeWithText("Year bounds")
+            .performClick()
+
+        composeRule
+            .onNode(hasContentDescriptionStartingWith(expectedYearSummary))
             .assertIsDisplayed()
     }
 
