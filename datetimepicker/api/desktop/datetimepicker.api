@@ -596,6 +596,7 @@ public final class com/kez/picker/date/DateRange {
 	public final fun component1 ()Lkotlinx/datetime/LocalDate;
 	public final fun component2 ()Lkotlinx/datetime/LocalDate;
 	public final fun contains (III)Z
+	public final fun contains (Lcom/kez/picker/date/DateRange;)Z
 	public final fun contains (Lkotlinx/datetime/LocalDate;)Z
 	public final fun copy (Lkotlinx/datetime/LocalDate;Lkotlinx/datetime/LocalDate;)Lcom/kez/picker/date/DateRange;
 	public static synthetic fun copy$default (Lcom/kez/picker/date/DateRange;Lkotlinx/datetime/LocalDate;Lkotlinx/datetime/LocalDate;ILjava/lang/Object;)Lcom/kez/picker/date/DateRange;
@@ -604,6 +605,8 @@ public final class com/kez/picker/date/DateRange {
 	public final fun getEndDate ()Lkotlinx/datetime/LocalDate;
 	public final fun getStartDate ()Lkotlinx/datetime/LocalDate;
 	public fun hashCode ()I
+	public final fun isSingleDay ()Z
+	public final fun overlaps (Lcom/kez/picker/date/DateRange;)Z
 	public fun toString ()Ljava/lang/String;
 }
 

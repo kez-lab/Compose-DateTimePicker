@@ -65,10 +65,22 @@ data class DateRange(
         get() = (endDate.toEpochDays() - startDate.toEpochDays() + 1).toInt()
 
     /**
+     * Returns whether this range selects exactly one calendar day.
+     */
+    val isSingleDay: Boolean
+        get() = startDate == endDate
+
+    /**
      * Returns whether [date] is inside this inclusive range.
      */
     operator fun contains(date: LocalDate): Boolean =
         date in startDate..endDate
+
+    /**
+     * Returns whether [range] is fully inside this inclusive range.
+     */
+    operator fun contains(range: DateRange): Boolean =
+        range.startDate >= startDate && range.endDate <= endDate
 
     /**
      * Returns whether [year], [month], and [day] are inside this inclusive range.
@@ -81,6 +93,12 @@ data class DateRange(
         if (day > daysInMonth(year, month)) return false
         return LocalDate(year = year, month = month, day = day) in this
     }
+
+    /**
+     * Returns whether this inclusive range and [range] share at least one calendar day.
+     */
+    fun overlaps(range: DateRange): Boolean =
+        startDate <= range.endDate && range.startDate <= endDate
 
     companion object {
         /**

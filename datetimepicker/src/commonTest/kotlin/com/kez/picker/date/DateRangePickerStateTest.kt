@@ -37,6 +37,88 @@ class DateRangePickerStateTest {
     }
 
     @Test
+    fun dateRange_containsRangeWhenFullyInsideInclusiveBoundaries() {
+        val range = DateRange(
+            startDate = LocalDate(2026, 5, 1),
+            endDate = LocalDate(2026, 5, 10)
+        )
+
+        assertEquals(
+            true,
+            DateRange(
+                startDate = LocalDate(2026, 5, 1),
+                endDate = LocalDate(2026, 5, 10)
+            ) in range
+        )
+        assertEquals(
+            true,
+            DateRange(
+                startDate = LocalDate(2026, 5, 3),
+                endDate = LocalDate(2026, 5, 5)
+            ) in range
+        )
+        assertEquals(
+            false,
+            DateRange(
+                startDate = LocalDate(2026, 4, 30),
+                endDate = LocalDate(2026, 5, 2)
+            ) in range
+        )
+        assertEquals(
+            false,
+            DateRange(
+                startDate = LocalDate(2026, 5, 9),
+                endDate = LocalDate(2026, 5, 11)
+            ) in range
+        )
+    }
+
+    @Test
+    fun dateRange_overlapsRangeWhenRangesShareAnyInclusiveDate() {
+        val range = DateRange(
+            startDate = LocalDate(2026, 5, 10),
+            endDate = LocalDate(2026, 5, 20)
+        )
+
+        assertEquals(
+            true,
+            range.overlaps(
+                DateRange(
+                    startDate = LocalDate(2026, 5, 1),
+                    endDate = LocalDate(2026, 5, 10)
+                )
+            )
+        )
+        assertEquals(
+            true,
+            range.overlaps(
+                DateRange(
+                    startDate = LocalDate(2026, 5, 20),
+                    endDate = LocalDate(2026, 5, 25)
+                )
+            )
+        )
+        assertEquals(
+            false,
+            range.overlaps(
+                DateRange(
+                    startDate = LocalDate(2026, 5, 1),
+                    endDate = LocalDate(2026, 5, 9)
+                )
+            )
+        )
+        assertEquals(
+            false,
+            range.overlaps(
+                DateRange(
+                    startDate = LocalDate(2026, 5, 21),
+                    endDate = LocalDate(2026, 5, 25)
+                )
+            )
+        )
+    }
+
+    @Test
     fun dateRange_dayCountReturnsInclusiveCalendarDayCount() {
         assertEquals(
             1,
@@ -58,6 +140,24 @@ class DateRangePickerStateTest {
                 startDate = LocalDate(2026, 1, 31),
                 endDate = LocalDate(2026, 2, 1)
             ).dayCount
+        )
+    }
+
+    @Test
+    fun dateRange_isSingleDayReturnsTrueOnlyWhenBoundariesMatch() {
+        assertEquals(
+            true,
+            DateRange(
+                startDate = LocalDate(2026, 5, 1),
+                endDate = LocalDate(2026, 5, 1)
+            ).isSingleDay
+        )
+        assertEquals(
+            false,
+            DateRange(
+                startDate = LocalDate(2026, 5, 1),
+                endDate = LocalDate(2026, 5, 2)
+            ).isSingleDay
         )
     }
 
