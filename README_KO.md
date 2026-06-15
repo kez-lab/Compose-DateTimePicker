@@ -693,7 +693,11 @@ DatePicker(
 
 상태 생성 이후 선택값을 바꾸려면 `state.selectTime(LocalTime(...))` 또는
 `state.selectTime(hour, minute)`을 호출합니다. custom item 목록이나 시간 범위를 함께 적용해야 한다면
-`items`를 받는 overload를 사용하세요. 정수 `hour`는 `0..23` 범위의 hour-of-day로 해석됩니다.
+`items`를 받는 overload를 사용하세요. 정수 `hour`는 `0..23` 범위의 hour-of-day로 해석됩니다. 앱이
+소유한 12시간제 form 또는 preset 값이 표시 시간과 AM/PM으로 저장된다면
+`items.coerceTime(displayHour = ..., minute = ..., period = ...)` 또는
+`state.selectTime(displayHour = ..., minute = ..., period = ..., items = ...)`를 사용하세요.
+`displayHour`는 `1..12` 범위입니다.
 
 custom item 값이 유효 범위를 벗어나거나, 중복이 있거나, 필수 목록이 비어 있거나, 현재 선택값이 custom 목록 또는 시간 범위 밖이면 composition 중 `IllegalArgumentException`이 발생합니다. custom item 목록은 picker에 전달한 뒤 불변으로 다루고, 선택 가능한 값이 바뀌면 새 `items` 객체를 만들어 전달하세요. 12시간 형식의 `PickerDefaults.timePickerItems(hour12Items = ...)`는 표시 시간 기준(`1..12`)입니다. 예를 들어 `initialHour = 13`은 `state.selectedHour == 1`, `PM`으로 변환됩니다.
 

@@ -287,6 +287,8 @@ final class com.kez.picker.time/TimePickerState { // com.kez.picker.time/TimePic
         final fun <get-timeFormat>(): com.kez.picker.util/TimeFormat // com.kez.picker.time/TimePickerState.timeFormat.<get-timeFormat>|<get-timeFormat>(){}[0]
 
     final fun selectTime(kotlin/Int, kotlin/Int) // com.kez.picker.time/TimePickerState.selectTime|selectTime(kotlin.Int;kotlin.Int){}[0]
+    final fun selectTime(kotlin/Int, kotlin/Int, com.kez.picker.util/TimePeriod) // com.kez.picker.time/TimePickerState.selectTime|selectTime(kotlin.Int;kotlin.Int;com.kez.picker.util.TimePeriod){}[0]
+    final fun selectTime(kotlin/Int, kotlin/Int, com.kez.picker.util/TimePeriod, com.kez.picker/TimePickerItems) // com.kez.picker.time/TimePickerState.selectTime|selectTime(kotlin.Int;kotlin.Int;com.kez.picker.util.TimePeriod;com.kez.picker.TimePickerItems){}[0]
     final fun selectTime(kotlin/Int, kotlin/Int, com.kez.picker/TimePickerItems) // com.kez.picker.time/TimePickerState.selectTime|selectTime(kotlin.Int;kotlin.Int;com.kez.picker.TimePickerItems){}[0]
     final fun selectTime(kotlinx.datetime/LocalTime) // com.kez.picker.time/TimePickerState.selectTime|selectTime(kotlinx.datetime.LocalTime){}[0]
     final fun selectTime(kotlinx.datetime/LocalTime, com.kez.picker/TimePickerItems) // com.kez.picker.time/TimePickerState.selectTime|selectTime(kotlinx.datetime.LocalTime;com.kez.picker.TimePickerItems){}[0]
@@ -610,6 +612,7 @@ final class com.kez.picker/TimePickerItems { // com.kez.picker/TimePickerItems|n
         final fun <get-periodItems>(): kotlin.collections/List<com.kez.picker.util/TimePeriod> // com.kez.picker/TimePickerItems.periodItems.<get-periodItems>|<get-periodItems>(){}[0]
 
     final fun coerceTime(kotlin/Int, kotlin/Int, com.kez.picker.util/TimeFormat = ...): kotlinx.datetime/LocalTime // com.kez.picker/TimePickerItems.coerceTime|coerceTime(kotlin.Int;kotlin.Int;com.kez.picker.util.TimeFormat){}[0]
+    final fun coerceTime(kotlin/Int, kotlin/Int, com.kez.picker.util/TimePeriod): kotlinx.datetime/LocalTime // com.kez.picker/TimePickerItems.coerceTime|coerceTime(kotlin.Int;kotlin.Int;com.kez.picker.util.TimePeriod){}[0]
     final fun coerceTime(kotlinx.datetime/LocalTime, com.kez.picker.util/TimeFormat = ...): kotlinx.datetime/LocalTime // com.kez.picker/TimePickerItems.coerceTime|coerceTime(kotlinx.datetime.LocalTime;com.kez.picker.util.TimeFormat){}[0]
     final fun component1(): kotlin.collections/List<kotlin/Int> // com.kez.picker/TimePickerItems.component1|component1(){}[0]
     final fun component2(): kotlin.collections/List<kotlin/Int> // com.kez.picker/TimePickerItems.component2|component2(){}[0]
@@ -617,6 +620,7 @@ final class com.kez.picker/TimePickerItems { // com.kez.picker/TimePickerItems|n
     final fun component4(): kotlin.collections/List<com.kez.picker.util/TimePeriod> // com.kez.picker/TimePickerItems.component4|component4(){}[0]
     final fun component5(): com.kez.picker/TimePickerConstraints // com.kez.picker/TimePickerItems.component5|component5(){}[0]
     final fun contains(kotlin/Int, kotlin/Int, com.kez.picker.util/TimeFormat = ...): kotlin/Boolean // com.kez.picker/TimePickerItems.contains|contains(kotlin.Int;kotlin.Int;com.kez.picker.util.TimeFormat){}[0]
+    final fun contains(kotlin/Int, kotlin/Int, com.kez.picker.util/TimePeriod): kotlin/Boolean // com.kez.picker/TimePickerItems.contains|contains(kotlin.Int;kotlin.Int;com.kez.picker.util.TimePeriod){}[0]
     final fun contains(kotlinx.datetime/LocalTime, com.kez.picker.util/TimeFormat = ...): kotlin/Boolean // com.kez.picker/TimePickerItems.contains|contains(kotlinx.datetime.LocalTime;com.kez.picker.util.TimeFormat){}[0]
     final fun copy(kotlin.collections/List<kotlin/Int> = ..., kotlin.collections/List<kotlin/Int> = ..., kotlin.collections/List<kotlin/Int> = ..., kotlin.collections/List<com.kez.picker.util/TimePeriod> = ..., com.kez.picker/TimePickerConstraints = ...): com.kez.picker/TimePickerItems // com.kez.picker/TimePickerItems.copy|copy(kotlin.collections.List<kotlin.Int>;kotlin.collections.List<kotlin.Int>;kotlin.collections.List<kotlin.Int>;kotlin.collections.List<com.kez.picker.util.TimePeriod>;com.kez.picker.TimePickerConstraints){}[0]
     final fun equals(kotlin/Any?): kotlin/Boolean // com.kez.picker/TimePickerItems.equals|equals(kotlin.Any?){}[0]

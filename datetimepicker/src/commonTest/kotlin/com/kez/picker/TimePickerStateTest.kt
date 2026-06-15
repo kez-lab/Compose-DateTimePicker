@@ -697,6 +697,23 @@ class TimePickerStateTest {
     }
 
     @Test
+    fun timePickerState_selectDisplayTimeParts_updates12HourSelection() {
+        val state = TimePickerState(
+            initialHour = 8,
+            initialMinute = 0,
+            initialPeriod = TimePeriod.AM,
+            timeFormat = TimeFormat.HOUR_12
+        )
+
+        state.selectTime(displayHour = 12, minute = 30, period = TimePeriod.AM)
+
+        assertEquals(12, state.selectedHour)
+        assertEquals(30, state.selectedMinute)
+        assertEquals(TimePeriod.AM, state.selectedPeriod)
+        assertEquals(LocalTime(0, 30), state.selectedTime)
+    }
+
+    @Test
     fun timePickerState_selectedTime_updatesWhenSelectionChanges() {
         val state = TimePickerState(
             initialHour = 12,
@@ -936,6 +953,37 @@ class TimePickerStateTest {
     }
 
     @Test
+    fun timePickerItems_coerceDisplayTimeParts_uses12HourDisplayAndPeriodItems() {
+        val items = TimePickerItems(
+            minuteItems = listOf(0, 30),
+            hour24Items = emptyList(),
+            hour12Items = listOf(1, 4),
+            periodItems = listOf(TimePeriod.PM)
+        )
+
+        assertEquals(
+            LocalTime(13, 30),
+            items.coerceTime(displayHour = 1, minute = 20, period = TimePeriod.PM)
+        )
+    }
+
+    @Test
+    fun timePickerItems_coerceDisplayTimeParts_rejectsInvalidDisplayHour() {
+        val items = TimePickerItems(
+            minuteItems = listOf(0),
+            hour24Items = emptyList(),
+            hour12Items = listOf(12),
+            periodItems = listOf(TimePeriod.AM)
+        )
+
+        val error = assertFailsWith<IllegalArgumentException> {
+            items.coerceTime(displayHour = 13, minute = 0, period = TimePeriod.AM)
+        }
+
+        assertTrue(error.message.orEmpty().contains("displayHour"))
+    }
+
+    @Test
     fun timePickerItems_contains_checks12HourDisplayAndPeriodMembership() {
         val items = TimePickerItems(
             minuteItems = listOf(0, 30),
@@ -947,6 +995,21 @@ class TimePickerStateTest {
         assertTrue(items.contains(LocalTime(9, 30), TimeFormat.HOUR_12))
         assertTrue(!items.contains(LocalTime(21, 30), TimeFormat.HOUR_12))
         assertTrue(!items.contains(LocalTime(9, 45), TimeFormat.HOUR_12))
+    }
+
+    @Test
+    fun timePickerItems_containsDisplayParts_checks12HourDisplayAndPeriodMembership() {
+        val items = TimePickerItems(
+            minuteItems = listOf(0, 30),
+            hour24Items = emptyList(),
+            hour12Items = listOf(9),
+            periodItems = listOf(TimePeriod.AM)
+        )
+
+        assertTrue(items.contains(displayHour = 9, minute = 30, period = TimePeriod.AM))
+        assertTrue(!items.contains(displayHour = 9, minute = 30, period = TimePeriod.PM))
+        assertTrue(!items.contains(displayHour = 13, minute = 30, period = TimePeriod.AM))
+        assertTrue(!items.contains(displayHour = 9, minute = 60, period = TimePeriod.AM))
     }
 
     @Test
@@ -1030,6 +1093,34 @@ class TimePickerStateTest {
         state.selectTime(hour = 14, minute = 20, items = items)
 
         assertEquals(LocalTime(17, 0), state.selectedTime)
+    }
+
+    @Test
+    fun timePickerState_selectDisplayTimePartsWithItems_coercesSelection() {
+        val state = TimePickerState(
+            initialHour = 12,
+            initialMinute = 0,
+            initialPeriod = TimePeriod.AM,
+            timeFormat = TimeFormat.HOUR_12
+        )
+        val items = TimePickerItems(
+            minuteItems = listOf(0, 30),
+            hour24Items = emptyList(),
+            hour12Items = listOf(1, 4),
+            periodItems = listOf(TimePeriod.PM)
+        )
+
+        state.selectTime(
+            displayHour = 1,
+            minute = 20,
+            period = TimePeriod.PM,
+            items = items
+        )
+
+        assertEquals(LocalTime(13, 30), state.selectedTime)
+        assertEquals(1, state.selectedHour)
+        assertEquals(30, state.selectedMinute)
+        assertEquals(TimePeriod.PM, state.selectedPeriod)
     }
 
     @Test
