@@ -486,10 +486,7 @@ class DateRangePickerState(
             "startDate must be on or before endDate. startDate=$startDate, endDate=$endDate. " +
                     dateRangeOrderedAdvice()
         }
-        val coercedRange = orderedDateRange(
-            startDate = items.coerceDate(startDate),
-            endDate = items.coerceDate(endDate)
-        )
+        val coercedRange = items.coerceDateRange(startDate = startDate, endDate = endDate)
         selectDateRange(
             startDate = coercedRange.startDate,
             endDate = coercedRange.endDate

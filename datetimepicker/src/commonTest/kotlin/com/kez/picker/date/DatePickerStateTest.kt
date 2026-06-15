@@ -447,6 +447,76 @@ class DatePickerStateTest {
     }
 
     @Test
+    fun datePickerItems_coerceDateRangeValue_respectsDateConstraints() {
+        val items = DatePickerItems(
+            yearItems = listOf(2026),
+            monthItems = (1..12).toList(),
+            dayItems = (1..31).toList(),
+            constraints = DatePickerConstraints(
+                minDate = LocalDate(year = 2026, month = Month.MAY, day = 10),
+                maxDate = LocalDate(year = 2026, month = Month.JUNE, day = 20)
+            )
+        )
+
+        assertEquals(
+            DateRange(
+                startDate = LocalDate(year = 2026, month = Month.MAY, day = 10),
+                endDate = LocalDate(year = 2026, month = Month.JUNE, day = 20)
+            ),
+            items.coerceDateRange(
+                DateRange(
+                    startDate = LocalDate(year = 2026, month = Month.JANUARY, day = 1),
+                    endDate = LocalDate(year = 2026, month = Month.DECEMBER, day = 31)
+                )
+            )
+        )
+    }
+
+    @Test
+    fun datePickerItems_coerceDateRangeDates_ordersCoercedBoundaries() {
+        val items = DatePickerItems(
+            yearItems = listOf(2026),
+            monthItems = listOf(5),
+            dayItems = listOf(1, 10, 20)
+        )
+
+        assertEquals(
+            DateRange(
+                startDate = LocalDate(year = 2026, month = Month.MAY, day = 1),
+                endDate = LocalDate(year = 2026, month = Month.MAY, day = 20)
+            ),
+            items.coerceDateRange(
+                startDate = LocalDate(year = 2026, month = Month.MAY, day = 20),
+                endDate = LocalDate(year = 2026, month = Month.MAY, day = 1)
+            )
+        )
+    }
+
+    @Test
+    fun datePickerItems_coerceDateRangeParts_clampsInvalidDaysBeforeCoercing() {
+        val items = DatePickerItems(
+            yearItems = listOf(2026),
+            monthItems = listOf(2, 3),
+            dayItems = listOf(28, 31)
+        )
+
+        assertEquals(
+            DateRange(
+                startDate = LocalDate(year = 2026, month = Month.FEBRUARY, day = 28),
+                endDate = LocalDate(year = 2026, month = Month.MARCH, day = 31)
+            ),
+            items.coerceDateRange(
+                startYear = 2026,
+                startMonth = 3,
+                startDay = 31,
+                endYear = 2026,
+                endMonth = 2,
+                endDay = 31
+            )
+        )
+    }
+
+    @Test
     fun datePickerItems_coerceDate_throwsActionableMessageWhenConstraintsFilterEveryDate() {
         val items = DatePickerItems(
             yearItems = listOf(2026),
