@@ -605,6 +605,7 @@ public final class com/kez/picker/date/DateRange {
 	public final fun getEndDate ()Lkotlinx/datetime/LocalDate;
 	public final fun getStartDate ()Lkotlinx/datetime/LocalDate;
 	public fun hashCode ()I
+	public final fun intersection (Lcom/kez/picker/date/DateRange;)Lcom/kez/picker/date/DateRange;
 	public final fun isSingleDay ()Z
 	public final fun overlaps (Lcom/kez/picker/date/DateRange;)Z
 	public fun toString ()Ljava/lang/String;

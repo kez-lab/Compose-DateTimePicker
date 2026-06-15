@@ -119,6 +119,60 @@ class DateRangePickerStateTest {
     }
 
     @Test
+    fun dateRange_intersectionReturnsInclusiveSharedDateRange() {
+        val range = DateRange(
+            startDate = LocalDate(2026, 5, 10),
+            endDate = LocalDate(2026, 5, 20)
+        )
+
+        assertEquals(
+            DateRange(
+                startDate = LocalDate(2026, 5, 10),
+                endDate = LocalDate(2026, 5, 10)
+            ),
+            range.intersection(
+                DateRange(
+                    startDate = LocalDate(2026, 5, 1),
+                    endDate = LocalDate(2026, 5, 10)
+                )
+            )
+        )
+        assertEquals(
+            DateRange(
+                startDate = LocalDate(2026, 5, 12),
+                endDate = LocalDate(2026, 5, 15)
+            ),
+            range.intersection(
+                DateRange(
+                    startDate = LocalDate(2026, 5, 12),
+                    endDate = LocalDate(2026, 5, 15)
+                )
+            )
+        )
+        assertEquals(
+            DateRange(
+                startDate = LocalDate(2026, 5, 18),
+                endDate = LocalDate(2026, 5, 20)
+            ),
+            range.intersection(
+                DateRange(
+                    startDate = LocalDate(2026, 5, 18),
+                    endDate = LocalDate(2026, 5, 25)
+                )
+            )
+        )
+        assertEquals(
+            null,
+            range.intersection(
+                DateRange(
+                    startDate = LocalDate(2026, 5, 21),
+                    endDate = LocalDate(2026, 5, 25)
+                )
+            )
+        )
+    }
+
+    @Test
     fun dateRange_dayCountReturnsInclusiveCalendarDayCount() {
         assertEquals(
             1,
