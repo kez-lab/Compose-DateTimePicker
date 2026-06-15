@@ -46,6 +46,9 @@ public final class com/kez/picker/DatePickerItems {
 	public synthetic fun <init> (Ljava/util/List;Ljava/util/List;Ljava/util/List;Lcom/kez/picker/DatePickerConstraints;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public final fun coerceDate (III)Lkotlinx/datetime/LocalDate;
 	public final fun coerceDate (Lkotlinx/datetime/LocalDate;)Lkotlinx/datetime/LocalDate;
+	public final fun coerceDateRange (IIIIII)Lcom/kez/picker/date/DateRange;
+	public final fun coerceDateRange (Lcom/kez/picker/date/DateRange;)Lcom/kez/picker/date/DateRange;
+	public final fun coerceDateRange (Lkotlinx/datetime/LocalDate;Lkotlinx/datetime/LocalDate;)Lcom/kez/picker/date/DateRange;
 	public final fun component1 ()Ljava/util/List;
 	public final fun component2 ()Ljava/util/List;
 	public final fun component3 ()Ljava/util/List;

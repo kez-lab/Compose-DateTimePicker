@@ -1,5 +1,6 @@
 package com.kez.picker
 
+import com.kez.picker.date.DateRange
 import com.kez.picker.date.YearMonth
 import com.kez.picker.date.daysInMonth
 import com.kez.picker.util.TimeFormat
@@ -311,6 +312,58 @@ data class DatePickerItems(
      */
     fun coerceDate(year: Int, month: Int, day: Int): LocalDate =
         coerceDate(dateFromParts(year = year, month = month, day = day))
+
+    /**
+     * Returns the closest selectable ordered date range for [dateRange].
+     *
+     * Start and end dates are coerced independently using [coerceDate], then ordered so the returned
+     * [DateRange] always has `startDate <= endDate`. This is useful before creating
+     * [com.kez.picker.date.DateRangePickerState] or applying app-owned range presets with custom
+     * picker items.
+     *
+     * @throws IllegalArgumentException if the configured item lists are invalid.
+     */
+    fun coerceDateRange(dateRange: DateRange): DateRange =
+        coerceDateRange(
+            startDate = dateRange.startDate,
+            endDate = dateRange.endDate
+        )
+
+    /**
+     * Returns the closest selectable ordered date range for [startDate] and [endDate].
+     *
+     * Unlike [DateRange], this overload accepts unordered inputs so apps can normalize form,
+     * restored, or preset values in one step.
+     *
+     * @throws IllegalArgumentException if the configured item lists are invalid.
+     */
+    fun coerceDateRange(startDate: LocalDate, endDate: LocalDate): DateRange =
+        DateRange.ordered(
+            startDate = coerceDate(startDate),
+            endDate = coerceDate(endDate)
+        )
+
+    /**
+     * Returns the closest selectable ordered date range for explicit start and end date parts.
+     *
+     * If a day is greater than the maximum day for its year/month, it is clamped before applying this
+     * item's selectable values and date bounds.
+     *
+     * @throws IllegalArgumentException if any year/month/day value is outside its supported range, or
+     * if the configured item lists are invalid.
+     */
+    fun coerceDateRange(
+        startYear: Int,
+        startMonth: Int,
+        startDay: Int,
+        endYear: Int,
+        endMonth: Int,
+        endDay: Int
+    ): DateRange =
+        coerceDateRange(
+            startDate = dateFromParts(year = startYear, month = startMonth, day = startDay),
+            endDate = dateFromParts(year = endYear, month = endMonth, day = endDay)
+        )
 
     internal fun selectableYearItems(): List<Int> =
         yearItems.filter { year ->

@@ -347,6 +347,9 @@ final class com.kez.picker/DatePickerItems { // com.kez.picker/DatePickerItems|n
 
     final fun coerceDate(kotlin/Int, kotlin/Int, kotlin/Int): kotlinx.datetime/LocalDate // com.kez.picker/DatePickerItems.coerceDate|coerceDate(kotlin.Int;kotlin.Int;kotlin.Int){}[0]
     final fun coerceDate(kotlinx.datetime/LocalDate): kotlinx.datetime/LocalDate // com.kez.picker/DatePickerItems.coerceDate|coerceDate(kotlinx.datetime.LocalDate){}[0]
+    final fun coerceDateRange(com.kez.picker.date/DateRange): com.kez.picker.date/DateRange // com.kez.picker/DatePickerItems.coerceDateRange|coerceDateRange(com.kez.picker.date.DateRange){}[0]
+    final fun coerceDateRange(kotlin/Int, kotlin/Int, kotlin/Int, kotlin/Int, kotlin/Int, kotlin/Int): com.kez.picker.date/DateRange // com.kez.picker/DatePickerItems.coerceDateRange|coerceDateRange(kotlin.Int;kotlin.Int;kotlin.Int;kotlin.Int;kotlin.Int;kotlin.Int){}[0]
+    final fun coerceDateRange(kotlinx.datetime/LocalDate, kotlinx.datetime/LocalDate): com.kez.picker.date/DateRange // com.kez.picker/DatePickerItems.coerceDateRange|coerceDateRange(kotlinx.datetime.LocalDate;kotlinx.datetime.LocalDate){}[0]
     final fun component1(): kotlin.collections/List<kotlin/Int> // com.kez.picker/DatePickerItems.component1|component1(){}[0]
     final fun component2(): kotlin.collections/List<kotlin/Int> // com.kez.picker/DatePickerItems.component2|component2(){}[0]
     final fun component3(): kotlin.collections/List<kotlin/Int> // com.kez.picker/DatePickerItems.component3|component3(){}[0]
