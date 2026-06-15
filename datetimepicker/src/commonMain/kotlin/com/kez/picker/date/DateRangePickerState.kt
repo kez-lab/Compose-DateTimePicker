@@ -100,6 +100,20 @@ data class DateRange(
     fun overlaps(range: DateRange): Boolean =
         startDate <= range.endDate && range.startDate <= endDate
 
+    /**
+     * Returns the inclusive overlap between this range and [range], or `null` when they do not
+     * share any calendar day.
+     */
+    fun intersection(range: DateRange): DateRange? {
+        val intersectionStart = maxOf(startDate, range.startDate)
+        val intersectionEnd = minOf(endDate, range.endDate)
+        return if (intersectionStart <= intersectionEnd) {
+            DateRange(startDate = intersectionStart, endDate = intersectionEnd)
+        } else {
+            null
+        }
+    }
+
     companion object {
         /**
          * Creates a [DateRange] from two dates, ordering them if [startDate] is after [endDate].

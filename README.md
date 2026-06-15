@@ -775,8 +775,9 @@ start/end fields may be entered in either order, use `DateRange.ordered(startDat
 matching year/month/day overload before passing the value to state. Use `range.contains(year, month,
 day)` when app-owned form fields need an inclusive range check before creating a `LocalDate`. Use
 `date in range`, `childRange in range`, and `range.overlaps(blockedRange)` for inclusive date and
-range checks. Use `range.isSingleDay` for one-day selections and `range.dayCount` to display the
-inclusive number of calendar days in the selected range.
+range checks. Use `range.intersection(blockedRange)` when apps need the shared sub-range itself.
+Use `range.isSingleDay` for one-day selections and `range.dayCount` to display the inclusive number
+of calendar days in the selected range.
 
 ### YearMonthPicker
 

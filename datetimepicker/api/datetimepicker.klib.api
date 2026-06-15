@@ -177,6 +177,7 @@ final class com.kez.picker.date/DateRange { // com.kez.picker.date/DateRange|nul
     final fun copy(kotlinx.datetime/LocalDate = ..., kotlinx.datetime/LocalDate = ...): com.kez.picker.date/DateRange // com.kez.picker.date/DateRange.copy|copy(kotlinx.datetime.LocalDate;kotlinx.datetime.LocalDate){}[0]
     final fun equals(kotlin/Any?): kotlin/Boolean // com.kez.picker.date/DateRange.equals|equals(kotlin.Any?){}[0]
     final fun hashCode(): kotlin/Int // com.kez.picker.date/DateRange.hashCode|hashCode(){}[0]
+    final fun intersection(com.kez.picker.date/DateRange): com.kez.picker.date/DateRange? // com.kez.picker.date/DateRange.intersection|intersection(com.kez.picker.date.DateRange){}[0]
     final fun overlaps(com.kez.picker.date/DateRange): kotlin/Boolean // com.kez.picker.date/DateRange.overlaps|overlaps(com.kez.picker.date.DateRange){}[0]
     final fun toString(): kotlin/String // com.kez.picker.date/DateRange.toString|toString(){}[0]
 

@@ -766,8 +766,9 @@ custom item 값이 유효 범위를 벗어나거나, 중복이 있거나, 목록
 대응되는 year/month/day overload를 사용하세요. 앱이 form field 값을 `LocalDate`로 만들기 전에
 inclusive range 포함 여부를 확인해야 한다면 `range.contains(year, month, day)`를 사용하세요.
 inclusive date와 range 확인에는 `date in range`, `childRange in range`,
-`range.overlaps(blockedRange)`를 사용할 수 있습니다. 하루만 선택된 범위는 `range.isSingleDay`로
-확인하고, 선택된 범위의 inclusive calendar day 수를 표시하려면 `range.dayCount`를 사용하세요.
+`range.overlaps(blockedRange)`를 사용할 수 있습니다. 앱이 공유되는 하위 범위 자체가 필요하다면
+`range.intersection(blockedRange)`를 사용하세요. 하루만 선택된 범위는 `range.isSingleDay`로 확인하고,
+선택된 범위의 inclusive calendar day 수를 표시하려면 `range.dayCount`를 사용하세요.
 
 ### YearMonthPicker
 

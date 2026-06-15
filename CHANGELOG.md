@@ -54,6 +54,8 @@ This project tracks notable user-facing and maintainer-facing changes here. The 
 - Added `DateRange.isSingleDay`, `DateRange.contains(DateRange)`, and `DateRange.overlaps(...)` so
   apps can check selected ranges for one-day, containment, and overlap cases without duplicating
   inclusive boundary logic.
+- Added `DateRange.intersection(...)` so apps can retrieve the shared inclusive sub-range between
+  two date ranges, or `null` when no calendar day overlaps.
 - Added `DateRangePickerState` and `rememberDateRangePickerState` overloads that accept a `DateRange`
   value directly.
 - Added value-first state constructors: `TimePickerState(LocalTime, ...)`,
