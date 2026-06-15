@@ -56,24 +56,18 @@ internal fun DateRangePickerSampleScreen(
             val today = remember { currentDate() }
             val yearStart = remember(today.year) { LocalDate(today.year, 1, 1) }
             val yearEnd = remember(today.year) { LocalDate(today.year, 12, 31) }
-            val monthEndDay = remember(today) {
-                when (today.month.number) {
-                    2 -> 28
-                    4, 6, 9, 11 -> 30
-                    else -> 31
-                }
-            }
-            val monthStart = remember(today) {
-                LocalDate(today.year, today.month, 1)
-            }
-            val monthEnd = remember(today, monthEndDay) {
-                LocalDate(today.year, today.month, monthEndDay)
-            }
             val todayRange = remember(today) {
                 DateRange(startDate = today, endDate = today)
             }
-            val monthRange = remember(monthStart, monthEnd) {
-                DateRange(startDate = monthStart, endDate = monthEnd)
+            val monthRange = remember(today) {
+                DateRange(
+                    startYear = today.year,
+                    startMonth = today.month.number,
+                    startDay = 1,
+                    endYear = today.year,
+                    endMonth = today.month.number,
+                    endDay = 31
+                )
             }
             val items = remember(today.year, yearStart, yearEnd) {
                 PickerDefaults.datePickerItems(
