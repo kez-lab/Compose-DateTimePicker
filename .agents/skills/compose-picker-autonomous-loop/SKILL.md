@@ -27,7 +27,7 @@ Also inspect `README.md`, `README_KO.md`, `CHANGELOG.md`, `gradle.properties`, `
 - Treat `main` / `origin/main` as the integration branch. Do not target `develop`.
 - If the current checkout has unrelated dirty work, create a separate worktree from `origin/main` before editing.
 - Keep one PR-sized slice active at a time. Do not bundle calendar expansion, API breaking changes, docs rewrites, and CI policy changes in one product PR.
-- Treat push, PR creation, and merge as part of each slice's completion path. After local verification passes, push the branch, open or update the PR, and merge it when the maintainer has authorized ongoing autonomous merges. If merge is blocked, capture the exact blocker before moving on.
+- Treat push, PR creation, and merge as part of each slice's completion path. After local verification passes, push the branch, open or update the PR, and merge it when the maintainer has authorized ongoing autonomous merges and GitHub's `mergeable` value is `MERGEABLE`. Do not wait for hosted PR automation or `mergeStateStatus == CLEAN` when PR automation is disabled or intentionally omitted. If merge is blocked, capture the exact blocker before moving on.
 - Do not deploy, publish, release, or trigger production credentials unless the maintainer explicitly authorizes that action.
 
 ## Priority Order
