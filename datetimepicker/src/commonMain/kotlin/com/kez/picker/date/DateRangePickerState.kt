@@ -477,12 +477,11 @@ class DateRangePickerState(
 
     /**
      * Programmatically selects the closest date range allowed by [items].
+     *
+     * This overload accepts unordered [startDate] and [endDate] values. Both dates are coerced by
+     * [items] and then ordered before selection.
      */
     fun selectDateRange(startDate: LocalDate, endDate: LocalDate, items: DatePickerItems) {
-        require(startDate <= endDate) {
-            "startDate must be on or before endDate. startDate=$startDate, endDate=$endDate. " +
-                    dateRangeOrderedAdvice()
-        }
         val coercedRange = items.coerceDateRange(startDate = startDate, endDate = endDate)
         selectDateRange(
             startDate = coercedRange.startDate,
@@ -505,7 +504,7 @@ class DateRangePickerState(
      * Programmatically selects the closest date range to the requested date parts allowed by [items].
      *
      * If a day is greater than the maximum day for its year/month, it is clamped before [items]
-     * coercion.
+     * coercion. This overload accepts unordered resulting dates and orders them before selection.
      */
     fun selectDateRange(
         startYear: Int,
