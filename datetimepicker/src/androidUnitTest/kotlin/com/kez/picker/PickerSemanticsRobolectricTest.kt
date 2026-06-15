@@ -19,6 +19,7 @@ import com.kez.picker.date.DatePicker
 import com.kez.picker.date.DatePickerState
 import com.kez.picker.date.DateRange
 import com.kez.picker.date.DateRangePicker
+import com.kez.picker.date.DateRangePickerState
 import com.kez.picker.date.YearMonth
 import com.kez.picker.date.YearMonthPicker
 import com.kez.picker.date.YearMonthPickerState
@@ -1032,6 +1033,56 @@ class PickerSemanticsRobolectricTest {
                 ),
                 changedRangeState.value
             )
+        }
+    }
+
+    @Test
+    fun dateRangePicker_callsOnSelectedDateRangeChangeAfterEndSelectionMovesStart() {
+        lateinit var state: DateRangePickerState
+        lateinit var changedRangeState: MutableState<DateRange?>
+
+        composeRule.setContent {
+            state = rememberDateRangePickerState(
+                initialStartDate = LocalDate(2026, 1, 12),
+                initialEndDate = LocalDate(2026, 1, 12)
+            )
+            changedRangeState = remember { mutableStateOf(null) }
+
+            DateRangePicker(
+                state = state,
+                onSelectedDateRangeChange = { changedRangeState.value = it },
+                items = PickerDefaults.datePickerItems(
+                    yearItems = listOf(2026),
+                    monthItems = listOf(1),
+                    dayItems = listOf(11, 12)
+                ),
+                style = PickerDefaults.style(visibleItemsCount = 3),
+                format = PickerDefaults.datePickerFormat(
+                    dayItemContentDescription = { "${it}일" }
+                ),
+                semantics = PickerDefaults.dateRangePickerSemantics(
+                    end = PickerDefaults.datePickerSemantics(
+                        dayPickerLabel = "종료 일",
+                        previousItemActionLabel = PREVIOUS_VALUE_ACTION_LABEL
+                    )
+                )
+            )
+        }
+
+        performCustomAccessibilityAction(
+            contentDescription = "종료 일: 12일",
+            actionLabel = PREVIOUS_VALUE_ACTION_LABEL
+        )
+        waitUntilSelectedItem("종료 일: 11일")
+
+        composeRule.runOnIdle {
+            val expectedRange = DateRange(
+                startDate = LocalDate(2026, 1, 11),
+                endDate = LocalDate(2026, 1, 11)
+            )
+
+            assertEquals(expectedRange, changedRangeState.value)
+            assertEquals(expectedRange, state.selectedDateRange)
         }
     }
 
