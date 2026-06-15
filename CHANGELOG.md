@@ -74,6 +74,8 @@ This project tracks notable user-facing and maintainer-facing changes here. The 
 - `rememberDateRangePickerState(items = ..., initialStartDate = ..., initialEndDate = ...)` now
   accepts unordered initial boundaries, coerces each boundary with the provided date picker items,
   and creates an ordered initial range.
+- `DateRangePickerState.selectDateRange(..., items)` now accepts unordered boundaries, coerces each
+  boundary with the provided date picker items, and selects an ordered range.
 - Fixed picker row height calculation and default vertical item padding so selected text no longer
   appears clipped against the selection dividers.
 - Fixed picker row height consistency across mixed Korean, numeric, and Latin font fallback so

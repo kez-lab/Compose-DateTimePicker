@@ -773,10 +773,10 @@ or `state.selectEndDate(...)` with `DateRange`, `LocalDate`, or explicit year/mo
 `DateRange` can also be created from explicit start/end year, month, and day parts. If app-owned
 start/end fields may be entered in either order, use `DateRange.ordered(startDate, endDate)` or the
 matching year/month/day overload before passing the value to state. When custom `items` or
-`minDate`/`maxDate` bounds should normalize app-owned presets before state creation, use
-`items.coerceDateRange(...)` or `rememberDateRangePickerState(items = ..., initialStartDate = ...,
-initialEndDate = ...)`; they coerce both boundaries to the closest selectable dates and return or
-create an ordered `DateRange`. Use `range.contains(year, month,
+`minDate`/`maxDate` bounds should normalize app-owned presets, use `items.coerceDateRange(...)`,
+`rememberDateRangePickerState(items = ..., initialStartDate = ..., initialEndDate = ...)`, or the
+`state.selectDateRange(..., items)` overloads; they coerce both boundaries to the closest selectable
+dates and return, create, or select an ordered `DateRange`. Use `range.contains(year, month,
 day)` when app-owned form fields need an inclusive range check before creating a `LocalDate`. Use
 `date in range`, `childRange in range`, and `range.overlaps(blockedRange)` for inclusive date and
 range checks. Use `range.intersection(blockedRange)` when apps need the shared sub-range itself.

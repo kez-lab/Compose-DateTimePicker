@@ -497,6 +497,37 @@ class DateRangePickerStateTest {
     }
 
     @Test
+    fun dateRangePickerState_selectDateRangeWithItems_ordersUnorderedSelection() {
+        val state = DateRangePickerState(
+            initialStartDate = LocalDate(2026, 5, 10),
+            initialEndDate = LocalDate(2026, 6, 10)
+        )
+        val items = DatePickerItems(
+            yearItems = listOf(2026),
+            monthItems = (1..12).toList(),
+            dayItems = (1..31).toList(),
+            constraints = DatePickerConstraints(
+                minDate = LocalDate(2026, Month.MAY, 10),
+                maxDate = LocalDate(2026, Month.JUNE, 20)
+            )
+        )
+
+        state.selectDateRange(
+            startDate = LocalDate(2026, Month.DECEMBER, 31),
+            endDate = LocalDate(2026, Month.JANUARY, 1),
+            items = items
+        )
+
+        assertEquals(
+            DateRange(
+                startDate = LocalDate(2026, Month.MAY, 10),
+                endDate = LocalDate(2026, Month.JUNE, 20)
+            ),
+            state.selectedDateRange
+        )
+    }
+
+    @Test
     fun dateRangePickerState_selectDateRangePartsWithItems_coercesSelection() {
         val state = DateRangePickerState(
             initialStartDate = LocalDate(2026, 5, 10),
