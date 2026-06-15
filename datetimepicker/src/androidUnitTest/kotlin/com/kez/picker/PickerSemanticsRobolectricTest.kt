@@ -756,6 +756,46 @@ class PickerSemanticsRobolectricTest {
     }
 
     @Test
+    fun timePicker_disabledChildPickersOmitCustomAccessibilityActions() {
+        composeRule.setContent {
+            val state = rememberTimePickerState(
+                initialTime = LocalTime(hour = 10, minute = 5),
+                timeFormat = TimeFormat.HOUR_24
+            )
+
+            TimePicker(
+                state = state,
+                enabled = false,
+                items = PickerDefaults.timePickerItems(
+                    minuteItems = listOf(5, 10),
+                    hour24Items = listOf(10, 11)
+                ),
+                style = PickerDefaults.style(visibleItemsCount = 3),
+                format = PickerDefaults.timePickerFormat(
+                    hourItemContentDescription = { "${it}시" },
+                    minuteItemContentDescription = { "${it}분" }
+                ),
+                semantics = PickerDefaults.timePickerSemantics(
+                    hourPickerLabel = "시간",
+                    minutePickerLabel = "분",
+                    previousItemActionLabel = PREVIOUS_VALUE_ACTION_LABEL,
+                    nextItemActionLabel = NEXT_VALUE_ACTION_LABEL
+                )
+            )
+        }
+
+        composeRule
+            .onNode(hasContentDescription("시간: 10시") and hasStateDescription("10시"))
+            .assertIsNotEnabled()
+        composeRule
+            .onNode(hasContentDescription("분: 5분") and hasStateDescription("5분"))
+            .assertIsNotEnabled()
+
+        assertNoCustomAccessibilityActions("시간: 10시")
+        assertNoCustomAccessibilityActions("분: 5분")
+    }
+
+    @Test
     fun timePicker_forwardsCustomPeriodAccessibilityDescriptionIn12HourMode() {
         composeRule.setContent {
             val state = rememberTimePickerState(
@@ -985,6 +1025,54 @@ class PickerSemanticsRobolectricTest {
         composeRule.runOnIdle {
             assertEquals(LocalDate(year = 2026, month = Month.FEBRUARY, day = 28), changedDateState.value)
         }
+    }
+
+    @Test
+    fun datePicker_disabledChildPickersOmitCustomAccessibilityActions() {
+        composeRule.setContent {
+            val state = rememberDatePickerState(
+                initialYear = 2026,
+                initialMonth = 1,
+                initialDay = 10
+            )
+
+            DatePicker(
+                state = state,
+                enabled = false,
+                items = PickerDefaults.datePickerItems(
+                    yearItems = listOf(2026, 2027),
+                    monthItems = listOf(1, 2),
+                    dayItems = listOf(10, 20)
+                ),
+                style = PickerDefaults.style(visibleItemsCount = 3),
+                format = PickerDefaults.datePickerFormat(
+                    yearItemContentDescription = { "${it}년" },
+                    monthItemContentDescription = { "${it}월" },
+                    dayItemContentDescription = { "${it}일" }
+                ),
+                semantics = PickerDefaults.datePickerSemantics(
+                    yearPickerLabel = "연도",
+                    monthPickerLabel = "월",
+                    dayPickerLabel = "일",
+                    previousItemActionLabel = PREVIOUS_VALUE_ACTION_LABEL,
+                    nextItemActionLabel = NEXT_VALUE_ACTION_LABEL
+                )
+            )
+        }
+
+        composeRule
+            .onNode(hasContentDescription("연도: 2026년") and hasStateDescription("2026년"))
+            .assertIsNotEnabled()
+        composeRule
+            .onNode(hasContentDescription("월: 1월") and hasStateDescription("1월"))
+            .assertIsNotEnabled()
+        composeRule
+            .onNode(hasContentDescription("일: 10일") and hasStateDescription("10일"))
+            .assertIsNotEnabled()
+
+        assertNoCustomAccessibilityActions("연도: 2026년")
+        assertNoCustomAccessibilityActions("월: 1월")
+        assertNoCustomAccessibilityActions("일: 10일")
     }
 
     @Test
@@ -1261,6 +1349,46 @@ class PickerSemanticsRobolectricTest {
         composeRule.runOnIdle {
             assertEquals(YearMonth(year = 2026, month = 6), changedYearMonthState.value)
         }
+    }
+
+    @Test
+    fun yearMonthPicker_disabledChildPickersOmitCustomAccessibilityActions() {
+        composeRule.setContent {
+            val state = rememberYearMonthPickerState(
+                initialYear = 2026,
+                initialMonth = 5
+            )
+
+            YearMonthPicker(
+                state = state,
+                enabled = false,
+                items = PickerDefaults.yearMonthPickerItems(
+                    yearItems = listOf(2026, 2027),
+                    monthItems = listOf(5, 6)
+                ),
+                style = PickerDefaults.style(visibleItemsCount = 3),
+                format = PickerDefaults.yearMonthPickerFormat(
+                    yearItemContentDescription = { "${it}년" },
+                    monthItemContentDescription = { "${it}월" }
+                ),
+                semantics = PickerDefaults.yearMonthPickerSemantics(
+                    yearPickerLabel = "연도",
+                    monthPickerLabel = "월",
+                    previousItemActionLabel = PREVIOUS_VALUE_ACTION_LABEL,
+                    nextItemActionLabel = NEXT_VALUE_ACTION_LABEL
+                )
+            )
+        }
+
+        composeRule
+            .onNode(hasContentDescription("연도: 2026년") and hasStateDescription("2026년"))
+            .assertIsNotEnabled()
+        composeRule
+            .onNode(hasContentDescription("월: 5월") and hasStateDescription("5월"))
+            .assertIsNotEnabled()
+
+        assertNoCustomAccessibilityActions("연도: 2026년")
+        assertNoCustomAccessibilityActions("월: 5월")
     }
 
     private fun waitUntilSelectedItem(contentDescription: String) {
