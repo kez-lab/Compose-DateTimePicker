@@ -51,6 +51,9 @@ This project tracks notable user-facing and maintainer-facing changes here. The 
   forms, presets, or restored state before passing them to `DateRangePickerState`.
 - Added `DateRange.dayCount` so apps can display the inclusive number of calendar days in the
   selected range without recalculating epoch-day differences.
+- Added `DateRange.isSingleDay`, `DateRange.contains(DateRange)`, and `DateRange.overlaps(...)` so
+  apps can check selected ranges for one-day, containment, and overlap cases without duplicating
+  inclusive boundary logic.
 - Added `DateRangePickerState` and `rememberDateRangePickerState` overloads that accept a `DateRange`
   value directly.
 - Added value-first state constructors: `TimePickerState(LocalTime, ...)`,
