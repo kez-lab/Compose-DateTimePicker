@@ -85,7 +85,8 @@ internal fun DateRangePickerSampleScreen(
                 icon = FeatherIcons.Calendar,
                 label = "Selected range",
                 value = state.selectedDateRange.asText(),
-                supportingText = "Selectable year: ${today.year}"
+                supportingText = "Days selected: ${state.selectedDateRange.dayCount}. " +
+                        "Selectable year: ${today.year}"
             )
 
             Spacer(modifier = Modifier.height(16.dp))
