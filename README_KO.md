@@ -519,6 +519,19 @@ Picker(
 화면에 보이는 텍스트와 스크린 리더 문구가 달라야 한다면 visible text는 `format.itemText`로, 접근성
 값 설명은 `format.itemContentDescription`으로 분리하세요.
 
+`PickerStyle`은 `Picker`와 composite picker에서 공유할 수 있는 시각 설정을 묶습니다.
+
+| Option | 용도 |
+| :--- | :--- |
+| `visibleItemsCount` | wheel에 보이는 행 개수입니다. |
+| `colors` | 기본/선택/비활성 텍스트 색, divider 색, 선택 항목 배경색입니다. |
+| `textStyles` | 기본 텍스트와 선택 텍스트 스타일입니다. |
+| `selectedItemBackgroundShape` | 선택 항목 배경의 shape입니다. |
+| `itemPadding` | 각 item 주위에 적용되는 padding입니다. |
+| `fadingEdgeGradient` | 상하 fading edge mask입니다. |
+| `horizontalAlignment` | 각 column 안에서 item content를 가로 정렬하는 방식입니다. |
+| `dividerThickness`, `dividerShape`, `dividerWidth`, `isDividerVisible` | 독립 실행형 `Picker`의 selection divider 설정입니다. Composite picker는 공유 band에 `selectionIndicator`를 사용합니다. |
+
 독립 실행형 `Picker`에서는 `dividerWidth`로 선택 divider의 길이를 제어할 수 있습니다.
 `PickerDividerWidth.Fill`(기본값)은 column 전체 폭을 사용하고,
 `PickerDividerWidth.Fraction(0f..1f)`은 column 폭의 비율을 사용하며,
@@ -541,6 +554,17 @@ divider를 따로 그리지 않고 picker 전체를 가로지르는 **단일 sel
 파생되므로 기존 `dividerColor` / `dividerThickness` / `disabledDividerColor` / `isDividerVisible`
 커스터마이징은 계속 적용됩니다. `horizontalInset`으로 picker 양쪽 가장자리에서 band를 안쪽으로
 넣을 수 있습니다. `thickness`와 `horizontalInset`은 finite non-negative `Dp`여야 합니다.
+
+`PickerSelectionIndicator`는 composite band 설정을 per-column item styling과 분리합니다.
+
+| Option | 용도 |
+| :--- | :--- |
+| `color` | picker가 활성화됐을 때 selection band line 색입니다. |
+| `disabledColor` | picker가 비활성화됐을 때 selection band line 색입니다. |
+| `thickness` | 각 band line 두께입니다. finite non-negative `Dp`여야 합니다. |
+| `shape` | 각 band line의 shape입니다. |
+| `horizontalInset` | band의 양쪽 가로 가장자리에 적용되는 inset입니다. finite non-negative `Dp`여야 합니다. |
+| `isVisible` | band를 그릴지 여부입니다. |
 
 ```kotlin
 TimePicker(
