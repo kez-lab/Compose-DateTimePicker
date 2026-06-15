@@ -49,6 +49,8 @@ This project tracks notable user-facing and maintainer-facing changes here. The 
   values.
 - Added `DateRange.ordered(...)` factories so apps can normalize unordered start/end inputs from
   forms, presets, or restored state before passing them to `DateRangePickerState`.
+- Added `DateRange.dayCount` so apps can display the inclusive number of calendar days in the
+  selected range without recalculating epoch-day differences.
 - Added `DateRangePickerState` and `rememberDateRangePickerState` overloads that accept a `DateRange`
   value directly.
 - Added value-first state constructors: `TimePickerState(LocalTime, ...)`,

@@ -160,6 +160,8 @@ final class com.kez.picker.date/DateRange { // com.kez.picker.date/DateRange|nul
     constructor <init>(kotlin/Int, kotlin/Int, kotlin/Int, kotlin/Int = ..., kotlin/Int = ..., kotlin/Int = ...) // com.kez.picker.date/DateRange.<init>|<init>(kotlin.Int;kotlin.Int;kotlin.Int;kotlin.Int;kotlin.Int;kotlin.Int){}[0]
     constructor <init>(kotlinx.datetime/LocalDate, kotlinx.datetime/LocalDate) // com.kez.picker.date/DateRange.<init>|<init>(kotlinx.datetime.LocalDate;kotlinx.datetime.LocalDate){}[0]
 
+    final val dayCount // com.kez.picker.date/DateRange.dayCount|{}dayCount[0]
+        final fun <get-dayCount>(): kotlin/Int // com.kez.picker.date/DateRange.dayCount.<get-dayCount>|<get-dayCount>(){}[0]
     final val endDate // com.kez.picker.date/DateRange.endDate|{}endDate[0]
         final fun <get-endDate>(): kotlinx.datetime/LocalDate // com.kez.picker.date/DateRange.endDate.<get-endDate>|<get-endDate>(){}[0]
     final val startDate // com.kez.picker.date/DateRange.startDate|{}startDate[0]
