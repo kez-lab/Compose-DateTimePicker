@@ -6,8 +6,11 @@ import androidx.compose.ui.test.hasContentDescription
 import androidx.compose.ui.test.isSelected
 import com.kez.picker.date.DatePicker
 import com.kez.picker.date.DatePickerState
+import com.kez.picker.date.DateRangePicker
+import com.kez.picker.date.DateRangePickerState
 import com.kez.picker.date.YearMonthPicker
 import com.kez.picker.date.YearMonthPickerState
+import com.kez.picker.date.rememberDateRangePickerState
 import com.kez.picker.date.rememberDatePickerState
 import com.kez.picker.date.rememberYearMonthPickerState
 import com.kez.picker.time.TimePicker
@@ -258,6 +261,85 @@ class PickerStateRestorationRobolectricTest {
 
         composeRule.runOnIdle {
             assertEquals(LocalDate(2026, 2, 28), state.selectedDate)
+        }
+    }
+
+    @Test
+    fun dateRangePicker_restoresSelectionIntoRenderedSemanticsAfterSaveRestore() {
+        lateinit var state: DateRangePickerState
+        val restorationTester = StateRestorationTester(composeRule)
+        val items = PickerDefaults.datePickerItems(
+            yearItems = listOf(2024, 2026),
+            monthItems = listOf(1, 2, 3),
+            dayItems = (1..31).toList()
+        )
+
+        restorationTester.setContent {
+            state = rememberDateRangePickerState(
+                initialStartDate = LocalDate(2024, 1, 2),
+                initialEndDate = LocalDate(2024, 1, 3)
+            )
+
+            DateRangePicker(
+                state = state,
+                items = items,
+                style = PickerDefaults.style(visibleItemsCount = 3),
+                format = PickerDefaults.datePickerFormat(
+                    yearItemContentDescription = { "$it year" },
+                    monthItemContentDescription = { "$it month" },
+                    dayItemContentDescription = { "$it day" }
+                ),
+                startLabel = null,
+                endLabel = null,
+                semantics = PickerDefaults.dateRangePickerSemantics(
+                    start = PickerDefaults.datePickerSemantics(
+                        yearPickerLabel = "Start year",
+                        monthPickerLabel = "Start month",
+                        dayPickerLabel = "Start day"
+                    ),
+                    end = PickerDefaults.datePickerSemantics(
+                        yearPickerLabel = "End year",
+                        monthPickerLabel = "End month",
+                        dayPickerLabel = "End day"
+                    )
+                )
+            )
+        }
+
+        composeRule.runOnIdle {
+            state.selectDateRange(
+                startDate = LocalDate(2026, 2, 27),
+                endDate = LocalDate(2026, 3, 1)
+            )
+            assertEquals(LocalDate(2026, 2, 27), state.selectedStartDate)
+            assertEquals(LocalDate(2026, 3, 1), state.selectedEndDate)
+        }
+
+        restorationTester.emulateSavedInstanceStateRestore()
+        composeRule.waitForIdle()
+
+        composeRule
+            .onNode(hasContentDescription("Start year: 2026 year") and isSelected())
+            .assertExists()
+        composeRule
+            .onNode(hasContentDescription("Start month: 2 month") and isSelected())
+            .assertExists()
+        composeRule
+            .onNode(hasContentDescription("Start day: 27 day") and isSelected())
+            .assertExists()
+        composeRule
+            .onNode(hasContentDescription("End year: 2026 year") and isSelected())
+            .assertExists()
+        composeRule
+            .onNode(hasContentDescription("End month: 3 month") and isSelected())
+            .assertExists()
+        composeRule
+            .onNode(hasContentDescription("End day: 1 day") and isSelected())
+            .assertExists()
+
+        composeRule.runOnIdle {
+            assertEquals(LocalDate(2026, 2, 27), state.selectedStartDate)
+            assertEquals(LocalDate(2026, 3, 1), state.selectedEndDate)
         }
     }
 
