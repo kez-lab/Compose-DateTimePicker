@@ -6,6 +6,7 @@ import androidx.compose.ui.test.hasContentDescription
 import androidx.compose.ui.test.isSelected
 import com.kez.picker.date.DatePicker
 import com.kez.picker.date.DatePickerState
+import com.kez.picker.date.DateRange
 import com.kez.picker.date.DateRangePicker
 import com.kez.picker.date.DateRangePickerState
 import com.kez.picker.date.YearMonthPicker
@@ -261,6 +262,43 @@ class PickerStateRestorationRobolectricTest {
 
         composeRule.runOnIdle {
             assertEquals(LocalDate(2026, 2, 28), state.selectedDate)
+        }
+    }
+
+    @Test
+    fun rememberDateRangePickerState_restoresProgrammaticSelectionSummaryAfterSaveRestore() {
+        lateinit var state: DateRangePickerState
+        val restorationTester = StateRestorationTester(composeRule)
+
+        restorationTester.setContent {
+            state = rememberDateRangePickerState(
+                initialDateRange = DateRange(
+                    startDate = LocalDate(2024, 1, 1),
+                    endDate = LocalDate(2024, 1, 2)
+                )
+            )
+        }
+
+        composeRule.runOnIdle {
+            state.selectDateRange(
+                startDate = LocalDate(2024, 2, 27),
+                endDate = LocalDate(2024, 3, 1)
+            )
+            assertEquals(4, state.selectedDateRange.dayCount)
+        }
+
+        restorationTester.emulateSavedInstanceStateRestore()
+
+        composeRule.runOnIdle {
+            val expected = DateRange(
+                startDate = LocalDate(2024, 2, 27),
+                endDate = LocalDate(2024, 3, 1)
+            )
+
+            assertEquals(expected, state.selectedDateRange)
+            assertEquals(expected.startDate, state.selectedStartDate)
+            assertEquals(expected.endDate, state.selectedEndDate)
+            assertEquals(4, state.selectedDateRange.dayCount)
         }
     }
 
