@@ -105,6 +105,48 @@ class PickerItemScope<T : Any> internal constructor(
     val contentColor: Color
 )
 
+@Composable
+internal fun <T : Any> rememberPickerItemHeight(
+    items: List<T>,
+    format: PickerItemFormat<T>,
+    style: PickerStyle
+): Dp {
+    val density = LocalDensity.current
+    val textMeasurer = rememberTextMeasurer(cacheSize = 16)
+    val itemPadding = style.itemPadding
+    val textStyle = style.textStyles.textStyle
+    val selectedTextStyle = style.textStyles.selectedTextStyle
+    val measuredTextHeight = remember(items, format, textStyle, selectedTextStyle, textMeasurer) {
+        val itemTexts = items.map(format.itemText)
+        (itemTexts + ItemHeightProbeTexts).maxOf { itemText ->
+            val text = AnnotatedString(itemText)
+            max(
+                textMeasurer.measure(
+                    text = text,
+                    style = textStyle,
+                    overflow = TextOverflow.Clip,
+                    softWrap = false,
+                    maxLines = 1
+                ).size.height,
+                textMeasurer.measure(
+                    text = text,
+                    style = selectedTextStyle,
+                    overflow = TextOverflow.Clip,
+                    softWrap = false,
+                    maxLines = 1
+                ).size.height
+            )
+        }
+    }
+
+    return with(density) {
+        measuredTextHeight.toDp() +
+            itemPadding.calculateTopPadding() +
+            itemPadding.calculateBottomPadding() +
+            ItemHeightSafetyPadding
+    }
+}
+
 /**
  * A generic picker component that displays a list of items and allows the user to select one.
  * Follows Material3 component design patterns.
@@ -145,7 +187,6 @@ fun <T : Any> Picker(
     }
 
     val density = LocalDensity.current
-    val textMeasurer = rememberTextMeasurer(cacheSize = 16)
     val visibleItemsMiddle = remember(visibleItemsCount) { visibleItemsCount / 2 }
     val scope = rememberCoroutineScope()
     val currentOnSelectedItemChange by rememberUpdatedState(onSelectedItemChange)
@@ -161,6 +202,12 @@ fun <T : Any> Picker(
     val dividerShape = style.dividerShape
     val dividerWidth = style.dividerWidth
     val isDividerVisible = style.isDividerVisible
+    val itemHeight = rememberPickerItemHeight(
+        items = items,
+        format = format,
+        style = style
+    )
+    val itemHeightPx = with(density) { itemHeight.toPx() }
 
     val adjustedItems: List<T?> = remember(items, isInfinity, visibleItemsMiddle) {
         if (!isInfinity) {
@@ -215,37 +262,6 @@ fun <T : Any> Picker(
     } else {
         colors.disabledSelectedTextColor
     }
-
-    val measuredTextHeight = remember(items, format, textStyle, selectedTextStyle, textMeasurer) {
-        val itemTexts = items.map(format.itemText)
-        (itemTexts + ItemHeightProbeTexts).maxOf { itemText ->
-            val text = AnnotatedString(itemText)
-            max(
-                textMeasurer.measure(
-                    text = text,
-                    style = textStyle,
-                    overflow = TextOverflow.Clip,
-                    softWrap = false,
-                    maxLines = 1
-                ).size.height,
-                textMeasurer.measure(
-                    text = text,
-                    style = selectedTextStyle,
-                    overflow = TextOverflow.Clip,
-                    softWrap = false,
-                    maxLines = 1
-                ).size.height
-            )
-        }
-    }
-
-    val itemHeight = with(density) {
-        measuredTextHeight.toDp() +
-            itemPadding.calculateTopPadding() +
-            itemPadding.calculateBottomPadding() +
-            ItemHeightSafetyPadding
-    }
-    val itemHeightPx = with(density) { itemHeight.toPx() }
 
     LaunchedEffect(listState, adjustedItems, visibleItemsMiddle, enabled) {
         snapshotFlow { listState.firstVisibleItemIndex to listState.isScrollInProgress }

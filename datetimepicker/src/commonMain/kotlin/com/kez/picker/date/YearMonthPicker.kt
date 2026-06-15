@@ -26,7 +26,9 @@ import com.kez.picker.YearMonthPickerFormat
 import com.kez.picker.YearMonthPickerItems
 import com.kez.picker.YearMonthPickerLayout
 import com.kez.picker.YearMonthPickerSemantics
+import com.kez.picker.maxPickerItemHeight
 import com.kez.picker.pickerColumnModifier
+import com.kez.picker.rememberPickerItemHeight
 
 /**
  * A year and month picker component.
@@ -89,6 +91,25 @@ fun YearMonthPicker(
         }
     }
 
+    val yearItems by remember(items) {
+        derivedStateOf { items.selectableYearItems() }
+    }
+    val monthItems by remember(items, state) {
+        derivedStateOf {
+            items.selectableMonthItemsFor(state.selectedYear)
+        }
+    }
+    val yearItemHeight = rememberPickerItemHeight(
+        items = yearItems,
+        format = format.year,
+        style = columnStyle
+    )
+    val monthItemHeight = rememberPickerItemHeight(
+        items = monthItems,
+        format = format.month,
+        style = columnStyle
+    )
+
     Box(modifier = modifier) {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
@@ -97,62 +118,54 @@ fun YearMonthPicker(
         ) {
             PickerSelectionBand(
                 indicator = selectionIndicator,
-                visibleItemsCount = style.visibleItemsCount,
+                itemHeight = maxPickerItemHeight(yearItemHeight, monthItemHeight),
                 enabled = enabled,
                 modifier = Modifier.fillMaxWidth()
             ) {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(
-                    spacingBetweenPickers,
-                    Alignment.CenterHorizontally
-                ),
-            ) {
-                layout.columnOrder.forEach { column ->
-                    key(column) {
-                        when (column) {
-                            YearMonthPickerColumn.YEAR -> {
-                                val yearItems by remember(items) {
-                                    derivedStateOf { items.selectableYearItems() }
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(
+                        spacingBetweenPickers,
+                        Alignment.CenterHorizontally
+                    ),
+                ) {
+                    layout.columnOrder.forEach { column ->
+                        key(column) {
+                            when (column) {
+                                YearMonthPickerColumn.YEAR -> {
+                                    Picker(
+                                        items = yearItems,
+                                        selectedItem = state.selectedYear,
+                                        onSelectedItemChange = { year ->
+                                            updateSelectedYearMonth { state.selectYear(year) }
+                                        },
+                                        modifier = pickerColumnModifier(pickerModifier, layout.yearWeight),
+                                        enabled = enabled,
+                                        style = columnStyle,
+                                        isInfinity = false,
+                                        semantics = semantics.year,
+                                        format = format.year
+                                    )
                                 }
-                                Picker(
-                                    items = yearItems,
-                                    selectedItem = state.selectedYear,
-                                    onSelectedItemChange = { year ->
-                                        updateSelectedYearMonth { state.selectYear(year) }
-                                    },
-                                    modifier = pickerColumnModifier(pickerModifier, layout.yearWeight),
-                                    enabled = enabled,
-                                    style = columnStyle,
-                                    isInfinity = false,
-                                    semantics = semantics.year,
-                                    format = format.year
-                                )
-                            }
 
-                            YearMonthPickerColumn.MONTH -> {
-                                val monthItems by remember(items, state) {
-                                    derivedStateOf {
-                                        items.selectableMonthItemsFor(state.selectedYear)
-                                    }
+                                YearMonthPickerColumn.MONTH -> {
+                                    Picker(
+                                        items = monthItems,
+                                        selectedItem = state.selectedMonth,
+                                        onSelectedItemChange = { month ->
+                                            updateSelectedYearMonth { state.selectMonth(month) }
+                                        },
+                                        modifier = pickerColumnModifier(pickerModifier, layout.monthWeight),
+                                        enabled = enabled,
+                                        style = columnStyle,
+                                        semantics = semantics.month,
+                                        format = format.month
+                                    )
                                 }
-                                Picker(
-                                    items = monthItems,
-                                    selectedItem = state.selectedMonth,
-                                    onSelectedItemChange = { month ->
-                                        updateSelectedYearMonth { state.selectMonth(month) }
-                                    },
-                                    modifier = pickerColumnModifier(pickerModifier, layout.monthWeight),
-                                    enabled = enabled,
-                                    style = columnStyle,
-                                    semantics = semantics.month,
-                                    format = format.month
-                                )
                             }
                         }
                     }
                 }
-            }
             }
         }
     }

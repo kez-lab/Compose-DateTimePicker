@@ -168,8 +168,9 @@ public final class com/kez/picker/PickerDefaults {
 	public final fun getSpacingBetweenPickers-D9Ej5fM ()F
 	public final fun itemFormat (Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;)Lcom/kez/picker/PickerItemFormat;
 	public static synthetic fun itemFormat$default (Lcom/kez/picker/PickerDefaults;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)Lcom/kez/picker/PickerItemFormat;
-	public final fun selectionIndicator-jkN7RYM (Lcom/kez/picker/PickerStyle;JFLandroidx/compose/ui/graphics/Shape;FZ)Lcom/kez/picker/PickerSelectionIndicator;
-	public static synthetic fun selectionIndicator-jkN7RYM$default (Lcom/kez/picker/PickerDefaults;Lcom/kez/picker/PickerStyle;JFLandroidx/compose/ui/graphics/Shape;FZILjava/lang/Object;)Lcom/kez/picker/PickerSelectionIndicator;
+	public final fun selectionIndicator-CeB25-k (JFLandroidx/compose/ui/graphics/Shape;FZJLandroidx/compose/runtime/Composer;II)Lcom/kez/picker/PickerSelectionIndicator;
+	public final fun selectionIndicator-Wu-s0uE (Lcom/kez/picker/PickerStyle;JFLandroidx/compose/ui/graphics/Shape;FZJ)Lcom/kez/picker/PickerSelectionIndicator;
+	public static synthetic fun selectionIndicator-Wu-s0uE$default (Lcom/kez/picker/PickerDefaults;Lcom/kez/picker/PickerStyle;JFLandroidx/compose/ui/graphics/Shape;FZJILjava/lang/Object;)Lcom/kez/picker/PickerSelectionIndicator;
 	public final fun semantics (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)Lcom/kez/picker/PickerSemantics;
 	public static synthetic fun semantics$default (Lcom/kez/picker/PickerDefaults;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;ILjava/lang/Object;)Lcom/kez/picker/PickerSemantics;
 	public final fun style-seJ8HY0 (ILcom/kez/picker/PickerColors;Lcom/kez/picker/PickerTextStyles;Landroidx/compose/ui/graphics/Shape;Landroidx/compose/foundation/layout/PaddingValues;Landroidx/compose/ui/graphics/Brush;Landroidx/compose/ui/Alignment$Horizontal;FLandroidx/compose/ui/graphics/Shape;Lcom/kez/picker/PickerDividerWidth;ZLandroidx/compose/runtime/Composer;III)Lcom/kez/picker/PickerStyle;
@@ -264,16 +265,19 @@ public final class com/kez/picker/PickerKt {
 
 public final class com/kez/picker/PickerSelectionIndicator {
 	public static final field $stable I
-	public synthetic fun <init> (JFLandroidx/compose/ui/graphics/Shape;FZLkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public synthetic fun <init> (JFLandroidx/compose/ui/graphics/Shape;FZJILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public synthetic fun <init> (JFLandroidx/compose/ui/graphics/Shape;FZJLkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public final fun component1-0d7_KjU ()J
 	public final fun component2-D9Ej5fM ()F
 	public final fun component3 ()Landroidx/compose/ui/graphics/Shape;
 	public final fun component4-D9Ej5fM ()F
 	public final fun component5 ()Z
-	public final fun copy-5bVDa84 (JFLandroidx/compose/ui/graphics/Shape;FZ)Lcom/kez/picker/PickerSelectionIndicator;
-	public static synthetic fun copy-5bVDa84$default (Lcom/kez/picker/PickerSelectionIndicator;JFLandroidx/compose/ui/graphics/Shape;FZILjava/lang/Object;)Lcom/kez/picker/PickerSelectionIndicator;
+	public final fun component6-0d7_KjU ()J
+	public final fun copy-3xVzxCo (JFLandroidx/compose/ui/graphics/Shape;FZJ)Lcom/kez/picker/PickerSelectionIndicator;
+	public static synthetic fun copy-3xVzxCo$default (Lcom/kez/picker/PickerSelectionIndicator;JFLandroidx/compose/ui/graphics/Shape;FZJILjava/lang/Object;)Lcom/kez/picker/PickerSelectionIndicator;
 	public fun equals (Ljava/lang/Object;)Z
 	public final fun getColor-0d7_KjU ()J
+	public final fun getDisabledColor-0d7_KjU ()J
 	public final fun getHorizontalInset-D9Ej5fM ()F
 	public final fun getShape ()Landroidx/compose/ui/graphics/Shape;
 	public final fun getThickness-D9Ej5fM ()F

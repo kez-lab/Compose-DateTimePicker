@@ -5,6 +5,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -130,6 +131,12 @@ class PickerLayoutTest {
     }
 
     @Test
+    fun pickerDividerWidthFixed_rejectsNonFiniteWidth() {
+        assertFailsWith<IllegalArgumentException> { PickerDividerWidth.Fixed(Dp.Infinity) }
+        assertFailsWith<IllegalArgumentException> { PickerDividerWidth.Fixed(Dp.Unspecified) }
+    }
+
+    @Test
     fun pickerSelectionIndicator_rejectsNegativeThicknessOrInset() {
         assertFailsWith<IllegalArgumentException> {
             PickerSelectionIndicator(
@@ -152,11 +159,52 @@ class PickerLayoutTest {
     }
 
     @Test
+    fun pickerSelectionIndicator_rejectsNonFiniteThicknessOrInset() {
+        assertFailsWith<IllegalArgumentException> {
+            PickerSelectionIndicator(
+                color = Color.Black,
+                thickness = Dp.Infinity,
+                shape = RectangleShape,
+                horizontalInset = 0.dp,
+                isVisible = true
+            )
+        }
+        assertFailsWith<IllegalArgumentException> {
+            PickerSelectionIndicator(
+                color = Color.Black,
+                thickness = Dp.Unspecified,
+                shape = RectangleShape,
+                horizontalInset = 0.dp,
+                isVisible = true
+            )
+        }
+        assertFailsWith<IllegalArgumentException> {
+            PickerSelectionIndicator(
+                color = Color.Black,
+                thickness = 1.dp,
+                shape = RectangleShape,
+                horizontalInset = Dp.Infinity,
+                isVisible = true
+            )
+        }
+        assertFailsWith<IllegalArgumentException> {
+            PickerSelectionIndicator(
+                color = Color.Black,
+                thickness = 1.dp,
+                shape = RectangleShape,
+                horizontalInset = Dp.Unspecified,
+                isVisible = true
+            )
+        }
+    }
+
+    @Test
     fun pickerSelectionIndicator_defaults_areDerivedFromStyle() {
         val style = PickerStyle(
             visibleItemsCount = 3,
             colors = PickerColors(
                 dividerColor = Color.Red,
+                disabledDividerColor = Color.Yellow,
                 selectedItemBackgroundColor = Color.Transparent,
                 textColor = Color.Gray,
                 selectedTextColor = Color.Black
@@ -182,5 +230,6 @@ class PickerLayoutTest {
         assertEquals(RectangleShape, indicator.shape)
         assertEquals(0.dp, indicator.horizontalInset)
         assertEquals(false, indicator.isVisible)
+        assertEquals(Color.Yellow, indicator.disabledColor)
     }
 }

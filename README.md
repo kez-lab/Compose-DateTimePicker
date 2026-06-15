@@ -36,7 +36,7 @@ Add the dependency to your version catalog or build file.
 
 ```toml
 [versions]
-composeDateTimePicker = "0.4.0"
+composeDateTimePicker = "0.6.0"
 
 [libraries]
 compose-date-time-picker = { module = "io.github.kez-lab:compose-date-time-picker", version.ref = "composeDateTimePicker" }
@@ -46,17 +46,17 @@ compose-date-time-picker = { module = "io.github.kez-lab:compose-date-time-picke
 
 ```kotlin
 dependencies {
-    implementation("io.github.kez-lab:compose-date-time-picker:0.4.0")
+    implementation("io.github.kez-lab:compose-date-time-picker:0.6.0")
 }
 ```
 
-> **Release status:** `0.4.0` is the latest public Maven Central/GitHub Releases version. This README is maintained from `main` and documents unreleased `0.6.0` API work, so the Usage and API Reference sections may include APIs that are not available in `0.4.0`. For published APIs, use the `0.4.0` release/tag docs. To test `main` locally, run `./gradlew :datetimepicker:publishToMavenLocal`, add `mavenLocal()` to your consuming build, and depend on `0.6.0`.
+> **Release status:** `0.6.0` is the latest public Maven Central version. GitHub Releases may still show `0.4.0` as the latest tagged release. This README is maintained from `main`, so Usage and API Reference sections can include APIs that are not in the public `0.6.0` artifact yet. To test `main` locally, run `./gradlew :datetimepicker:publishToMavenLocal`, add `mavenLocal()` to your consuming build, and depend on the repository `VERSION_NAME`.
 
 For release notes and upgrade-impact details, see [CHANGELOG.md](CHANGELOG.md).
 
 ## Usage
 
-> The examples below target the current `main` branch API. They may require unreleased `0.6.0` APIs rather than the public `0.4.0` dependency shown above.
+> The examples below target the current `main` branch API. They may require post-`0.6.0` APIs that are not available in the public Maven Central artifact yet.
 
 ### State and Callback Pattern
 
@@ -418,7 +418,7 @@ The example stores hour and minute separately because primitive values work with
 
 ## API Reference
 
-> This reference describes the current `main` branch API. Check [CHANGELOG.md](CHANGELOG.md) and the `0.4.0` release/tag docs before copying API examples into a project that depends on the public `0.4.0` artifact.
+> This reference describes the current `main` branch API. Check [CHANGELOG.md](CHANGELOG.md) before copying API examples into a project that depends on the public `0.6.0` artifact.
 
 Public state APIs live beside their components: `TimePicker`, `TimePickerState`, and
 `rememberTimePickerState` are in `com.kez.picker.time`; `DatePicker`, `DatePickerState`,
@@ -529,7 +529,8 @@ text when those two strings should differ.
 For a standalone `Picker`, control the selection divider length with `dividerWidth`. Use
 `PickerDividerWidth.Fill` (default) to span the full column width, `PickerDividerWidth.Fraction(0f..1f)`
 for a proportional length, or `PickerDividerWidth.Fixed(Dp)` for an absolute length. The divider stays
-centered horizontally.
+centered horizontally. `Fraction` accepts only values in `0f..1f`; `Fixed` width must be a finite,
+non-negative `Dp`.
 
 ```kotlin
 Picker(
@@ -545,17 +546,29 @@ selection band** spanning the whole picker instead of one divider per column, so
 stay aligned regardless of column widths and column spacing. Control it with `selectionIndicator`
 rather than the per-column `style` divider settings (which do not apply to composites). The default
 `selectionIndicator` is derived from `style`, so existing `dividerColor` / `dividerThickness` /
-`isDividerVisible` customizations still take effect. Use `horizontalInset` to inset the band from the
-picker edges.
+`disabledDividerColor` / `isDividerVisible` customizations still take effect. Use `horizontalInset`
+to inset the band from the picker edges. `thickness` and `horizontalInset` must be finite,
+non-negative `Dp` values.
 
 ```kotlin
-val style = PickerDefaults.style()
+TimePicker(
+    selectionIndicator = PickerDefaults.selectionIndicator(horizontalInset = 16.dp),
+)
+```
+
+When a custom `PickerStyle` should drive the band defaults, pass that style explicitly:
+
+```kotlin
+val style = PickerDefaults.style(
+    colors = PickerDefaults.colors(
+        dividerColor = Color(0xFF1565C0),
+        disabledDividerColor = Color(0x551565C0),
+    ),
+)
+
 TimePicker(
     style = style,
-    selectionIndicator = PickerDefaults.selectionIndicator(
-        style = style,
-        horizontalInset = 16.dp,
-    ),
+    selectionIndicator = PickerDefaults.selectionIndicator(style = style),
 )
 ```
 

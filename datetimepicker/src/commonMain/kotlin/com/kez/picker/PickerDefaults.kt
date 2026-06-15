@@ -202,6 +202,7 @@ object PickerDefaults {
      * @param horizontalInset The inset applied to each side of the band so it can be narrower than
      * the full picker width while staying centered.
      * @param isVisible Whether the selection band is drawn.
+     * @param disabledColor The color of the selection band lines when the composite picker is disabled.
      * @return A [PickerSelectionIndicator] instance with the specified values.
      */
     fun selectionIndicator(
@@ -210,13 +211,48 @@ object PickerDefaults {
         thickness: Dp = style.dividerThickness,
         shape: Shape = style.dividerShape,
         horizontalInset: Dp = SelectionIndicatorHorizontalInset,
-        isVisible: Boolean = style.isDividerVisible
+        isVisible: Boolean = style.isDividerVisible,
+        disabledColor: Color = style.colors.disabledDividerColor
     ): PickerSelectionIndicator = PickerSelectionIndicator(
         color = color,
         thickness = thickness,
         shape = shape,
         horizontalInset = horizontalInset,
-        isVisible = isVisible
+        isVisible = isVisible,
+        disabledColor = disabledColor
+    )
+
+    /**
+     * Creates a [PickerSelectionIndicator] without requiring a [PickerStyle].
+     *
+     * Use this overload when only the composite selection band itself should be customized, for
+     * example `PickerDefaults.selectionIndicator(horizontalInset = 16.dp)`. Use the [style]-based
+     * overload when a custom [PickerStyle] should drive indicator defaults.
+     *
+     * @param color The color of the selection band lines.
+     * @param thickness The thickness of each selection band line.
+     * @param shape The shape of each selection band line.
+     * @param horizontalInset The inset applied to each side of the band so it can be narrower than
+     * the full picker width while staying centered.
+     * @param isVisible Whether the selection band is drawn.
+     * @param disabledColor The color of the selection band lines when the composite picker is disabled.
+     * @return A [PickerSelectionIndicator] instance with the specified values.
+     */
+    @Composable
+    fun selectionIndicator(
+        color: Color = LocalContentColor.current.copy(alpha = 0.2f),
+        thickness: Dp = DividerThickness,
+        shape: Shape = DividerShape,
+        horizontalInset: Dp = SelectionIndicatorHorizontalInset,
+        isVisible: Boolean = true,
+        disabledColor: Color = color.copy(alpha = color.alpha * DISABLED_CONTAINER_ALPHA)
+    ): PickerSelectionIndicator = PickerSelectionIndicator(
+        color = color,
+        thickness = thickness,
+        shape = shape,
+        horizontalInset = horizontalInset,
+        isVisible = isVisible,
+        disabledColor = disabledColor
     )
 
     /**
@@ -785,14 +821,12 @@ sealed interface PickerDividerWidth {
     /**
      * The divider has a fixed [width], centered horizontally.
      *
-     * @param width The absolute divider width. Must not be negative.
+     * @param width The absolute divider width. Must be finite and non-negative.
      */
     @Immutable
     data class Fixed(val width: Dp) : PickerDividerWidth {
         init {
-            require(width.value >= 0f) {
-                "PickerDividerWidth.Fixed.width must not be negative, but was $width."
-            }
+            width.requireFiniteNonNegative(name = "PickerDividerWidth.Fixed.width")
         }
     }
 }
@@ -805,10 +839,11 @@ sealed interface PickerDividerWidth {
  * so the selection lines stay aligned regardless of per-column widths and column spacing.
  *
  * @param color The color of the band lines.
- * @param thickness The thickness of each band line. Must not be negative.
+ * @param thickness The thickness of each band line. Must be finite and non-negative.
  * @param shape The shape of each band line.
- * @param horizontalInset The inset applied to each side of the band. Must not be negative.
+ * @param horizontalInset The inset applied to each side of the band. Must be finite and non-negative.
  * @param isVisible Whether the band is drawn.
+ * @param disabledColor The color of the band lines when the composite picker is disabled.
  * @see PickerDefaults.selectionIndicator
  */
 @Immutable
@@ -817,15 +852,18 @@ data class PickerSelectionIndicator(
     val thickness: Dp,
     val shape: Shape,
     val horizontalInset: Dp,
-    val isVisible: Boolean
+    val isVisible: Boolean,
+    val disabledColor: Color = color.copy(alpha = color.alpha * DISABLED_CONTAINER_ALPHA)
 ) {
     init {
-        require(thickness.value >= 0f) {
-            "PickerSelectionIndicator.thickness must not be negative, but was $thickness."
-        }
-        require(horizontalInset.value >= 0f) {
-            "PickerSelectionIndicator.horizontalInset must not be negative, but was $horizontalInset."
-        }
+        thickness.requireFiniteNonNegative(name = "PickerSelectionIndicator.thickness")
+        horizontalInset.requireFiniteNonNegative(name = "PickerSelectionIndicator.horizontalInset")
+    }
+}
+
+private fun Dp.requireFiniteNonNegative(name: String) {
+    require(value.isFinite() && value >= 0f) {
+        "$name must be a finite, non-negative Dp, but was $this."
     }
 }
 

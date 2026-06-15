@@ -17,6 +17,9 @@ This project tracks notable user-facing and maintainer-facing changes here. The 
   aligned regardless of column widths and column spacing. The default indicator is derived from
   `style`, so existing `dividerColor` / `dividerThickness` / `isDividerVisible` customizations still
   apply.
+- Added `PickerSelectionIndicator.disabledColor` and a style-free
+  `PickerDefaults.selectionIndicator(...)` overload for apps that only need to customize the shared
+  composite selection band.
 - Added programmatic selection APIs for picker state objects:
   `TimePickerState.selectTime`, `DatePickerState.selectDate`,
   `YearMonthPickerState.selectYearMonth`, and `YearMonthPickerState.selectDate`.
@@ -98,6 +101,12 @@ This project tracks notable user-facing and maintainer-facing changes here. The 
   `DateRangePicker` (after `style`), changing those composable signatures. Per-column `style` divider
   settings no longer render inside composite pickers; the shared `selectionIndicator` band draws the
   selection lines instead. Callers using named arguments are unaffected.
+- Made composite picker selection bands use the same measured item height as child picker columns
+  instead of deriving band height from the final content height, so custom `pickerModifier` heights
+  do not misalign the selected-row indicator.
+- Made `PickerDividerWidth.Fixed.width`, `PickerSelectionIndicator.thickness`, and
+  `PickerSelectionIndicator.horizontalInset` reject infinite or unspecified `Dp` values in addition
+  to negative values.
 - Made `DatePickerItems.coerceDate(...)` compare whole selectable `LocalDate` values, matching the
   `coerceTime(...)` and `coerceYearMonth(...)` behavior instead of independently coercing year,
   month, and day.
@@ -143,7 +152,8 @@ This project tracks notable user-facing and maintainer-facing changes here. The 
 - Clarified `DatePickerState` initial-day documentation to distinguish invalid values from max-day clamping.
 - Documented generic `Picker<T>` controlled usage and app-owned saveable selection state.
 - Clarified `DatePicker` README examples for custom year ranges and state synchronization after composition.
-- Clarified README installation guidance to distinguish published `0.4.0` artifacts from unreleased `main`/`0.6.0` API documentation.
+- Clarified README installation guidance to distinguish the published Maven Central `0.6.0`
+  artifact, the still-latest GitHub Release tag, and unreleased `main` API documentation.
 - Made library `@Preview` composables private tooling code so preview functions do not appear in the supported public API surface.
 - Reworked generic `Picker<T>` into a controlled component with `selectedItem` and
   `onSelectedItemChange`, removing the old `PickerState<T>` and positional `startIndex` source of truth.
