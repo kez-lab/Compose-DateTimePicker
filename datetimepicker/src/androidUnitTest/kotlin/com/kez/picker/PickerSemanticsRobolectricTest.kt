@@ -1125,6 +1125,56 @@ class PickerSemanticsRobolectricTest {
     }
 
     @Test
+    fun dateRangePicker_callsOnSelectedDateRangeChangeAfterStartSelectionMovesEnd() {
+        lateinit var state: DateRangePickerState
+        lateinit var changedRangeState: MutableState<DateRange?>
+
+        composeRule.setContent {
+            state = rememberDateRangePickerState(
+                initialStartDate = LocalDate(2026, 1, 12),
+                initialEndDate = LocalDate(2026, 1, 12)
+            )
+            changedRangeState = remember { mutableStateOf(null) }
+
+            DateRangePicker(
+                state = state,
+                onSelectedDateRangeChange = { changedRangeState.value = it },
+                items = PickerDefaults.datePickerItems(
+                    yearItems = listOf(2026),
+                    monthItems = listOf(1),
+                    dayItems = listOf(12, 13)
+                ),
+                style = PickerDefaults.style(visibleItemsCount = 3),
+                format = PickerDefaults.datePickerFormat(
+                    dayItemContentDescription = { "${it}일" }
+                ),
+                semantics = PickerDefaults.dateRangePickerSemantics(
+                    start = PickerDefaults.datePickerSemantics(
+                        dayPickerLabel = "시작 일",
+                        nextItemActionLabel = NEXT_VALUE_ACTION_LABEL
+                    )
+                )
+            )
+        }
+
+        performCustomAccessibilityAction(
+            contentDescription = "시작 일: 12일",
+            actionLabel = NEXT_VALUE_ACTION_LABEL
+        )
+        waitUntilSelectedItem("시작 일: 13일")
+
+        composeRule.runOnIdle {
+            val expectedRange = DateRange(
+                startDate = LocalDate(2026, 1, 13),
+                endDate = LocalDate(2026, 1, 13)
+            )
+
+            assertEquals(expectedRange, changedRangeState.value)
+            assertEquals(expectedRange, state.selectedDateRange)
+        }
+    }
+
+    @Test
     fun dateRangePicker_callsOnSelectedDateRangeChangeAfterEndSelectionMovesStart() {
         lateinit var state: DateRangePickerState
         lateinit var changedRangeState: MutableState<DateRange?>
