@@ -1,0 +1,4 @@
+interface:
+  display_name: "Compose Picker API Stabilizer"
+  short_description: "API ergonomics and ABI hardening"
+  default_prompt: "Use $compose-picker-api-stabilizer to audit and improve Compose-DateTimePicker public APIs."

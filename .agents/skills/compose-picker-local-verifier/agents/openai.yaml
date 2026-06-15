@@ -1,0 +1,4 @@
+interface:
+  display_name: "Compose Picker Local Verifier"
+  short_description: "Fast local verification gates"
+  default_prompt: "Use $compose-picker-local-verifier to choose and run local verification gates before a PR."

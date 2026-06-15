@@ -1,8 +1,18 @@
 name: CI - Compose Multiplatform TimePicker (Build & Test)
 
 on:
-  pull_request:
-    branches: [ main ]
+  # Hosted PR CI is intentionally disabled for now because the full
+  # multiplatform/emulator matrix is slow. Run the same gates locally and use
+  # this workflow manually only when hosted evidence is explicitly needed.
+  # pull_request:
+  #   branches: [ main ]
+  workflow_dispatch:
+    inputs:
+      base_ref:
+        description: Base branch or ref used for manual diff hygiene checks.
+        required: false
+        default: main
+        type: string
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -14,6 +24,7 @@ permissions:
 env:
   LIBRARY_MODULE: ":datetimepicker"
   SAMPLE_MODULE: ":sample"
+  BASE_REF: ${{ inputs.base_ref || github.base_ref || 'main' }}
 jobs:
   repository-hygiene:
     name: Linux • Repository hygiene
@@ -24,8 +35,10 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Check PR diff whitespace
-        run: git diff --check "origin/${{ github.base_ref }}...HEAD"
+      - name: Check diff whitespace
+        run: |
+          git fetch origin "${BASE_REF}"
+          git diff --check "origin/${BASE_REF}...HEAD"
 
   abi-check:
     name: macOS • Kotlin ABI Check

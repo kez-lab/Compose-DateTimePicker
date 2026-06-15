@@ -87,8 +87,10 @@ Most logic lives in `commonMain`. Platform-specific code is minimal.
 
 - Use `feature/*` branch names for new implementation work in this repository.
 - Treat `main` as the integration branch. There is currently no `develop` branch on the remote.
+- For long autonomous improvement runs, keep one PR-sized slice active at a time. Prefer a separate worktree from `origin/main` when the current checkout has dirty feature work, and do not mix agent workflow assets with picker product changes unless the maintainer explicitly asks for workflow assets.
+- In autonomous improvement runs, a PR-sized slice is not complete until it has its own commit(s), pushed `feature/*` branch, opened PR, and merge attempt after local verification. If merge is blocked, record the blocker and continue with the next actionable slice only after the blocker is explicit.
 - After a substantial implementation step, run a six-agent feedback loop when the maintainer asks for autonomous improvement work: collect feedback, fix actionable issues, verify again, then open or update the PR.
-- Merge PRs only after relevant local verification and GitHub Actions checks pass.
+- Hosted GitHub Actions PR automation is intentionally disabled while the matrix is too slow. Merge PRs only after relevant local verification passes; run the manual `workflow_dispatch` CI only when hosted evidence is explicitly requested.
 - Keep improving toward Android developer ergonomics first: state APIs, sample usability, documentation clarity, accessibility, and predictable behavior in real app lifecycles.
 - Before adding custom performance machinery, verify that the standard Compose/runtime primitives are insufficient. Prefer `remember`, `derivedStateOf`, `snapshotFlow`, stable object ownership, and domain helpers before introducing bespoke caches or dirty-check classes. If the reason is performance, record the measured or directly inspected evidence in the PR.
 - Treat bespoke caching, manual invalidation, synchronization, and equality-key logic as high-risk code. If such code remains, add focused regression coverage for stale data, source identity changes, non-default column orders, and state changes that should invalidate derived values. Private code still needs tests when it replaces framework guarantees.
@@ -278,7 +280,7 @@ Follow **Semantic Versioning**: MAJOR.MINOR.PATCH
 ## CI/CD
 
 GitHub Actions workflows:
-- **`integration-build-test.yml`**: Runs repository hygiene and multiplatform library checks on pull requests to `main`; the hygiene job runs `git diff --check` on the PR diff, the dedicated macOS ABI job runs `checkLegacyAbi`, and the Android matrix runs the Gradle Managed Device `pixel2Api35DebugAndroidTest` gate for library and sample instrumented tests.
+- **`integration-build-test.yml`**: Manual-only (`workflow_dispatch`) hosted verification. PR automation is commented out because the full multiplatform/emulator matrix is slow. Prefer local gates first: `git diff --check origin/main...HEAD`, targeted Gradle tests, `checkLegacyAbi` for public API changes, and sample compilation. Trigger the hosted workflow only when explicit hosted evidence is needed.
 - **`maven-central-deploy.yml`**: Publishes releases to Maven Central
 
 Build matrix: Ubuntu latest for Android/Desktop/Wasm and macOS 14 for iOS, using JDK 17 (Temurin)
