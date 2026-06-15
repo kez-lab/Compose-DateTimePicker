@@ -1087,6 +1087,52 @@ class PickerSemanticsRobolectricTest {
     }
 
     @Test
+    fun dateRangePicker_disabledChildPickersOmitCustomAccessibilityActions() {
+        composeRule.setContent {
+            val state = rememberDateRangePickerState(
+                initialStartDate = LocalDate(2026, 1, 10),
+                initialEndDate = LocalDate(2026, 1, 20)
+            )
+
+            DateRangePicker(
+                state = state,
+                enabled = false,
+                items = PickerDefaults.datePickerItems(
+                    yearItems = listOf(2026),
+                    monthItems = listOf(1),
+                    dayItems = listOf(10, 20)
+                ),
+                style = PickerDefaults.style(visibleItemsCount = 3),
+                format = PickerDefaults.datePickerFormat(
+                    dayItemContentDescription = { "${it}일" }
+                ),
+                semantics = PickerDefaults.dateRangePickerSemantics(
+                    start = PickerDefaults.datePickerSemantics(
+                        dayPickerLabel = "시작 일",
+                        previousItemActionLabel = PREVIOUS_VALUE_ACTION_LABEL,
+                        nextItemActionLabel = NEXT_VALUE_ACTION_LABEL
+                    ),
+                    end = PickerDefaults.datePickerSemantics(
+                        dayPickerLabel = "종료 일",
+                        previousItemActionLabel = PREVIOUS_VALUE_ACTION_LABEL,
+                        nextItemActionLabel = NEXT_VALUE_ACTION_LABEL
+                    )
+                )
+            )
+        }
+
+        composeRule
+            .onNode(hasContentDescription("시작 일: 10일") and hasStateDescription("10일"))
+            .assertIsNotEnabled()
+        composeRule
+            .onNode(hasContentDescription("종료 일: 20일") and hasStateDescription("20일"))
+            .assertIsNotEnabled()
+
+        assertNoCustomAccessibilityActions("시작 일: 10일")
+        assertNoCustomAccessibilityActions("종료 일: 20일")
+    }
+
+    @Test
     fun yearMonthPicker_forwardsCustomAccessibilityDescriptionsToChildPickers() {
         composeRule.setContent {
             val state = rememberYearMonthPickerState(
