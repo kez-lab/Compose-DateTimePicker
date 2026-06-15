@@ -37,6 +37,31 @@ class DateRangePickerStateTest {
     }
 
     @Test
+    fun dateRange_dayCountReturnsInclusiveCalendarDayCount() {
+        assertEquals(
+            1,
+            DateRange(
+                startDate = LocalDate(2026, 5, 1),
+                endDate = LocalDate(2026, 5, 1)
+            ).dayCount
+        )
+        assertEquals(
+            3,
+            DateRange(
+                startDate = LocalDate(2026, 5, 1),
+                endDate = LocalDate(2026, 5, 3)
+            ).dayCount
+        )
+        assertEquals(
+            2,
+            DateRange(
+                startDate = LocalDate(2026, 1, 31),
+                endDate = LocalDate(2026, 2, 1)
+            ).dayCount
+        )
+    }
+
+    @Test
     fun dateRange_initializesFromDateParts() {
         val range = DateRange(
             startYear = 2026,

@@ -57,6 +57,14 @@ data class DateRange(
     }
 
     /**
+     * Number of calendar days in this inclusive range.
+     *
+     * A range whose [startDate] and [endDate] are the same has a [dayCount] of 1.
+     */
+    val dayCount: Int
+        get() = (endDate.toEpochDays() - startDate.toEpochDays() + 1).toInt()
+
+    /**
      * Returns whether [date] is inside this inclusive range.
      */
     operator fun contains(date: LocalDate): Boolean =

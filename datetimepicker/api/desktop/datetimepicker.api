@@ -600,6 +600,7 @@ public final class com/kez/picker/date/DateRange {
 	public final fun copy (Lkotlinx/datetime/LocalDate;Lkotlinx/datetime/LocalDate;)Lcom/kez/picker/date/DateRange;
 	public static synthetic fun copy$default (Lcom/kez/picker/date/DateRange;Lkotlinx/datetime/LocalDate;Lkotlinx/datetime/LocalDate;ILjava/lang/Object;)Lcom/kez/picker/date/DateRange;
 	public fun equals (Ljava/lang/Object;)Z
+	public final fun getDayCount ()I
 	public final fun getEndDate ()Lkotlinx/datetime/LocalDate;
 	public final fun getStartDate ()Lkotlinx/datetime/LocalDate;
 	public fun hashCode ()I
