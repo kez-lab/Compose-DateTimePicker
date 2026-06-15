@@ -76,7 +76,7 @@ class SampleAppSmokeAndroidTest {
     @Test
     fun dateRangePickerMenuAction_updatesSelectedRangeFromButtons() {
         val today = currentDate()
-        val expectedSummary = "Selected range, $today..$today, Days selected: 1. " +
+        val expectedSummary = "Selected range, $today..$today, Single day. Days selected: 1. " +
                 "Last user change: No user change. Selectable year: ${today.year}"
 
         composeRule

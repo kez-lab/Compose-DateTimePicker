@@ -86,12 +86,18 @@ internal fun DateRangePickerSampleScreen(
             var lastUserRangeText by rememberSaveable {
                 mutableStateOf("No user change")
             }
+            val selectedRange = state.selectedDateRange
+            val selectionKind = if (selectedRange.isSingleDay) {
+                "Single day"
+            } else {
+                "Date range"
+            }
 
             SelectedValueCard(
                 icon = FeatherIcons.Calendar,
                 label = "Selected range",
-                value = state.selectedDateRange.asText(),
-                supportingText = "Days selected: ${state.selectedDateRange.dayCount}. " +
+                value = selectedRange.asText(),
+                supportingText = "$selectionKind. Days selected: ${selectedRange.dayCount}. " +
                         "Last user change: $lastUserRangeText. Selectable year: ${today.year}"
             )
 
