@@ -1,0 +1,4 @@
+interface:
+  display_name: "Compose Picker Autonomous Loop"
+  short_description: "12-hour repo improvement loop"
+  default_prompt: "Use $compose-picker-autonomous-loop to run a scoped autonomous improvement loop for Compose-DateTimePicker."

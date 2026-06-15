@@ -1,8 +1,12 @@
 name: CI - Compose Multiplatform TimePicker (Build & Test)
 
 on:
-  pull_request:
-    branches: [ main ]
+  # Hosted PR CI is intentionally disabled for now because the full
+  # multiplatform/emulator matrix is slow. Run the same gates locally and use
+  # this workflow manually only when hosted evidence is explicitly needed.
+  # pull_request:
+  #   branches: [ main ]
+  workflow_dispatch:
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
