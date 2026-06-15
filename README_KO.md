@@ -10,9 +10,10 @@ Android, iOS, Desktop (JVM), Web (Wasm) 등 다양한 플랫폼에서 일관된 
 *   **멀티플랫폼 지원**: Android, iOS, Desktop (JVM), Web (Wasm) 환경을 지원하며 원활한 통합이 가능합니다.
 *   **TimePicker**: 12시간(오전/오후) 및 24시간 형식을 모두 지원합니다.
 *   **DatePicker**: 연도, 월, 일을 함께 선택하고 월/윤년에 맞춰 일을 자동 보정합니다.
+*   **DateRangePicker**: 예약, 필터, 리포트 흐름에서 시작일과 종료일을 순서가 보장된 범위로 선택합니다.
 *   **YearMonthPicker**: 년도와 월을 선택할 수 있는 전용 컴포넌트를 제공합니다.
 *   **커스터마이징**: 재사용 가능한 UI 설정을 위한 `PickerStyle`과 format 옵션을 제공합니다.
-*   **상태 관리**: `rememberTimePickerState`, `rememberDatePickerState`, `rememberYearMonthPickerState`를 통해 간편하게 상태를 관리할 수 있습니다.
+*   **상태 관리**: `rememberTimePickerState`, `rememberDatePickerState`, `rememberDateRangePickerState`, `rememberYearMonthPickerState`를 통해 간편하게 상태를 관리할 수 있습니다.
 *   **접근성**: 스크린 리더 및 내비게이션 지원 등 접근성을 고려하여 설계되었습니다.
 
 ## 샘플 앱

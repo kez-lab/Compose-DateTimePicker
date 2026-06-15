@@ -11,10 +11,11 @@ It provides consistent UI components across Android, iOS, Desktop (JVM), and Web
 *   **TimePicker**: Supports both 12-hour (AM/PM) and 24-hour formats.
 * **DatePicker**: A complete date picker for selecting year, month, and day with automatic day
   validation.
+* **DateRangePicker**: An ordered start/end date picker for booking, filtering, and reporting flows.
 *   **YearMonthPicker**: A dedicated component for selecting years and months.
 *   **Customizable**: Extensible API with `PickerStyle` and format options for reusable UI configuration.
 * **State Management**: simplified state handling with `rememberTimePickerState`,
-  `rememberDatePickerState`, and `rememberYearMonthPickerState`.
+  `rememberDatePickerState`, `rememberDateRangePickerState`, and `rememberYearMonthPickerState`.
 *   **Accessibility**: Built with accessibility semantics in mind, supporting screen readers and navigation.
 
 ## Sample App
