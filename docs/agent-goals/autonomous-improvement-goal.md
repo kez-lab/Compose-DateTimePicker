@@ -21,4 +21,4 @@ Verification policy: hosted PR GitHub Actions are disabled because the full matr
 Every substantial implementation step should end with: current branch/status, files changed, tests run with results, remaining risks, and the next PR-sized slice.
 ```
 
-Recommended first slice for June 2026: finish the current `feature/picker-selection-indicator` work if it is still dirty. After that, use separate branches for API stabilization, sample/documentation improvements, and calendar feature design.
+Recommended slice order: finish any active dirty picker feature first, then use separate branches for API stabilization, sample/documentation improvements, workflow guidance, and calendar feature design.

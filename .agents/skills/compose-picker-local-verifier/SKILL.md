@@ -24,6 +24,13 @@ Docs or workflow-only changes:
 git diff --check origin/main...HEAD
 ```
 
+For workflow changes, validate YAML and run `actionlint` when it is available:
+
+```bash
+ruby -e 'require "yaml"; Dir[".github/workflows/*.yml"].each { |f| YAML.load_file(f); puts "ok #{f}" }'
+command -v actionlint >/dev/null && actionlint .github/workflows/*.yml
+```
+
 Common Kotlin logic or picker state changes:
 
 ```bash
@@ -37,6 +44,12 @@ Android Compose semantics, state restoration, or component UI behavior:
 ```
 
 Public API changes:
+
+```bash
+./gradlew :datetimepicker:checkLegacyAbi --no-daemon
+```
+
+If `checkLegacyAbi` fails because the public API change is intentional, run:
 
 ```bash
 ./gradlew :datetimepicker:updateLegacyAbi --no-daemon
