@@ -236,6 +236,8 @@ fun rememberDateRangePickerState(
  * Creates and remembers a [DateRangePickerState] whose initial values are coerced by [items].
  *
  * Initial values and [items] are read when the state is first created.
+ * This overload accepts unordered [initialStartDate] and [initialEndDate] values. Both dates are
+ * coerced by [items] and then ordered before the state is created.
  *
  * @param items Selectable values used to coerce [initialStartDate] and [initialEndDate].
  * @param initialStartDate The requested range start date.
@@ -256,15 +258,9 @@ fun rememberDateRangePickerState(
         rememberedInitialStartDate,
         rememberedInitialEndDate
     ) {
-        require(rememberedInitialStartDate <= rememberedInitialEndDate) {
-            "initialStartDate must be on or before initialEndDate. " +
-                    "initialStartDate=$rememberedInitialStartDate, " +
-                    "initialEndDate=$rememberedInitialEndDate. " +
-                    dateRangeOrderedAdvice()
-        }
-        orderedDateRange(
-            startDate = rememberedItems.coerceDate(rememberedInitialStartDate),
-            endDate = rememberedItems.coerceDate(rememberedInitialEndDate)
+        rememberedItems.coerceDateRange(
+            startDate = rememberedInitialStartDate,
+            endDate = rememberedInitialEndDate
         )
     }
     return rememberDateRangePickerState(
@@ -300,6 +296,7 @@ fun rememberDateRangePickerState(
  *
  * Initial values and [items] are read when the state is first created. If a day is greater than the
  * maximum day for its year/month, it is clamped before [items] coercion.
+ * This overload accepts unordered resulting dates and orders them before the state is created.
  *
  * @param items Selectable values used to coerce the requested start and end dates.
  * @param initialStartYear The requested range start year.
@@ -645,9 +642,6 @@ private fun dateFromParts(year: Int, month: Int, day: Int): LocalDate {
         day = day.coerceAtMost(daysInMonth(year, month))
     )
 }
-
-private fun orderedDateRange(startDate: LocalDate, endDate: LocalDate): DateRange =
-    DateRange.ordered(startDate = startDate, endDate = endDate)
 
 private fun dateRangeOrderedAdvice(): String =
     "If app-owned start/end inputs may arrive in either order, use DateRange.ordered(...) before " +

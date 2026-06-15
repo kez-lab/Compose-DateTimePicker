@@ -765,9 +765,10 @@ custom item 값이 유효 범위를 벗어나거나, 중복이 있거나, 목록
 어느 순서로든 입력될 수 있다면 state에 전달하기 전에 `DateRange.ordered(startDate, endDate)` 또는
 대응되는 year/month/day overload를 사용하세요. custom `items` 또는 `minDate`/`maxDate` 범위로
 앱이 소유한 preset 값을 state 생성 전에 정규화해야 한다면 `items.coerceDateRange(...)`를 사용하세요.
-이 helper는 양쪽 경계를 가장 가까운 선택 가능 날짜로 보정하고 정렬된 `DateRange`를 반환합니다. 앱이
-form field 값을 `LocalDate`로 만들기 전에 inclusive range 포함 여부를 확인해야 한다면
-`range.contains(year, month, day)`를 사용하세요.
+또는 `rememberDateRangePickerState(items = ..., initialStartDate = ..., initialEndDate = ...)`를
+사용하세요. 이 API들은 양쪽 경계를 가장 가까운 선택 가능 날짜로 보정하고 정렬된 `DateRange`를
+반환하거나 생성합니다. 앱이 form field 값을 `LocalDate`로 만들기 전에 inclusive range 포함 여부를
+확인해야 한다면 `range.contains(year, month, day)`를 사용하세요.
 inclusive date와 range 확인에는 `date in range`, `childRange in range`,
 `range.overlaps(blockedRange)`를 사용할 수 있습니다. 앱이 공유되는 하위 범위 자체가 필요하다면
 `range.intersection(blockedRange)`를 사용하세요. 하루만 선택된 범위는 `range.isSingleDay`로 확인하고,
