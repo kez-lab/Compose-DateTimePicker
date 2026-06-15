@@ -21,8 +21,12 @@ import com.kez.picker.DatePickerLayout
 import com.kez.picker.DatePickerSemantics
 import com.kez.picker.Picker
 import com.kez.picker.PickerDefaults
+import com.kez.picker.PickerSelectionBand
+import com.kez.picker.PickerSelectionIndicator
 import com.kez.picker.PickerStyle
+import com.kez.picker.maxPickerItemHeight
 import com.kez.picker.pickerColumnModifier
+import com.kez.picker.rememberPickerItemHeight
 import kotlinx.datetime.LocalDate
 import kotlin.math.abs
 
@@ -39,7 +43,10 @@ import kotlin.math.abs
  * @param enabled Whether user scroll, click, and semantics selection actions are enabled.
  * @param items Selectable year, month, and day item lists for the picker.
  * @param format Visible item text and optional accessibility value descriptions for each picker column.
- * @param style Visual and layout styling for each picker column.
+ * @param style Visual and layout styling for each picker column. Per-column divider settings do not
+ * apply here; use [selectionIndicator] for the shared selection band instead.
+ * @param selectionIndicator The single selection band drawn across the whole picker. Defaults to a
+ * band derived from [style].
  * @param layout Column layout weights and visual order for each picker column.
  * @param spacingBetweenPickers The spacing between the pickers.
  * @param semantics Accessibility labels and custom action labels for each picker column.
@@ -55,10 +62,13 @@ fun DatePicker(
     items: DatePickerItems = PickerDefaults.datePickerItems(),
     format: DatePickerFormat = PickerDefaults.datePickerFormat(),
     style: PickerStyle = PickerDefaults.style(),
+    selectionIndicator: PickerSelectionIndicator = PickerDefaults.selectionIndicator(style),
     layout: DatePickerLayout = PickerDefaults.datePickerLayout(),
     spacingBetweenPickers: Dp = PickerDefaults.SpacingBetweenPickers,
     semantics: DatePickerSemantics = PickerDefaults.datePickerSemantics()
 ) {
+    val columnStyle = remember(style) { style.copy(isDividerVisible = false) }
+
     remember(items, state, state.selectedYear, state.selectedMonth, state.selectedDay) {
         validateDatePickerItems(state = state, items = items)
     }
@@ -107,63 +117,85 @@ fun DatePicker(
                     )
                 }
             }
+            val yearItemHeight = rememberPickerItemHeight(
+                items = yearItems,
+                format = format.year,
+                style = columnStyle
+            )
+            val monthItemHeight = rememberPickerItemHeight(
+                items = monthItems,
+                format = format.month,
+                style = columnStyle
+            )
+            val dayItemHeight = rememberPickerItemHeight(
+                items = dayItems,
+                format = format.day,
+                style = columnStyle
+            )
 
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(
-                    spacingBetweenPickers,
-                    Alignment.CenterHorizontally
-                ),
-                verticalAlignment = Alignment.CenterVertically
+            PickerSelectionBand(
+                indicator = selectionIndicator,
+                itemHeight = maxPickerItemHeight(yearItemHeight, monthItemHeight, dayItemHeight),
+                enabled = enabled,
+                modifier = Modifier.fillMaxWidth()
             ) {
-                layout.columnOrder.forEach { column ->
-                    key(column) {
-                        when (column) {
-                            DatePickerColumn.YEAR -> {
-                                Picker(
-                                    items = yearItems,
-                                    selectedItem = state.selectedYear,
-                                    onSelectedItemChange = { year ->
-                                        updateSelectedDate { state.selectYear(year) }
-                                    },
-                                    modifier = pickerColumnModifier(pickerModifier, layout.yearWeight),
-                                    enabled = enabled,
-                                    style = style,
-                                    isInfinity = false,
-                                    semantics = semantics.year,
-                                    format = format.year
-                                )
-                            }
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(
+                        spacingBetweenPickers,
+                        Alignment.CenterHorizontally
+                    ),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    layout.columnOrder.forEach { column ->
+                        key(column) {
+                            when (column) {
+                                DatePickerColumn.YEAR -> {
+                                    Picker(
+                                        items = yearItems,
+                                        selectedItem = state.selectedYear,
+                                        onSelectedItemChange = { year ->
+                                            updateSelectedDate { state.selectYear(year) }
+                                        },
+                                        modifier = pickerColumnModifier(pickerModifier, layout.yearWeight),
+                                        enabled = enabled,
+                                        style = columnStyle,
+                                        isInfinity = false,
+                                        semantics = semantics.year,
+                                        format = format.year
+                                    )
+                                }
 
-                            DatePickerColumn.MONTH -> {
-                                Picker(
-                                    items = monthItems,
-                                    selectedItem = state.selectedMonth,
-                                    onSelectedItemChange = { month ->
-                                        updateSelectedDate { state.selectMonth(month) }
-                                    },
-                                    modifier = pickerColumnModifier(pickerModifier, layout.monthWeight),
-                                    enabled = enabled,
-                                    style = style,
-                                    semantics = semantics.month,
-                                    format = format.month
-                                )
-                            }
+                                DatePickerColumn.MONTH -> {
+                                    Picker(
+                                        items = monthItems,
+                                        selectedItem = state.selectedMonth,
+                                        onSelectedItemChange = { month ->
+                                            updateSelectedDate { state.selectMonth(month) }
+                                        },
+                                        modifier = pickerColumnModifier(pickerModifier, layout.monthWeight),
+                                        enabled = enabled,
+                                        style = columnStyle,
+                                        semantics = semantics.month,
+                                        format = format.month
+                                    )
+                                }
 
-                            DatePickerColumn.DAY -> {
-                                Picker(
-                                    items = dayItems,
-                                    selectedItem = state.selectedDay,
-                                    onSelectedItemChange = { day ->
-                                        updateSelectedDate { state.selectDay(day) }
-                                    },
-                                    modifier = pickerColumnModifier(pickerModifier, layout.dayWeight),
-                                    enabled = enabled,
-                                    style = style,
-                                    isInfinity = false,
-                                    semantics = semantics.day,
-                                    format = format.day
-                                )
+                                DatePickerColumn.DAY -> {
+                                    Picker(
+                                        items = dayItems,
+                                        selectedItem = state.selectedDay,
+                                        onSelectedItemChange = { day ->
+                                            updateSelectedDate { state.selectDay(day) }
+                                        },
+                                        modifier = pickerColumnModifier(pickerModifier, layout.dayWeight),
+                                        enabled = enabled,
+                                        style = columnStyle,
+                                        isInfinity = false,
+                                        semantics = semantics.day,
+                                        format = format.day
+                                    )
+                                }
                             }
                         }
                     }

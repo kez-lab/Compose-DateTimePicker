@@ -79,6 +79,16 @@ object PickerDefaults {
     val DividerShape: Shape = RoundedCornerShape(10.dp)
 
     /**
+     * Default width of the selection dividers. Defaults to filling the picker column width.
+     */
+    val DividerWidth: PickerDividerWidth = PickerDividerWidth.Fill
+
+    /**
+     * Default horizontal inset applied to each side of a composite picker's selection indicator band.
+     */
+    val SelectionIndicatorHorizontalInset: Dp = 0.dp
+
+    /**
      * Creates a [PickerColors] with the provided colors.
      *
      * @param dividerColor The color of the dividers.
@@ -93,7 +103,7 @@ object PickerDefaults {
      */
     @Composable
     fun colors(
-        dividerColor: Color = LocalContentColor.current,
+        dividerColor: Color = LocalContentColor.current.copy(alpha = 0.2f),
         selectedItemBackgroundColor: Color = Color.Transparent,
         textColor: Color = LocalContentColor.current.copy(alpha = 0.7f),
         selectedTextColor: Color = LocalContentColor.current,
@@ -144,6 +154,9 @@ object PickerDefaults {
      * @param horizontalAlignment The horizontal alignment of items.
      * @param dividerThickness The thickness of the selection dividers.
      * @param dividerShape The shape of the selection dividers.
+     * @param dividerWidth The width of the selection dividers. Use [PickerDividerWidth.Fill] for the
+     * full column width, [PickerDividerWidth.Fraction] for a fraction of it, or
+     * [PickerDividerWidth.Fixed] for an absolute width.
      * @param isDividerVisible Whether selection dividers are visible.
      * @return A [PickerStyle] instance with the specified styling.
      */
@@ -158,6 +171,7 @@ object PickerDefaults {
         horizontalAlignment: Alignment.Horizontal = Alignment.CenterHorizontally,
         dividerThickness: Dp = DividerThickness,
         dividerShape: Shape = DividerShape,
+        dividerWidth: PickerDividerWidth = DividerWidth,
         isDividerVisible: Boolean = true
     ): PickerStyle = PickerStyle(
         visibleItemsCount = visibleItemsCount,
@@ -169,7 +183,76 @@ object PickerDefaults {
         horizontalAlignment = horizontalAlignment,
         dividerThickness = dividerThickness,
         dividerShape = dividerShape,
+        dividerWidth = dividerWidth,
         isDividerVisible = isDividerVisible
+    )
+
+    /**
+     * Creates a [PickerSelectionIndicator] for composite pickers (e.g.
+     * [com.kez.picker.time.TimePicker], [com.kez.picker.date.DatePicker]).
+     *
+     * Composite pickers render a single selection band spanning the whole picker instead of one
+     * divider per column, so per-column [PickerStyle] divider settings do not apply to them. The
+     * defaults derive from [style] so existing divider customizations carry over.
+     *
+     * @param style The picker style used to derive default indicator values.
+     * @param color The color of the selection band lines.
+     * @param thickness The thickness of each selection band line.
+     * @param shape The shape of each selection band line.
+     * @param horizontalInset The inset applied to each side of the band so it can be narrower than
+     * the full picker width while staying centered.
+     * @param isVisible Whether the selection band is drawn.
+     * @param disabledColor The color of the selection band lines when the composite picker is disabled.
+     * @return A [PickerSelectionIndicator] instance with the specified values.
+     */
+    fun selectionIndicator(
+        style: PickerStyle,
+        color: Color = style.colors.dividerColor,
+        thickness: Dp = style.dividerThickness,
+        shape: Shape = style.dividerShape,
+        horizontalInset: Dp = SelectionIndicatorHorizontalInset,
+        isVisible: Boolean = style.isDividerVisible,
+        disabledColor: Color = style.colors.disabledDividerColor
+    ): PickerSelectionIndicator = PickerSelectionIndicator(
+        color = color,
+        thickness = thickness,
+        shape = shape,
+        horizontalInset = horizontalInset,
+        isVisible = isVisible,
+        disabledColor = disabledColor
+    )
+
+    /**
+     * Creates a [PickerSelectionIndicator] without requiring a [PickerStyle].
+     *
+     * Use this overload when only the composite selection band itself should be customized, for
+     * example `PickerDefaults.selectionIndicator(horizontalInset = 16.dp)`. Use the [style]-based
+     * overload when a custom [PickerStyle] should drive indicator defaults.
+     *
+     * @param color The color of the selection band lines.
+     * @param thickness The thickness of each selection band line.
+     * @param shape The shape of each selection band line.
+     * @param horizontalInset The inset applied to each side of the band so it can be narrower than
+     * the full picker width while staying centered.
+     * @param isVisible Whether the selection band is drawn.
+     * @param disabledColor The color of the selection band lines when the composite picker is disabled.
+     * @return A [PickerSelectionIndicator] instance with the specified values.
+     */
+    @Composable
+    fun selectionIndicator(
+        color: Color = LocalContentColor.current.copy(alpha = 0.2f),
+        thickness: Dp = DividerThickness,
+        shape: Shape = DividerShape,
+        horizontalInset: Dp = SelectionIndicatorHorizontalInset,
+        isVisible: Boolean = true,
+        disabledColor: Color = color.copy(alpha = color.alpha * DISABLED_CONTAINER_ALPHA)
+    ): PickerSelectionIndicator = PickerSelectionIndicator(
+        color = color,
+        thickness = thickness,
+        shape = shape,
+        horizontalInset = horizontalInset,
+        isVisible = isVisible,
+        disabledColor = disabledColor
     )
 
     /**
@@ -690,6 +773,7 @@ data class PickerTextStyles(
  * @param horizontalAlignment The horizontal alignment of items.
  * @param dividerThickness The thickness of the selection dividers.
  * @param dividerShape The shape of the selection dividers.
+ * @param dividerWidth The width of the selection dividers.
  * @param isDividerVisible Whether selection dividers are visible.
  * @see PickerDefaults.style
  */
@@ -704,8 +788,84 @@ data class PickerStyle(
     val horizontalAlignment: Alignment.Horizontal,
     val dividerThickness: Dp,
     val dividerShape: Shape,
+    val dividerWidth: PickerDividerWidth,
     val isDividerVisible: Boolean
 )
+
+/**
+ * Describes how wide the selection dividers of a [Picker] should be rendered.
+ *
+ * @see PickerDefaults.style
+ */
+@Immutable
+sealed interface PickerDividerWidth {
+    /**
+     * The divider fills the full width of the picker column.
+     */
+    data object Fill : PickerDividerWidth
+
+    /**
+     * The divider spans a [fraction] of the picker column width, centered horizontally.
+     *
+     * @param fraction The portion of the column width to occupy, in `0f..1f`.
+     */
+    @Immutable
+    data class Fraction(val fraction: Float) : PickerDividerWidth {
+        init {
+            require(fraction in 0f..1f) {
+                "PickerDividerWidth.Fraction.fraction must be in 0f..1f, but was $fraction."
+            }
+        }
+    }
+
+    /**
+     * The divider has a fixed [width], centered horizontally.
+     *
+     * @param width The absolute divider width. Must be finite and non-negative.
+     */
+    @Immutable
+    data class Fixed(val width: Dp) : PickerDividerWidth {
+        init {
+            width.requireFiniteNonNegative(name = "PickerDividerWidth.Fixed.width")
+        }
+    }
+}
+
+/**
+ * Describes the single selection band drawn by composite pickers (e.g.
+ * [com.kez.picker.time.TimePicker], [com.kez.picker.date.DatePicker]).
+ *
+ * The band spans the whole picker width (minus [horizontalInset] on each side) and stays centered,
+ * so the selection lines stay aligned regardless of per-column widths and column spacing.
+ *
+ * @param color The color of the band lines.
+ * @param thickness The thickness of each band line. Must be finite and non-negative.
+ * @param shape The shape of each band line.
+ * @param horizontalInset The inset applied to each side of the band. Must be finite and non-negative.
+ * @param isVisible Whether the band is drawn.
+ * @param disabledColor The color of the band lines when the composite picker is disabled.
+ * @see PickerDefaults.selectionIndicator
+ */
+@Immutable
+data class PickerSelectionIndicator(
+    val color: Color,
+    val thickness: Dp,
+    val shape: Shape,
+    val horizontalInset: Dp,
+    val isVisible: Boolean,
+    val disabledColor: Color = color.copy(alpha = color.alpha * DISABLED_CONTAINER_ALPHA)
+) {
+    init {
+        thickness.requireFiniteNonNegative(name = "PickerSelectionIndicator.thickness")
+        horizontalInset.requireFiniteNonNegative(name = "PickerSelectionIndicator.horizontalInset")
+    }
+}
+
+private fun Dp.requireFiniteNonNegative(name: String) {
+    require(value.isFinite() && value >= 0f) {
+        "$name must be a finite, non-negative Dp, but was $this."
+    }
+}
 
 /**
  * Identifies a [com.kez.picker.time.TimePicker] column for layout ordering.

@@ -34,7 +34,7 @@ Android, iOS, Desktop (JVM), Web (Wasm) 등 다양한 플랫폼에서 일관된 
 
 ```toml
 [versions]
-composeDateTimePicker = "0.4.0"
+composeDateTimePicker = "0.6.0"
 
 [libraries]
 compose-date-time-picker = { module = "io.github.kez-lab:compose-date-time-picker", version.ref = "composeDateTimePicker" }
@@ -44,17 +44,17 @@ compose-date-time-picker = { module = "io.github.kez-lab:compose-date-time-picke
 
 ```kotlin
 dependencies {
-    implementation("io.github.kez-lab:compose-date-time-picker:0.4.0")
+    implementation("io.github.kez-lab:compose-date-time-picker:0.6.0")
 }
 ```
 
-> **릴리스 상태:** `0.4.0`이 현재 Maven Central/GitHub Releases에 공개된 최신 버전입니다. 이 README는 `main` 기준으로 유지되며 아직 릴리스되지 않은 `0.6.0` API 작업도 문서화하므로, 아래 사용법과 API 레퍼런스에는 `0.4.0`에 없는 API가 포함될 수 있습니다. 공개 버전 기준 API는 `0.4.0` release/tag 문서를 확인하세요. `main`을 로컬에서 테스트하려면 `./gradlew :datetimepicker:publishToMavenLocal`을 실행하고, 소비 프로젝트에 `mavenLocal()`을 추가한 뒤 `0.6.0`에 의존하세요.
+> **릴리스 상태:** `0.6.0`이 현재 Maven Central에 공개된 최신 버전입니다. GitHub Releases 화면은 아직 `0.4.0`을 최신 태그 릴리스로 표시할 수 있습니다. 이 README는 `main` 기준으로 유지되므로, 사용법과 API 레퍼런스에는 공개 `0.6.0` artifact에 아직 없는 API가 포함될 수 있습니다. `main`을 로컬에서 테스트하려면 `./gradlew :datetimepicker:publishToMavenLocal`을 실행하고, 소비 프로젝트에 `mavenLocal()`을 추가한 뒤 저장소 `VERSION_NAME`에 의존하세요.
 
 릴리스 노트와 업그레이드 영향은 영문 [CHANGELOG.md](CHANGELOG.md)를 참고하세요.
 
 ## 사용법
 
-> 아래 예제는 현재 `main` 브랜치 API를 기준으로 합니다. 위 설치 스니펫의 공개 `0.4.0` 의존성이 아니라, 아직 릴리스되지 않은 `0.6.0` API가 필요할 수 있습니다.
+> 아래 예제는 현재 `main` 브랜치 API를 기준으로 합니다. 공개 Maven Central `0.6.0` artifact에 아직 없는 post-`0.6.0` API가 필요할 수 있습니다.
 
 ### State와 Callback 사용 패턴
 
@@ -413,7 +413,7 @@ fun BottomSheetPickerExample() {
 
 ## API 레퍼런스
 
-> 이 레퍼런스는 현재 `main` 브랜치 API를 설명합니다. 공개 `0.4.0` artifact에 의존하는 프로젝트에 예제를 복사하기 전에는 [CHANGELOG.md](CHANGELOG.md)와 `0.4.0` release/tag 문서를 확인하세요.
+> 이 레퍼런스는 현재 `main` 브랜치 API를 설명합니다. 공개 `0.6.0` artifact에 의존하는 프로젝트에 예제를 복사하기 전에는 [CHANGELOG.md](CHANGELOG.md)를 확인하세요.
 
 공개 state API는 해당 컴포넌트 패키지에 함께 둡니다. `TimePicker`, `TimePickerState`,
 `rememberTimePickerState`는 `com.kez.picker.time`에 있고, `DatePicker`, `DatePickerState`,
@@ -518,6 +518,51 @@ Picker(
 화면에 보이는 텍스트와 스크린 리더 문구가 달라야 한다면 visible text는 `format.itemText`로, 접근성
 값 설명은 `format.itemContentDescription`으로 분리하세요.
 
+독립 실행형 `Picker`에서는 `dividerWidth`로 선택 divider의 길이를 제어할 수 있습니다.
+`PickerDividerWidth.Fill`(기본값)은 column 전체 폭을 사용하고,
+`PickerDividerWidth.Fraction(0f..1f)`은 column 폭의 비율을 사용하며,
+`PickerDividerWidth.Fixed(Dp)`는 고정 폭을 사용합니다. divider는 가로 중앙에 배치됩니다.
+`Fraction`은 `0f..1f` 값만 허용하고, `Fixed` width는 finite non-negative `Dp`여야 합니다.
+
+```kotlin
+Picker(
+    items = items,
+    selectedItem = selectedItem,
+    onSelectedItemChange = { selectedItem = it },
+    style = PickerDefaults.style(dividerWidth = PickerDividerWidth.Fraction(0.6f))
+)
+```
+
+Composite picker(`TimePicker`, `DatePicker`, `YearMonthPicker`, `DateRangePicker`)는 column마다
+divider를 따로 그리지 않고 picker 전체를 가로지르는 **단일 selection band**를 그립니다. 그래서 column
+폭이나 column 간격이 달라도 selection line이 정렬됩니다. Composite picker의 선택 line은 per-column
+`style` divider 설정이 아니라 `selectionIndicator`로 제어하세요. 기본 `selectionIndicator`는 `style`에서
+파생되므로 기존 `dividerColor` / `dividerThickness` / `disabledDividerColor` / `isDividerVisible`
+커스터마이징은 계속 적용됩니다. `horizontalInset`으로 picker 양쪽 가장자리에서 band를 안쪽으로
+넣을 수 있습니다. `thickness`와 `horizontalInset`은 finite non-negative `Dp`여야 합니다.
+
+```kotlin
+TimePicker(
+    selectionIndicator = PickerDefaults.selectionIndicator(horizontalInset = 16.dp),
+)
+```
+
+커스텀 `PickerStyle`의 기본값으로 band를 만들고 싶다면 style을 명시적으로 전달하세요.
+
+```kotlin
+val style = PickerDefaults.style(
+    colors = PickerDefaults.colors(
+        dividerColor = Color(0xFF1565C0),
+        disabledDividerColor = Color(0x551565C0),
+    ),
+)
+
+TimePicker(
+    style = style,
+    selectionIndicator = PickerDefaults.selectionIndicator(style = style),
+)
+```
+
 ### 프로그래밍 방식 선택
 
 `remember*State`로 picker state를 만들고 picker에 전달한 뒤, 이벤트 핸들러나
@@ -602,6 +647,7 @@ DatePicker(
 | `items` | 선택 가능한 분, 24시간제 시간, 12시간제 표시 시간, 오전/오후 목록과 선택적 `minTime`/`maxTime` 범위입니다. | `PickerDefaults.timePickerItems()` |
 | `format` | 각 picker column의 화면 표시 텍스트와 선택적 접근성 값 설명입니다. | `PickerDefaults.timePickerFormat()` |
 | `style` | 각 picker column의 시각/레이아웃 스타일입니다. | `PickerDefaults.style()` |
+| `selectionIndicator` | picker 전체에 그려지는 공유 selection band입니다. | `PickerDefaults.selectionIndicator(style)` |
 | `layout` | period, hour, minute picker column의 weight와 표시 순서입니다. 명시적 width가 필요한 column은 weight를 `null`로 설정하세요. | `PickerDefaults.timePickerLayout()` |
 | `spacingBetweenPickers` | picker column 사이의 가로 간격입니다. | `0.dp` |
 | `semantics` | 각 picker column의 접근성 label과 custom action label입니다. | `PickerDefaults.timePickerSemantics()` |
@@ -636,6 +682,7 @@ custom item 값이 유효 범위를 벗어나거나, 중복이 있거나, 필수
 | `items` | 선택 가능한 연도/월/일 목록과 선택적 `minDate`/`maxDate` inclusive 범위입니다. 값은 `1000..9999`, `1..12`, `1..31` 범위여야 합니다. | `PickerDefaults.datePickerItems()` |
 | `format` | 각 picker column의 화면 표시 텍스트와 선택적 접근성 값 설명입니다. | `PickerDefaults.datePickerFormat()` |
 | `style` | 각 picker column의 시각/레이아웃 스타일입니다. | `PickerDefaults.style()` |
+| `selectionIndicator` | picker 전체에 그려지는 공유 selection band입니다. | `PickerDefaults.selectionIndicator(style)` |
 | `layout` | year, month, day picker column의 weight와 표시 순서입니다. 명시적 width가 필요한 column은 weight를 `null`로 설정하세요. | `PickerDefaults.datePickerLayout()` |
 | `spacingBetweenPickers` | picker column 사이의 가로 간격입니다. | `0.dp` |
 | `semantics` | 각 picker column의 접근성 label과 custom action label입니다. | `PickerDefaults.datePickerSemantics()` |
@@ -672,6 +719,7 @@ custom item 값이 유효 범위를 벗어나거나, 중복이 있거나, 목록
 | `items` | 공유되는 연도/월/일 선택 목록과 선택적 `minDate`/`maxDate` inclusive 범위입니다. | `PickerDefaults.datePickerItems()` |
 | `format` | 각 picker column의 화면 표시 텍스트와 선택적 접근성 값 설명입니다. | `PickerDefaults.datePickerFormat()` |
 | `style` | 각 picker column의 시각/레이아웃 스타일입니다. | `PickerDefaults.style()` |
+| `selectionIndicator` | 각 child `DatePicker`에 그려지는 공유 selection band입니다. | `PickerDefaults.selectionIndicator(style)` |
 | `layout` | 각 child `DatePicker`의 column weight와 표시 순서입니다. | `PickerDefaults.datePickerLayout()` |
 | `spacingBetweenPickers` | 각 child `DatePicker` 내부 column 사이의 가로 간격입니다. | `0.dp` |
 | `spacingBetweenDatePickers` | 시작/종료 child picker 사이의 세로 간격입니다. | `16.dp` |
@@ -703,6 +751,7 @@ inclusive range 포함 여부를 확인해야 한다면 `range.contains(year, mo
 | `items` | 선택 가능한 연도/월 목록과 선택적 `minYearMonth`/`maxYearMonth` 범위입니다. 값은 `1000..9999`와 `1..12` 범위여야 합니다. | `PickerDefaults.yearMonthPickerItems()` |
 | `format` | 각 picker column의 화면 표시 텍스트와 선택적 접근성 값 설명입니다. | `PickerDefaults.yearMonthPickerFormat()` |
 | `style` | 각 picker column의 시각/레이아웃 스타일입니다. | `PickerDefaults.style()` |
+| `selectionIndicator` | picker 전체에 그려지는 공유 selection band입니다. | `PickerDefaults.selectionIndicator(style)` |
 | `layout` | year, month picker column의 weight와 표시 순서입니다. 명시적 width가 필요한 column은 weight를 `null`로 설정하세요. | `PickerDefaults.yearMonthPickerLayout()` |
 | `spacingBetweenPickers` | picker column 사이의 가로 간격입니다. | `0.dp` |
 | `semantics` | 각 picker column의 접근성 label과 custom action label입니다. | `PickerDefaults.yearMonthPickerSemantics()` |

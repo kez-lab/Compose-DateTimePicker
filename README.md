@@ -36,7 +36,7 @@ Add the dependency to your version catalog or build file.
 
 ```toml
 [versions]
-composeDateTimePicker = "0.4.0"
+composeDateTimePicker = "0.6.0"
 
 [libraries]
 compose-date-time-picker = { module = "io.github.kez-lab:compose-date-time-picker", version.ref = "composeDateTimePicker" }
@@ -46,17 +46,17 @@ compose-date-time-picker = { module = "io.github.kez-lab:compose-date-time-picke
 
 ```kotlin
 dependencies {
-    implementation("io.github.kez-lab:compose-date-time-picker:0.4.0")
+    implementation("io.github.kez-lab:compose-date-time-picker:0.6.0")
 }
 ```
 
-> **Release status:** `0.4.0` is the latest public Maven Central/GitHub Releases version. This README is maintained from `main` and documents unreleased `0.6.0` API work, so the Usage and API Reference sections may include APIs that are not available in `0.4.0`. For published APIs, use the `0.4.0` release/tag docs. To test `main` locally, run `./gradlew :datetimepicker:publishToMavenLocal`, add `mavenLocal()` to your consuming build, and depend on `0.6.0`.
+> **Release status:** `0.6.0` is the latest public Maven Central version. GitHub Releases may still show `0.4.0` as the latest tagged release. This README is maintained from `main`, so Usage and API Reference sections can include APIs that are not in the public `0.6.0` artifact yet. To test `main` locally, run `./gradlew :datetimepicker:publishToMavenLocal`, add `mavenLocal()` to your consuming build, and depend on the repository `VERSION_NAME`.
 
 For release notes and upgrade-impact details, see [CHANGELOG.md](CHANGELOG.md).
 
 ## Usage
 
-> The examples below target the current `main` branch API. They may require unreleased `0.6.0` APIs rather than the public `0.4.0` dependency shown above.
+> The examples below target the current `main` branch API. They may require post-`0.6.0` APIs that are not available in the public Maven Central artifact yet.
 
 ### State and Callback Pattern
 
@@ -418,7 +418,7 @@ The example stores hour and minute separately because primitive values work with
 
 ## API Reference
 
-> This reference describes the current `main` branch API. Check [CHANGELOG.md](CHANGELOG.md) and the `0.4.0` release/tag docs before copying API examples into a project that depends on the public `0.4.0` artifact.
+> This reference describes the current `main` branch API. Check [CHANGELOG.md](CHANGELOG.md) before copying API examples into a project that depends on the public `0.6.0` artifact.
 
 Public state APIs live beside their components: `TimePicker`, `TimePickerState`, and
 `rememberTimePickerState` are in `com.kez.picker.time`; `DatePicker`, `DatePickerState`,
@@ -526,6 +526,52 @@ dividers, item padding, selected item background, and fading edge behavior with 
 Use `format.itemText` for visible text and `format.itemContentDescription` for screen-reader value
 text when those two strings should differ.
 
+For a standalone `Picker`, control the selection divider length with `dividerWidth`. Use
+`PickerDividerWidth.Fill` (default) to span the full column width, `PickerDividerWidth.Fraction(0f..1f)`
+for a proportional length, or `PickerDividerWidth.Fixed(Dp)` for an absolute length. The divider stays
+centered horizontally. `Fraction` accepts only values in `0f..1f`; `Fixed` width must be a finite,
+non-negative `Dp`.
+
+```kotlin
+Picker(
+    items = items,
+    selectedItem = selectedItem,
+    onSelectedItemChange = { selectedItem = it },
+    style = PickerDefaults.style(dividerWidth = PickerDividerWidth.Fraction(0.6f))
+)
+```
+
+Composite pickers (`TimePicker`, `DatePicker`, `YearMonthPicker`, `DateRangePicker`) draw a **single
+selection band** spanning the whole picker instead of one divider per column, so the selection lines
+stay aligned regardless of column widths and column spacing. Control it with `selectionIndicator`
+rather than the per-column `style` divider settings (which do not apply to composites). The default
+`selectionIndicator` is derived from `style`, so existing `dividerColor` / `dividerThickness` /
+`disabledDividerColor` / `isDividerVisible` customizations still take effect. Use `horizontalInset`
+to inset the band from the picker edges. `thickness` and `horizontalInset` must be finite,
+non-negative `Dp` values.
+
+```kotlin
+TimePicker(
+    selectionIndicator = PickerDefaults.selectionIndicator(horizontalInset = 16.dp),
+)
+```
+
+When a custom `PickerStyle` should drive the band defaults, pass that style explicitly:
+
+```kotlin
+val style = PickerDefaults.style(
+    colors = PickerDefaults.colors(
+        dividerColor = Color(0xFF1565C0),
+        disabledDividerColor = Color(0x551565C0),
+    ),
+)
+
+TimePicker(
+    style = style,
+    selectionIndicator = PickerDefaults.selectionIndicator(style = style),
+)
+```
+
 ### Programmatic Selection
 
 Create picker state with `remember*State`, pass it to the picker, then call the public selection method
@@ -610,6 +656,7 @@ is rendered only in 12-hour mode and ignored in 24-hour mode.
 | `items` | Selectable minute, 24-hour hour, 12-hour format-hour, and AM/PM item lists plus optional inclusive `minTime`/`maxTime` bounds. | `PickerDefaults.timePickerItems()` |
 | `format` | Visible item text and optional accessibility value descriptions for each picker column. | `PickerDefaults.timePickerFormat()` |
 | `style` | Visual and layout styling for each picker column. | `PickerDefaults.style()` |
+| `selectionIndicator` | Shared selection band drawn across the whole picker. | `PickerDefaults.selectionIndicator(style)` |
 | `layout` | Column weights and visual order for period, hour, and minute picker columns. Use `null` weights for explicit-width columns. | `PickerDefaults.timePickerLayout()` |
 | `spacingBetweenPickers` | Horizontal spacing between picker columns. | `0.dp` |
 | `semantics` | Picker labels and custom action labels for each picker column. | `PickerDefaults.timePickerSemantics()` |
@@ -645,6 +692,7 @@ Invalid custom item values, duplicate items, empty required lists, or current se
 | `items`             | Selectable year/month/day item lists plus optional inclusive `minDate`/`maxDate` bounds. Values must be in `1000..9999`, `1..12`, and `1..31`. | `PickerDefaults.datePickerItems()` |
 | `format` | Visible item text and optional accessibility value descriptions for each picker column. | `PickerDefaults.datePickerFormat()` |
 | `style`             | Visual and layout styling for each picker column. | `PickerDefaults.style()` |
+| `selectionIndicator` | Shared selection band drawn across the whole picker. | `PickerDefaults.selectionIndicator(style)` |
 | `layout` | Column weights and visual order for year, month, and day picker columns. Use `null` weights for explicit-width columns. | `PickerDefaults.datePickerLayout()` |
 | `spacingBetweenPickers` | Horizontal spacing between picker columns. | `0.dp` |
 | `semantics` | Picker labels and custom action labels for each picker column. | `PickerDefaults.datePickerSemantics()` |
@@ -681,6 +729,7 @@ Invalid custom item values, duplicate items, empty lists, or current selected ye
 | `items` | Shared selectable year/month/day item lists plus optional inclusive `minDate`/`maxDate` bounds. | `PickerDefaults.datePickerItems()` |
 | `format` | Visible item text and optional accessibility value descriptions for each picker column. | `PickerDefaults.datePickerFormat()` |
 | `style` | Visual and layout styling for each picker column. | `PickerDefaults.style()` |
+| `selectionIndicator` | Shared selection band drawn across each child `DatePicker`. | `PickerDefaults.selectionIndicator(style)` |
 | `layout` | Column weights and visual order for each child `DatePicker`. | `PickerDefaults.datePickerLayout()` |
 | `spacingBetweenPickers` | Horizontal spacing between columns inside each child `DatePicker`. | `0.dp` |
 | `spacingBetweenDatePickers` | Vertical spacing between the start and end child pickers. | `16.dp` |
@@ -711,6 +760,7 @@ day)` when app-owned form fields need an inclusive range check before creating a
 | `items` | Selectable year/month item lists plus optional inclusive `minYearMonth`/`maxYearMonth` bounds. Values must be in `1000..9999` and `1..12`. | `PickerDefaults.yearMonthPickerItems()` |
 | `format` | Visible item text and optional accessibility value descriptions for each picker column. | `PickerDefaults.yearMonthPickerFormat()` |
 | `style` | Visual and layout styling for each picker column. | `PickerDefaults.style()` |
+| `selectionIndicator` | Shared selection band drawn across the whole picker. | `PickerDefaults.selectionIndicator(style)` |
 | `layout` | Column weights and visual order for year and month picker columns. Use `null` weights for explicit-width columns. | `PickerDefaults.yearMonthPickerLayout()` |
 | `spacingBetweenPickers` | Horizontal spacing between picker columns. | `0.dp` |
 | `semantics` | Picker labels and custom action labels for each picker column. | `PickerDefaults.yearMonthPickerSemantics()` |

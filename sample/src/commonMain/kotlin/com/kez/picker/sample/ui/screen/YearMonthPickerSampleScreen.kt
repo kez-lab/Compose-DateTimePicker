@@ -126,6 +126,7 @@ internal fun YearMonthPickerSampleScreen(
                 YearMonthPicker(
                     modifier = Modifier.padding(horizontal = 12.dp),
                     state = state,
+                    spacingBetweenPickers = 8.dp,
                     items = items,
                     format = PickerDefaults.yearMonthPickerFormat(
                         yearItemText = { "${it}년" },

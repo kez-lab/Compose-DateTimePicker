@@ -5,12 +5,13 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.snapping.rememberSnapFlingBehavior
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -30,6 +31,7 @@ import androidx.compose.ui.graphics.BlendMode
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.CompositingStrategy
+import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.lerp
 import androidx.compose.ui.platform.LocalDensity
@@ -54,6 +56,7 @@ import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.lerp
 import androidx.compose.ui.unit.sp
@@ -102,6 +105,48 @@ class PickerItemScope<T : Any> internal constructor(
     val contentColor: Color
 )
 
+@Composable
+internal fun <T : Any> rememberPickerItemHeight(
+    items: List<T>,
+    format: PickerItemFormat<T>,
+    style: PickerStyle
+): Dp {
+    val density = LocalDensity.current
+    val textMeasurer = rememberTextMeasurer(cacheSize = 16)
+    val itemPadding = style.itemPadding
+    val textStyle = style.textStyles.textStyle
+    val selectedTextStyle = style.textStyles.selectedTextStyle
+    val measuredTextHeight = remember(items, format, textStyle, selectedTextStyle, textMeasurer) {
+        val itemTexts = items.map(format.itemText)
+        (itemTexts + ItemHeightProbeTexts).maxOf { itemText ->
+            val text = AnnotatedString(itemText)
+            max(
+                textMeasurer.measure(
+                    text = text,
+                    style = textStyle,
+                    overflow = TextOverflow.Clip,
+                    softWrap = false,
+                    maxLines = 1
+                ).size.height,
+                textMeasurer.measure(
+                    text = text,
+                    style = selectedTextStyle,
+                    overflow = TextOverflow.Clip,
+                    softWrap = false,
+                    maxLines = 1
+                ).size.height
+            )
+        }
+    }
+
+    return with(density) {
+        measuredTextHeight.toDp() +
+            itemPadding.calculateTopPadding() +
+            itemPadding.calculateBottomPadding() +
+            ItemHeightSafetyPadding
+    }
+}
+
 /**
  * A generic picker component that displays a list of items and allows the user to select one.
  * Follows Material3 component design patterns.
@@ -142,7 +187,6 @@ fun <T : Any> Picker(
     }
 
     val density = LocalDensity.current
-    val textMeasurer = rememberTextMeasurer(cacheSize = 16)
     val visibleItemsMiddle = remember(visibleItemsCount) { visibleItemsCount / 2 }
     val scope = rememberCoroutineScope()
     val currentOnSelectedItemChange by rememberUpdatedState(onSelectedItemChange)
@@ -156,7 +200,14 @@ fun <T : Any> Picker(
     val horizontalAlignment = style.horizontalAlignment
     val dividerThickness = style.dividerThickness
     val dividerShape = style.dividerShape
+    val dividerWidth = style.dividerWidth
     val isDividerVisible = style.isDividerVisible
+    val itemHeight = rememberPickerItemHeight(
+        items = items,
+        format = format,
+        style = style
+    )
+    val itemHeightPx = with(density) { itemHeight.toPx() }
 
     val adjustedItems: List<T?> = remember(items, isInfinity, visibleItemsMiddle) {
         if (!isInfinity) {
@@ -211,37 +262,6 @@ fun <T : Any> Picker(
     } else {
         colors.disabledSelectedTextColor
     }
-
-    val measuredTextHeight = remember(items, format, textStyle, selectedTextStyle, textMeasurer) {
-        val itemTexts = items.map(format.itemText)
-        (itemTexts + ItemHeightProbeTexts).maxOf { itemText ->
-            val text = AnnotatedString(itemText)
-            max(
-                textMeasurer.measure(
-                    text = text,
-                    style = textStyle,
-                    overflow = TextOverflow.Clip,
-                    softWrap = false,
-                    maxLines = 1
-                ).size.height,
-                textMeasurer.measure(
-                    text = text,
-                    style = selectedTextStyle,
-                    overflow = TextOverflow.Clip,
-                    softWrap = false,
-                    maxLines = 1
-                ).size.height
-            )
-        }
-    }
-
-    val itemHeight = with(density) {
-        measuredTextHeight.toDp() +
-            itemPadding.calculateTopPadding() +
-            itemPadding.calculateBottomPadding() +
-            ItemHeightSafetyPadding
-    }
-    val itemHeightPx = with(density) { itemHeight.toPx() }
 
     LaunchedEffect(listState, adjustedItems, visibleItemsMiddle, enabled) {
         snapshotFlow { listState.firstVisibleItemIndex to listState.isScrollInProgress }
@@ -384,28 +404,20 @@ fun <T : Any> Picker(
                 .height(itemHeight)
         ) {
             if (isDividerVisible) {
-                HorizontalDivider(
+                PickerDivider(
+                    width = dividerWidth,
                     color = dividerColor,
                     thickness = dividerThickness,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .background(
-                            color = dividerColor,
-                            shape = dividerShape
-                        )
-                        .align(Alignment.TopCenter)
+                    shape = dividerShape,
+                    alignment = Alignment.TopCenter
                 )
 
-                HorizontalDivider(
+                PickerDivider(
+                    width = dividerWidth,
                     color = dividerColor,
                     thickness = dividerThickness,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .background(
-                            color = dividerColor,
-                            shape = dividerShape
-                        )
-                        .align(Alignment.BottomCenter)
+                    shape = dividerShape,
+                    alignment = Alignment.BottomCenter
                 )
             }
         }
@@ -536,6 +548,35 @@ fun <T : Any> Picker(
             }
         }
     }
+}
+
+/**
+ * Renders a single selection divider line for [Picker].
+ *
+ * Uses a plain [Box] rather than [androidx.compose.material3.HorizontalDivider] because the latter
+ * forces `fillMaxWidth`, which would prevent [PickerDividerWidth.Fraction] and
+ * [PickerDividerWidth.Fixed] from controlling the divider width.
+ */
+@Composable
+private fun BoxScope.PickerDivider(
+    width: PickerDividerWidth,
+    color: Color,
+    thickness: Dp,
+    shape: Shape,
+    alignment: Alignment
+) {
+    val widthModifier = when (width) {
+        PickerDividerWidth.Fill -> Modifier.fillMaxWidth()
+        is PickerDividerWidth.Fraction -> Modifier.fillMaxWidth(width.fraction)
+        is PickerDividerWidth.Fixed -> Modifier.width(width.width)
+    }
+    Box(
+        modifier = Modifier
+            .then(widthModifier)
+            .height(thickness)
+            .background(color = color, shape = shape)
+            .align(alignment)
+    )
 }
 
 internal fun <T : Any> validatePickerInput(
@@ -678,6 +719,32 @@ private fun Picker5VisibleItemsPreview() {
         selectedItem = selectedItem,
         onSelectedItemChange = { selectedItem = it },
         style = PickerDefaults.style(visibleItemsCount = 5)
+    )
+}
+
+@Preview(name = "Fraction Divider Width", group = "Picker - Styles", showBackground = true)
+@Composable
+private fun PickerFractionDividerWidthPreview() {
+    val items = listOf("Item 1", "Item 2", "Item 3")
+    var selectedItem by remember { mutableStateOf("Item 2") }
+    Picker(
+        items = items,
+        selectedItem = selectedItem,
+        onSelectedItemChange = { selectedItem = it },
+        style = PickerDefaults.style(dividerWidth = PickerDividerWidth.Fraction(0.6f))
+    )
+}
+
+@Preview(name = "Fixed Divider Width", group = "Picker - Styles", showBackground = true)
+@Composable
+private fun PickerFixedDividerWidthPreview() {
+    val items = listOf("Item 1", "Item 2", "Item 3")
+    var selectedItem by remember { mutableStateOf("Item 2") }
+    Picker(
+        items = items,
+        selectedItem = selectedItem,
+        onSelectedItemChange = { selectedItem = it },
+        style = PickerDefaults.style(dividerWidth = PickerDividerWidth.Fixed(48.dp))
     )
 }
 

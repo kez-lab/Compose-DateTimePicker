@@ -6,6 +6,20 @@ This project tracks notable user-facing and maintainer-facing changes here. The 
 
 ### Added
 
+- Added `PickerDividerWidth` (`Fill`, `Fraction`, `Fixed`) and the `dividerWidth` parameter to
+  `PickerStyle` / `PickerDefaults.style(...)` so the selection divider length can be a fraction of
+  the column width or a fixed `Dp` instead of always filling the column. The divider stays centered
+  horizontally.
+- Added `PickerSelectionIndicator` and `PickerDefaults.selectionIndicator(...)` plus a
+  `selectionIndicator` parameter on `TimePicker`, `DatePicker`, `YearMonthPicker`, and
+  `DateRangePicker`. Composite pickers now draw a single selection band spanning the whole picker
+  (with an optional `horizontalInset`) instead of one divider per column, so the selection lines stay
+  aligned regardless of column widths and column spacing. The default indicator is derived from
+  `style`, so existing `dividerColor` / `dividerThickness` / `isDividerVisible` customizations still
+  apply.
+- Added `PickerSelectionIndicator.disabledColor` and a style-free
+  `PickerDefaults.selectionIndicator(...)` overload for apps that only need to customize the shared
+  composite selection band.
 - Added programmatic selection APIs for picker state objects:
   `TimePickerState.selectTime`, `DatePickerState.selectDate`,
   `YearMonthPickerState.selectYearMonth`, and `YearMonthPickerState.selectDate`.
@@ -77,6 +91,22 @@ This project tracks notable user-facing and maintainer-facing changes here. The 
 
 ### Changed
 
+- Changed the default `PickerDefaults.colors(...)` `dividerColor` from the full-strength
+  `LocalContentColor` to `LocalContentColor.copy(alpha = 0.2f)` for a lighter default selection
+  divider. Pass an explicit `dividerColor` to restore the previous appearance.
+- Added `dividerWidth` to the `PickerStyle` primary constructor (between `dividerShape` and
+  `isDividerVisible`), shifting its positional parameters and generated `componentN`/`copy`
+  signatures. Code that constructs `PickerStyle` via `PickerDefaults.style(...)` is unaffected.
+- Added a `selectionIndicator` parameter to `TimePicker`, `DatePicker`, `YearMonthPicker`, and
+  `DateRangePicker` (after `style`), changing those composable signatures. Per-column `style` divider
+  settings no longer render inside composite pickers; the shared `selectionIndicator` band draws the
+  selection lines instead. Callers using named arguments are unaffected.
+- Made composite picker selection bands use the same measured item height as child picker columns
+  instead of deriving band height from the final content height, so custom `pickerModifier` heights
+  do not misalign the selected-row indicator.
+- Made `PickerDividerWidth.Fixed.width`, `PickerSelectionIndicator.thickness`, and
+  `PickerSelectionIndicator.horizontalInset` reject infinite or unspecified `Dp` values in addition
+  to negative values.
 - Made `DatePickerItems.coerceDate(...)` compare whole selectable `LocalDate` values, matching the
   `coerceTime(...)` and `coerceYearMonth(...)` behavior instead of independently coercing year,
   month, and day.
@@ -122,7 +152,8 @@ This project tracks notable user-facing and maintainer-facing changes here. The 
 - Clarified `DatePickerState` initial-day documentation to distinguish invalid values from max-day clamping.
 - Documented generic `Picker<T>` controlled usage and app-owned saveable selection state.
 - Clarified `DatePicker` README examples for custom year ranges and state synchronization after composition.
-- Clarified README installation guidance to distinguish published `0.4.0` artifacts from unreleased `main`/`0.6.0` API documentation.
+- Clarified README installation guidance to distinguish the published Maven Central `0.6.0`
+  artifact, the still-latest GitHub Release tag, and unreleased `main` API documentation.
 - Made library `@Preview` composables private tooling code so preview functions do not appear in the supported public API surface.
 - Reworked generic `Picker<T>` into a controlled component with `selectedItem` and
   `onSelectedItemChange`, removing the old `PickerState<T>` and positional `startIndex` source of truth.

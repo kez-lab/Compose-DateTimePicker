@@ -20,6 +20,7 @@ import com.kez.picker.DatePickerItems
 import com.kez.picker.DatePickerLayout
 import com.kez.picker.DateRangePickerSemantics
 import com.kez.picker.PickerDefaults
+import com.kez.picker.PickerSelectionIndicator
 import com.kez.picker.PickerStyle
 import kotlinx.datetime.LocalDate
 
@@ -37,7 +38,10 @@ import kotlinx.datetime.LocalDate
  * @param enabled Whether user scroll, click, and semantics selection actions are enabled.
  * @param items Selectable year/month/day item lists plus optional inclusive date bounds.
  * @param format Visible item text and optional accessibility value descriptions shared by both child pickers.
- * @param style Visual and layout styling for each picker column.
+ * @param style Visual and layout styling for each picker column. Per-column divider settings do not
+ * apply here; use [selectionIndicator] for the shared selection band instead.
+ * @param selectionIndicator The single selection band drawn across each child [DatePicker]. Defaults
+ * to a band derived from [style].
  * @param layout Column layout weights and visual order for each child [DatePicker].
  * @param spacingBetweenPickers Horizontal spacing between columns inside each child [DatePicker].
  * @param spacingBetweenDatePickers Vertical spacing between start and end pickers.
@@ -55,6 +59,7 @@ fun DateRangePicker(
     items: DatePickerItems = PickerDefaults.datePickerItems(),
     format: DatePickerFormat = PickerDefaults.datePickerFormat(),
     style: PickerStyle = PickerDefaults.style(),
+    selectionIndicator: PickerSelectionIndicator = PickerDefaults.selectionIndicator(style),
     layout: DatePickerLayout = PickerDefaults.datePickerLayout(),
     spacingBetweenPickers: Dp = PickerDefaults.SpacingBetweenPickers,
     spacingBetweenDatePickers: Dp = 16.dp,
@@ -96,6 +101,7 @@ fun DateRangePicker(
                     items = items,
                     format = format,
                     style = style,
+                    selectionIndicator = selectionIndicator,
                     layout = layout,
                     spacingBetweenPickers = spacingBetweenPickers,
                     semantics = semantics.start
@@ -117,6 +123,7 @@ fun DateRangePicker(
                     items = items,
                     format = format,
                     style = style,
+                    selectionIndicator = selectionIndicator,
                     layout = layout,
                     spacingBetweenPickers = spacingBetweenPickers,
                     semantics = semantics.end

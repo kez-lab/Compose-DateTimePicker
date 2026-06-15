@@ -247,6 +247,7 @@ internal fun BottomSheetSampleScreen(
                     ) {
                         YearMonthPicker(
                             state = yearMonthState,
+                            spacingBetweenPickers = 8.dp,
                             format = PickerDefaults.yearMonthPickerFormat(
                                 yearItemText = { "${it}년" },
                                 monthItemText = { getMonthName(it) },
@@ -329,6 +330,7 @@ internal fun BottomSheetSampleScreen(
                     ) {
                         TimePicker(
                             state = timeState,
+                            spacingBetweenPickers = 8.dp,
                             format = PickerDefaults.timePickerFormat(
                                 hourItemText = { it.toString().padStart(2, '0') },
                                 minuteItemText = { it.toString().padStart(2, '0') },
