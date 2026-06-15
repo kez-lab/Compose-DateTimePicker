@@ -527,6 +527,19 @@ dividers, item padding, selected item background, and fading edge behavior with 
 Use `format.itemText` for visible text and `format.itemContentDescription` for screen-reader value
 text when those two strings should differ.
 
+`PickerStyle` groups the visual settings that can be shared across `Picker` and composite pickers:
+
+| Option | Use it for |
+| :--- | :--- |
+| `visibleItemsCount` | Number of rows visible in the wheel. |
+| `colors` | Default/selected/disabled text colors, divider colors, and selected-item background colors. |
+| `textStyles` | Default and selected text styles. |
+| `selectedItemBackgroundShape` | Shape of the selected item background. |
+| `itemPadding` | Padding applied around each rendered item. |
+| `fadingEdgeGradient` | Top/bottom fading edge mask. |
+| `horizontalAlignment` | Horizontal alignment of item content inside each column. |
+| `dividerThickness`, `dividerShape`, `dividerWidth`, `isDividerVisible` | Standalone `Picker` selection divider settings. Composite pickers use `selectionIndicator` for the shared band. |
+
 For a standalone `Picker`, control the selection divider length with `dividerWidth`. Use
 `PickerDividerWidth.Fill` (default) to span the full column width, `PickerDividerWidth.Fraction(0f..1f)`
 for a proportional length, or `PickerDividerWidth.Fixed(Dp)` for an absolute length. The divider stays
@@ -550,6 +563,17 @@ rather than the per-column `style` divider settings (which do not apply to compo
 `disabledDividerColor` / `isDividerVisible` customizations still take effect. Use `horizontalInset`
 to inset the band from the picker edges. `thickness` and `horizontalInset` must be finite,
 non-negative `Dp` values.
+
+`PickerSelectionIndicator` keeps the composite band settings separate from per-column item styling:
+
+| Option | Use it for |
+| :--- | :--- |
+| `color` | Selection band line color while the picker is enabled. |
+| `disabledColor` | Selection band line color while the picker is disabled. |
+| `thickness` | Thickness of each band line. Must be a finite, non-negative `Dp`. |
+| `shape` | Shape of each band line. |
+| `horizontalInset` | Inset applied to both horizontal edges of the band. Must be a finite, non-negative `Dp`. |
+| `isVisible` | Whether the band is drawn. |
 
 ```kotlin
 TimePicker(
