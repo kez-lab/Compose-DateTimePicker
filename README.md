@@ -2,12 +2,14 @@
 
 [![Read in Korean](https://img.shields.io/badge/README-Korean-green)](./README_KO.md)
 
-A generic, customizable, and multiplatform date and time picker library for Compose Multiplatform.
-It provides consistent UI components across Android, iOS, Desktop (JVM), and Web (Wasm).
+A controlled wheel selection and temporal picker library for Compose Multiplatform. It provides a
+generic `WheelPicker<T>` plus date/time presets with consistent APIs across Android, iOS, Desktop
+(JVM), and Web (Wasm).
 
 ## Features
 
 *   **Multiplatform Support**: seamless integration for Android, iOS, Desktop (JVM), and Web (Wasm).
+* **WheelPicker**: A controlled generic wheel with live value changes and a separate settled callback.
 *   **TimePicker**: Supports both 12-hour (AM/PM) and 24-hour formats.
 * **DatePicker**: A complete date picker for selecting year, month, and day with automatic day
   validation.
@@ -20,7 +22,8 @@ It provides consistent UI components across Android, iOS, Desktop (JVM), and Web
 
 ## Sample App
 
-The repository includes a Compose Multiplatform sample app with copyable date, time, and bottom sheet flows.
+The repository includes a Compose Multiplatform sample app with copyable generic wheel, date, time,
+and bottom sheet flows.
 
 <p align="center">
   <img src="docs/images/sample/sample-home.png" alt="Sample app home screen" width="23%" />
@@ -345,7 +348,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberSaveable
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -458,28 +461,31 @@ TimePicker(
 )
 ```
 
-### Generic Picker
+### Generic WheelPicker
 
-Use `Picker<T>` when you need a single custom picker column.
+Use `WheelPicker<T>` when you need a controlled single custom wheel column.
 
 ```kotlin
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.rememberSaveable
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
-import com.kez.picker.Picker
 import com.kez.picker.PickerDefaults
+import com.kez.picker.WheelPicker
 
 @Composable
 fun SizePickerExample() {
     val items = listOf("Small", "Medium", "Large")
     var selectedSize by rememberSaveable { mutableStateOf("Medium") }
 
-    Picker(
+    WheelPicker(
         items = items,
         selectedItem = selectedSize,
         onSelectedItemChange = { selectedSize = it },
+        onSelectionSettled = { size ->
+            // Commit the preview or start expensive work with size.
+        },
         enabled = true,
         isInfinity = false,
         format = PickerDefaults.itemFormat(
@@ -493,9 +499,20 @@ fun SizePickerExample() {
 }
 ```
 
-`Picker<T>` is a controlled component. Keep the selected value in app state, pass it through
-`selectedItem`, and update that state from `onSelectedItemChange`. `items` must be non-empty and
-distinct, and `selectedItem` must exist in `items`. If `items` can change, update or coerce the
+`WheelPicker<T>` is a controlled component. Keep the selected value in app state, pass it through
+`selectedItem`, and update it synchronously from `onSelectedItemChange`. That callback runs live as
+user scrolling, item clicks, or semantics actions move a different item into the center.
+`onSelectionSettled` runs once after an interaction that changed the centered item stops, so it is
+the appropriate place to start an expensive query or commit a preview. App-driven `selectedItem`
+changes move the wheel without invoking either callback.
+
+The existing `Picker<T>` remains available for compatibility. Its `onSelectedItemChange` callback
+runs only after interaction settles; it does not expose live centered-item changes. Composite
+temporal pickers continue to use this settled contract so dependent columns do not rebuild while a
+neighboring column is still scrolling.
+
+For both APIs, `items` must be non-empty and distinct, and `selectedItem` must exist in `items`. If
+`items` can change, update or coerce the
 app-owned `selectedItem` to one of the new values before rendering the picker. Treat `items` as
 immutable while the picker is composed; create and pass a new list when available values change. If `T` is not
 saveable, store a saveable key in your app state and map that key back to an item before rendering
@@ -508,7 +525,7 @@ Custom `content` receives `PickerItemScope<T>` so custom rows can reuse the defa
 selected/enabled state, distance fraction, text style, and content color:
 
 ```kotlin
-Picker(
+WheelPicker(
     items = items,
     selectedItem = selectedSize,
     onSelectedItemChange = { selectedSize = it },
@@ -527,7 +544,8 @@ dividers, item padding, selected item background, and fading edge behavior with 
 Use `format.itemText` for visible text and `format.itemContentDescription` for screen-reader value
 text when those two strings should differ.
 
-`PickerStyle` groups the visual settings that can be shared across `Picker` and composite pickers:
+`PickerStyle` groups the visual settings that can be shared across `WheelPicker`, `Picker`, and
+composite pickers:
 
 | Option | Use it for |
 | :--- | :--- |
@@ -538,7 +556,7 @@ text when those two strings should differ.
 | `itemPadding` | Padding applied around each rendered item. |
 | `fadingEdgeGradient` | Top/bottom fading edge mask. |
 | `horizontalAlignment` | Horizontal alignment of item content inside each column. |
-| `dividerThickness`, `dividerShape`, `dividerWidth`, `isDividerVisible` | Standalone `Picker` selection divider settings. Composite pickers use `selectionIndicator` for the shared band. |
+| `dividerThickness`, `dividerShape`, `dividerWidth`, `isDividerVisible` | Standalone `WheelPicker` / `Picker` selection divider settings. Composite pickers use `selectionIndicator` for the shared band. |
 
 For a standalone `Picker`, control the selection divider length with `dividerWidth`. Use
 `PickerDividerWidth.Fill` (default) to span the full column width, `PickerDividerWidth.Fraction(0f..1f)`
@@ -547,7 +565,7 @@ centered horizontally. `Fraction` accepts only values in `0f..1f`; `Fixed` width
 non-negative `Dp`.
 
 ```kotlin
-Picker(
+WheelPicker(
     items = items,
     selectedItem = selectedItem,
     onSelectedItemChange = { selectedItem = it },
@@ -605,7 +623,7 @@ selection.
 
 | State | Method |
 | :--- | :--- |
-| Generic `Picker<T>` | Update the app-owned `selectedItem` value |
+| Generic `WheelPicker<T>` / `Picker<T>` | Update the app-owned `selectedItem` value |
 | `time.TimePickerState` | `selectTime(LocalTime(...))`, `selectTime(hour, minute)`, or the matching `items` overloads |
 | `date.DatePickerState` | `selectDate(LocalDate(...))`, `selectDate(year, month, day)`, or the matching `items` overloads |
 | `date.DateRangePickerState` | `selectDateRange(DateRange(...))`, `selectDateRange(startDate, endDate)`, `selectDateRange(startYear, startMonth, startDay, endYear, endMonth, endDay)`, `selectStartDate(...)`, `selectEndDate(...)`, or the matching `items` overloads |

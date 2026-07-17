@@ -6,6 +6,11 @@ This project tracks notable user-facing and maintainer-facing changes here. The 
 
 ### Added
 
+- Added a controlled generic `WheelPicker<T>` with live `onSelectedItemChange` updates and a
+  separate `onSelectionSettled` callback. App-driven selection synchronization invokes neither
+  callback.
+- Added a non-temporal seat-count sample that demonstrates live values, settled commits, and
+  programmatic selection without interaction callbacks.
 - Added an evidence-based product direction for evolving the library into a constraint-aware,
   multi-column wheel selection engine while keeping the existing temporal pickers as presets and
   requiring external first-use and pilot evidence before claiming market validation.
@@ -116,6 +121,9 @@ This project tracks notable user-facing and maintainer-facing changes here. The 
 
 ### Changed
 
+- Clarified that the existing `Picker<T>.onSelectedItemChange` compatibility contract dispatches
+  only after user interaction settles. `Picker` and `WheelPicker` share the same internal rendering,
+  validation, semantics, styling, and programmatic synchronization path.
 - Built-in numeric date/time formats now use bounded internal height probes, avoiding per-item text
   layouts for large default columns such as the 9,000-year range. Generic and custom formatters keep
   exact per-item measurement so arbitrary fallback-font glyphs are not sampled away.

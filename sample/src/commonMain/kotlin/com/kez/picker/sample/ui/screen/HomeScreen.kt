@@ -68,6 +68,15 @@ internal fun HomeScreen(navController: NavController) {
         ) {
             item {
                 MenuListItem(
+                    title = "WheelPicker Sample",
+                    description = "Live value updates plus a settled callback",
+                    icon = FeatherIcons.Layers,
+                    modifier = Modifier.testTag("sample-menu-wheel-picker"),
+                    onClick = { navController.navigate(Screen.WheelPicker.route) }
+                )
+            }
+            item {
+                MenuListItem(
                     title = "Integrated Sample",
                     description = "Tabs with shared date and time state",
                     icon = FeatherIcons.CheckCircle,

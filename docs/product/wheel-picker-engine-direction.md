@@ -149,9 +149,11 @@ wheel rendering + interaction primitives
 - `PickerItemFormat`, `PickerStyle`, `PickerSemantics`, custom item content의 역할 분리
 - 큰 item list의 materialization/measurement 비용과 지원 범위
 
-`WheelPicker<T>`라는 이름은 generic 용도를 더 잘 설명하지만 이름만 바꾸는 것은 breaking change다. 실제
-multi-column/preset 사용성 검증 전에는 기존 `Picker<T>`를 제거하지 않는다. 새 이름을 추가할 경우 alias,
-delegation, deprecation 중 어떤 경로가 ABI와 문서에 가장 정직한지 별도 API review에서 결정한다.
+`WheelPicker<T>`는 live `onSelectedItemChange`와 별도 `onSelectionSettled`를 제공하는 새 controlled API로
+추가한다. 기존 `Picker<T>`는 callback을 settle 뒤에만 전달하는 호환 API로 유지한다. 두 API의 callback
+계약이 다르므로 typealias나 단순 이름 변경으로 위장하지 않고 rendering, validation, semantics, style,
+programmatic synchronization만 같은 내부 구현을 공유한다. 기존 temporal picker는 dependent column이 scroll
+중 재구성되지 않도록 settled-only `Picker` 계약을 계속 사용한다.
 
 ### 2. multi-column contract
 
@@ -195,8 +197,9 @@ behavior가 달라지는 slice는 README, README_KO, CHANGELOG, KDoc, ABI dump, 
 
 ### Phase 1 — core contract
 
-- 기존 `Picker<T>`에서 live/settled selection, programmatic sync, restoration의 현재 동작을 test로 고정한다.
-- `WheelPicker<T>` 이름과 migration 전략을 API/ABI 관점에서 review한다.
+- 기존 `Picker<T>`의 settled-only selection과 programmatic sync, item source 변경 동작을 test로 고정한다.
+- `WheelPicker<T>`의 live change와 settled callback, 기존 `Picker<T>`의 settled-only 호환 계약을 API/ABI와
+  interaction test로 고정한다.
 - Android, Desktop, Wasm, iOS compile gate와 semantics regression을 통과한다.
 
 ### Phase 2 — dependent columns
@@ -258,18 +261,18 @@ maintainer, AI review, sample app, repository 내부 test는 품질 증거지만
 
 ## 다음 구현 slice의 acceptance criteria
 
-다음 slice는 새 public DSL을 바로 추가하는 작업이 아니다. 먼저 single-column selection event 계약을
-다음 증거로 고정한다.
+다음 multi-column slice는 새 public graph DSL을 바로 추가하는 작업이 아니다. 먼저 Date/Time concrete
+picker에서 atomic/dependent selection 계약을 다음 증거로 고정한다.
 
-- user scroll/click의 live selection과 settle 완료 시점을 구분하는 test
-- programmatic `selectedItem` 변경 중 intermediate list index가 값을 되돌리지 않는 test
-- items equality/identity/content 변경과 bounded/infinite mode 전환 test
+- 한 열의 user interaction과 repair가 하나의 유효한 logical state callback만 commit하는 test
+- programmatic state 변경 중 child scroll index가 요청 값을 되돌리지 않는 test
+- item source identity/content 변경과 non-default column order test
 - dependent item list가 비는 경우와 동시에 여러 열을 조작하는 경우의 명시적 failure/repair test
-- saveable app state 사용 예제와 generic semantics test
-- callback 이름과 발생 조건을 README/KDoc에서 한 문장으로 설명 가능
+- preset의 save/restore와 semantics가 repair 뒤 논리 값을 설명하는 test
+- atomic callback 이름과 발생 조건을 README/KDoc에서 한 문장으로 설명 가능
 - intentional public API가 있으면 ABI dump를 업데이트하고 review
 
-이 gate를 통과한 뒤 `WheelPicker<T>` 공개 여부와 migration 방식을 결정한다.
+이 gate를 최소 두 concrete preset에서 통과한 뒤 `MultiWheelPicker<State>` public surface를 결정한다.
 
 ## 근거 자료
 
