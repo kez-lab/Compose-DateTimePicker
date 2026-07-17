@@ -6,6 +6,9 @@ This project tracks notable user-facing and maintainer-facing changes here. The 
 
 ### Added
 
+- Added an evidence-based product direction for evolving the library into a constraint-aware,
+  multi-column wheel selection engine while keeping the existing temporal pickers as presets and
+  requiring external first-use and pilot evidence before claiming market validation.
 - Add a reproducible Android Macrobenchmark harness for generic 10/100/10,000-item picker startup and bounded-versus-exact 9,000-year `DatePicker` rendering comparisons.
 - Added `PickerDividerWidth` (`Fill`, `Fraction`, `Fixed`) and the `dividerWidth` parameter to
   `PickerStyle` / `PickerDefaults.style(...)` so the selection divider length can be a fraction of
