@@ -86,13 +86,13 @@ private val ItemHeightSafetyPadding = 4.dp
  * Returns the visible texts used to calculate one-line picker row height.
  *
  * The exact path formats every item so arbitrary fallback fonts and combining sequences remain
- * covered. A caller-supplied [PickerItemFormat.itemHeightProbeText] opts into bounded measurement by
- * explicitly declaring text whose measured height covers every value produced by `itemText`.
+ * covered. Library-owned numeric and period formatters use known bounded probes instead.
  */
 internal fun <T : Any> pickerItemHeightTexts(
     items: List<T>,
     format: PickerItemFormat<T>
-): List<String> = format.itemHeightProbeText?.let(::listOf) ?: items.map(format.itemText)
+): List<String> = defaultPickerItemHeightProbeText(format.itemText)?.let(::listOf)
+    ?: items.map(format.itemText)
 
 /**
  * Information passed to custom [Picker] item content.
