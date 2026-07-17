@@ -54,7 +54,10 @@ public final class com/kez/picker/DatePickerItems {
 	public final fun component3 ()Ljava/util/List;
 	public final fun component4 ()Lcom/kez/picker/DatePickerConstraints;
 	public final fun contains (III)Z
+	public final fun contains (IIIIII)Z
+	public final fun contains (Lcom/kez/picker/date/DateRange;)Z
 	public final fun contains (Lkotlinx/datetime/LocalDate;)Z
+	public final fun contains (Lkotlinx/datetime/LocalDate;Lkotlinx/datetime/LocalDate;)Z
 	public final fun copy (Ljava/util/List;Ljava/util/List;Ljava/util/List;Lcom/kez/picker/DatePickerConstraints;)Lcom/kez/picker/DatePickerItems;
 	public static synthetic fun copy$default (Lcom/kez/picker/DatePickerItems;Ljava/util/List;Ljava/util/List;Ljava/util/List;Lcom/kez/picker/DatePickerConstraints;ILjava/lang/Object;)Lcom/kez/picker/DatePickerItems;
 	public fun equals (Ljava/lang/Object;)Z

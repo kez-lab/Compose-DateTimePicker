@@ -53,6 +53,9 @@ This project tracks notable user-facing and maintainer-facing changes here. The 
   values.
 - Added `DateRange.ordered(...)` factories so apps can normalize unordered start/end inputs from
   forms, presets, or restored state before passing them to `DateRangePickerState`.
+- Added `DatePickerItems.contains(DateRange)` and matching start/end overloads so apps can check
+  whether date range preset boundaries are directly selectable before deciding to reject or coerce
+  the preset.
 - Added `DatePickerItems.coerceDateRange(...)` so apps can normalize app-owned date range presets
   with the same custom item lists and `minDate`/`maxDate` bounds used by `DateRangePicker`.
 - Added `DateRange.dayCount` so apps can display the inclusive number of calendar days in the
