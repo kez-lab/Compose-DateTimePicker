@@ -426,6 +426,14 @@ item별 content description을 생략하면 picker는 화면에 보이는 텍스
 사용합니다. 이 동작은 화면 텍스트와 스크린 리더 값이 조용히 어긋나는 문제를 막지만, TalkBack이
 "1시간", "1월", "오후"처럼 더 자연스럽게 읽어야 한다면 여전히 명시적인 설명을 제공해야 합니다.
 
+Picker row 높이는 기본적으로 정확하게 계산됩니다. custom script, fallback font, combining sequence를
+놓치지 않도록 모든 formatted item을 측정합니다. 텍스트 형태를 예측할 수 있는 큰 목록에서는
+`itemText`가 만들 수 있는 모든 값보다 높이가 크거나 같은 glyph를 포함한 `itemHeightProbeText`를
+전달할 수 있습니다. 그러면 높이 측정 작업이 item 수와 무관한 bounded work가 됩니다. 부족한 probe는
+텍스트 clipping을 만들 수 있으므로 보장할 수 없다면 null로 두세요. 기본 숫자형 date/time format은
+digit probe를 자동으로 사용하지만, custom `*ItemText` lambda를 전달하면 해당 column은 정확한 전체
+측정으로 돌아갑니다. 최적화를 원하면 대응하는 `*ItemHeightProbeText`도 함께 전달해야 합니다.
+
 semantics 옵션은 picker column label과 이전/다음 action label 같은 구조적 semantics를 정의합니다.
 선택 상태는 고정된 영어 문구를 붙이지 않고 Compose `selected` semantics로 전달됩니다. 단일
 `Picker<T>`에서는 `PickerDefaults.itemFormat(...)`를, composite picker value에는
@@ -440,7 +448,9 @@ TimePicker(
         hourItemText = { it.toString().padStart(2, '0') },
         minuteItemText = { it.toString().padStart(2, '0') },
         hourItemContentDescription = { "${it}시" },
-        minuteItemContentDescription = { "${it}분" }
+        minuteItemContentDescription = { "${it}분" },
+        hourItemHeightProbeText = "00",
+        minuteItemHeightProbeText = "00"
     ),
     semantics = PickerDefaults.timePickerSemantics(
         hourPickerLabel = "시간",
@@ -492,6 +502,9 @@ fun SizePickerExample() {
 앱이 소유한 `selectedItem`을 새 목록의 값으로 갱신하거나 보정하세요. Picker가 composition 중일 때는
 `items`를 불변 목록처럼 다루고, 선택 가능한 값이 바뀌면 새 목록을 만들어 전달하세요. `T`가 saveable하지 않다면 앱
 state에는 saveable한 key를 저장한 뒤 렌더링 전에 그 key를 item으로 매핑하세요.
+일관된 형식의 큰 목록이라면 `PickerDefaults.itemFormat(...)`에
+`itemHeightProbeText = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"` 같은 명시적 height probe를 추가할 수
+있습니다. 이 값은 단순 sample이 아니라 성능 계약이므로 어떤 item보다도 높은 glyph를 포함해야 합니다.
 현재 값을 표시하되 사용자의 scroll, click, semantics 선택 action을 막아야 한다면 `enabled = false`를
 전달하세요. Disabled picker는 기본 텍스트, divider, 선택 영역 배경에 `PickerDefaults.colors(...)`의
 disabled 색상 슬롯을 사용합니다.

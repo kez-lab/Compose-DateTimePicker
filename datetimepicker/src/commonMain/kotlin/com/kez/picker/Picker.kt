@@ -83,6 +83,18 @@ private val ItemHeightProbeTexts = listOf(
 private val ItemHeightSafetyPadding = 4.dp
 
 /**
+ * Returns the visible texts used to calculate one-line picker row height.
+ *
+ * The exact path formats every item so arbitrary fallback fonts and combining sequences remain
+ * covered. A caller-supplied [PickerItemFormat.itemHeightProbeText] opts into bounded measurement by
+ * explicitly declaring text whose measured height covers every value produced by `itemText`.
+ */
+internal fun <T : Any> pickerItemHeightTexts(
+    items: List<T>,
+    format: PickerItemFormat<T>
+): List<String> = format.itemHeightProbeText?.let(::listOf) ?: items.map(format.itemText)
+
+/**
  * Information passed to custom [Picker] item content.
  *
  * @param T The picker item type.
@@ -117,8 +129,7 @@ internal fun <T : Any> rememberPickerItemHeight(
     val textStyle = style.textStyles.textStyle
     val selectedTextStyle = style.textStyles.selectedTextStyle
     val measuredTextHeight = remember(items, format, textStyle, selectedTextStyle, textMeasurer) {
-        val itemTexts = items.map(format.itemText)
-        (itemTexts + ItemHeightProbeTexts).maxOf { itemText ->
+        (pickerItemHeightTexts(items, format) + ItemHeightProbeTexts).distinct().maxOf { itemText ->
             val text = AnnotatedString(itemText)
             max(
                 textMeasurer.measure(
