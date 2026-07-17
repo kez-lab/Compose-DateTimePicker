@@ -395,6 +395,83 @@ class DatePickerStateTest {
     }
 
     @Test
+    fun datePickerItems_containsDateRange_checksBoundaryMembership() {
+        val items = DatePickerItems(
+            yearItems = listOf(2026),
+            monthItems = listOf(5, 6),
+            dayItems = listOf(1, 10, 20)
+        )
+
+        assertEquals(
+            true,
+            items.contains(
+                DateRange(
+                    startDate = LocalDate(year = 2026, month = Month.MAY, day = 1),
+                    endDate = LocalDate(year = 2026, month = Month.JUNE, day = 20)
+                )
+            )
+        )
+        assertEquals(
+            false,
+            items.contains(
+                DateRange(
+                    startDate = LocalDate(year = 2026, month = Month.MAY, day = 1),
+                    endDate = LocalDate(year = 2026, month = Month.JUNE, day = 21)
+                )
+            )
+        )
+    }
+
+    @Test
+    fun datePickerItems_containsDateRangeDates_acceptsUnorderedBoundaries() {
+        val items = DatePickerItems(
+            yearItems = listOf(2026),
+            monthItems = listOf(5),
+            dayItems = listOf(1, 20)
+        )
+
+        assertEquals(
+            true,
+            items.contains(
+                startDate = LocalDate(year = 2026, month = Month.MAY, day = 20),
+                endDate = LocalDate(year = 2026, month = Month.MAY, day = 1)
+            )
+        )
+    }
+
+    @Test
+    fun datePickerItems_containsDateRangeParts_checksBoundaryMembership() {
+        val items = DatePickerItems(
+            yearItems = listOf(2026),
+            monthItems = listOf(2, 3),
+            dayItems = listOf(28, 31)
+        )
+
+        assertEquals(
+            true,
+            items.contains(
+                startYear = 2026,
+                startMonth = 3,
+                startDay = 31,
+                endYear = 2026,
+                endMonth = 2,
+                endDay = 28
+            )
+        )
+        assertEquals(
+            false,
+            items.contains(
+                startYear = 2026,
+                startMonth = 3,
+                startDay = 31,
+                endYear = 2026,
+                endMonth = 2,
+                endDay = 29
+            )
+        )
+    }
+
+    @Test
     fun datePickerConstraints_throwsWhenMinimumIsAfterMaximum() {
         val error = assertFailsWith<IllegalArgumentException> {
             DatePickerConstraints(

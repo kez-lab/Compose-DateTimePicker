@@ -325,6 +325,43 @@ data class DatePickerItems(
     }
 
     /**
+     * Returns whether both boundaries of [dateRange] are directly selectable.
+     *
+     * This checks the start and end dates used by [com.kez.picker.date.DateRangePicker]. It does not
+     * require every date inside [dateRange] to appear in [dayItems].
+     */
+    fun contains(dateRange: DateRange): Boolean =
+        contains(startDate = dateRange.startDate, endDate = dateRange.endDate)
+
+    /**
+     * Returns whether [startDate] and [endDate] are directly selectable range boundaries.
+     *
+     * Unlike [DateRange], this overload accepts unordered inputs. The result only checks whether
+     * both provided boundary dates are selectable; it does not require every date between them to
+     * appear in [dayItems].
+     */
+    fun contains(startDate: LocalDate, endDate: LocalDate): Boolean =
+        contains(startDate) && contains(endDate)
+
+    /**
+     * Returns whether explicit start and end date parts are directly selectable range boundaries.
+     *
+     * Values outside the supported year, month, or day ranges return false. A day greater than the
+     * maximum valid day for its year and month also returns false.
+     */
+    fun contains(
+        startYear: Int,
+        startMonth: Int,
+        startDay: Int,
+        endYear: Int,
+        endMonth: Int,
+        endDay: Int
+    ): Boolean {
+        if (!contains(startYear, startMonth, startDay)) return false
+        return contains(endYear, endMonth, endDay)
+    }
+
+    /**
      * Returns the closest selectable date for [date].
      *
      * Candidate dates are compared as whole [LocalDate] values instead of independently coercing
