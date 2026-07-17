@@ -407,6 +407,24 @@ class DateRangePickerStateTest {
     }
 
     @Test
+    fun dateRangePickerState_selectStartDateWithItems_coercesAndMovesEndWhenStartPassesEnd() {
+        val state = DateRangePickerState(
+            initialStartDate = LocalDate(2026, 5, 1),
+            initialEndDate = LocalDate(2026, 5, 10)
+        )
+        val items = DatePickerItems(
+            yearItems = listOf(2026),
+            monthItems = listOf(5),
+            dayItems = listOf(20)
+        )
+
+        state.selectStartDate(LocalDate(2026, 5, 15), items)
+
+        assertEquals(LocalDate(2026, 5, 20), state.selectedStartDate)
+        assertEquals(LocalDate(2026, 5, 20), state.selectedEndDate)
+    }
+
+    @Test
     fun dateRangePickerState_selectEndDate_movesStartWhenEndPrecedesStart() {
         val state = DateRangePickerState(
             initialStartDate = LocalDate(2026, 5, 5),
@@ -430,6 +448,24 @@ class DateRangePickerStateTest {
 
         assertEquals(LocalDate(2026, 5, 1), state.selectedStartDate)
         assertEquals(LocalDate(2026, 5, 1), state.selectedEndDate)
+    }
+
+    @Test
+    fun dateRangePickerState_selectEndDatePartsWithItems_coercesAndMovesStartWhenEndPrecedesStart() {
+        val state = DateRangePickerState(
+            initialStartDate = LocalDate(2026, 5, 20),
+            initialEndDate = LocalDate(2026, 5, 25)
+        )
+        val items = DatePickerItems(
+            yearItems = listOf(2026),
+            monthItems = listOf(5),
+            dayItems = listOf(10)
+        )
+
+        state.selectEndDate(year = 2026, month = 5, day = 1, items = items)
+
+        assertEquals(LocalDate(2026, 5, 10), state.selectedStartDate)
+        assertEquals(LocalDate(2026, 5, 10), state.selectedEndDate)
     }
 
     @Test
