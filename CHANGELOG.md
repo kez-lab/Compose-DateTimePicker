@@ -6,6 +6,11 @@ This project tracks notable user-facing and maintainer-facing changes here. The 
 
 ### Added
 
+- Added the optional `PickerItemFormat.itemHeightProbeText` performance contract. Generic custom
+  formats still measure every item by default for exact fallback-font coverage, while the built-in
+  numeric date/time formats use bounded digit probes for large columns such as the default
+  9,000-year range.
+
 - Added `PickerDividerWidth` (`Fill`, `Fraction`, `Fixed`) and the `dividerWidth` parameter to
   `PickerStyle` / `PickerDefaults.style(...)` so the selection divider length can be a fraction of
   the column width or a fixed `Dp` instead of always filling the column. The divider stays centered
@@ -210,6 +215,10 @@ This project tracks notable user-facing and maintainer-facing changes here. The 
 
 ### Compatibility Notes
 
+- `PickerItemFormat` and the `PickerDefaults.*Format(...)` factories gained optional height-probe
+  parameters. This is an intentional binary API change queued for the next 0.x release. Source calls
+  that omit the new defaulted parameters continue to compile. Custom item-text lambdas keep exact
+  per-item measurement unless apps explicitly provide a probe.
 - The `*Preview` cleanup removes previously exposed but undocumented tooling symbols from repository ABI dumps. It does not remove supported picker/state APIs. If app code imported those preview functions from a local or snapshot build, remove those calls and use the actual picker composables instead.
 - ABI dump updates are now part of public API review. Intentional public API changes should update `datetimepicker/api/` and explain the compatibility impact.
 - The controlled picker/state overhaul is a breaking 0.x API change. Replace

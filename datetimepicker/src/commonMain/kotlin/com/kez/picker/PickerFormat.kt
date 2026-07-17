@@ -9,17 +9,30 @@ import com.kez.picker.util.TimePeriod
  * [itemText] controls visible item text. [itemContentDescription] controls the accessibility
  * value description when screen reader output should differ from visible text. When
  * [itemContentDescription] is null, [Picker] uses [itemText] for the accessibility value too.
+ * [itemHeightProbeText] is an optional performance contract for large item lists. When it is null,
+ * [Picker] measures every visible item text to preserve exact fallback-font coverage. When it is
+ * non-null, [Picker] measures the probe instead, so it must contain glyphs whose one-line height is
+ * at least as tall as every value produced by [itemText]. An insufficient probe can clip item text.
  *
  * @param itemText Text displayed for each item value.
  * @param itemContentDescription Optional accessibility description for each item value. When null,
  * [itemText] is used as the default value description.
+ * @param itemHeightProbeText Optional visible-text height probe that replaces per-item text
+ * measurement. Leave null for exact measurement of every formatted item.
  * @see PickerDefaults.itemFormat
  */
 @Immutable
 data class PickerItemFormat<T : Any>(
     val itemText: (T) -> String = { it.toString() },
-    val itemContentDescription: ((T) -> String)? = null
-)
+    val itemContentDescription: ((T) -> String)? = null,
+    val itemHeightProbeText: String? = null
+) {
+    init {
+        require(itemHeightProbeText == null || itemHeightProbeText.isNotBlank()) {
+            "PickerItemFormat itemHeightProbeText must be null or non-blank."
+        }
+    }
+}
 
 /**
  * Value formatting for [com.kez.picker.time.TimePicker].
