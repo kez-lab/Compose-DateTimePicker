@@ -432,14 +432,6 @@ accessibility value. This prevents visible text and screen-reader values from si
 apps should still provide explicit descriptions when TalkBack should read a more natural phrase such
 as "1 hour", "January", or "PM".
 
-Picker row height is exact by default: every formatted item is measured so custom scripts, fallback
-fonts, and combining sequences are covered. For a large list with a predictable text shape, pass
-`itemHeightProbeText` containing glyphs at least as tall as every value produced by `itemText`. This
-bounds height-measurement work independently of the item count. An insufficient probe can clip text,
-so leave it null when that guarantee is uncertain. Built-in numeric date/time formats provide a digit
-probe automatically; supplying a custom `*ItemText` lambda returns that column to exact measurement
-unless the matching `*ItemHeightProbeText` is also supplied.
-
 Semantics options customize the structural picker-column label and previous/next action labels.
 Selection is exposed through Compose `selected` semantics rather than appended as a hardcoded English
 phrase. Use `PickerDefaults.itemFormat(...)` on a generic `Picker<T>`, or
@@ -455,9 +447,7 @@ TimePicker(
         hourItemText = { it.toString().padStart(2, '0') },
         minuteItemText = { it.toString().padStart(2, '0') },
         hourItemContentDescription = { "$it hour" },
-        minuteItemContentDescription = { "$it minute" },
-        hourItemHeightProbeText = "00",
-        minuteItemHeightProbeText = "00"
+        minuteItemContentDescription = { "$it minute" }
     ),
     semantics = PickerDefaults.timePickerSemantics(
         hourPickerLabel = "Hour",
@@ -510,9 +500,6 @@ app-owned `selectedItem` to one of the new values before rendering the picker. T
 immutable while the picker is composed; create and pass a new list when available values change. If `T` is not
 saveable, store a saveable key in your app state and map that key back to an item before rendering
 the picker.
-For a large, consistently formatted list, add an explicit height probe such as
-`itemHeightProbeText = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"` to `PickerDefaults.itemFormat(...)`. The probe
-is a performance contract, not a sample: it must cover the tallest glyphs that any item can render.
 Pass `enabled = false` to prevent user scroll, click, and semantics selection actions while still
 showing the current value. Disabled pickers use the disabled slots from `PickerDefaults.colors(...)`
 for default text, dividers, and selected-item backgrounds.

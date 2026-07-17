@@ -36,11 +36,11 @@ private const val DEFAULT_PERIOD_ITEM_HEIGHT_PROBE_TEXT = "AMPM"
 private val DefaultIntegerItemText: (Int) -> String = { it.toString() }
 private val DefaultPeriodItemText: (TimePeriod) -> String = { it.name }
 
-private fun defaultIntegerItemHeightProbeText(itemText: (Int) -> String): String? =
-    DEFAULT_INTEGER_ITEM_HEIGHT_PROBE_TEXT.takeIf { itemText === DefaultIntegerItemText }
-
-private fun defaultPeriodItemHeightProbeText(itemText: (TimePeriod) -> String): String? =
-    DEFAULT_PERIOD_ITEM_HEIGHT_PROBE_TEXT.takeIf { itemText === DefaultPeriodItemText }
+internal fun defaultPickerItemHeightProbeText(itemText: Any): String? = when {
+    itemText === DefaultIntegerItemText -> DEFAULT_INTEGER_ITEM_HEIGHT_PROBE_TEXT
+    itemText === DefaultPeriodItemText -> DEFAULT_PERIOD_ITEM_HEIGHT_PROBE_TEXT
+    else -> null
+}
 
 /**
  * Contains default values and factory methods for creating Picker styles.
@@ -373,19 +373,14 @@ object PickerDefaults {
      * @param itemText Text displayed for each item value.
      * @param itemContentDescription Optional accessibility description for each item value. When null,
      * [itemText] is used as the default value description.
-     * @param itemHeightProbeText Optional visible-text height probe that replaces per-item text
-     * measurement. It must cover the tallest glyphs produced by [itemText]; leave null for exact
-     * measurement of every formatted item.
      * @return A [PickerItemFormat] instance with the specified value formatters.
      */
     fun <T : Any> itemFormat(
         itemText: (T) -> String = { it.toString() },
-        itemContentDescription: ((T) -> String)? = null,
-        itemHeightProbeText: String? = null
+        itemContentDescription: ((T) -> String)? = null
     ): PickerItemFormat<T> = PickerItemFormat(
         itemText = itemText,
-        itemContentDescription = itemContentDescription,
-        itemHeightProbeText = itemHeightProbeText
+        itemContentDescription = itemContentDescription
     )
 
     /**
@@ -397,10 +392,6 @@ object PickerDefaults {
      * @param hourItemContentDescription Optional accessibility description for each hour value.
      * @param minuteItemContentDescription Optional accessibility description for each minute value.
      * @param periodItemContentDescription Optional accessibility description for each AM/PM value.
-     * @param hourItemHeightProbeText Optional height probe for formatted hour text. The built-in
-     * numeric formatter uses a bounded digit probe; custom formatters default to exact measurement.
-     * @param minuteItemHeightProbeText Optional height probe for formatted minute text.
-     * @param periodItemHeightProbeText Optional height probe for formatted AM/PM text.
      * @return A [TimePickerFormat] instance with the specified value formatters.
      */
     fun timePickerFormat(
@@ -409,25 +400,19 @@ object PickerDefaults {
         periodItemText: (TimePeriod) -> String = DefaultPeriodItemText,
         hourItemContentDescription: ((Int) -> String)? = null,
         minuteItemContentDescription: ((Int) -> String)? = null,
-        periodItemContentDescription: ((TimePeriod) -> String)? = null,
-        hourItemHeightProbeText: String? = defaultIntegerItemHeightProbeText(hourItemText),
-        minuteItemHeightProbeText: String? = defaultIntegerItemHeightProbeText(minuteItemText),
-        periodItemHeightProbeText: String? = defaultPeriodItemHeightProbeText(periodItemText)
+        periodItemContentDescription: ((TimePeriod) -> String)? = null
     ): TimePickerFormat = TimePickerFormat(
         hour = itemFormat(
             itemText = hourItemText,
-            itemContentDescription = hourItemContentDescription,
-            itemHeightProbeText = hourItemHeightProbeText
+            itemContentDescription = hourItemContentDescription
         ),
         minute = itemFormat(
             itemText = minuteItemText,
-            itemContentDescription = minuteItemContentDescription,
-            itemHeightProbeText = minuteItemHeightProbeText
+            itemContentDescription = minuteItemContentDescription
         ),
         period = itemFormat(
             itemText = periodItemText,
-            itemContentDescription = periodItemContentDescription,
-            itemHeightProbeText = periodItemHeightProbeText
+            itemContentDescription = periodItemContentDescription
         )
     )
 
@@ -440,10 +425,6 @@ object PickerDefaults {
      * @param yearItemContentDescription Optional accessibility description for each year value.
      * @param monthItemContentDescription Optional accessibility description for each month value.
      * @param dayItemContentDescription Optional accessibility description for each day value.
-     * @param yearItemHeightProbeText Optional height probe for formatted year text. The built-in
-     * numeric formatter uses a bounded digit probe; custom formatters default to exact measurement.
-     * @param monthItemHeightProbeText Optional height probe for formatted month text.
-     * @param dayItemHeightProbeText Optional height probe for formatted day text.
      * @return A [DatePickerFormat] instance with the specified value formatters.
      */
     fun datePickerFormat(
@@ -452,25 +433,19 @@ object PickerDefaults {
         dayItemText: (Int) -> String = DefaultIntegerItemText,
         yearItemContentDescription: ((Int) -> String)? = null,
         monthItemContentDescription: ((Int) -> String)? = null,
-        dayItemContentDescription: ((Int) -> String)? = null,
-        yearItemHeightProbeText: String? = defaultIntegerItemHeightProbeText(yearItemText),
-        monthItemHeightProbeText: String? = defaultIntegerItemHeightProbeText(monthItemText),
-        dayItemHeightProbeText: String? = defaultIntegerItemHeightProbeText(dayItemText)
+        dayItemContentDescription: ((Int) -> String)? = null
     ): DatePickerFormat = DatePickerFormat(
         year = itemFormat(
             itemText = yearItemText,
-            itemContentDescription = yearItemContentDescription,
-            itemHeightProbeText = yearItemHeightProbeText
+            itemContentDescription = yearItemContentDescription
         ),
         month = itemFormat(
             itemText = monthItemText,
-            itemContentDescription = monthItemContentDescription,
-            itemHeightProbeText = monthItemHeightProbeText
+            itemContentDescription = monthItemContentDescription
         ),
         day = itemFormat(
             itemText = dayItemText,
-            itemContentDescription = dayItemContentDescription,
-            itemHeightProbeText = dayItemHeightProbeText
+            itemContentDescription = dayItemContentDescription
         )
     )
 
@@ -481,28 +456,21 @@ object PickerDefaults {
      * @param monthItemText Text displayed for each month value.
      * @param yearItemContentDescription Optional accessibility description for each year value.
      * @param monthItemContentDescription Optional accessibility description for each month value.
-     * @param yearItemHeightProbeText Optional height probe for formatted year text. The built-in
-     * numeric formatter uses a bounded digit probe; custom formatters default to exact measurement.
-     * @param monthItemHeightProbeText Optional height probe for formatted month text.
      * @return A [YearMonthPickerFormat] instance with the specified value formatters.
      */
     fun yearMonthPickerFormat(
         yearItemText: (Int) -> String = DefaultIntegerItemText,
         monthItemText: (Int) -> String = DefaultIntegerItemText,
         yearItemContentDescription: ((Int) -> String)? = null,
-        monthItemContentDescription: ((Int) -> String)? = null,
-        yearItemHeightProbeText: String? = defaultIntegerItemHeightProbeText(yearItemText),
-        monthItemHeightProbeText: String? = defaultIntegerItemHeightProbeText(monthItemText)
+        monthItemContentDescription: ((Int) -> String)? = null
     ): YearMonthPickerFormat = YearMonthPickerFormat(
         year = itemFormat(
             itemText = yearItemText,
-            itemContentDescription = yearItemContentDescription,
-            itemHeightProbeText = yearItemHeightProbeText
+            itemContentDescription = yearItemContentDescription
         ),
         month = itemFormat(
             itemText = monthItemText,
-            itemContentDescription = monthItemContentDescription,
-            itemHeightProbeText = monthItemHeightProbeText
+            itemContentDescription = monthItemContentDescription
         )
     )
 
