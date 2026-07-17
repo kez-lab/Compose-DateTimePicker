@@ -58,6 +58,21 @@ class SampleAppSmokeAndroidTest {
     }
 
     @Test
+    fun wheelPickerMenuAction_opensLiveAndSettledSelectionSample() {
+        composeRule
+            .onNodeWithTag("sample-menu-wheel-picker")
+            .performScrollTo()
+            .performClick()
+
+        composeRule
+            .onNodeWithText("WheelPicker Sample")
+            .assertIsDisplayed()
+        composeRule
+            .onNodeWithText("Set 8 seats programmatically")
+            .assertIsDisplayed()
+    }
+
+    @Test
     fun timePickerMenuAction_opensTimePickerSampleAndRendersDefaultTab() {
         composeRule
             .onNodeWithTag("sample-menu-time-picker")
@@ -138,6 +153,7 @@ class SampleAppSmokeAndroidTest {
 }
 
 private val sampleMenuTags = listOf(
+    "sample-menu-wheel-picker",
     "sample-menu-integrated",
     "sample-menu-time-picker",
     "sample-menu-year-month-picker",

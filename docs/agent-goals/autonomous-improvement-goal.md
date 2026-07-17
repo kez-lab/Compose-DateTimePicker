@@ -32,10 +32,10 @@ WheelPicker<T>, atomic/dependent MultiWheelPicker<State>, DurationPicker, Quanti
 우선순위:
 1. 시장/경쟁/baseline 문서와 10/100/10,000 item 및 9,000-year Android benchmark를 유지하고 물리 기기
    성능 증거를 수집한다. emulator dry run을 성능 수치로 주장하지 않는다.
-2. 현재 Picker<T>의 controlled state, programmatic sync, live/settled selection, save/restore, item identity 변경,
-   bounded/infinite mode, semantics 계약을 test로 고정한다.
-3. WheelPicker<T> 공개 이름과 Picker<T> migration 전략을 API/ABI 관점에서 결정한다. alias, delegation,
-   deprecation 중 증거가 가장 정직한 경로를 선택하며 이름만 바꾸지 않는다.
+2. WheelPicker<T>의 live change/settled callback과 기존 Picker<T>의 settled-only 호환 계약, programmatic sync,
+   item identity 변경, bounded/infinite mode, semantics를 test로 유지한다.
+3. WheelPicker<T>와 Picker<T>가 callback 의미를 섞지 않으면서 rendering/validation/style/semantics 내부 경로를
+   공유하도록 유지하고 ABI·양언어 문서·sample을 함께 검증한다.
 4. Date/Time에서 반복되는 dependent item filtering, constraint, deterministic repair, atomic logical callback 규칙을
    추출한다. non-default column order, source identity, restored value, intermediate scroll overwrite를 검증한다.
 5. MultiWheelPicker<State>는 처음부터 거대한 graph DSL로 공개하지 않는다. 최소 두 concrete preset에서 같은
@@ -65,11 +65,11 @@ WheelPicker<T>, atomic/dependent MultiWheelPicker<State>, DurationPicker, Quanti
 ## 권장 PR 순서
 
 1. 시장/제품 방향 기준선과 benchmark harness
-2. single-column selection event contract
-3. `WheelPicker<T>` API/migration 결정
-4. dependent column internal contract
-5. `DurationPicker` vertical slice
-6. `QuantityUnitPicker` vertical slice
+2. single-column `WheelPicker<T>` live/settled contract
+3. dependent column internal contract
+4. `DurationPicker` vertical slice
+5. `QuantityUnitPicker` vertical slice
+6. combined `DateTimePicker` vertical slice
 7. 반복이 증명된 최소 `MultiWheelPicker<State>` public API
 8. external first-use task kit와 pilot evidence
 

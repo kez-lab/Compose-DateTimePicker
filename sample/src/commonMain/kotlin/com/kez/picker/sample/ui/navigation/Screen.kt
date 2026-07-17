@@ -2,6 +2,7 @@ package com.kez.picker.sample.ui.navigation
 
 sealed class Screen(val route: String) {
     object Home : Screen("home")
+    object WheelPicker : Screen("wheel_picker")
     object Integrated : Screen("integrated")
     object TimePicker : Screen("time_picker")
     object YearMonthPicker : Screen("year_month_picker")

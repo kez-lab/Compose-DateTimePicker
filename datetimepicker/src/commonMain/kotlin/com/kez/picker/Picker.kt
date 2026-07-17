@@ -165,7 +165,9 @@ internal fun <T : Any> rememberPickerItemHeight(
  * @param items The list of items to display. Treat this list as immutable while the picker is
  * composed; create and pass a new list when available values change.
  * @param selectedItem The currently selected item. It must exist in [items].
- * @param onSelectedItemChange Called when scroll or click interaction selects a new item.
+ * @param onSelectedItemChange Called once after scroll, click, or semantics interaction settles on
+ * a new item. Update the controlled [selectedItem] from this callback. Programmatic
+ * [selectedItem] changes do not invoke it.
  * @param modifier The modifier to be applied to the picker.
  * @param enabled Whether user scroll, click, and semantics selection actions are enabled.
  * @param format Visible item text and optional accessibility value descriptions. When [content] is
@@ -188,6 +190,97 @@ fun <T : Any> Picker(
     isInfinity: Boolean = true,
     content: @Composable ((PickerItemScope<T>) -> Unit)? = null
 ) {
+    PickerImpl(
+        items = items,
+        selectedItem = selectedItem,
+        onCenteredItemChange = {},
+        onSelectionSettled = { settledItem ->
+            if (settledItem != selectedItem) {
+                onSelectedItemChange(settledItem)
+            }
+        },
+        modifier = modifier,
+        enabled = enabled,
+        format = format,
+        style = style,
+        semantics = semantics,
+        isInfinity = isInfinity,
+        content = content
+    )
+}
+
+/**
+ * A controlled single-column wheel picker with separate live and settled selection callbacks.
+ *
+ * Update [selectedItem] synchronously from [onSelectedItemChange]. The callback runs while a user
+ * scroll, item click, or semantics action moves a new item into the center. [onSelectionSettled]
+ * runs once after an interaction that changed the centered item stops. App-driven [selectedItem]
+ * changes synchronize the wheel without invoking either callback.
+ *
+ * `WheelPicker` does not own or save arbitrary [T] values. Keep the selected value in app state;
+ * when [T] is not saveable, persist a stable saveable key and map it back to an item before
+ * composition.
+ *
+ * Use [Picker] when migrating code that expects its selection callback only after scrolling
+ * settles. New generic wheel picker code should prefer this live controlled contract.
+ *
+ * @param items The immutable list of unique items to display.
+ * @param selectedItem The controlled item currently selected by the app. It must exist in [items].
+ * @param onSelectedItemChange Called whenever user interaction moves a different item into the
+ * center. Update [selectedItem] from this callback.
+ * @param modifier The modifier to be applied to the wheel picker.
+ * @param enabled Whether user scroll, click, and semantics selection actions are enabled.
+ * @param format Visible item text and optional accessibility value descriptions.
+ * @param style Visual and layout styling for the wheel picker.
+ * @param semantics Accessibility label and custom action labels for the wheel picker.
+ * @param isInfinity Whether the picker should loop infinitely.
+ * @param onSelectionSettled Called once when an interaction that changed the centered item settles.
+ * App-driven [selectedItem] synchronization does not invoke it.
+ * @param content Optional custom content composable for rendering each item.
+ */
+@Composable
+fun <T : Any> WheelPicker(
+    items: List<T>,
+    selectedItem: T,
+    onSelectedItemChange: (T) -> Unit,
+    modifier: Modifier = Modifier,
+    enabled: Boolean = true,
+    format: PickerItemFormat<T> = PickerDefaults.itemFormat(),
+    style: PickerStyle = PickerDefaults.style(),
+    semantics: PickerSemantics = PickerDefaults.semantics(),
+    isInfinity: Boolean = true,
+    onSelectionSettled: (T) -> Unit = {},
+    content: @Composable ((PickerItemScope<T>) -> Unit)? = null
+) {
+    PickerImpl(
+        items = items,
+        selectedItem = selectedItem,
+        onCenteredItemChange = onSelectedItemChange,
+        onSelectionSettled = onSelectionSettled,
+        modifier = modifier,
+        enabled = enabled,
+        format = format,
+        style = style,
+        semantics = semantics,
+        isInfinity = isInfinity,
+        content = content
+    )
+}
+
+@Composable
+private fun <T : Any> PickerImpl(
+    items: List<T>,
+    selectedItem: T,
+    onCenteredItemChange: (T) -> Unit,
+    onSelectionSettled: (T) -> Unit,
+    modifier: Modifier,
+    enabled: Boolean,
+    format: PickerItemFormat<T>,
+    style: PickerStyle,
+    semantics: PickerSemantics,
+    isInfinity: Boolean,
+    content: @Composable ((PickerItemScope<T>) -> Unit)?
+) {
     val visibleItemsCount = style.visibleItemsCount
     remember(items, selectedItem, visibleItemsCount) {
         validatePickerInput(
@@ -200,8 +293,10 @@ fun <T : Any> Picker(
     val density = LocalDensity.current
     val visibleItemsMiddle = remember(visibleItemsCount) { visibleItemsCount / 2 }
     val scope = rememberCoroutineScope()
-    val currentOnSelectedItemChange by rememberUpdatedState(onSelectedItemChange)
+    val currentOnCenteredItemChange by rememberUpdatedState(onCenteredItemChange)
+    val currentOnSelectionSettled by rememberUpdatedState(onSelectionSettled)
     val currentSelectedItem by rememberUpdatedState(selectedItem)
+    var centeredItemChangedDuringScroll by remember { mutableStateOf(false) }
     val selectedItemIndex = items.indexOf(selectedItem)
     val colors = style.colors
     val textStyles = style.textStyles
@@ -281,8 +376,14 @@ fun <T : Any> Picker(
             }
             .distinctUntilChanged()
             .collect { (item, isScrollInProgress) ->
-                if (enabled && !isScrollInProgress && item != currentSelectedItem) {
-                    currentOnSelectedItemChange(item)
+                if (!enabled) {
+                    centeredItemChangedDuringScroll = false
+                } else if (isScrollInProgress && item != currentSelectedItem) {
+                    centeredItemChangedDuringScroll = true
+                    currentOnCenteredItemChange(item)
+                } else if (!isScrollInProgress && centeredItemChangedDuringScroll) {
+                    centeredItemChangedDuringScroll = false
+                    currentOnSelectionSettled(item)
                 }
             }
     }
