@@ -6,6 +6,7 @@ This project tracks notable user-facing and maintainer-facing changes here. The 
 
 ### Added
 
+- Add a reproducible Android Macrobenchmark harness for generic 10/100/10,000-item picker startup and bounded-versus-exact 9,000-year `DatePicker` rendering comparisons.
 - Added `PickerDividerWidth` (`Fill`, `Fraction`, `Fixed`) and the `dividerWidth` parameter to
   `PickerStyle` / `PickerDefaults.style(...)` so the selection divider length can be a fraction of
   the column width or a fixed `Dp` instead of always filling the column. The divider stays centered
