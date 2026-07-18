@@ -5,12 +5,15 @@ import androidx.compose.ui.semantics.getOrNull
 import androidx.compose.ui.test.SemanticsMatcher
 import androidx.compose.ui.test.assertHasClickAction
 import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.hasContentDescription
+import androidx.compose.ui.test.hasTestTag
+import androidx.compose.ui.test.isSelected
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
-import androidx.compose.ui.test.performScrollTo
+import androidx.compose.ui.test.performScrollToNode
 import com.kez.picker.date.DateRange
 import com.kez.picker.util.currentDate
 import kotlinx.datetime.LocalDate
@@ -29,9 +32,9 @@ class SampleAppSmokeAndroidTest {
             .assertIsDisplayed()
 
         sampleMenuTags.forEach { tag ->
+            scrollToSampleMenuItem(tag)
             composeRule
                 .onNodeWithTag(tag)
-                .performScrollTo()
                 .assertIsDisplayed()
                 .assertHasClickAction()
         }
@@ -39,9 +42,9 @@ class SampleAppSmokeAndroidTest {
 
     @Test
     fun datePickerMenuAction_opensDatePickerSampleAndReturnsHome() {
+        scrollToSampleMenuItem("sample-menu-date-picker")
         composeRule
             .onNodeWithTag("sample-menu-date-picker")
-            .performScrollTo()
             .performClick()
 
         composeRule
@@ -59,9 +62,9 @@ class SampleAppSmokeAndroidTest {
 
     @Test
     fun wheelPickerMenuAction_opensLiveAndSettledSelectionSample() {
+        scrollToSampleMenuItem("sample-menu-wheel-picker")
         composeRule
             .onNodeWithTag("sample-menu-wheel-picker")
-            .performScrollTo()
             .performClick()
 
         composeRule
@@ -74,9 +77,9 @@ class SampleAppSmokeAndroidTest {
 
     @Test
     fun timePickerMenuAction_opensTimePickerSampleAndRendersDefaultTab() {
+        scrollToSampleMenuItem("sample-menu-time-picker")
         composeRule
             .onNodeWithTag("sample-menu-time-picker")
-            .performScrollTo()
             .performClick()
 
         composeRule
@@ -92,9 +95,9 @@ class SampleAppSmokeAndroidTest {
 
     @Test
     fun durationPickerMenuAction_opensBoundedScalarSample() {
+        scrollToSampleMenuItem("sample-menu-duration-picker")
         composeRule
             .onNodeWithTag("sample-menu-duration-picker")
-            .performScrollTo()
             .performClick()
 
         composeRule
@@ -105,6 +108,83 @@ class SampleAppSmokeAndroidTest {
             .assertIsDisplayed()
         composeRule
             .onNodeWithText("Reset 45 min")
+            .assertIsDisplayed()
+    }
+
+    @Test
+    fun quantityUnitMenuAction_opensDependentSourceSample() {
+        scrollToSampleMenuItem("sample-menu-quantity-unit-picker")
+        composeRule
+            .onNodeWithTag("sample-menu-quantity-unit-picker")
+            .performClick()
+
+        composeRule
+            .onNodeWithText("Quantity + Unit Sample")
+            .assertIsDisplayed()
+        composeRule
+            .onNodeWithText("Set 2 kg programmatically")
+            .assertIsDisplayed()
+        composeRule
+            .onNodeWithText("Reset 2,500 g")
+            .assertIsDisplayed()
+    }
+
+    @Test
+    fun quantityUnitPicker_unitRepairCommitsOnceAndProgrammaticResetIsCallbackFree() {
+        scrollToSampleMenuItem("sample-menu-quantity-unit-picker")
+        composeRule
+            .onNodeWithTag("sample-menu-quantity-unit-picker")
+            .performClick()
+
+        composeRule
+            .onNodeWithContentDescription("Mass unit: Kilogram")
+            .performClick()
+
+        composeRule
+            .onNode(
+                SemanticsMatcher.expectValue(
+                    SemanticsProperties.ContentDescription,
+                    listOf(
+                        "Selected mass, 2 kg, Normalized: 2000 g · " +
+                                "User callbacks: 1 · Last: 2 kg"
+                    )
+                )
+            )
+            .assertIsDisplayed()
+        composeRule
+            .onNodeWithText("2 kg")
+            .assertIsDisplayed()
+        composeRule
+            .onNode(
+                hasContentDescription("Quantity in kilograms: 2 kilograms") and isSelected()
+            )
+            .assertIsDisplayed()
+
+        composeRule
+            .onNodeWithText("Reset 2,500 g")
+            .performClick()
+
+        composeRule
+            .onNode(
+                SemanticsMatcher.expectValue(
+                    SemanticsProperties.ContentDescription,
+                    listOf(
+                        "Selected mass, 2500 g, Normalized: 2500 g · " +
+                                "User callbacks: 1 · Last: 2 kg"
+                    )
+                )
+            )
+            .assertIsDisplayed()
+        composeRule
+            .onNodeWithText("2500 g")
+            .assertIsDisplayed()
+        composeRule
+            .onNode(hasContentDescription("Mass unit: Gram") and isSelected())
+            .assertIsDisplayed()
+        composeRule
+            .onNode(
+                hasContentDescription("Quantity in grams: 2500 grams") and isSelected()
+            )
             .assertIsDisplayed()
     }
 
@@ -120,9 +200,9 @@ class SampleAppSmokeAndroidTest {
                 "Days selected: ${expectedYearRange.dayCount}. Last user change: No user change. " +
                 "Selectable year: ${today.year}"
 
+        scrollToSampleMenuItem("sample-menu-date-range-picker")
         composeRule
             .onNodeWithTag("sample-menu-date-range-picker")
-            .performScrollTo()
             .performClick()
 
         composeRule
@@ -148,9 +228,9 @@ class SampleAppSmokeAndroidTest {
 
     @Test
     fun integratedMenuAction_opensAccessibleSelectionSummaryAndReturnsHome() {
+        scrollToSampleMenuItem("sample-menu-integrated")
         composeRule
             .onNodeWithTag("sample-menu-integrated")
-            .performScrollTo()
             .performClick()
 
         composeRule
@@ -168,6 +248,12 @@ class SampleAppSmokeAndroidTest {
             .onNodeWithText("Compose DateTimePicker")
             .assertIsDisplayed()
     }
+
+    private fun scrollToSampleMenuItem(tag: String) {
+        composeRule
+            .onNodeWithTag("sample-menu-list")
+            .performScrollToNode(hasTestTag(tag))
+    }
 }
 
 private val sampleMenuTags = listOf(
@@ -175,6 +261,7 @@ private val sampleMenuTags = listOf(
     "sample-menu-integrated",
     "sample-menu-time-picker",
     "sample-menu-duration-picker",
+    "sample-menu-quantity-unit-picker",
     "sample-menu-year-month-picker",
     "sample-menu-date-picker",
     "sample-menu-date-range-picker",

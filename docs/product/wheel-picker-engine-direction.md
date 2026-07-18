@@ -73,6 +73,9 @@ temporal 사용자에게 주던 명확성까지 잃을 수 있다.
 제품·저장소의 목표 브랜드는 **`Compose-Pickers`**로 확정한다. 공식 표기와 향후 namespace 후보는 다음과
 같다.
 
+> Maintainer decision: 2026-07-18에 목표 브랜드를 `Compose-Pickers`로 확정했다. 이 결정은 아래 migration
+> gate를 생략하거나 기존 배포 좌표를 즉시 폐기한다는 뜻이 아니다.
+
 - 제품명 및 저장소명: `Compose-Pickers`
 - 향후 Maven artifact 후보: `io.github.kez-lab:compose-pickers`
 - 제품 설명: `Constraint-aware wheel selection for Compose Multiplatform`
@@ -255,10 +258,16 @@ behavior가 달라지는 slice는 README, README_KO, CHANGELOG, KDoc, ABI dump, 
 - non-default column order, source identity 변경, restore, intermediate scroll overwrite를 red-team한다.
 - public generic API는 concrete preset 최소 두 종류에서 같은 모델이 증명된 뒤에만 노출한다.
 
-### Phase 3 — non-temporal proof
+### Phase 3 — domain-expansion proof
 
 - `DurationPicker`와 `QuantityUnitPicker`의 representative sample, KDoc, tests를 만든다.
 - 처음 보는 개발자가 문서만으로 state/constraint/callback 계약을 설명하고 사용할 수 있는지 확인한다.
+
+현재 repository proof에서 `DurationPicker`는 public scalar preset으로, `QuantityUnitPicker`는 sample-local
+dependent-source slice로 구현됐다. Quantity/Unit은 unit별 item source, step, format, semantics가 logical state에서
+파생되고 settled change가 repair 뒤 한 번만 commit되는 동일한 seam을 sample에서 재현했다. 이 결과만으로 public
+`MultiWheelPicker<State>`를 바로 고정하지 않고, 다음 combined `DateTimePicker` slice에서 4개 이상의 column과
+기존 temporal state를 조합해도 preset-specific 예외가 늘어나지 않는지 확인한다.
 
 ### Phase 4 — 외부 수요 검증
 

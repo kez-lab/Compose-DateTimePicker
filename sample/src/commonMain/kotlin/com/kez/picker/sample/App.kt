@@ -15,6 +15,7 @@ import com.kez.picker.sample.ui.screen.DateRangePickerSampleScreen
 import com.kez.picker.sample.ui.screen.DurationPickerSampleScreen
 import com.kez.picker.sample.ui.screen.HomeScreen
 import com.kez.picker.sample.ui.screen.IntegratedPickerScreen
+import com.kez.picker.sample.ui.screen.QuantityUnitPickerSampleScreen
 import com.kez.picker.sample.ui.screen.TimePickerSampleScreen
 import com.kez.picker.sample.ui.screen.WheelPickerSampleScreen
 import com.kez.picker.sample.ui.screen.YearMonthPickerSampleScreen
@@ -57,6 +58,11 @@ fun App() {
             }
             composable(Screen.DurationPicker.route) {
                 DurationPickerSampleScreen(
+                    onBackPressed = { handleNavigateBack(navController) }
+                )
+            }
+            composable(Screen.QuantityUnitPicker.route) {
+                QuantityUnitPickerSampleScreen(
                     onBackPressed = { handleNavigateBack(navController) }
                 )
             }

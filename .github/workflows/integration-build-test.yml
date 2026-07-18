@@ -171,7 +171,7 @@ jobs:
             ${{ env.LIBRARY_MODULE }}:clean \
             ${{ env.LIBRARY_MODULE }}:desktopJar \
             ${{ env.LIBRARY_MODULE }}:desktopTest \
-            ${{ env.SAMPLE_MODULE }}:compileKotlinDesktop \
+            ${{ env.SAMPLE_MODULE }}:desktopTest \
             --no-daemon
 
   ios-build-and-test:
