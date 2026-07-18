@@ -15,6 +15,8 @@ generic `WheelPicker<T>` plus date/time presets with consistent APIs across Andr
 * **Quantity + Unit repository sample only — not artifact API**: Demonstrates a non-temporal unit
   change replacing quantity items, step, formatting, and semantics while committing one repaired
   logical value.
+* **Date + Time repository sample only — not artifact API**: Demonstrates five dependent columns
+  committing one exact `LocalDateTime` across a midnight boundary.
 * **DatePicker**: A complete date picker for selecting year, month, and day with automatic day
   validation.
 * **DateRangePicker**: An ordered start/end date picker for booking, filtering, and reporting flows.
@@ -28,7 +30,7 @@ generic `WheelPicker<T>` plus date/time presets with consistent APIs across Andr
 ## Sample App
 
 The repository includes a Compose Multiplatform sample app with inspectable generic wheel,
-dependent quantity/unit, date, time, duration, and bottom sheet flows.
+dependent quantity/unit, combined date-time, date, time, duration, and bottom sheet flows.
 
 <p align="center">
   <img src="docs/images/sample/sample-home.png" alt="Sample app home screen" width="23%" />
@@ -254,6 +256,29 @@ The first two files contain the core reference; the screen uses repository-speci
 components and is not a standalone copy target.
 This sample is evidence for the future engine API, not a promise that mass conversion belongs in the
 core picker library.
+
+### Date + Time dependent sample
+
+The sample app also contains a sample-local five-column `DateTimePicker`. It is not a supported
+artifact API. Its six exact whole-minute candidates cross midnight from `2026-02-28 23:00` to
+`2026-03-01 01:30`.
+
+- year, month, day, hour, and minute are derived from one `LocalDateTime`;
+- changing February to March replaces the downstream day/hour/minute sources;
+- `2026-02-28 23:30` repairs to the closest candidate `2026-03-01 00:00` in one state commit and
+  callback;
+- programmatic selection and restore coerce without dispatching a user callback;
+- an Android race test verifies that an in-flight, still-selectable minute target cannot overwrite
+  a later programmatic selection.
+
+See the core reference's
+[state and exact-candidate contract](sample/src/commonMain/kotlin/com/kez/picker/sample/ui/screen/datetime/DateTimePickerContract.kt),
+[picker composable](sample/src/commonMain/kotlin/com/kez/picker/sample/ui/screen/datetime/DateTimePicker.kt),
+and the repository-specific [sample screen](sample/src/commonMain/kotlin/com/kez/picker/sample/ui/screen/DateTimePickerSampleScreen.kt).
+The first two files are the core reference; the screen depends on repository-specific presentation
+components and is not a standalone copy target.
+This bounded stress case adds repository evidence for a future multi-column engine. It is not a
+production date-time API, timezone model, first-use result, or market-demand proof.
 
 ### DatePicker
 

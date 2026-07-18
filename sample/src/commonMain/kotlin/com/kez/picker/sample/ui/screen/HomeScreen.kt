@@ -78,8 +78,17 @@ internal fun HomeScreen(navController: NavController) {
             }
             item {
                 MenuListItem(
+                    title = "Exact Date-Time Slots (Sample Only)",
+                    description = "One internal LocalDateTime over five candidate columns",
+                    icon = FeatherIcons.Clock,
+                    modifier = Modifier.testTag("sample-menu-date-time-picker"),
+                    onClick = { navController.navigate(Screen.DateTimePicker.route) }
+                )
+            }
+            item {
+                MenuListItem(
                     title = "Integrated Sample",
-                    description = "Tabs with shared date and time state",
+                    description = "Public YearMonthPicker and TimePicker with separate states",
                     icon = FeatherIcons.CheckCircle,
                     modifier = Modifier.testTag("sample-menu-integrated"),
                     onClick = { navController.navigate(Screen.Integrated.route) }

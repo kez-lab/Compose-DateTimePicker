@@ -76,6 +76,88 @@ class SampleAppSmokeAndroidTest {
     }
 
     @Test
+    fun dateTimePickerMenuAction_opensFiveColumnExactCandidateSample() {
+        scrollToSampleMenuItem("sample-menu-date-time-picker")
+        composeRule
+            .onNodeWithTag("sample-menu-date-time-picker")
+            .performClick()
+
+        composeRule
+            .onNodeWithText("Exact Date-Time Slots")
+            .assertIsDisplayed()
+        composeRule
+            .onNodeWithText("Set Mar 1, 00:30 programmatically")
+            .assertIsDisplayed()
+        composeRule
+            .onNodeWithText("Reset Feb 28, 23:30")
+            .assertIsDisplayed()
+    }
+
+    @Test
+    fun dateTimePicker_monthRepairCommitsOnceAndProgrammaticResetIsCallbackFree() {
+        scrollToSampleMenuItem("sample-menu-date-time-picker")
+        composeRule
+            .onNodeWithTag("sample-menu-date-time-picker")
+            .performClick()
+
+        composeRule
+            .onNodeWithContentDescription("Date-time month: 3")
+            .performClick()
+
+        composeRule
+            .onNode(
+                SemanticsMatcher.expectValue(
+                    SemanticsProperties.ContentDescription,
+                    listOf(
+                        "Selected date-time, 2026-03-01 00:00, " +
+                                "User callbacks: 1 · Last: 2026-03-01 00:00"
+                    )
+                )
+            )
+            .assertIsDisplayed()
+        composeRule
+            .onNode(hasContentDescription("Date-time month: 3") and isSelected())
+            .assertIsDisplayed()
+        composeRule
+            .onNode(hasContentDescription("Date-time day: 1") and isSelected())
+            .assertIsDisplayed()
+        composeRule
+            .onNode(hasContentDescription("Date-time hour: 0") and isSelected())
+            .assertIsDisplayed()
+        composeRule
+            .onNode(hasContentDescription("Date-time minute: 0") and isSelected())
+            .assertIsDisplayed()
+
+        composeRule
+            .onNodeWithText("Reset Feb 28, 23:30")
+            .performClick()
+
+        composeRule
+            .onNode(
+                SemanticsMatcher.expectValue(
+                    SemanticsProperties.ContentDescription,
+                    listOf(
+                        "Selected date-time, 2026-02-28 23:30, " +
+                                "User callbacks: 1 · Last: 2026-03-01 00:00"
+                    )
+                )
+            )
+            .assertIsDisplayed()
+        composeRule
+            .onNode(hasContentDescription("Date-time month: 2") and isSelected())
+            .assertIsDisplayed()
+        composeRule
+            .onNode(hasContentDescription("Date-time day: 28") and isSelected())
+            .assertIsDisplayed()
+        composeRule
+            .onNode(hasContentDescription("Date-time hour: 23") and isSelected())
+            .assertIsDisplayed()
+        composeRule
+            .onNode(hasContentDescription("Date-time minute: 30") and isSelected())
+            .assertIsDisplayed()
+    }
+
+    @Test
     fun timePickerMenuAction_opensTimePickerSampleAndRendersDefaultTab() {
         scrollToSampleMenuItem("sample-menu-time-picker")
         composeRule
@@ -258,6 +340,7 @@ class SampleAppSmokeAndroidTest {
 
 private val sampleMenuTags = listOf(
     "sample-menu-wheel-picker",
+    "sample-menu-date-time-picker",
     "sample-menu-integrated",
     "sample-menu-time-picker",
     "sample-menu-duration-picker",

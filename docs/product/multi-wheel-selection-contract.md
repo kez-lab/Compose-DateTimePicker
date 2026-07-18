@@ -88,10 +88,12 @@ interaction contract (still pending)
   + stale-generation cancellation
 ```
 
-The Quantity/Unit implementation intentionally remains in the sample module. A combined
-`DateTimePicker` slice must still test interaction-generation cancellation and whether this seam
-supports a larger temporal composition without forcing preset-specific callbacks or layout rules
-before it becomes public API.
+The Quantity/Unit and combined DateTime implementations intentionally remain in the sample module.
+DateTime applies the transition to five typed columns backed by one exact-candidate `LocalDateTime`
+source. Its Android interaction test verifies that a programmatic logical selection cancels an
+in-flight minute target even when that target is still valid in the replacement source. This closes
+one interaction-generation case without promoting whole-subtree `key` replacement into a public
+engine primitive.
 
 - `YearMonthPickerState` and `DateRangePickerState` still need the same one-snapshot logical update
   audit before they can claim this contract.
@@ -101,7 +103,17 @@ before it becomes public API.
 - Infinite mode with a one-value source currently renders repeated visible rows whose equal values
   all satisfy selected semantics. Audit single-value rendering so accessibility exposes one logical
   selection rather than several selected duplicates.
-- Combined DateTime is the next evidence slice, not the only public API gate. A public engine remains
-  gated on DateTime proving the same late-invalid-value, dependency, restore, and settled-event model
-  without preset-specific exceptions, the open YearMonth/DateRange/disabled/single-value counterpart
-  audits above, and an explicit live-versus-settled event proposal.
+- Combined DateTime is repository evidence, not the only public API gate. A public engine remains
+  gated on the open YearMonth/DateRange/disabled/single-value counterpart audits above, simultaneous
+  upstream/dependent settlement and source-replacement coverage for the five-column model, an
+  explicit live-versus-settled event proposal, and benchmark-backed cancellation/measurement design.
+- Before fixing a public surface, one private shared prototype must reimplement at least two existing
+  slices without increasing preset-specific glue or exception paths. The proposal must explicitly
+  choose whether v1 supports only an ordered dependency chain or an arbitrary dependency graph.
+  Every prototype symbol must remain `internal` with zero `datetimepicker/api/` public-symbol delta.
+  At least one temporal and one non-temporal slice must share the same core reducer/generation
+  implementation and contract-test harness without preset-type `when`, casts, or exception adapters,
+  and existing public preset signatures must not change.
+- At least one prototype slice must exercise separate live item and repaired logical-settled events.
+  Interaction tests must prove that programmatic synchronization, source replacement, and stale
+  settlement do not emit either event incorrectly; a document-only event proposal is insufficient.
