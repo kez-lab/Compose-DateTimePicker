@@ -1,8 +1,10 @@
-# Constraint-aware Wheel Picker Engine 제품 방향
+# Compose-Pickers: Constraint-aware Wheel Picker Engine 제품 방향
 
 > 상태: 제품 가설 및 구현 순서 기준선
 > 근거 스냅샷: 2026-07-18
-> 범위: 저장소 이름, Maven 좌표, 공개 API를 즉시 변경하는 결정이 아니라 다음 구현 slice의 방향을 고정한다.
+> 목표 브랜드: `Compose-Pickers`
+> 범위: 목표 브랜드와 다음 구현 slice의 방향을 고정한다. 저장소 이름, Maven 좌표, package, 공개 API의
+> 즉시 변경을 승인하는 문서는 아니다.
 
 ## 결론
 
@@ -20,6 +22,10 @@
 기존 `TimePicker`, `DatePicker`, `YearMonthPicker`, `DateRangePicker`는 버릴 대상이 아니라 이 engine의 첫
 presets이자 회귀 검증 기준이다. 이후 `DurationPicker`와 `QuantityUnitPicker`처럼 날짜가 아닌 실제 사용 사례를
 추가해 범용성을 증명한다.
+
+이 제품 방향의 공식 목표 브랜드는 **`Compose-Pickers`**다. 이름은 기존 temporal picker 사용자에게 익숙한
+`Compose`와 `Picker` vocabulary를 유지하면서도, 복수형 `Pickers`로 단일 date/time component가 아니라
+재사용 가능한 picker primitives와 presets의 제품군임을 나타낸다.
 
 ## 냉정한 시장 판정
 
@@ -62,25 +68,45 @@ presets이자 회귀 검증 기준이다. 이후 `DurationPicker`와 `QuantityUn
 미검증**이다. 특히 지금 인지도 상태에서 이름만 `WheelPicker`로 바꾸면 검색 경쟁은 더 치열해지고 기존
 temporal 사용자에게 주던 명확성까지 잃을 수 있다.
 
-## Naming decision gate
+## 브랜드 결정과 migration gate
 
-`WheelPicker`는 제품·저장소 브랜드 후보에서 제외한다. Compose Multiplatform에 이미 정확히 같은 범주의
+제품·저장소의 목표 브랜드는 **`Compose-Pickers`**로 확정한다. 공식 표기와 향후 namespace 후보는 다음과
+같다.
+
+- 제품명 및 저장소명: `Compose-Pickers`
+- 향후 Maven artifact 후보: `io.github.kez-lab:compose-pickers`
+- 제품 설명: `Constraint-aware wheel selection for Compose Multiplatform`
+- 기존 Kotlin package `com.kez.picker`와 public API 이름은 브랜드 결정만으로 변경하지 않는다.
+
+이 이름은 소유자 접두사나 설명이 필요한 조어보다 보편적인 개발자 vocabulary를 우선한다. 그 대가로 이름
+자체의 상표 독점력과 일반 검색 구분성은 강하지 않다. README title, repository description, topics, 문서 subtitle에
+`constraint-aware`, `wheel selection`, `Compose Multiplatform`을 일관되게 사용해 검색 의도를 보완한다.
+
+`WheelPicker`는 제품·저장소 브랜드 후보에서 계속 제외한다. Compose Multiplatform에 이미 정확히 같은 범주의
 `KMP Wheel Picker`가 `com.swmansion.kmpwheelpicker:kmp-wheel-picker`로 Maven Central에 배포되고 있고,
 Android에는 Compose를 지원하는 `dev.aige.pub:WheelPicker`와 여러 `wheelpicker-compose` 계열 프로젝트가
 존재한다. 보통명사만으로 리브랜딩하면 법적 문제보다 먼저 검색성, 기억성, dependency 식별성이 나빠진다.
 
 브랜드와 API vocabulary는 분리한다.
 
-- 제품·저장소·문서 사이트는 검색 가능한 고유 브랜드를 별도 naming validation에서 결정한다.
+- 제품·저장소·문서 사이트는 `Compose-Pickers`를 목표 브랜드로 사용한다.
 - 단일-column composable `WheelPicker<T>`는 UI control을 설명하는 API 보통명사로 유지할 수 있다.
 - `MultiWheelPicker<State>`는 아직 공개 API가 아니며, Duration/Quantity 검증 뒤 역할을 더 잘 드러내는 이름과
   함께 다시 비교한다.
-- Maven artifact와 package migration은 외부 first-use/adoption 증거, 후보명 충돌 검색, migration 비용을
-  함께 평가하기 전에는 수행하지 않는다.
+- Maven artifact, package, repository migration은 외부 first-use/adoption 증거, migration 비용, 기존 좌표의
+  deprecation/redirect 전략을 함께 평가하기 전에는 수행하지 않는다.
 
-후보 브랜드는 GitHub/Maven Central exact-name 충돌, 일반 검색 결과의 구분 가능성, 발음·철자 회상성,
-도메인/조직 namespace 가능성, temporal 전용으로 오해되지 않는지를 통과해야 한다. 이름이 engine의 실제
-채택 증거보다 먼저 제품 방향을 결정하게 두지 않는다.
+2026-07-18 예비 검색에서 `compose-pickers` Maven artifact와 npm package의 exact-name 충돌은 발견되지
+않았다. 이는 법률적 상표 clearance나 향후 namespace 확보를 보장하지 않는다. 실제 repository/artifact rename
+직전에는 GitHub, Maven Central, 주요 package registry와 필요한 상표권역을 다시 검색한다.
+
+브랜드 확정과 migration 실행은 별개의 결정이다. 다음 조건을 충족하기 전까지 공개 설치 좌표와 저장소 이름은
+`Compose-DateTimePicker` / `io.github.kez-lab:compose-date-time-picker`로 유지한다.
+
+1. 최소 두 개의 non-temporal preset으로 범용 picker 가설을 검증한다.
+2. 기존 artifact 사용자를 위한 병행 배포 또는 명시적 migration 경로를 준비한다.
+3. README, README_KO, API reference, sample, release note를 같은 release slice에서 전환할 수 있다.
+4. rename 직전 exact-name 및 상표 혼동 가능성을 다시 점검한다.
 
 ## 경쟁 지형에서의 빈자리
 
