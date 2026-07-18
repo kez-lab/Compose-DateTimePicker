@@ -1,7 +1,7 @@
 # Constraint-aware Wheel Picker Engine 제품 방향
 
 > 상태: 제품 가설 및 구현 순서 기준선
-> 근거 스냅샷: 2026-07-17
+> 근거 스냅샷: 2026-07-18
 > 범위: 저장소 이름, Maven 좌표, 공개 API를 즉시 변경하는 결정이 아니라 다음 구현 slice의 방향을 고정한다.
 
 ## 결론
@@ -61,6 +61,26 @@ presets이자 회귀 검증 기준이다. 이후 `DurationPicker`와 `QuantityUn
 이 가설을 외부 개발자 증거 없이 “시장 검증 완료”로 표현하면 안 된다. 현재 제품성 평가는 **유망하지만
 미검증**이다. 특히 지금 인지도 상태에서 이름만 `WheelPicker`로 바꾸면 검색 경쟁은 더 치열해지고 기존
 temporal 사용자에게 주던 명확성까지 잃을 수 있다.
+
+## Naming decision gate
+
+`WheelPicker`는 제품·저장소 브랜드 후보에서 제외한다. Compose Multiplatform에 이미 정확히 같은 범주의
+`KMP Wheel Picker`가 `com.swmansion.kmpwheelpicker:kmp-wheel-picker`로 Maven Central에 배포되고 있고,
+Android에는 Compose를 지원하는 `dev.aige.pub:WheelPicker`와 여러 `wheelpicker-compose` 계열 프로젝트가
+존재한다. 보통명사만으로 리브랜딩하면 법적 문제보다 먼저 검색성, 기억성, dependency 식별성이 나빠진다.
+
+브랜드와 API vocabulary는 분리한다.
+
+- 제품·저장소·문서 사이트는 검색 가능한 고유 브랜드를 별도 naming validation에서 결정한다.
+- 단일-column composable `WheelPicker<T>`는 UI control을 설명하는 API 보통명사로 유지할 수 있다.
+- `MultiWheelPicker<State>`는 아직 공개 API가 아니며, Duration/Quantity 검증 뒤 역할을 더 잘 드러내는 이름과
+  함께 다시 비교한다.
+- Maven artifact와 package migration은 외부 first-use/adoption 증거, 후보명 충돌 검색, migration 비용을
+  함께 평가하기 전에는 수행하지 않는다.
+
+후보 브랜드는 GitHub/Maven Central exact-name 충돌, 일반 검색 결과의 구분 가능성, 발음·철자 회상성,
+도메인/조직 namespace 가능성, temporal 전용으로 오해되지 않는지를 통과해야 한다. 이름이 engine의 실제
+채택 증거보다 먼저 제품 방향을 결정하게 두지 않는다.
 
 ## 경쟁 지형에서의 빈자리
 
@@ -282,5 +302,7 @@ picker에서 atomic/dependent selection 계약을 다음 증거로 고정한다.
 - [commandiron/WheelPickerCompose](https://github.com/commandiron/WheelPickerCompose)
 - [darkokoa/compose-datetime-wheel-picker](https://github.com/darkokoa/compose-datetime-wheel-picker)
 - [software-mansion-labs/kmp-wheel-picker](https://github.com/software-mansion-labs/kmp-wheel-picker)
+- [Maven Central — com.swmansion.kmpwheelpicker:kmp-wheel-picker](https://central.sonatype.com/artifact/com.swmansion.kmpwheelpicker/kmp-wheel-picker)
+- [devaige/WheelPicker](https://github.com/devaige/WheelPicker)
 - [zj565061763/compose-wheel-picker](https://github.com/zj565061763/compose-wheel-picker)
 - [KMP Awesome — Compose UI](https://github.com/terrakok/kmp-awesome#-compose-ui)

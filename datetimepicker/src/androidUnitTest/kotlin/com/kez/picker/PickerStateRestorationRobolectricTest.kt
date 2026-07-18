@@ -1,5 +1,8 @@
 package com.kez.picker
 
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.test.junit4.StateRestorationTester
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.hasContentDescription
@@ -114,6 +117,105 @@ class PickerStateRestorationRobolectricTest {
     }
 
     @Test
+    fun timePicker_itemsAndFormatChangeRecreatesStateAgainstTheLatestSource() {
+        lateinit var state: TimePickerState
+        lateinit var itemsState: MutableState<TimePickerItems>
+        lateinit var formatState: MutableState<TimeFormat>
+        val originalItems = PickerDefaults.timePickerItems(
+            minuteItems = listOf(0),
+            hour24Items = listOf(8),
+            hour12Items = listOf(8)
+        )
+        val replacementItems = PickerDefaults.timePickerItems(
+            minuteItems = listOf(30),
+            hour24Items = listOf(9),
+            hour12Items = listOf(9),
+            periodItems = listOf(TimePeriod.PM)
+        )
+
+        composeRule.setContent {
+            itemsState = remember { mutableStateOf(originalItems) }
+            formatState = remember { mutableStateOf(TimeFormat.HOUR_24) }
+            state = rememberTimePickerState(
+                items = itemsState.value,
+                initialHour = 8,
+                initialMinute = 0,
+                timeFormat = formatState.value
+            )
+            TimePicker(
+                state = state,
+                items = itemsState.value
+            )
+        }
+
+        composeRule.runOnIdle {
+            itemsState.value = replacementItems
+            formatState.value = TimeFormat.HOUR_12
+        }
+        composeRule.waitForIdle()
+
+        composeRule.runOnIdle {
+            assertEquals(TimeFormat.HOUR_12, state.timeFormat)
+            assertEquals(LocalTime(21, 30), state.selectedTime)
+        }
+    }
+
+    @Test
+    fun timePicker_itemsAwareRestoreCoercesSavedValueWithTheRecreatedSource() {
+        lateinit var state: TimePickerState
+        val committedTimes = mutableListOf<LocalTime>()
+        val restorationTester = StateRestorationTester(composeRule)
+        val originalItems = PickerDefaults.timePickerItems(
+            minuteItems = listOf(0, 30),
+            hour24Items = listOf(8, 17)
+        )
+        var recreatedItems = originalItems
+
+        restorationTester.setContent {
+            state = rememberTimePickerState(
+                items = recreatedItems,
+                initialTime = LocalTime(8, 0)
+            )
+            TimePicker(
+                state = state,
+                items = recreatedItems,
+                onSelectedTimeChange = committedTimes::add,
+                style = PickerDefaults.style(visibleItemsCount = 3),
+                format = PickerDefaults.timePickerFormat(
+                    hourItemContentDescription = { "$it hour" },
+                    minuteItemContentDescription = { "$it minute" }
+                ),
+                semantics = PickerDefaults.timePickerSemantics(
+                    hourPickerLabel = "Hour",
+                    minutePickerLabel = "Minute"
+                )
+            )
+        }
+
+        composeRule.runOnIdle {
+            state.selectTime(LocalTime(17, 30), originalItems)
+            recreatedItems = PickerDefaults.timePickerItems(
+                minuteItems = listOf(30),
+                hour24Items = listOf(9)
+            )
+        }
+
+        restorationTester.emulateSavedInstanceStateRestore()
+        composeRule.waitForIdle()
+
+        composeRule
+            .onAllNodes(hasContentDescription("Hour: 9 hour") and isSelected())[0]
+            .assertExists()
+        composeRule
+            .onAllNodes(hasContentDescription("Minute: 30 minute") and isSelected())[0]
+            .assertExists()
+        composeRule.runOnIdle {
+            assertEquals(LocalTime(9, 30), state.selectedTime)
+            assertEquals(emptyList<LocalTime>(), committedTimes)
+        }
+    }
+
+    @Test
     fun timePicker_restoresSelectionIntoRenderedSemanticsAfterSaveRestore() {
         lateinit var state: TimePickerState
         val restorationTester = StateRestorationTester(composeRule)
@@ -211,6 +313,68 @@ class PickerStateRestorationRobolectricTest {
 
         composeRule.runOnIdle {
             assertEquals(LocalDate(year = 2026, month = 5, day = 10), state.selectedDate)
+        }
+    }
+
+    @Test
+    fun datePicker_itemsAwareRestoreCoercesSavedValueWithTheRecreatedSource() {
+        lateinit var state: DatePickerState
+        val committedDates = mutableListOf<LocalDate>()
+        val restorationTester = StateRestorationTester(composeRule)
+        val originalItems = PickerDefaults.datePickerItems(
+            yearItems = listOf(2025, 2026),
+            monthItems = listOf(1, 2),
+            dayItems = listOf(15, 28, 31)
+        )
+        var recreatedItems = originalItems
+
+        restorationTester.setContent {
+            state = rememberDatePickerState(
+                items = recreatedItems,
+                initialDate = LocalDate(2025, 1, 31)
+            )
+            DatePicker(
+                state = state,
+                items = recreatedItems,
+                onSelectedDateChange = committedDates::add,
+                style = PickerDefaults.style(visibleItemsCount = 3),
+                format = PickerDefaults.datePickerFormat(
+                    yearItemContentDescription = { "$it year" },
+                    monthItemContentDescription = { "$it month" },
+                    dayItemContentDescription = { "$it day" }
+                ),
+                semantics = PickerDefaults.datePickerSemantics(
+                    yearPickerLabel = "Year",
+                    monthPickerLabel = "Month",
+                    dayPickerLabel = "Day"
+                )
+            )
+        }
+
+        composeRule.runOnIdle {
+            state.selectDate(LocalDate(2026, 2, 28), originalItems)
+            recreatedItems = PickerDefaults.datePickerItems(
+                yearItems = listOf(2025),
+                monthItems = listOf(1),
+                dayItems = listOf(15)
+            )
+        }
+
+        restorationTester.emulateSavedInstanceStateRestore()
+        composeRule.waitForIdle()
+
+        composeRule
+            .onAllNodes(hasContentDescription("Year: 2025 year") and isSelected())[0]
+            .assertExists()
+        composeRule
+            .onAllNodes(hasContentDescription("Month: 1 month") and isSelected())[0]
+            .assertExists()
+        composeRule
+            .onAllNodes(hasContentDescription("Day: 15 day") and isSelected())[0]
+            .assertExists()
+        composeRule.runOnIdle {
+            assertEquals(LocalDate(2025, 1, 15), state.selectedDate)
+            assertEquals(emptyList<LocalDate>(), committedDates)
         }
     }
 

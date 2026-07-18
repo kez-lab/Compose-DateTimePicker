@@ -5,9 +5,11 @@ import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.saveable.Saver
 import androidx.compose.runtime.saveable.listSaver
 import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.snapshots.Snapshot
 import androidx.compose.runtime.setValue
 import com.kez.picker.TimePickerItems
 import com.kez.picker.util.TimeFormat
@@ -79,14 +81,17 @@ fun rememberTimePickerState(
 /**
  * Creates and remembers a [TimePickerState] whose initial value is coerced by [items].
  *
- * Initial values and [items] are read when the state is first created. This is useful when the
- * picker is rendered with custom item lists or time bounds and restored app state may fall outside
- * those rules.
+ * Initial values and [items] are read when the state is first created. An items-only recomposition
+ * does not reset the state. If [timeFormat] changes, the state is recreated against the latest
+ * [items]. On recreation, the [items] supplied by the recreated composition also coerce the saved
+ * value, so the picker cannot restore outside its current custom lists or time bounds.
  *
  * @param items Selectable values used to coerce [initialTime] before creating the state.
  * @param initialTime The requested initial time.
  * @param timeFormat The time format (12-hour or 24-hour). Defaults to [TimeFormat.HOUR_24].
  * @return A [TimePickerState] initialized to the closest selectable time.
+ * @throws IllegalArgumentException if the item lists needed by [timeFormat] are invalid or contain
+ * no time allowed by their constraints.
  */
 @Composable
 fun rememberTimePickerState(
@@ -95,17 +100,20 @@ fun rememberTimePickerState(
     timeFormat: TimeFormat = TimeFormat.HOUR_24
 ): TimePickerState {
     val rememberedInitialTime = remember { initialTime }
-    val rememberedItems = remember { items }
-    val coercedInitialTime = remember(rememberedInitialTime, rememberedItems, timeFormat) {
-        rememberedItems.coerceTime(
+    val currentItems by rememberUpdatedState(items)
+    val itemsForState = remember(timeFormat) { currentItems }
+    val coercedInitialTime = remember(rememberedInitialTime, itemsForState, timeFormat) {
+        itemsForState.coerceTime(
             time = rememberedInitialTime,
             timeFormat = timeFormat
         )
     }
-    return rememberTimePickerState(
-        initialTime = coercedInitialTime,
-        timeFormat = timeFormat
-    )
+    val saver = remember(itemsForState, timeFormat) {
+        timePickerStateSaver(timeFormat = timeFormat, items = itemsForState)
+    }
+    return rememberSaveable(timeFormat, saver = saver) {
+        TimePickerState(initialTime = coercedInitialTime, timeFormat = timeFormat)
+    }
 }
 
 /**
@@ -115,6 +123,7 @@ fun rememberTimePickerState(
  * the same way as [rememberTimePickerState] without [items]: as an hour-of-day in `0..23`, then
  * converted to the active [timeFormat]. In 12-hour mode, [initialPeriod] can override the period
  * derived from [initialHour].
+ * On recreation, the [items] supplied by the recreated composition also coerce the saved value.
  *
  * @param items Selectable values used to coerce [initialHour] and [initialMinute].
  * @param initialHour The requested initial hour-of-day. Must be in 0..23.
@@ -122,6 +131,9 @@ fun rememberTimePickerState(
  * @param initialPeriod The requested AM/PM period when [timeFormat] is [TimeFormat.HOUR_12].
  * @param timeFormat The time format (12-hour or 24-hour). Defaults to [TimeFormat.HOUR_24].
  * @return A [TimePickerState] initialized to the closest selectable time.
+ * @throws IllegalArgumentException if [initialHour] or [initialMinute] is outside its supported
+ * range, or if the item lists needed by [timeFormat] are invalid or contain no time allowed by
+ * their constraints.
  */
 @Composable
 fun rememberTimePickerState(
@@ -134,7 +146,6 @@ fun rememberTimePickerState(
     val rememberedInitialHour = remember { initialHour }
     val rememberedInitialMinute = remember { initialMinute }
     val rememberedInitialPeriod = remember { initialPeriod }
-    val rememberedItems = remember { items }
     val requestedInitialTime = remember(
         rememberedInitialHour,
         rememberedInitialMinute,
@@ -148,14 +159,9 @@ fun rememberTimePickerState(
             timeFormat = timeFormat
         )
     }
-    val coercedInitialTime = remember(requestedInitialTime, rememberedItems, timeFormat) {
-        rememberedItems.coerceTime(
-            time = requestedInitialTime,
-            timeFormat = timeFormat
-        )
-    }
     return rememberTimePickerState(
-        initialTime = coercedInitialTime,
+        items = items,
+        initialTime = requestedInitialTime,
         timeFormat = timeFormat
     )
 }
@@ -208,17 +214,20 @@ private fun displayTimeFromParts(displayHour: Int, minute: Int, period: TimePeri
     return LocalTime(hour = hourOfDay, minute = minute)
 }
 
-private fun timePickerStateSaver(timeFormat: TimeFormat): Saver<TimePickerState, Any> {
+private fun timePickerStateSaver(
+    timeFormat: TimeFormat,
+    items: TimePickerItems? = null
+): Saver<TimePickerState, Any> {
     return listSaver(
         save = { listOf(it.selectedHourOfDay, it.selectedMinute) },
         restore = {
             val restoredHourOfDay = it[0] as Int
-            TimePickerState(
-                initialHour = initialHourForTimeFormat(restoredHourOfDay, timeFormat),
-                initialMinute = it[1] as Int,
-                initialPeriod = if (restoredHourOfDay >= 12) TimePeriod.PM else TimePeriod.AM,
-                timeFormat = timeFormat
+            val restoredTime = LocalTime(
+                hour = restoredHourOfDay,
+                minute = it[1] as Int
             )
+            val selectedTime = items?.coerceTime(restoredTime, timeFormat) ?: restoredTime
+            TimePickerState(initialTime = selectedTime, timeFormat = timeFormat)
         }
     )
 }
@@ -316,12 +325,14 @@ class TimePickerState(
      *
      * The hour is converted to the current [timeFormat]. In 12-hour mode, the AM/PM period is derived from
      * [time]. In 24-hour mode, [selectedPeriod] is still updated for consistency but is not formatted by
-     * [TimePicker].
+     * [TimePicker]. The hour, minute, and period fields are applied together as one logical state update.
      */
     fun selectTime(time: LocalTime) {
-        mutableSelectedHour = initialHourForTimeFormat(time.hour, timeFormat)
-        mutableSelectedMinute = time.minute
-        mutableSelectedPeriod = if (time.hour >= 12) TimePeriod.PM else TimePeriod.AM
+        Snapshot.withMutableSnapshot {
+            mutableSelectedHour = initialHourForTimeFormat(time.hour, timeFormat)
+            mutableSelectedMinute = time.minute
+            mutableSelectedPeriod = if (time.hour >= 12) TimePeriod.PM else TimePeriod.AM
+        }
     }
 
     /**
@@ -376,26 +387,6 @@ class TimePickerState(
      */
     fun selectTime(displayHour: Int, minute: Int, period: TimePeriod, items: TimePickerItems) {
         selectTime(items.coerceTime(displayHour = displayHour, minute = minute, period = period))
-    }
-
-    internal fun selectHour(hour: Int) {
-        val hourRange = if (timeFormat == TimeFormat.HOUR_12) 1..12 else 0..23
-        val hourRangeLabel = if (timeFormat == TimeFormat.HOUR_12) "1..12" else "0..23"
-        require(hour in hourRange) {
-            "hour must be in range $hourRangeLabel for timeFormat=$timeFormat, but was $hour"
-        }
-        mutableSelectedHour = hour
-    }
-
-    internal fun selectMinute(minute: Int) {
-        require(minute in 0..59) {
-            "minute must be in range 0..59, but was $minute"
-        }
-        mutableSelectedMinute = minute
-    }
-
-    internal fun selectPeriod(period: TimePeriod) {
-        mutableSelectedPeriod = period
     }
 
     companion object {

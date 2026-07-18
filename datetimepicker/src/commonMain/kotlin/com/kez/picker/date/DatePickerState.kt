@@ -8,6 +8,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.Saver
 import androidx.compose.runtime.saveable.listSaver
 import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.snapshots.Snapshot
 import androidx.compose.runtime.setValue
 import com.kez.picker.DatePickerItems
 import com.kez.picker.util.currentDate
@@ -18,10 +19,8 @@ import kotlinx.datetime.number
  * Creates and remembers a [DatePickerState].
  * Initial date values are read when the state is first created.
  *
- * @param initialYear The initial year to be selected. Defaults to the current year.
- * @param initialMonth The initial month to be selected. Defaults to the current month.
- * @param initialDay The initial day to be selected. Defaults to the current day.
- * @return A [DatePickerState] initialized with the given date values.
+ * @param initialDate The initial date to be selected. Defaults to the current date.
+ * @return A [DatePickerState] initialized with [initialDate].
  */
 @Composable
 fun rememberDatePickerState(
@@ -40,13 +39,15 @@ fun rememberDatePickerState(
 /**
  * Creates and remembers a [DatePickerState] whose initial value is coerced by [items].
  *
- * Initial values and [items] are read when the state is first created. This is useful when the
- * picker is rendered with custom item lists or date bounds and restored app state may fall outside
- * those rules.
+ * Initial values and [items] are read when the state is first created. On recreation, the [items]
+ * supplied by the recreated composition also coerce the saved value, so the picker cannot restore
+ * outside its current custom lists or date bounds.
  *
  * @param items Selectable values used to coerce [initialDate] before creating the state.
  * @param initialDate The requested initial date.
  * @return A [DatePickerState] initialized to the closest selectable date.
+ * @throws IllegalArgumentException if the configured item lists are invalid or contain no date
+ * allowed by their constraints.
  */
 @Composable
 fun rememberDatePickerState(
@@ -58,7 +59,10 @@ fun rememberDatePickerState(
     val coercedInitialDate = remember(rememberedInitialDate, rememberedItems) {
         rememberedItems.coerceDate(rememberedInitialDate)
     }
-    return rememberDatePickerState(initialDate = coercedInitialDate)
+    val saver = remember(rememberedItems) { datePickerStateSaver(rememberedItems) }
+    return rememberSaveable(saver = saver) {
+        DatePickerState(initialDate = coercedInitialDate)
+    }
 }
 
 /**
@@ -66,12 +70,15 @@ fun rememberDatePickerState(
  *
  * Initial values and [items] are read when the state is first created. If [initialDay] is greater
  * than the maximum day for [initialYear] and [initialMonth], it is clamped before applying [items].
+ * On recreation, the [items] supplied by the recreated composition also coerce the saved value.
  *
  * @param items Selectable values used to coerce [initialYear], [initialMonth], and [initialDay].
  * @param initialYear The requested initial year. Must be in 1000..9999.
  * @param initialMonth The requested initial month. Must be in 1..12.
  * @param initialDay The requested initial day. Must be at least 1.
  * @return A [DatePickerState] initialized to the closest selectable date.
+ * @throws IllegalArgumentException if an initial date part is outside its supported range, or if
+ * the configured item lists are invalid or contain no date allowed by their constraints.
  */
 @Composable
 fun rememberDatePickerState(
@@ -96,8 +103,25 @@ fun rememberDatePickerState(
             day = rememberedInitialDay
         )
     }
-    return rememberDatePickerState(initialDate = coercedInitialDate)
+    return rememberDatePickerState(
+        items = rememberedItems,
+        initialDate = coercedInitialDate
+    )
 }
+
+private fun datePickerStateSaver(items: DatePickerItems): Saver<DatePickerState, Any> =
+    listSaver(
+        save = { listOf(it.selectedYear, it.selectedMonth, it.selectedDay) },
+        restore = {
+            DatePickerState(
+                initialDate = items.coerceDate(
+                    year = it[0] as Int,
+                    month = it[1] as Int,
+                    day = it[2] as Int
+                )
+            )
+        }
+    )
 
 /**
  * Creates and remembers a [DatePickerState] with explicit year, month, and day values.
@@ -197,6 +221,8 @@ class DatePickerState(
     /**
      * Programmatically selects [date].
      *
+     * The year, month, and day fields are applied together as one logical state update.
+     *
      * @throws IllegalArgumentException if [date]'s year is outside the supported range.
      */
     fun selectDate(date: LocalDate) {
@@ -246,35 +272,13 @@ class DatePickerState(
     val maxDay: Int
         get() = daysInMonth(selectedYear, selectedMonth)
 
-    internal fun selectYear(year: Int) {
-        updateDate(
-            year = year,
-            month = selectedMonth,
-            day = selectedDay
-        )
-    }
-
-    internal fun selectMonth(month: Int) {
-        updateDate(
-            year = selectedYear,
-            month = month,
-            day = selectedDay
-        )
-    }
-
-    internal fun selectDay(day: Int) {
-        updateDate(
-            year = selectedYear,
-            month = selectedMonth,
-            day = day
-        )
-    }
-
     private fun updateDate(year: Int, month: Int, day: Int) {
         val date = dateFromParts(year = year, month = month, day = day)
-        mutableSelectedYear = date.year
-        mutableSelectedMonth = date.month.number
-        mutableSelectedDay = date.day
+        Snapshot.withMutableSnapshot {
+            mutableSelectedYear = date.year
+            mutableSelectedMonth = date.month.number
+            mutableSelectedDay = date.day
+        }
     }
 
     private fun dateFromParts(year: Int, month: Int, day: Int): LocalDate {

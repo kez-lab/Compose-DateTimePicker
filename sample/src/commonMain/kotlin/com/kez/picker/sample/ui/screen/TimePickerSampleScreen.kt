@@ -21,6 +21,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
@@ -68,8 +69,8 @@ internal fun TimePickerSampleScreen(
         initialMinute = currentTime.minute
     )
     val demoTime = LocalTime(hour = 9, minute = 30)
-    var lastChangedHour by rememberSaveable { mutableIntStateOf(currentTime.hour) }
-    var lastChangedMinute by rememberSaveable { mutableIntStateOf(currentTime.minute) }
+    var lastUserTimeText by rememberSaveable { mutableStateOf("No user change") }
+    var userCallbackCount by rememberSaveable { mutableIntStateOf(0) }
 
     val ktxTimeFormat12 = LocalTime.Format {
         amPmHour(padding = Padding.ZERO)
@@ -115,9 +116,7 @@ internal fun TimePickerSampleScreen(
                 icon = FeatherIcons.Clock,
                 label = "Selected time",
                 value = selectedTimeText,
-                supportingText = "Last callback: ${
-                    LocalTime(lastChangedHour, lastChangedMinute).format(ktxTimeFormat24)
-                }"
+                supportingText = "User callbacks: $userCallbackCount · Last: $lastUserTimeText"
             )
 
             Spacer(modifier = Modifier.height(16.dp))
@@ -128,13 +127,6 @@ internal fun TimePickerSampleScreen(
                         val now = currentDateTime().time
                         timeState12.selectTime(now)
                         timeState24.selectTime(now, businessHoursItems)
-                        val selectedTime = if (selectedFormat == 0) {
-                            timeState12.selectedTime
-                        } else {
-                            timeState24.selectedTime
-                        }
-                        lastChangedHour = selectedTime.hour
-                        lastChangedMinute = selectedTime.minute
                     },
                     modifier = Modifier.fillMaxWidth()
                 ) {
@@ -153,13 +145,6 @@ internal fun TimePickerSampleScreen(
                             minute = demoTime.minute,
                             items = businessHoursItems
                         )
-                        val selectedTime = if (selectedFormat == 0) {
-                            timeState12.selectedTime
-                        } else {
-                            timeState24.selectedTime
-                        }
-                        lastChangedHour = selectedTime.hour
-                        lastChangedMinute = selectedTime.minute
                     },
                     modifier = Modifier.fillMaxWidth()
                 ) {
@@ -189,8 +174,8 @@ internal fun TimePickerSampleScreen(
                         state = timeState12,
                         spacingBetweenPickers = 8.dp,
                         onSelectedTimeChange = {
-                            lastChangedHour = it.hour
-                            lastChangedMinute = it.minute
+                            lastUserTimeText = it.format(ktxTimeFormat24)
+                            userCallbackCount += 1
                         },
                         format = PickerDefaults.timePickerFormat(
                             hourItemText = { it.toString().padStart(2, '0') },
@@ -221,8 +206,8 @@ internal fun TimePickerSampleScreen(
                         state = timeState24,
                         spacingBetweenPickers = 8.dp,
                         onSelectedTimeChange = {
-                            lastChangedHour = it.hour
-                            lastChangedMinute = it.minute
+                            lastUserTimeText = it.format(ktxTimeFormat24)
+                            userCallbackCount += 1
                         },
                         items = businessHoursItems,
                         format = PickerDefaults.timePickerFormat(

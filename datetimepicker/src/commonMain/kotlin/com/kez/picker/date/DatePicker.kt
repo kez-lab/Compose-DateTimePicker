@@ -24,11 +24,11 @@ import com.kez.picker.PickerDefaults
 import com.kez.picker.PickerSelectionBand
 import com.kez.picker.PickerSelectionIndicator
 import com.kez.picker.PickerStyle
+import com.kez.picker.commitMultiWheelSelection
 import com.kez.picker.maxPickerItemHeight
 import com.kez.picker.pickerColumnModifier
 import com.kez.picker.rememberPickerItemHeight
 import kotlinx.datetime.LocalDate
-import kotlin.math.abs
 
 /**
  * A date picker component that allows selecting year, month, and day.
@@ -36,7 +36,10 @@ import kotlin.math.abs
  * @param modifier The modifier to be applied to the component.
  * @param pickerModifier The modifier to be applied to each picker.
  * @param state The state object to control the picker.
- * @param onSelectedDateChange Called after user interaction changes the selected date.
+ * @param onSelectedDateChange Called once after a user interaction settles on a new column value,
+ * dependent month/day values are repaired, and the final selectable date is committed to [state].
+ * If an upstream settle replaces a still-moving dependent column source, that invalidated child
+ * interaction is cancelled without a callback.
  * Programmatic [DatePickerState.selectDate] calls update [state] directly and do not invoke this
  * callback. When app code changes the picker from a button, preset, or external value, update any
  * app-owned state in the same handler.
@@ -69,32 +72,26 @@ fun DatePicker(
 ) {
     val columnStyle = remember(style) { style.copy(isDividerVisible = false) }
 
+    remember(items) {
+        validateDatePickerItemConfiguration(items = items)
+    }
     remember(items, state, state.selectedYear, state.selectedMonth, state.selectedDay) {
-        validateDatePickerItems(state = state, items = items)
+        validateDatePickerSelection(state = state, items = items)
     }
 
-    fun moveSelectionInsideAvailableItems() {
-        val availableMonthItems = items.selectableMonthItemsFor(state.selectedYear)
-        if (state.selectedMonth !in availableMonthItems) {
-            state.selectMonth(availableMonthItems.closestTo(state.selectedMonth))
-        }
-        val availableDayItems = items.selectableDayItemsFor(
-            year = state.selectedYear,
-            month = state.selectedMonth
+    fun commitColumnChange(column: DatePickerColumn, value: Int) {
+        val currentDate = state.selectedDate
+        val nextDate = items.repairedDateAfter(
+            currentDate = currentDate,
+            column = column,
+            value = value
         )
-        if (state.selectedDay !in availableDayItems) {
-            state.selectDay(availableDayItems.closestTo(state.selectedDay))
-        }
-    }
-
-    fun updateSelectedDate(update: () -> Unit) {
-        val previousDate = state.selectedDate
-        update()
-        moveSelectionInsideAvailableItems()
-        val nextDate = state.selectedDate
-        if (nextDate != previousDate) {
-            onSelectedDateChange(nextDate)
-        }
+        commitMultiWheelSelection(
+            currentState = currentDate,
+            nextState = nextDate,
+            commitState = state::selectDate,
+            onSelectionCommitted = onSelectedDateChange
+        )
     }
 
     Box(modifier = modifier) {
@@ -148,14 +145,14 @@ fun DatePicker(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     layout.columnOrder.forEach { column ->
-                        key(column) {
+                        key(column, state, items) {
                             when (column) {
                                 DatePickerColumn.YEAR -> {
                                     Picker(
                                         items = yearItems,
                                         selectedItem = state.selectedYear,
                                         onSelectedItemChange = { year ->
-                                            updateSelectedDate { state.selectYear(year) }
+                                            commitColumnChange(DatePickerColumn.YEAR, year)
                                         },
                                         modifier = pickerColumnModifier(pickerModifier, layout.yearWeight),
                                         enabled = enabled,
@@ -171,7 +168,7 @@ fun DatePicker(
                                         items = monthItems,
                                         selectedItem = state.selectedMonth,
                                         onSelectedItemChange = { month ->
-                                            updateSelectedDate { state.selectMonth(month) }
+                                            commitColumnChange(DatePickerColumn.MONTH, month)
                                         },
                                         modifier = pickerColumnModifier(pickerModifier, layout.monthWeight),
                                         enabled = enabled,
@@ -186,7 +183,7 @@ fun DatePicker(
                                         items = dayItems,
                                         selectedItem = state.selectedDay,
                                         onSelectedItemChange = { day ->
-                                            updateSelectedDate { state.selectDay(day) }
+                                            commitColumnChange(DatePickerColumn.DAY, day)
                                         },
                                         modifier = pickerColumnModifier(pickerModifier, layout.dayWeight),
                                         enabled = enabled,
@@ -209,6 +206,11 @@ internal fun validateDatePickerItems(
     state: DatePickerState,
     items: DatePickerItems
 ) {
+    validateDatePickerItemConfiguration(items = items)
+    validateDatePickerSelection(state = state, items = items)
+}
+
+private fun validateDatePickerItemConfiguration(items: DatePickerItems) {
     val yearItems = items.yearItems
     val monthItems = items.monthItems
     val dayItems = items.dayItems
@@ -244,14 +246,6 @@ internal fun validateDatePickerItems(
         "DatePicker dayItems must contain only values in range [1, 31]. " +
                 "Invalid values: $invalidDays"
     }
-    require(state.selectedYear in yearItems) {
-        "DatePicker yearItems must contain state.selectedYear=${state.selectedYear}. " +
-                datePickerStateItemsAdvice()
-    }
-    require(state.selectedMonth in monthItems) {
-        "DatePicker monthItems must contain state.selectedMonth=${state.selectedMonth}. " +
-                datePickerStateItemsAdvice()
-    }
     if (items.constraints.isUnbounded) {
         val minimumMaxDay = minimumMaxDayFor(yearItems, monthItems)
         require(dayItems.any { it <= minimumMaxDay }) {
@@ -259,12 +253,22 @@ internal fun validateDatePickerItems(
                     "year/month combination. Smallest maximum day is $minimumMaxDay."
         }
     }
-    val availableYearItems = items.selectableYearItems()
-    require(state.selectedYear in availableYearItems) {
-        "DatePicker constraints must allow state.selectedYear=${state.selectedYear}. " +
+}
+
+private fun validateDatePickerSelection(state: DatePickerState, items: DatePickerItems) {
+    require(state.selectedYear in items.yearItems) {
+        "DatePicker yearItems must contain state.selectedYear=${state.selectedYear}. " +
+                datePickerStateItemsAdvice()
+    }
+    require(state.selectedMonth in items.monthItems) {
+        "DatePicker monthItems must contain state.selectedMonth=${state.selectedMonth}. " +
                 datePickerStateItemsAdvice()
     }
     val availableMonthItems = items.selectableMonthItemsFor(state.selectedYear)
+    require(availableMonthItems.isNotEmpty()) {
+        "DatePicker constraints must allow state.selectedYear=${state.selectedYear}. " +
+                datePickerStateItemsAdvice()
+    }
     require(state.selectedMonth in availableMonthItems) {
         "DatePicker constraints must allow state.selectedMonth=${state.selectedMonth} " +
                 "for selectedYear=${state.selectedYear}. " +
@@ -288,12 +292,6 @@ private fun datePickerStateItemsAdvice(): String =
 
 private fun List<Int>.invalidValuesFor(range: IntRange): List<Int> =
     filterNot { it in range }.distinct()
-
-private fun List<Int>.closestTo(value: Int): Int =
-    minWith(
-        compareBy<Int> { abs(it - value) }
-            .thenBy { it }
-    )
 
 private fun minimumMaxDayFor(yearItems: List<Int>, monthItems: List<Int>): Int =
     monthItems.minOf { month ->

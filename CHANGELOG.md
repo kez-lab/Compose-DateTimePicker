@@ -121,6 +121,19 @@ This project tracks notable user-facing and maintainer-facing changes here. The 
 
 ### Changed
 
+- `DatePicker` and `TimePicker` now reduce each settled child-column interaction to one repaired,
+  selectable logical value before committing state and dispatching exactly one user callback.
+  Programmatic multi-field date/time updates apply in one Compose mutable snapshot, while
+  programmatic scroll synchronization and compatible item-source replacement remain callback-free.
+  Late child values that are no longer selectable in the active source are ignored, and an upstream
+  settle or app-driven state/item-source replacement cancels an invalidated in-flight child
+  interaction without dispatching it.
+- Item configuration validation is now remembered by the item source instead of repeating its full
+  empty/duplicate/range checks on every Date/Time selection change.
+- Items-aware `rememberDatePickerState` and `rememberTimePickerState` overloads now coerce saved
+  values against the recreated item source during restore, not only during initial creation.
+- Changing both `TimePicker` items and `timeFormat` now recreates items-aware state against the latest
+  item source; an items-only recomposition still does not reset the logical selection.
 - Clarified that the existing `Picker<T>.onSelectedItemChange` compatibility contract dispatches
   only after user interaction settles. `Picker` and `WheelPicker` share the same internal rendering,
   validation, semantics, styling, and programmatic synchronization path.

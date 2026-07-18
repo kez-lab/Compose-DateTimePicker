@@ -22,6 +22,7 @@ import com.kez.picker.PickerDefaults
 import com.kez.picker.PickerSelectionBand
 import com.kez.picker.PickerSelectionIndicator
 import com.kez.picker.PickerStyle
+import com.kez.picker.commitMultiWheelSelection
 import com.kez.picker.TimePickerColumn
 import com.kez.picker.TimePickerFormat
 import com.kez.picker.TimePickerLayout
@@ -39,10 +40,12 @@ import kotlinx.datetime.LocalTime
  * @param modifier The modifier to be applied to the component.
  * @param pickerModifier The modifier to be applied to each picker.
  * @param state The state object to control the picker.
- * @param onSelectedTimeChange Called after user interaction changes the selected time.
- * Programmatic [TimePickerState.selectTime] calls update [state] directly and do not invoke this
- * callback. When app code changes the picker from a button, preset, or external value, update any
- * app-owned state in the same handler.
+ * @param onSelectedTimeChange Called once after a user interaction settles on a new column value,
+ * dependent period/hour/minute values are repaired, and the final selectable time is committed to
+ * [state]. If an upstream settle replaces a still-moving dependent column source, that invalidated
+ * child interaction is cancelled without a callback. Programmatic [TimePickerState.selectTime]
+ * calls update [state] directly and do not invoke this callback. When app code changes the picker
+ * from a button, preset, or external value, update any app-owned state in the same handler.
  * @param enabled Whether user scroll, click, and semantics selection actions are enabled.
  * @param items Selectable minute, hour, and period item lists for the picker.
  * @param format Visible item text and optional accessibility value descriptions for each picker column.
@@ -72,29 +75,22 @@ fun TimePicker(
 ) {
     val columnStyle = remember(style) { style.copy(isDividerVisible = false) }
 
+    remember(items, state.timeFormat) {
+        validateTimePickerItemConfiguration(timeFormat = state.timeFormat, items = items)
+    }
     remember(items, state, state.selectedTime, state.selectedHour, state.selectedPeriod, state.timeFormat) {
-        validateTimePickerItems(state = state, items = items)
+        validateTimePickerSelection(state = state, items = items)
     }
 
-    fun moveSelectionInsideAvailableItems() {
-        if (items.contains(state.selectedTime, state.timeFormat)) return
-
-        state.selectTime(
-            time = items.coerceTime(
-                time = state.selectedTime,
-                timeFormat = state.timeFormat
-            )
+    fun commitColumnChange(repair: (LocalTime) -> LocalTime) {
+        val currentTime = state.selectedTime
+        val nextTime = repair(currentTime)
+        commitMultiWheelSelection(
+            currentState = currentTime,
+            nextState = nextTime,
+            commitState = state::selectTime,
+            onSelectionCommitted = onSelectedTimeChange
         )
-    }
-
-    fun updateSelectedTime(update: () -> Unit) {
-        val previousTime = state.selectedTime
-        update()
-        moveSelectionInsideAvailableItems()
-        val nextTime = state.selectedTime
-        if (nextTime != previousTime) {
-            onSelectedTimeChange(nextTime)
-        }
     }
 
     val periodItems by remember(items) {
@@ -155,7 +151,7 @@ fun TimePicker(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     layout.columnOrder.forEach { column ->
-                        key(column) {
+                        key(column, state, items) {
                             when (column) {
                                 TimePickerColumn.PERIOD -> {
                                     if (state.timeFormat == TimeFormat.HOUR_12) {
@@ -163,7 +159,12 @@ fun TimePicker(
                                             items = periodItems,
                                             selectedItem = state.selectedPeriod,
                                             onSelectedItemChange = { period ->
-                                                updateSelectedTime { state.selectPeriod(period) }
+                                                commitColumnChange { currentTime ->
+                                                    items.repairedTimeAfterPeriod(
+                                                        currentTime = currentTime,
+                                                        period = period
+                                                    )
+                                                }
                                             },
                                             modifier = pickerColumnModifier(pickerModifier, layout.periodWeight),
                                             enabled = enabled,
@@ -180,7 +181,13 @@ fun TimePicker(
                                         items = hourItems,
                                         selectedItem = state.selectedHour,
                                         onSelectedItemChange = { hour ->
-                                            updateSelectedTime { state.selectHour(hour) }
+                                            commitColumnChange { currentTime ->
+                                                items.repairedTimeAfterHour(
+                                                    currentTime = currentTime,
+                                                    timeFormat = state.timeFormat,
+                                                    hour = hour
+                                                )
+                                            }
                                         },
                                         modifier = pickerColumnModifier(pickerModifier, layout.hourWeight),
                                         enabled = enabled,
@@ -195,7 +202,13 @@ fun TimePicker(
                                         items = minuteItems,
                                         selectedItem = state.selectedMinute,
                                         onSelectedItemChange = { minute ->
-                                            updateSelectedTime { state.selectMinute(minute) }
+                                            commitColumnChange { currentTime ->
+                                                items.repairedTimeAfterMinute(
+                                                    currentTime = currentTime,
+                                                    timeFormat = state.timeFormat,
+                                                    minute = minute
+                                                )
+                                            }
                                         },
                                         modifier = pickerColumnModifier(pickerModifier, layout.minuteWeight),
                                         enabled = enabled,
@@ -217,8 +230,16 @@ internal fun validateTimePickerItems(
     state: TimePickerState,
     items: TimePickerItems
 ) {
+    validateTimePickerItemConfiguration(timeFormat = state.timeFormat, items = items)
+    validateTimePickerSelection(state = state, items = items)
+}
+
+private fun validateTimePickerItemConfiguration(
+    timeFormat: TimeFormat,
+    items: TimePickerItems
+) {
     val minuteItems = items.minuteItems
-    val hourItems = items.hourItemsFor(state.timeFormat)
+    val hourItems = items.hourItemsFor(timeFormat)
     val periodItems = items.periodItems
 
     val minuteRange = 0..59
@@ -231,12 +252,7 @@ internal fun validateTimePickerItems(
         "TimePicker minuteItems must contain only values in range [0, 59]. " +
                 "Invalid values: $invalidMinutes"
     }
-    require(state.selectedMinute in minuteItems) {
-        "TimePicker minuteItems must contain state.selectedMinute=${state.selectedMinute}. " +
-                timePickerStateItemsAdvice()
-    }
-
-    val isHour12 = state.timeFormat == TimeFormat.HOUR_12
+    val isHour12 = timeFormat == TimeFormat.HOUR_12
     val hourItemsName = if (isHour12) "hour12Items" else "hour24Items"
     val hourRange = if (isHour12) 1..12 else 0..23
     val hourRangeLabel = if (isHour12) "1, 12" else "0, 23"
@@ -247,12 +263,7 @@ internal fun validateTimePickerItems(
     }
     require(invalidHours.isEmpty()) {
         "TimePicker $hourItemsName must contain only values in range [$hourRangeLabel] " +
-                "for timeFormat=${state.timeFormat}. Invalid values: $invalidHours"
-    }
-    require(state.selectedHour in hourItems) {
-        "TimePicker $hourItemsName must contain state.selectedHour=${state.selectedHour} " +
-                "for timeFormat=${state.timeFormat}. " +
-                timePickerStateItemsAdvice()
+                "for timeFormat=$timeFormat. Invalid values: $invalidHours"
     }
 
     if (isHour12) {
@@ -262,7 +273,24 @@ internal fun validateTimePickerItems(
         require(periodItems.distinct().size == periodItems.size) {
             "TimePicker periodItems must not contain duplicate values."
         }
-        require(state.selectedPeriod in periodItems) {
+    }
+}
+
+private fun validateTimePickerSelection(state: TimePickerState, items: TimePickerItems) {
+    require(state.selectedMinute in items.minuteItems) {
+        "TimePicker minuteItems must contain state.selectedMinute=${state.selectedMinute}. " +
+                timePickerStateItemsAdvice()
+    }
+    val hourItems = items.hourItemsFor(state.timeFormat)
+    val hourItemsName = if (state.timeFormat == TimeFormat.HOUR_12) "hour12Items" else "hour24Items"
+    require(state.selectedHour in hourItems) {
+        "TimePicker $hourItemsName must contain state.selectedHour=${state.selectedHour} " +
+                "for timeFormat=${state.timeFormat}. " +
+                timePickerStateItemsAdvice()
+    }
+
+    if (state.timeFormat == TimeFormat.HOUR_12) {
+        require(state.selectedPeriod in items.periodItems) {
             "TimePicker periodItems must contain state.selectedPeriod=${state.selectedPeriod}. " +
                     timePickerStateItemsAdvice()
         }
