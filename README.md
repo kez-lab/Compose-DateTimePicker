@@ -11,19 +11,21 @@ generic `WheelPicker<T>` plus date/time presets with consistent APIs across Andr
 *   **Multiplatform Support**: seamless integration for Android, iOS, Desktop (JVM), and Web (Wasm).
 * **WheelPicker**: A controlled generic wheel with live value changes and a separate settled callback.
 *   **TimePicker**: Supports both 12-hour (AM/PM) and 24-hour formats.
+* **DurationPicker**: Selects one bounded elapsed duration through dependent hour/minute columns.
 * **DatePicker**: A complete date picker for selecting year, month, and day with automatic day
   validation.
 * **DateRangePicker**: An ordered start/end date picker for booking, filtering, and reporting flows.
 *   **YearMonthPicker**: A dedicated component for selecting years and months.
 *   **Customizable**: Extensible API with `PickerStyle` and format options for reusable UI configuration.
 * **State Management**: simplified state handling with `rememberTimePickerState`,
-  `rememberDatePickerState`, `rememberDateRangePickerState`, and `rememberYearMonthPickerState`.
+  `rememberDurationPickerState`, `rememberDatePickerState`, `rememberDateRangePickerState`, and
+  `rememberYearMonthPickerState`.
 *   **Accessibility**: Built with accessibility semantics in mind, supporting screen readers and navigation.
 
 ## Sample App
 
 The repository includes a Compose Multiplatform sample app with copyable generic wheel, date, time,
-and bottom sheet flows.
+duration, and bottom sheet flows.
 
 <p align="center">
   <img src="docs/images/sample/sample-home.png" alt="Sample app home screen" width="23%" />
@@ -64,15 +66,15 @@ For release notes and upgrade-impact details, see [CHANGELOG.md](CHANGELOG.md).
 
 ### State and Callback Pattern
 
-For `TimePicker`, `DatePicker`, `DateRangePicker`, and `YearMonthPicker`, create the picker state
+For `TimePicker`, `DurationPicker`, `DatePicker`, `DateRangePicker`, and `YearMonthPicker`, create the picker state
 once with `remember*State(...)` and pass that same state object to the composable. Inside the picker
 UI, that state object is the source of truth for the currently selected value.
 
-- Read the current value from `state.selectedTime`, `state.selectedDate`,
+- Read the current value from `state.selectedTime`, `state.selectedDuration`, `state.selectedDate`,
   `state.selectedDateRange`, or `state.selectedYearMonth`.
 - Use `onSelected*Change` when you need to mirror user-driven picker changes into app state,
   a `ViewModel`, or form data.
-- `TimePicker` and `DatePicker` dispatch that callback once after the changed column settles and all
+- `TimePicker`, `DurationPicker`, and `DatePicker` dispatch that callback once after the changed column settles and all
   dependent values are repaired. The callback receives the final selectable logical value, which is
   already committed to the picker state; visual `columnOrder` does not change that transition.
 - A changed column value is preserved only while it still belongs to the active constrained source.
@@ -180,6 +182,52 @@ fun BusinessHoursTimePickerExample() {
     )
 }
 ```
+
+### DurationPicker
+
+Use `DurationPicker` when hour and minute columns must commit one bounded elapsed duration. This
+example permits `0..90` minutes in five-minute steps. Create state with the same `items` object so
+initial and restored values use the same scalar coercion rules. For an app-driven preset, call
+`state.selectDuration(value, items)` to apply those rules before rendering.
+
+```kotlin
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
+import com.kez.picker.PickerDefaults
+import com.kez.picker.duration.DurationPicker
+import com.kez.picker.duration.rememberDurationPickerState
+import kotlin.time.Duration.Companion.minutes
+
+@Composable
+fun WorkoutDurationExample() {
+    val items = remember {
+        PickerDefaults.durationPickerItems(
+            hourItems = listOf(0, 1),
+            minuteItems = (0..55 step 5).toList(),
+            minDuration = 0.minutes,
+            maxDuration = 90.minutes
+        )
+    }
+    val state = rememberDurationPickerState(
+        items = items,
+        initialDuration = 45.minutes
+    )
+
+    DurationPicker(
+        state = state,
+        items = items,
+        onSelectedDurationChange = { duration ->
+            // The repaired value is already committed to state.selectedDuration.
+        }
+    )
+}
+```
+
+`DurationPicker` uses finite, non-negative, whole-minute `kotlin.time.Duration` values. Its hour
+column represents elapsed whole hours rather than time-of-day. A changed hour preserves the current
+minute when possible, then repairs it to the closest selectable minute inside the inclusive scalar
+bounds. Numeric ties prefer the smaller duration. Negative, infinite, or sub-minute state and bound
+values throw `IllegalArgumentException` instead of being silently truncated.
 
 ### DatePicker
 
@@ -432,7 +480,8 @@ The example stores hour and minute separately because primitive values work with
 > This reference describes the current `main` branch API. Check [CHANGELOG.md](CHANGELOG.md) before copying API examples into a project that depends on the public `0.6.0` artifact.
 
 Public state APIs live beside their components: `TimePicker`, `TimePickerState`, and
-`rememberTimePickerState` are in `com.kez.picker.time`; `DatePicker`, `DatePickerState`,
+`rememberTimePickerState` are in `com.kez.picker.time`; `DurationPicker`, `DurationPickerState`, and
+`rememberDurationPickerState` are in `com.kez.picker.duration`; `DatePicker`, `DatePickerState`,
 `YearMonthPicker`, `YearMonthPickerState`, and their `remember*State` functions are in
 `com.kez.picker.date`.
 
@@ -445,10 +494,10 @@ as "1 hour", "January", or "PM".
 Semantics options customize the structural picker-column label and previous/next action labels.
 Selection is exposed through Compose `selected` semantics rather than appended as a hardcoded English
 phrase. Use `PickerDefaults.itemFormat(...)` on a generic `Picker<T>`, or
-`PickerDefaults.timePickerFormat(...)`, `datePickerFormat(...)`, and `yearMonthPickerFormat(...)`
-for composite picker values. Use `PickerDefaults.semantics(...)`, `timePickerSemantics(...)`,
-`datePickerSemantics(...)`, or `yearMonthPickerSemantics(...)` for reusable localized labels and
-actions.
+`PickerDefaults.timePickerFormat(...)`, `durationPickerFormat(...)`, `datePickerFormat(...)`, and
+`yearMonthPickerFormat(...)` for composite picker values. Use `PickerDefaults.semantics(...)`,
+`timePickerSemantics(...)`, `durationPickerSemantics(...)`, `datePickerSemantics(...)`, or
+`yearMonthPickerSemantics(...)` for reusable localized labels and actions.
 
 ```kotlin
 TimePicker(
@@ -634,6 +683,7 @@ recreate the state just to reset the selection.
 | :--- | :--- |
 | Generic `WheelPicker<T>` / `Picker<T>` | Update the app-owned `selectedItem` value |
 | `time.TimePickerState` | `selectTime(LocalTime(...))`, `selectTime(hour, minute)`, or the matching `items` overloads |
+| `duration.DurationPickerState` | `selectDuration(Duration)`, `selectDuration(hours, minutes)`, or the matching `items` overloads |
 | `date.DatePickerState` | `selectDate(LocalDate(...))`, `selectDate(year, month, day)`, or the matching `items` overloads |
 | `date.DateRangePickerState` | `selectDateRange(DateRange(...))`, `selectDateRange(startDate, endDate)`, `selectDateRange(startYear, startMonth, startDay, endYear, endMonth, endDay)`, `selectStartDate(...)`, `selectEndDate(...)`, or the matching `items` overloads |
 | `date.YearMonthPickerState` | `selectYearMonth(YearMonth(...))`, `selectYearMonth(year, month)`, `selectDate(LocalDate(...))`, or the matching `items` overloads |
@@ -674,7 +724,8 @@ fun replaceItems(newItems: TimePickerItems, requestedTime: LocalTime) {
 The picker scroll position is synchronized when the current item lists contain the requested values. Custom
 item lists are strict: they must be non-empty, distinct, within the supported value ranges, and contain the
 current selected value. `TimePicker` filters hour, minute, and AM/PM columns through optional
-`minTime`/`maxTime` bounds. `DatePicker` filters `dayItems` by the selected year/month maximum day and
+`minTime`/`maxTime` bounds. `DurationPicker` filters hour/minute combinations through optional scalar
+`minDuration`/`maxDuration` bounds. `DatePicker` filters `dayItems` by the selected year/month maximum day and
 optional `minDate`/`maxDate` bounds. If an app can restore or request values outside a custom list or
 configured bounds, call `items.contains(...)` to check primitive or value objects before rejecting a
 value, or call the `state.select*(value, items)` overload or `items.coerce*` helper to move to the
@@ -684,17 +735,20 @@ before the picker is rendered. These items-aware state overloads also coerce a s
 items supplied by the recreated composition, so changed constraints cannot restore an invalid logical
 value.
 
-`onSelectedTimeChange`, `onSelectedDateChange`, `onSelectedDateRangeChange`, and
-`onSelectedYearMonthChange` are called for user-driven picker changes. Programmatic `state.select*`
+`onSelectedTimeChange`, `onSelectedDurationChange`, `onSelectedDateChange`,
+`onSelectedDateRangeChange`, and `onSelectedYearMonthChange` are called for user-driven picker
+changes. Programmatic `state.select*`
 calls update the state directly; update your app-owned value in the same event handler when you
-trigger programmatic changes. `TimePicker` and `DatePicker` wait for the changed child wheel to
+trigger programmatic changes. `TimePicker`, `DurationPicker`, and `DatePicker` wait for the changed child wheel to
 settle, repair dependent columns against the active constraints, commit one logical value, and then
 invoke the callback once. A compatible item-source replacement is app-driven and invokes no callback;
 if the new source excludes the current value, coerce the state with that new source before composing.
 Date repair preserves the accepted changed column and then repairs year/month/day dependencies; Time
-repair does the same in period/hour/minute dependency order. Numeric ties choose the smaller value.
+repair does the same in period/hour/minute dependency order. Duration repair treats hour and minute
+columns as one scalar elapsed value. Numeric ties choose the smaller value.
 
-Use `PickerDefaults.timePickerLayout(...)`, `datePickerLayout(...)`, or `yearMonthPickerLayout(...)`
+Use `PickerDefaults.timePickerLayout(...)`, `durationPickerLayout(...)`, `datePickerLayout(...)`, or
+`yearMonthPickerLayout(...)`
 when a composite picker needs different column proportions. Pass `null` for a column weight to let
 `pickerModifier` provide an explicit width for that column. Use `columnOrder` when locale, product,
 or form conventions need a different order, such as month/day/year:
@@ -753,6 +807,37 @@ time bounds should be applied at the same time. The integer hour is interpreted 
 `1..12`.
 
 Invalid custom item values, duplicate items, empty required lists, or current selections missing from custom lists or time bounds throw `IllegalArgumentException` during composition. Treat custom item lists as immutable after passing them to the picker; create a new `items` object when available values change. In 12-hour mode, `PickerDefaults.timePickerItems(hour12Items = ...)` uses format-hour values (`1..12`): `initialHour = 13` becomes `state.selectedHour == 1` with `PM`.
+
+### DurationPicker
+
+| Parameter | Description | Default |
+| :--- | :--- | :--- |
+| `state` | The state object holding one elapsed `Duration`. | `rememberDurationPickerState()` |
+| `onSelectedDurationChange` | Called once with the committed selectable `Duration` after a changed column settles and dependent values are repaired. | `{}` |
+| `enabled` | Whether user scroll, click, and semantics selection actions are enabled. | `true` |
+| `items` | Non-negative elapsed-hour and minute-within-hour lists plus optional inclusive scalar `minDuration`/`maxDuration` bounds. The default hour source is `0..23`; pass custom hours for durations of 24 hours or longer. | `PickerDefaults.durationPickerItems()` |
+| `format` | Visible item text and optional accessibility value descriptions for both columns. | `PickerDefaults.durationPickerFormat()` |
+| `style` | Visual and layout styling for each picker column. | `PickerDefaults.style()` |
+| `selectionIndicator` | Shared selection band drawn across the whole picker. | `PickerDefaults.selectionIndicator(style)` |
+| `layout` | Column weights and visual order for elapsed-hour and minute columns. Use `null` weights for explicit-width columns. | `PickerDefaults.durationPickerLayout()` |
+| `spacingBetweenPickers` | Horizontal spacing between picker columns. | `0.dp` |
+| `semantics` | Picker labels and custom action labels for both columns. | `PickerDefaults.durationPickerSemantics()` |
+
+**DurationPickerState Properties:**
+
+- `selectedDuration`: The selected finite, non-negative, whole-minute `kotlin.time.Duration`.
+- `selectedHours`: The elapsed whole-hour component. It is not limited to time-of-day values.
+- `selectedMinutes`: The minute-within-hour component (`0..59`).
+
+Use `rememberDurationPickerState(items = items, initialDuration = value)` when the initial or restored
+value must be coerced before first composition. Call `state.selectDuration(value)` for an already
+selectable app-driven value, or `state.selectDuration(value, items)` to coerce it through custom item
+sources and scalar bounds. Programmatic calls do not invoke `onSelectedDurationChange`.
+
+Durations must be finite, non-negative, and aligned to a whole minute. Hour items are elapsed hours,
+so custom sources may include values above `23`; minute items must remain in `0..59`. Invalid,
+duplicate, empty, or unsatisfiable item sources throw `IllegalArgumentException`. Equal-distance
+coercion chooses the smaller duration.
 
 ### DatePicker
 

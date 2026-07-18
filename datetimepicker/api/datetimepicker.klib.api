@@ -40,6 +40,17 @@ final enum class com.kez.picker/DatePickerColumn : kotlin/Enum<com.kez.picker/Da
     final fun values(): kotlin/Array<com.kez.picker/DatePickerColumn> // com.kez.picker/DatePickerColumn.values|values#static(){}[0]
 }
 
+final enum class com.kez.picker/DurationPickerColumn : kotlin/Enum<com.kez.picker/DurationPickerColumn> { // com.kez.picker/DurationPickerColumn|null[0]
+    enum entry HOUR // com.kez.picker/DurationPickerColumn.HOUR|null[0]
+    enum entry MINUTE // com.kez.picker/DurationPickerColumn.MINUTE|null[0]
+
+    final val entries // com.kez.picker/DurationPickerColumn.entries|#static{}entries[0]
+        final fun <get-entries>(): kotlin.enums/EnumEntries<com.kez.picker/DurationPickerColumn> // com.kez.picker/DurationPickerColumn.entries.<get-entries>|<get-entries>#static(){}[0]
+
+    final fun valueOf(kotlin/String): com.kez.picker/DurationPickerColumn // com.kez.picker/DurationPickerColumn.valueOf|valueOf#static(kotlin.String){}[0]
+    final fun values(): kotlin/Array<com.kez.picker/DurationPickerColumn> // com.kez.picker/DurationPickerColumn.values|values#static(){}[0]
+}
+
 final enum class com.kez.picker/TimePickerColumn : kotlin/Enum<com.kez.picker/TimePickerColumn> { // com.kez.picker/TimePickerColumn|null[0]
     enum entry HOUR // com.kez.picker/TimePickerColumn.HOUR|null[0]
     enum entry MINUTE // com.kez.picker/TimePickerColumn.MINUTE|null[0]
@@ -269,6 +280,28 @@ final class com.kez.picker.date/YearMonthPickerState { // com.kez.picker.date/Ye
     }
 }
 
+final class com.kez.picker.duration/DurationPickerState { // com.kez.picker.duration/DurationPickerState|null[0]
+    constructor <init>(kotlin.time/Duration = ...) // com.kez.picker.duration/DurationPickerState.<init>|<init>(kotlin.time.Duration){}[0]
+    constructor <init>(kotlin/Int, kotlin/Int) // com.kez.picker.duration/DurationPickerState.<init>|<init>(kotlin.Int;kotlin.Int){}[0]
+
+    final val selectedDuration // com.kez.picker.duration/DurationPickerState.selectedDuration|{}selectedDuration[0]
+        final fun <get-selectedDuration>(): kotlin.time/Duration // com.kez.picker.duration/DurationPickerState.selectedDuration.<get-selectedDuration>|<get-selectedDuration>(){}[0]
+    final val selectedHours // com.kez.picker.duration/DurationPickerState.selectedHours|{}selectedHours[0]
+        final fun <get-selectedHours>(): kotlin/Int // com.kez.picker.duration/DurationPickerState.selectedHours.<get-selectedHours>|<get-selectedHours>(){}[0]
+    final val selectedMinutes // com.kez.picker.duration/DurationPickerState.selectedMinutes|{}selectedMinutes[0]
+        final fun <get-selectedMinutes>(): kotlin/Int // com.kez.picker.duration/DurationPickerState.selectedMinutes.<get-selectedMinutes>|<get-selectedMinutes>(){}[0]
+
+    final fun selectDuration(kotlin.time/Duration) // com.kez.picker.duration/DurationPickerState.selectDuration|selectDuration(kotlin.time.Duration){}[0]
+    final fun selectDuration(kotlin.time/Duration, com.kez.picker/DurationPickerItems) // com.kez.picker.duration/DurationPickerState.selectDuration|selectDuration(kotlin.time.Duration;com.kez.picker.DurationPickerItems){}[0]
+    final fun selectDuration(kotlin/Int, kotlin/Int) // com.kez.picker.duration/DurationPickerState.selectDuration|selectDuration(kotlin.Int;kotlin.Int){}[0]
+    final fun selectDuration(kotlin/Int, kotlin/Int, com.kez.picker/DurationPickerItems) // com.kez.picker.duration/DurationPickerState.selectDuration|selectDuration(kotlin.Int;kotlin.Int;com.kez.picker.DurationPickerItems){}[0]
+
+    final object Companion { // com.kez.picker.duration/DurationPickerState.Companion|null[0]
+        final val Saver // com.kez.picker.duration/DurationPickerState.Companion.Saver|{}Saver[0]
+            final fun <get-Saver>(): androidx.compose.runtime.saveable/Saver<com.kez.picker.duration/DurationPickerState, kotlin/Any> // com.kez.picker.duration/DurationPickerState.Companion.Saver.<get-Saver>|<get-Saver>(){}[0]
+    }
+}
+
 final class com.kez.picker.time/TimePickerState { // com.kez.picker.time/TimePickerState|null[0]
     constructor <init>(kotlin/Int, kotlin/Int, com.kez.picker.util/TimePeriod, com.kez.picker.util/TimeFormat) // com.kez.picker.time/TimePickerState.<init>|<init>(kotlin.Int;kotlin.Int;com.kez.picker.util.TimePeriod;com.kez.picker.util.TimeFormat){}[0]
     constructor <init>(kotlinx.datetime/LocalTime, com.kez.picker.util/TimeFormat = ...) // com.kez.picker.time/TimePickerState.<init>|<init>(kotlinx.datetime.LocalTime;com.kez.picker.util.TimeFormat){}[0]
@@ -422,6 +455,97 @@ final class com.kez.picker/DateRangePickerSemantics { // com.kez.picker/DateRang
     final fun equals(kotlin/Any?): kotlin/Boolean // com.kez.picker/DateRangePickerSemantics.equals|equals(kotlin.Any?){}[0]
     final fun hashCode(): kotlin/Int // com.kez.picker/DateRangePickerSemantics.hashCode|hashCode(){}[0]
     final fun toString(): kotlin/String // com.kez.picker/DateRangePickerSemantics.toString|toString(){}[0]
+}
+
+final class com.kez.picker/DurationPickerConstraints { // com.kez.picker/DurationPickerConstraints|null[0]
+    constructor <init>(kotlin.time/Duration? = ..., kotlin.time/Duration? = ...) // com.kez.picker/DurationPickerConstraints.<init>|<init>(kotlin.time.Duration?;kotlin.time.Duration?){}[0]
+
+    final val maxDuration // com.kez.picker/DurationPickerConstraints.maxDuration|{}maxDuration[0]
+        final fun <get-maxDuration>(): kotlin.time/Duration? // com.kez.picker/DurationPickerConstraints.maxDuration.<get-maxDuration>|<get-maxDuration>(){}[0]
+    final val minDuration // com.kez.picker/DurationPickerConstraints.minDuration|{}minDuration[0]
+        final fun <get-minDuration>(): kotlin.time/Duration? // com.kez.picker/DurationPickerConstraints.minDuration.<get-minDuration>|<get-minDuration>(){}[0]
+
+    final fun component1(): kotlin.time/Duration? // com.kez.picker/DurationPickerConstraints.component1|component1(){}[0]
+    final fun component2(): kotlin.time/Duration? // com.kez.picker/DurationPickerConstraints.component2|component2(){}[0]
+    final fun contains(kotlin.time/Duration): kotlin/Boolean // com.kez.picker/DurationPickerConstraints.contains|contains(kotlin.time.Duration){}[0]
+    final fun copy(kotlin.time/Duration? = ..., kotlin.time/Duration? = ...): com.kez.picker/DurationPickerConstraints // com.kez.picker/DurationPickerConstraints.copy|copy(kotlin.time.Duration?;kotlin.time.Duration?){}[0]
+    final fun equals(kotlin/Any?): kotlin/Boolean // com.kez.picker/DurationPickerConstraints.equals|equals(kotlin.Any?){}[0]
+    final fun hashCode(): kotlin/Int // com.kez.picker/DurationPickerConstraints.hashCode|hashCode(){}[0]
+    final fun toString(): kotlin/String // com.kez.picker/DurationPickerConstraints.toString|toString(){}[0]
+}
+
+final class com.kez.picker/DurationPickerFormat { // com.kez.picker/DurationPickerFormat|null[0]
+    constructor <init>(com.kez.picker/PickerItemFormat<kotlin/Int>, com.kez.picker/PickerItemFormat<kotlin/Int>) // com.kez.picker/DurationPickerFormat.<init>|<init>(com.kez.picker.PickerItemFormat<kotlin.Int>;com.kez.picker.PickerItemFormat<kotlin.Int>){}[0]
+
+    final val hour // com.kez.picker/DurationPickerFormat.hour|{}hour[0]
+        final fun <get-hour>(): com.kez.picker/PickerItemFormat<kotlin/Int> // com.kez.picker/DurationPickerFormat.hour.<get-hour>|<get-hour>(){}[0]
+    final val minute // com.kez.picker/DurationPickerFormat.minute|{}minute[0]
+        final fun <get-minute>(): com.kez.picker/PickerItemFormat<kotlin/Int> // com.kez.picker/DurationPickerFormat.minute.<get-minute>|<get-minute>(){}[0]
+
+    final fun component1(): com.kez.picker/PickerItemFormat<kotlin/Int> // com.kez.picker/DurationPickerFormat.component1|component1(){}[0]
+    final fun component2(): com.kez.picker/PickerItemFormat<kotlin/Int> // com.kez.picker/DurationPickerFormat.component2|component2(){}[0]
+    final fun copy(com.kez.picker/PickerItemFormat<kotlin/Int> = ..., com.kez.picker/PickerItemFormat<kotlin/Int> = ...): com.kez.picker/DurationPickerFormat // com.kez.picker/DurationPickerFormat.copy|copy(com.kez.picker.PickerItemFormat<kotlin.Int>;com.kez.picker.PickerItemFormat<kotlin.Int>){}[0]
+    final fun equals(kotlin/Any?): kotlin/Boolean // com.kez.picker/DurationPickerFormat.equals|equals(kotlin.Any?){}[0]
+    final fun hashCode(): kotlin/Int // com.kez.picker/DurationPickerFormat.hashCode|hashCode(){}[0]
+    final fun toString(): kotlin/String // com.kez.picker/DurationPickerFormat.toString|toString(){}[0]
+}
+
+final class com.kez.picker/DurationPickerItems { // com.kez.picker/DurationPickerItems|null[0]
+    constructor <init>(kotlin.collections/List<kotlin/Int>, kotlin.collections/List<kotlin/Int>, com.kez.picker/DurationPickerConstraints = ...) // com.kez.picker/DurationPickerItems.<init>|<init>(kotlin.collections.List<kotlin.Int>;kotlin.collections.List<kotlin.Int>;com.kez.picker.DurationPickerConstraints){}[0]
+
+    final val constraints // com.kez.picker/DurationPickerItems.constraints|{}constraints[0]
+        final fun <get-constraints>(): com.kez.picker/DurationPickerConstraints // com.kez.picker/DurationPickerItems.constraints.<get-constraints>|<get-constraints>(){}[0]
+    final val hourItems // com.kez.picker/DurationPickerItems.hourItems|{}hourItems[0]
+        final fun <get-hourItems>(): kotlin.collections/List<kotlin/Int> // com.kez.picker/DurationPickerItems.hourItems.<get-hourItems>|<get-hourItems>(){}[0]
+    final val minuteItems // com.kez.picker/DurationPickerItems.minuteItems|{}minuteItems[0]
+        final fun <get-minuteItems>(): kotlin.collections/List<kotlin/Int> // com.kez.picker/DurationPickerItems.minuteItems.<get-minuteItems>|<get-minuteItems>(){}[0]
+
+    final fun coerceDuration(kotlin.time/Duration): kotlin.time/Duration // com.kez.picker/DurationPickerItems.coerceDuration|coerceDuration(kotlin.time.Duration){}[0]
+    final fun coerceDuration(kotlin/Int, kotlin/Int): kotlin.time/Duration // com.kez.picker/DurationPickerItems.coerceDuration|coerceDuration(kotlin.Int;kotlin.Int){}[0]
+    final fun component1(): kotlin.collections/List<kotlin/Int> // com.kez.picker/DurationPickerItems.component1|component1(){}[0]
+    final fun component2(): kotlin.collections/List<kotlin/Int> // com.kez.picker/DurationPickerItems.component2|component2(){}[0]
+    final fun component3(): com.kez.picker/DurationPickerConstraints // com.kez.picker/DurationPickerItems.component3|component3(){}[0]
+    final fun contains(kotlin.time/Duration): kotlin/Boolean // com.kez.picker/DurationPickerItems.contains|contains(kotlin.time.Duration){}[0]
+    final fun contains(kotlin/Int, kotlin/Int): kotlin/Boolean // com.kez.picker/DurationPickerItems.contains|contains(kotlin.Int;kotlin.Int){}[0]
+    final fun copy(kotlin.collections/List<kotlin/Int> = ..., kotlin.collections/List<kotlin/Int> = ..., com.kez.picker/DurationPickerConstraints = ...): com.kez.picker/DurationPickerItems // com.kez.picker/DurationPickerItems.copy|copy(kotlin.collections.List<kotlin.Int>;kotlin.collections.List<kotlin.Int>;com.kez.picker.DurationPickerConstraints){}[0]
+    final fun equals(kotlin/Any?): kotlin/Boolean // com.kez.picker/DurationPickerItems.equals|equals(kotlin.Any?){}[0]
+    final fun hashCode(): kotlin/Int // com.kez.picker/DurationPickerItems.hashCode|hashCode(){}[0]
+    final fun toString(): kotlin/String // com.kez.picker/DurationPickerItems.toString|toString(){}[0]
+}
+
+final class com.kez.picker/DurationPickerLayout { // com.kez.picker/DurationPickerLayout|null[0]
+    constructor <init>(kotlin/Float?, kotlin/Float?, kotlinx.collections.immutable/ImmutableList<com.kez.picker/DurationPickerColumn> = ...) // com.kez.picker/DurationPickerLayout.<init>|<init>(kotlin.Float?;kotlin.Float?;kotlinx.collections.immutable.ImmutableList<com.kez.picker.DurationPickerColumn>){}[0]
+
+    final val columnOrder // com.kez.picker/DurationPickerLayout.columnOrder|{}columnOrder[0]
+        final fun <get-columnOrder>(): kotlinx.collections.immutable/ImmutableList<com.kez.picker/DurationPickerColumn> // com.kez.picker/DurationPickerLayout.columnOrder.<get-columnOrder>|<get-columnOrder>(){}[0]
+    final val hourWeight // com.kez.picker/DurationPickerLayout.hourWeight|{}hourWeight[0]
+        final fun <get-hourWeight>(): kotlin/Float? // com.kez.picker/DurationPickerLayout.hourWeight.<get-hourWeight>|<get-hourWeight>(){}[0]
+    final val minuteWeight // com.kez.picker/DurationPickerLayout.minuteWeight|{}minuteWeight[0]
+        final fun <get-minuteWeight>(): kotlin/Float? // com.kez.picker/DurationPickerLayout.minuteWeight.<get-minuteWeight>|<get-minuteWeight>(){}[0]
+
+    final fun component1(): kotlin/Float? // com.kez.picker/DurationPickerLayout.component1|component1(){}[0]
+    final fun component2(): kotlin/Float? // com.kez.picker/DurationPickerLayout.component2|component2(){}[0]
+    final fun component3(): kotlinx.collections.immutable/ImmutableList<com.kez.picker/DurationPickerColumn> // com.kez.picker/DurationPickerLayout.component3|component3(){}[0]
+    final fun copy(kotlin/Float? = ..., kotlin/Float? = ..., kotlinx.collections.immutable/ImmutableList<com.kez.picker/DurationPickerColumn> = ...): com.kez.picker/DurationPickerLayout // com.kez.picker/DurationPickerLayout.copy|copy(kotlin.Float?;kotlin.Float?;kotlinx.collections.immutable.ImmutableList<com.kez.picker.DurationPickerColumn>){}[0]
+    final fun equals(kotlin/Any?): kotlin/Boolean // com.kez.picker/DurationPickerLayout.equals|equals(kotlin.Any?){}[0]
+    final fun hashCode(): kotlin/Int // com.kez.picker/DurationPickerLayout.hashCode|hashCode(){}[0]
+    final fun toString(): kotlin/String // com.kez.picker/DurationPickerLayout.toString|toString(){}[0]
+}
+
+final class com.kez.picker/DurationPickerSemantics { // com.kez.picker/DurationPickerSemantics|null[0]
+    constructor <init>(com.kez.picker/PickerSemantics, com.kez.picker/PickerSemantics) // com.kez.picker/DurationPickerSemantics.<init>|<init>(com.kez.picker.PickerSemantics;com.kez.picker.PickerSemantics){}[0]
+
+    final val hour // com.kez.picker/DurationPickerSemantics.hour|{}hour[0]
+        final fun <get-hour>(): com.kez.picker/PickerSemantics // com.kez.picker/DurationPickerSemantics.hour.<get-hour>|<get-hour>(){}[0]
+    final val minute // com.kez.picker/DurationPickerSemantics.minute|{}minute[0]
+        final fun <get-minute>(): com.kez.picker/PickerSemantics // com.kez.picker/DurationPickerSemantics.minute.<get-minute>|<get-minute>(){}[0]
+
+    final fun component1(): com.kez.picker/PickerSemantics // com.kez.picker/DurationPickerSemantics.component1|component1(){}[0]
+    final fun component2(): com.kez.picker/PickerSemantics // com.kez.picker/DurationPickerSemantics.component2|component2(){}[0]
+    final fun copy(com.kez.picker/PickerSemantics = ..., com.kez.picker/PickerSemantics = ...): com.kez.picker/DurationPickerSemantics // com.kez.picker/DurationPickerSemantics.copy|copy(com.kez.picker.PickerSemantics;com.kez.picker.PickerSemantics){}[0]
+    final fun equals(kotlin/Any?): kotlin/Boolean // com.kez.picker/DurationPickerSemantics.equals|equals(kotlin.Any?){}[0]
+    final fun hashCode(): kotlin/Int // com.kez.picker/DurationPickerSemantics.hashCode|hashCode(){}[0]
+    final fun toString(): kotlin/String // com.kez.picker/DurationPickerSemantics.toString|toString(){}[0]
 }
 
 final class com.kez.picker/PickerColors { // com.kez.picker/PickerColors|null[0]
@@ -811,6 +935,11 @@ final object com.kez.picker/PickerDefaults { // com.kez.picker/PickerDefaults|nu
     final fun datePickerLayout(kotlin/Float? = ..., kotlin/Float? = ..., kotlin/Float? = ..., kotlin.collections/List<com.kez.picker/DatePickerColumn> = ...): com.kez.picker/DatePickerLayout // com.kez.picker/PickerDefaults.datePickerLayout|datePickerLayout(kotlin.Float?;kotlin.Float?;kotlin.Float?;kotlin.collections.List<com.kez.picker.DatePickerColumn>){}[0]
     final fun datePickerSemantics(kotlin/String? = ..., kotlin/String? = ..., kotlin/String? = ..., kotlin/String? = ..., kotlin/String? = ...): com.kez.picker/DatePickerSemantics // com.kez.picker/PickerDefaults.datePickerSemantics|datePickerSemantics(kotlin.String?;kotlin.String?;kotlin.String?;kotlin.String?;kotlin.String?){}[0]
     final fun dateRangePickerSemantics(com.kez.picker/DatePickerSemantics = ..., com.kez.picker/DatePickerSemantics = ...): com.kez.picker/DateRangePickerSemantics // com.kez.picker/PickerDefaults.dateRangePickerSemantics|dateRangePickerSemantics(com.kez.picker.DatePickerSemantics;com.kez.picker.DatePickerSemantics){}[0]
+    final fun durationPickerConstraints(kotlin.time/Duration? = ..., kotlin.time/Duration? = ...): com.kez.picker/DurationPickerConstraints // com.kez.picker/PickerDefaults.durationPickerConstraints|durationPickerConstraints(kotlin.time.Duration?;kotlin.time.Duration?){}[0]
+    final fun durationPickerFormat(kotlin/Function1<kotlin/Int, kotlin/String> = ..., kotlin/Function1<kotlin/Int, kotlin/String> = ..., kotlin/Function1<kotlin/Int, kotlin/String>? = ..., kotlin/Function1<kotlin/Int, kotlin/String>? = ...): com.kez.picker/DurationPickerFormat // com.kez.picker/PickerDefaults.durationPickerFormat|durationPickerFormat(kotlin.Function1<kotlin.Int,kotlin.String>;kotlin.Function1<kotlin.Int,kotlin.String>;kotlin.Function1<kotlin.Int,kotlin.String>?;kotlin.Function1<kotlin.Int,kotlin.String>?){}[0]
+    final fun durationPickerItems(kotlin.collections/List<kotlin/Int> = ..., kotlin.collections/List<kotlin/Int> = ..., kotlin.time/Duration? = ..., kotlin.time/Duration? = ...): com.kez.picker/DurationPickerItems // com.kez.picker/PickerDefaults.durationPickerItems|durationPickerItems(kotlin.collections.List<kotlin.Int>;kotlin.collections.List<kotlin.Int>;kotlin.time.Duration?;kotlin.time.Duration?){}[0]
+    final fun durationPickerLayout(kotlin/Float? = ..., kotlin/Float? = ..., kotlin.collections/List<com.kez.picker/DurationPickerColumn> = ...): com.kez.picker/DurationPickerLayout // com.kez.picker/PickerDefaults.durationPickerLayout|durationPickerLayout(kotlin.Float?;kotlin.Float?;kotlin.collections.List<com.kez.picker.DurationPickerColumn>){}[0]
+    final fun durationPickerSemantics(kotlin/String? = ..., kotlin/String? = ..., kotlin/String? = ..., kotlin/String? = ...): com.kez.picker/DurationPickerSemantics // com.kez.picker/PickerDefaults.durationPickerSemantics|durationPickerSemantics(kotlin.String?;kotlin.String?;kotlin.String?;kotlin.String?){}[0]
     final fun fadingEdgeGradient(): androidx.compose.ui.graphics/Brush // com.kez.picker/PickerDefaults.fadingEdgeGradient|fadingEdgeGradient(){}[0]
     final fun selectionIndicator(androidx.compose.ui.graphics/Color, androidx.compose.ui.unit/Dp, androidx.compose.ui.graphics/Shape?, androidx.compose.ui.unit/Dp, kotlin/Boolean, androidx.compose.ui.graphics/Color, androidx.compose.runtime/Composer?, kotlin/Int, kotlin/Int): com.kez.picker/PickerSelectionIndicator // com.kez.picker/PickerDefaults.selectionIndicator|selectionIndicator(androidx.compose.ui.graphics.Color;androidx.compose.ui.unit.Dp;androidx.compose.ui.graphics.Shape?;androidx.compose.ui.unit.Dp;kotlin.Boolean;androidx.compose.ui.graphics.Color;androidx.compose.runtime.Composer?;kotlin.Int;kotlin.Int){}[0]
     final fun selectionIndicator(com.kez.picker/PickerStyle, androidx.compose.ui.graphics/Color = ..., androidx.compose.ui.unit/Dp = ..., androidx.compose.ui.graphics/Shape = ..., androidx.compose.ui.unit/Dp = ..., kotlin/Boolean = ..., androidx.compose.ui.graphics/Color = ...): com.kez.picker/PickerSelectionIndicator // com.kez.picker/PickerDefaults.selectionIndicator|selectionIndicator(com.kez.picker.PickerStyle;androidx.compose.ui.graphics.Color;androidx.compose.ui.unit.Dp;androidx.compose.ui.graphics.Shape;androidx.compose.ui.unit.Dp;kotlin.Boolean;androidx.compose.ui.graphics.Color){}[0]
@@ -834,6 +963,7 @@ final val com.kez.picker.date/com_kez_picker_date_DateRange$stableprop // com.ke
 final val com.kez.picker.date/com_kez_picker_date_DateRangePickerState$stableprop // com.kez.picker.date/com_kez_picker_date_DateRangePickerState$stableprop|#static{}com_kez_picker_date_DateRangePickerState$stableprop[0]
 final val com.kez.picker.date/com_kez_picker_date_YearMonth$stableprop // com.kez.picker.date/com_kez_picker_date_YearMonth$stableprop|#static{}com_kez_picker_date_YearMonth$stableprop[0]
 final val com.kez.picker.date/com_kez_picker_date_YearMonthPickerState$stableprop // com.kez.picker.date/com_kez_picker_date_YearMonthPickerState$stableprop|#static{}com_kez_picker_date_YearMonthPickerState$stableprop[0]
+final val com.kez.picker.duration/com_kez_picker_duration_DurationPickerState$stableprop // com.kez.picker.duration/com_kez_picker_duration_DurationPickerState$stableprop|#static{}com_kez_picker_duration_DurationPickerState$stableprop[0]
 final val com.kez.picker.resources/allDrawableResources // com.kez.picker.resources/allDrawableResources|@com.kez.picker.resources.Res{}allDrawableResources[0]
     final fun (com.kez.picker.resources/Res).<get-allDrawableResources>(): kotlin.collections/Map<kotlin/String, org.jetbrains.compose.resources/DrawableResource> // com.kez.picker.resources/allDrawableResources.<get-allDrawableResources>|<get-allDrawableResources>@com.kez.picker.resources.Res(){}[0]
 final val com.kez.picker.resources/allFontResources // com.kez.picker.resources/allFontResources|@com.kez.picker.resources.Res{}allFontResources[0]
@@ -869,6 +999,11 @@ final val com.kez.picker/com_kez_picker_DatePickerItems$stableprop // com.kez.pi
 final val com.kez.picker/com_kez_picker_DatePickerLayout$stableprop // com.kez.picker/com_kez_picker_DatePickerLayout$stableprop|#static{}com_kez_picker_DatePickerLayout$stableprop[0]
 final val com.kez.picker/com_kez_picker_DatePickerSemantics$stableprop // com.kez.picker/com_kez_picker_DatePickerSemantics$stableprop|#static{}com_kez_picker_DatePickerSemantics$stableprop[0]
 final val com.kez.picker/com_kez_picker_DateRangePickerSemantics$stableprop // com.kez.picker/com_kez_picker_DateRangePickerSemantics$stableprop|#static{}com_kez_picker_DateRangePickerSemantics$stableprop[0]
+final val com.kez.picker/com_kez_picker_DurationPickerConstraints$stableprop // com.kez.picker/com_kez_picker_DurationPickerConstraints$stableprop|#static{}com_kez_picker_DurationPickerConstraints$stableprop[0]
+final val com.kez.picker/com_kez_picker_DurationPickerFormat$stableprop // com.kez.picker/com_kez_picker_DurationPickerFormat$stableprop|#static{}com_kez_picker_DurationPickerFormat$stableprop[0]
+final val com.kez.picker/com_kez_picker_DurationPickerItems$stableprop // com.kez.picker/com_kez_picker_DurationPickerItems$stableprop|#static{}com_kez_picker_DurationPickerItems$stableprop[0]
+final val com.kez.picker/com_kez_picker_DurationPickerLayout$stableprop // com.kez.picker/com_kez_picker_DurationPickerLayout$stableprop|#static{}com_kez_picker_DurationPickerLayout$stableprop[0]
+final val com.kez.picker/com_kez_picker_DurationPickerSemantics$stableprop // com.kez.picker/com_kez_picker_DurationPickerSemantics$stableprop|#static{}com_kez_picker_DurationPickerSemantics$stableprop[0]
 final val com.kez.picker/com_kez_picker_PickerColors$stableprop // com.kez.picker/com_kez_picker_PickerColors$stableprop|#static{}com_kez_picker_PickerColors$stableprop[0]
 final val com.kez.picker/com_kez_picker_PickerDefaults$stableprop // com.kez.picker/com_kez_picker_PickerDefaults$stableprop|#static{}com_kez_picker_PickerDefaults$stableprop[0]
 final val com.kez.picker/com_kez_picker_PickerDividerWidth_Fill$stableprop // com.kez.picker/com_kez_picker_PickerDividerWidth_Fill$stableprop|#static{}com_kez_picker_PickerDividerWidth_Fill$stableprop[0]
@@ -917,6 +1052,12 @@ final fun com.kez.picker.date/rememberYearMonthPickerState(com.kez.picker/YearMo
 final fun com.kez.picker.date/rememberYearMonthPickerState(com.kez.picker/YearMonthPickerItems, kotlinx.datetime/LocalDate?, androidx.compose.runtime/Composer?, kotlin/Int, kotlin/Int): com.kez.picker.date/YearMonthPickerState // com.kez.picker.date/rememberYearMonthPickerState|rememberYearMonthPickerState(com.kez.picker.YearMonthPickerItems;kotlinx.datetime.LocalDate?;androidx.compose.runtime.Composer?;kotlin.Int;kotlin.Int){}[0]
 final fun com.kez.picker.date/rememberYearMonthPickerState(kotlin/Int, kotlin/Int, androidx.compose.runtime/Composer?, kotlin/Int): com.kez.picker.date/YearMonthPickerState // com.kez.picker.date/rememberYearMonthPickerState|rememberYearMonthPickerState(kotlin.Int;kotlin.Int;androidx.compose.runtime.Composer?;kotlin.Int){}[0]
 final fun com.kez.picker.date/rememberYearMonthPickerState(kotlinx.datetime/LocalDate?, androidx.compose.runtime/Composer?, kotlin/Int, kotlin/Int): com.kez.picker.date/YearMonthPickerState // com.kez.picker.date/rememberYearMonthPickerState|rememberYearMonthPickerState(kotlinx.datetime.LocalDate?;androidx.compose.runtime.Composer?;kotlin.Int;kotlin.Int){}[0]
+final fun com.kez.picker.duration/DurationPicker(androidx.compose.ui/Modifier?, androidx.compose.ui/Modifier?, com.kez.picker.duration/DurationPickerState?, kotlin/Function1<kotlin.time/Duration, kotlin/Unit>?, kotlin/Boolean, com.kez.picker/DurationPickerItems?, com.kez.picker/DurationPickerFormat?, com.kez.picker/PickerStyle?, com.kez.picker/PickerSelectionIndicator?, com.kez.picker/DurationPickerLayout?, androidx.compose.ui.unit/Dp, com.kez.picker/DurationPickerSemantics?, androidx.compose.runtime/Composer?, kotlin/Int, kotlin/Int, kotlin/Int) // com.kez.picker.duration/DurationPicker|DurationPicker(androidx.compose.ui.Modifier?;androidx.compose.ui.Modifier?;com.kez.picker.duration.DurationPickerState?;kotlin.Function1<kotlin.time.Duration,kotlin.Unit>?;kotlin.Boolean;com.kez.picker.DurationPickerItems?;com.kez.picker.DurationPickerFormat?;com.kez.picker.PickerStyle?;com.kez.picker.PickerSelectionIndicator?;com.kez.picker.DurationPickerLayout?;androidx.compose.ui.unit.Dp;com.kez.picker.DurationPickerSemantics?;androidx.compose.runtime.Composer?;kotlin.Int;kotlin.Int;kotlin.Int){}[0]
+final fun com.kez.picker.duration/com_kez_picker_duration_DurationPickerState$stableprop_getter(): kotlin/Int // com.kez.picker.duration/com_kez_picker_duration_DurationPickerState$stableprop_getter|com_kez_picker_duration_DurationPickerState$stableprop_getter(){}[0]
+final fun com.kez.picker.duration/rememberDurationPickerState(com.kez.picker/DurationPickerItems, kotlin.time/Duration, androidx.compose.runtime/Composer?, kotlin/Int, kotlin/Int): com.kez.picker.duration/DurationPickerState // com.kez.picker.duration/rememberDurationPickerState|rememberDurationPickerState(com.kez.picker.DurationPickerItems;kotlin.time.Duration;androidx.compose.runtime.Composer?;kotlin.Int;kotlin.Int){}[0]
+final fun com.kez.picker.duration/rememberDurationPickerState(com.kez.picker/DurationPickerItems, kotlin.time/Duration?, androidx.compose.runtime/Composer?, kotlin/Int, kotlin/Int): com.kez.picker.duration/DurationPickerState // com.kez.picker.duration/rememberDurationPickerState|rememberDurationPickerState(com.kez.picker.DurationPickerItems;kotlin.time.Duration?;androidx.compose.runtime.Composer?;kotlin.Int;kotlin.Int){}[0]
+final fun com.kez.picker.duration/rememberDurationPickerState(kotlin.time/Duration, androidx.compose.runtime/Composer?, kotlin/Int, kotlin/Int): com.kez.picker.duration/DurationPickerState // com.kez.picker.duration/rememberDurationPickerState|rememberDurationPickerState(kotlin.time.Duration;androidx.compose.runtime.Composer?;kotlin.Int;kotlin.Int){}[0]
+final fun com.kez.picker.duration/rememberDurationPickerState(kotlin.time/Duration?, androidx.compose.runtime/Composer?, kotlin/Int, kotlin/Int): com.kez.picker.duration/DurationPickerState // com.kez.picker.duration/rememberDurationPickerState|rememberDurationPickerState(kotlin.time.Duration?;androidx.compose.runtime.Composer?;kotlin.Int;kotlin.Int){}[0]
 final fun com.kez.picker.resources/com_kez_picker_resources_Res$stableprop_getter(): kotlin/Int // com.kez.picker.resources/com_kez_picker_resources_Res$stableprop_getter|com_kez_picker_resources_Res$stableprop_getter(){}[0]
 final fun com.kez.picker.resources/com_kez_picker_resources_Res_array$stableprop_getter(): kotlin/Int // com.kez.picker.resources/com_kez_picker_resources_Res_array$stableprop_getter|com_kez_picker_resources_Res_array$stableprop_getter(){}[0]
 final fun com.kez.picker.resources/com_kez_picker_resources_Res_drawable$stableprop_getter(): kotlin/Int // com.kez.picker.resources/com_kez_picker_resources_Res_drawable$stableprop_getter|com_kez_picker_resources_Res_drawable$stableprop_getter(){}[0]
@@ -941,6 +1082,11 @@ final fun com.kez.picker/com_kez_picker_DatePickerItems$stableprop_getter(): kot
 final fun com.kez.picker/com_kez_picker_DatePickerLayout$stableprop_getter(): kotlin/Int // com.kez.picker/com_kez_picker_DatePickerLayout$stableprop_getter|com_kez_picker_DatePickerLayout$stableprop_getter(){}[0]
 final fun com.kez.picker/com_kez_picker_DatePickerSemantics$stableprop_getter(): kotlin/Int // com.kez.picker/com_kez_picker_DatePickerSemantics$stableprop_getter|com_kez_picker_DatePickerSemantics$stableprop_getter(){}[0]
 final fun com.kez.picker/com_kez_picker_DateRangePickerSemantics$stableprop_getter(): kotlin/Int // com.kez.picker/com_kez_picker_DateRangePickerSemantics$stableprop_getter|com_kez_picker_DateRangePickerSemantics$stableprop_getter(){}[0]
+final fun com.kez.picker/com_kez_picker_DurationPickerConstraints$stableprop_getter(): kotlin/Int // com.kez.picker/com_kez_picker_DurationPickerConstraints$stableprop_getter|com_kez_picker_DurationPickerConstraints$stableprop_getter(){}[0]
+final fun com.kez.picker/com_kez_picker_DurationPickerFormat$stableprop_getter(): kotlin/Int // com.kez.picker/com_kez_picker_DurationPickerFormat$stableprop_getter|com_kez_picker_DurationPickerFormat$stableprop_getter(){}[0]
+final fun com.kez.picker/com_kez_picker_DurationPickerItems$stableprop_getter(): kotlin/Int // com.kez.picker/com_kez_picker_DurationPickerItems$stableprop_getter|com_kez_picker_DurationPickerItems$stableprop_getter(){}[0]
+final fun com.kez.picker/com_kez_picker_DurationPickerLayout$stableprop_getter(): kotlin/Int // com.kez.picker/com_kez_picker_DurationPickerLayout$stableprop_getter|com_kez_picker_DurationPickerLayout$stableprop_getter(){}[0]
+final fun com.kez.picker/com_kez_picker_DurationPickerSemantics$stableprop_getter(): kotlin/Int // com.kez.picker/com_kez_picker_DurationPickerSemantics$stableprop_getter|com_kez_picker_DurationPickerSemantics$stableprop_getter(){}[0]
 final fun com.kez.picker/com_kez_picker_PickerColors$stableprop_getter(): kotlin/Int // com.kez.picker/com_kez_picker_PickerColors$stableprop_getter|com_kez_picker_PickerColors$stableprop_getter(){}[0]
 final fun com.kez.picker/com_kez_picker_PickerDefaults$stableprop_getter(): kotlin/Int // com.kez.picker/com_kez_picker_PickerDefaults$stableprop_getter|com_kez_picker_PickerDefaults$stableprop_getter(){}[0]
 final fun com.kez.picker/com_kez_picker_PickerDividerWidth_Fill$stableprop_getter(): kotlin/Int // com.kez.picker/com_kez_picker_PickerDividerWidth_Fill$stableprop_getter|com_kez_picker_PickerDividerWidth_Fill$stableprop_getter(){}[0]

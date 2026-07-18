@@ -6,6 +6,11 @@ This project tracks notable user-facing and maintainer-facing changes here. The 
 
 ### Added
 
+- Added `DurationPicker`, `DurationPickerState`, `DurationPickerItems`, and scalar
+  `DurationPickerConstraints` for selecting finite, non-negative, whole-minute elapsed durations
+  through dependent hour/minute columns. The API includes deterministic nearest-value coercion,
+  atomic user-settled callbacks, items-aware save/restore, format/layout/semantics options, a bounded
+  0-to-90-minute sample, and Android callback/restoration/disabled-semantics coverage.
 - Added a controlled generic `WheelPicker<T>` with live `onSelectedItemChange` updates and a
   separate `onSelectionSettled` callback. App-driven selection synchronization invokes neither
   callback.

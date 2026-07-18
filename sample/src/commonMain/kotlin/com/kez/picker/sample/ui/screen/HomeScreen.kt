@@ -95,6 +95,15 @@ internal fun HomeScreen(navController: NavController) {
             }
             item {
                 MenuListItem(
+                    title = "DurationPicker Sample",
+                    description = "Atomic 0–90 minute selection in 5-minute steps",
+                    icon = FeatherIcons.Clock,
+                    modifier = Modifier.testTag("sample-menu-duration-picker"),
+                    onClick = { navController.navigate(Screen.DurationPicker.route) }
+                )
+            }
+            item {
+                MenuListItem(
                     title = "YearMonthPicker Sample",
                     description = "Month selection with programmatic reset",
                     icon = FeatherIcons.Calendar,
