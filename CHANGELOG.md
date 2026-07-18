@@ -6,6 +6,12 @@ This project tracks notable user-facing and maintainer-facing changes here. The 
 
 ### Added
 
+- Added a sample-local five-column `DateTimePicker` vertical slice backed by six exact
+  whole-minute `LocalDateTime` candidates across midnight. A month change replaces dependent
+  day/hour/minute sources, repairs and commits one selectable logical value before one callback,
+  and programmatic selection remains callback-free even when cancelling an in-flight selectable
+  minute target. This is repository contract evidence only and adds no public date-time or generic
+  multi-column API.
 - Added a sample-local `QuantityUnitPicker` vertical slice that demonstrates and regression-tests
   the core source-repair and state-first callback path outside date/time domains. Changing between
   gram and kilogram

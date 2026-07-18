@@ -222,7 +222,8 @@ public API보다 먼저 아래 invariant를 concrete preset에서 검증한다.
   saveable하다고 가정하지 않으며 generic API는 caller-owned key/value 또는 명시적 `Saver`가 필요하다.
 
 `MultiWheelPicker<State>`를 처음부터 임의의 graph DSL로 만들지 않는다. Date/Time/Duration/QuantityUnit 네
-종류에서 반복되는 최소 모델이 확인된 뒤 public surface를 고정한다.
+종류에서 반복되는 최소 모델 확인은 public surface 논의를 시작하는 필요조건일 뿐 충분조건이 아니다. private
+shared prototype과 counterpart/event/performance gate를 통과하기 전에는 public surface를 고정하지 않는다.
 
 ### 3. presets
 
@@ -258,16 +259,19 @@ behavior가 달라지는 slice는 README, README_KO, CHANGELOG, KDoc, ABI dump, 
 - non-default column order, source identity 변경, restore, intermediate scroll overwrite를 red-team한다.
 - public generic API는 concrete preset 최소 두 종류에서 같은 모델이 증명된 뒤에만 노출한다.
 
-### Phase 3 — domain-expansion proof
+### Phase 3 — domain-expansion and combined-state proof
 
-- `DurationPicker`와 `QuantityUnitPicker`의 representative sample, KDoc, tests를 만든다.
+- `DurationPicker`에는 public KDoc과 tests를, sample-local `QuantityUnitPicker`와 combined `DateTimePicker`에는
+  product contract 문서와 tests를 만든다.
 - 처음 보는 개발자가 문서만으로 state/constraint/callback 계약을 설명하고 사용할 수 있는지 확인한다.
 
 현재 repository proof에서 `DurationPicker`는 public scalar preset으로, `QuantityUnitPicker`는 sample-local
 dependent-source slice로 구현됐다. Quantity/Unit은 unit별 item source, step, format, semantics가 logical state에서
-파생되고 settled change가 repair 뒤 한 번만 commit되는 동일한 seam을 sample에서 재현했다. 이 결과만으로 public
-`MultiWheelPicker<State>`를 바로 고정하지 않고, 다음 combined `DateTimePicker` slice에서 4개 이상의 column과
-기존 temporal state를 조합해도 preset-specific 예외가 늘어나지 않는지 확인한다.
+파생되고 settled change가 repair 뒤 한 번만 commit되는 동일한 seam을 sample에서 재현했다. Combined
+DateTime은 exact candidate source에서 year/month/day/hour/minute 다섯 column을 하나의 `LocalDateTime`으로
+commit하고 programmatic selection이 in-flight minute settle에 덮어써지지 않는지 Android interaction test로
+검증한다. 이 repository evidence만으로 public `MultiWheelPicker<State>`를 바로 고정하지 않으며, 아래에 남은
+counterpart/event/performance gate와 외부 first-use를 계속 요구한다.
 
 ### Phase 4 — 외부 수요 검증
 
@@ -328,7 +332,10 @@ picker에서 atomic/dependent selection 계약을 다음 증거로 고정한다.
 - atomic callback 이름과 발생 조건을 README/KDoc에서 한 문장으로 설명 가능
 - intentional public API가 있으면 ABI dump를 업데이트하고 review
 
-이 gate를 최소 두 concrete preset에서 통과한 뒤 `MultiWheelPicker<State>` public surface를 결정한다.
+이 gate를 최소 두 concrete preset에서 통과하면 private shared prototype을 제안할 수 있다. Prototype은
+[`date-time-picker-contract.md`](date-time-picker-contract.md)의 visibility/ABI, temporal+non-temporal reuse,
+event, interaction acceptance criteria까지 통과해야 하며, 그 전에는 `MultiWheelPicker<State>` public surface를
+결정하거나 노출하지 않는다.
 
 ## 근거 자료
 
