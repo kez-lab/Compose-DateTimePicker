@@ -91,6 +91,24 @@ class SampleAppSmokeAndroidTest {
     }
 
     @Test
+    fun durationPickerMenuAction_opensBoundedScalarSample() {
+        composeRule
+            .onNodeWithTag("sample-menu-duration-picker")
+            .performScrollTo()
+            .performClick()
+
+        composeRule
+            .onNodeWithText("DurationPicker Sample")
+            .assertIsDisplayed()
+        composeRule
+            .onNodeWithText("Set 90 min")
+            .assertIsDisplayed()
+        composeRule
+            .onNodeWithText("Reset 45 min")
+            .assertIsDisplayed()
+    }
+
+    @Test
     fun dateRangePickerMenuAction_updatesSelectedRangeFromButtons() {
         val today = currentDate()
         val expectedTodaySummary = "Selected range, $today..$today, Single day. Days selected: 1. " +
@@ -156,6 +174,7 @@ private val sampleMenuTags = listOf(
     "sample-menu-wheel-picker",
     "sample-menu-integrated",
     "sample-menu-time-picker",
+    "sample-menu-duration-picker",
     "sample-menu-year-month-picker",
     "sample-menu-date-picker",
     "sample-menu-date-range-picker",

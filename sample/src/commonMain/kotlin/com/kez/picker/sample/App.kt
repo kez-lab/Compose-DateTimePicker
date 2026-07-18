@@ -12,6 +12,7 @@ import com.kez.picker.sample.ui.screen.BackgroundStylePickerScreen
 import com.kez.picker.sample.ui.screen.BottomSheetSampleScreen
 import com.kez.picker.sample.ui.screen.DatePickerSampleScreen
 import com.kez.picker.sample.ui.screen.DateRangePickerSampleScreen
+import com.kez.picker.sample.ui.screen.DurationPickerSampleScreen
 import com.kez.picker.sample.ui.screen.HomeScreen
 import com.kez.picker.sample.ui.screen.IntegratedPickerScreen
 import com.kez.picker.sample.ui.screen.TimePickerSampleScreen
@@ -51,6 +52,11 @@ fun App() {
             }
             composable(Screen.TimePicker.route) {
                 TimePickerSampleScreen(
+                    onBackPressed = { handleNavigateBack(navController) }
+                )
+            }
+            composable(Screen.DurationPicker.route) {
+                DurationPickerSampleScreen(
                     onBackPressed = { handleNavigateBack(navController) }
                 )
             }

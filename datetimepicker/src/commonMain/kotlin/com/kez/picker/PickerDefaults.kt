@@ -27,11 +27,13 @@ import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalTime
+import kotlin.time.Duration
 
 private const val DISABLED_CONTENT_ALPHA: Float = 0.38f
 private const val DISABLED_CONTAINER_ALPHA: Float = 0.12f
 private const val DEFAULT_INTEGER_ITEM_HEIGHT_PROBE_TEXT = "0123456789"
 private const val DEFAULT_PERIOD_ITEM_HEIGHT_PROBE_TEXT = "AMPM"
+private val DEFAULT_DURATION_HOUR_ITEMS = (0..23).toList()
 
 private val DefaultIntegerItemText: (Int) -> String = { it.toString() }
 private val DefaultPeriodItemText: (TimePeriod) -> String = { it.name }
@@ -296,6 +298,28 @@ object PickerDefaults {
     )
 
     /**
+     * Creates layout options for [com.kez.picker.duration.DurationPicker] columns.
+     *
+     * @param hourWeight The elapsed-hour column weight.
+     * @param minuteWeight The minute-within-hour column weight.
+     * @param columnOrder The visual order containing each [DurationPickerColumn] exactly once.
+     * @return A [DurationPickerLayout] instance with the specified column weights and order.
+     * @throws IllegalArgumentException if a provided weight is not positive or [columnOrder] is invalid.
+     */
+    fun durationPickerLayout(
+        hourWeight: Float? = 1f,
+        minuteWeight: Float? = 1f,
+        columnOrder: List<DurationPickerColumn> = listOf(
+            DurationPickerColumn.HOUR,
+            DurationPickerColumn.MINUTE
+        )
+    ): DurationPickerLayout = DurationPickerLayout(
+        hourWeight = hourWeight,
+        minuteWeight = minuteWeight,
+        columnOrder = columnOrder.toImmutableList()
+    )
+
+    /**
      * Creates layout options for [com.kez.picker.date.DatePicker] columns.
      *
      * Pass `null` for a column weight when [com.kez.picker.date.DatePicker] should use
@@ -417,6 +441,31 @@ object PickerDefaults {
     )
 
     /**
+     * Creates value formatting for a duration picker.
+     *
+     * @param hourItemText Text displayed for each elapsed-hour value.
+     * @param minuteItemText Text displayed for each minute-within-hour value.
+     * @param hourItemContentDescription Optional accessibility description for each hour value.
+     * @param minuteItemContentDescription Optional accessibility description for each minute value.
+     * @return A [DurationPickerFormat] instance with the specified value formatting.
+     */
+    fun durationPickerFormat(
+        hourItemText: (Int) -> String = DefaultIntegerItemText,
+        minuteItemText: (Int) -> String = DefaultIntegerItemText,
+        hourItemContentDescription: ((Int) -> String)? = null,
+        minuteItemContentDescription: ((Int) -> String)? = null
+    ): DurationPickerFormat = DurationPickerFormat(
+        hour = itemFormat(
+            itemText = hourItemText,
+            itemContentDescription = hourItemContentDescription
+        ),
+        minute = itemFormat(
+            itemText = minuteItemText,
+            itemContentDescription = minuteItemContentDescription
+        )
+    )
+
+    /**
      * Creates value formatting for a date picker.
      *
      * @param yearItemText Text displayed for each year value.
@@ -506,6 +555,33 @@ object PickerDefaults {
         ),
         period = semantics(
             pickerLabel = periodPickerLabel,
+            previousItemActionLabel = previousItemActionLabel,
+            nextItemActionLabel = nextItemActionLabel
+        )
+    )
+
+    /**
+     * Creates accessibility configuration for a duration picker.
+     *
+     * @param hourPickerLabel Accessibility label for the elapsed-hour column.
+     * @param minutePickerLabel Accessibility label for the minute-within-hour column.
+     * @param previousItemActionLabel Accessibility action label used to select the previous item.
+     * @param nextItemActionLabel Accessibility action label used to select the next item.
+     * @return A [DurationPickerSemantics] instance with the specified labels and actions.
+     */
+    fun durationPickerSemantics(
+        hourPickerLabel: String? = "Hours",
+        minutePickerLabel: String? = "Minutes",
+        previousItemActionLabel: String? = PreviousItemActionLabel,
+        nextItemActionLabel: String? = NextItemActionLabel
+    ): DurationPickerSemantics = DurationPickerSemantics(
+        hour = semantics(
+            pickerLabel = hourPickerLabel,
+            previousItemActionLabel = previousItemActionLabel,
+            nextItemActionLabel = nextItemActionLabel
+        ),
+        minute = semantics(
+            pickerLabel = minutePickerLabel,
             previousItemActionLabel = previousItemActionLabel,
             nextItemActionLabel = nextItemActionLabel
         )
@@ -608,6 +684,51 @@ object PickerDefaults {
     ): TimePickerConstraints = TimePickerConstraints(
         minTime = minTime,
         maxTime = maxTime
+    )
+
+    /**
+     * Creates inclusive whole-minute scalar constraints for a duration picker.
+     *
+     * @param minDuration The smallest selectable duration, inclusive. Pass null to omit the lower bound.
+     * @param maxDuration The largest selectable duration, inclusive. Pass null to omit the upper bound.
+     * @return A [DurationPickerConstraints] instance with the specified bounds.
+     * @throws IllegalArgumentException if a bound is outside the supported duration domain or the
+     * lower bound is greater than the upper bound.
+     */
+    fun durationPickerConstraints(
+        minDuration: Duration? = null,
+        maxDuration: Duration? = null
+    ): DurationPickerConstraints = DurationPickerConstraints(
+        minDuration = minDuration,
+        maxDuration = maxDuration
+    )
+
+    /**
+     * Creates selectable item sources for a duration picker.
+     *
+     * The default elapsed-hour source is `0..23`. Pass a custom source to select durations of 24
+     * hours or longer. Item-list validation is performed when the result is coerced or composed.
+     *
+     * @param hourItems Non-negative elapsed whole-hour values. Defaults to `0..23`.
+     * @param minuteItems Minute-within-hour values in `0..59`.
+     * @param minDuration The smallest selectable duration, inclusive.
+     * @param maxDuration The largest selectable duration, inclusive.
+     * @return A [DurationPickerItems] instance with the specified item sources and scalar bounds.
+     * @throws IllegalArgumentException if a scalar bound is outside the supported duration domain
+     * or the lower bound is greater than the upper bound.
+     */
+    fun durationPickerItems(
+        hourItems: List<Int> = DEFAULT_DURATION_HOUR_ITEMS,
+        minuteItems: List<Int> = MINUTE_RANGE,
+        minDuration: Duration? = null,
+        maxDuration: Duration? = null
+    ): DurationPickerItems = DurationPickerItems(
+        hourItems = hourItems,
+        minuteItems = minuteItems,
+        constraints = durationPickerConstraints(
+            minDuration = minDuration,
+            maxDuration = maxDuration
+        )
     )
 
     /**

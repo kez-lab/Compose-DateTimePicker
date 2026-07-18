@@ -147,7 +147,8 @@ Android에는 Compose를 지원하는 `dev.aige.pub:WheelPicker`와 여러 `whee
 ### 우선 사용 사례
 
 1. `DatePicker`, `TimePicker`, `YearMonthPicker`, `DateRangePicker`: 기존 API를 engine 위에서 유지한다.
-2. `DurationPicker`: day/hour/minute 또는 hour/minute/second 단위가 전체 min/max duration을 지킨다.
+2. `DurationPicker`: 첫 public slice는 hour/minute column이 전체 min/max duration을 지키는 계약을
+   검증한다. day/second 같은 추가 column은 실제 first-use 수요를 확인한 뒤 후속 slice에서 평가한다.
 3. `QuantityUnitPicker`: 선택 unit에 따라 허용 quantity/step/format이 달라진다.
 4. 앱 전용 dependent picker: 예를 들어 product/category, region/city처럼 앞 열에 따라 뒤 열이 달라진다.
 
