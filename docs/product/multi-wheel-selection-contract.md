@@ -67,6 +67,32 @@ explain how live preview and all-columns-settled events work when dependent sour
 
 ## Follow-up audit
 
+The sample-local Quantity/Unit slice demonstrates the same transition model outside temporal domains:
+the active quantity source, step, value description, and semantics label are derived from one
+logical unit selection; a settled unit change repairs by normalized scalar mass before one state
+commit and callback. It also exposes the minimum repeated engine seam more clearly:
+
+```text
+logical transition
+  = typed column id
+  + active items(logical state)
+  + selected item(logical state)
+  + reduce(logical state, column event)
+
+presentation
+  = state-dependent format/semantics/layout
+
+interaction contract (still pending)
+  = live versus settled phase
+  + state commit/callback ordering
+  + stale-generation cancellation
+```
+
+The Quantity/Unit implementation intentionally remains in the sample module. A combined
+`DateTimePicker` slice must still test interaction-generation cancellation and whether this seam
+supports a larger temporal composition without forcing preset-specific callbacks or layout rules
+before it becomes public API.
+
 - `YearMonthPickerState` and `DateRangePickerState` still need the same one-snapshot logical update
   audit before they can claim this contract.
 - Generic `Picker` still needs a focused slice for disabling during an active animation; the wheel
@@ -75,5 +101,7 @@ explain how live preview and all-columns-settled events work when dependent sour
 - Infinite mode with a one-value source currently renders repeated visible rows whose equal values
   all satisfy selected semantics. Audit single-value rendering so accessibility exposes one logical
   selection rather than several selected duplicates.
-- A public engine remains gated on Duration and Quantity/Unit proving the same late-invalid-value,
-  dependency, restore, and settled-event model without preset-specific exceptions.
+- Combined DateTime is the next evidence slice, not the only public API gate. A public engine remains
+  gated on DateTime proving the same late-invalid-value, dependency, restore, and settled-event model
+  without preset-specific exceptions, the open YearMonth/DateRange/disabled/single-value counterpart
+  audits above, and an explicit live-versus-settled event proposal.

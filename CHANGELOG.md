@@ -6,6 +6,14 @@ This project tracks notable user-facing and maintainer-facing changes here. The 
 
 ### Added
 
+- Added a sample-local `QuantityUnitPicker` vertical slice that demonstrates and regression-tests
+  the core source-repair and state-first callback path outside date/time domains. Changing between
+  gram and kilogram
+  sources replaces quantity items, step, formatting, and semantics, repairs by normalized scalar
+  mass with deterministic lower-value ties, commits state before one user callback, and keeps
+  programmatic presets callback-free. This sample intentionally adds no public quantity or generic
+  multi-wheel API. It is repository implementation evidence only, not first-use, adoption, or
+  market-demand evidence.
 - Added `DurationPicker`, `DurationPickerState`, `DurationPickerItems`, and scalar
   `DurationPickerConstraints` for selecting finite, non-negative, whole-minute elapsed durations
   through dependent hour/minute columns. The API includes deterministic nearest-value coercion,

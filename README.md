@@ -12,6 +12,9 @@ generic `WheelPicker<T>` plus date/time presets with consistent APIs across Andr
 * **WheelPicker**: A controlled generic wheel with live value changes and a separate settled callback.
 *   **TimePicker**: Supports both 12-hour (AM/PM) and 24-hour formats.
 * **DurationPicker**: Selects one bounded elapsed duration through dependent hour/minute columns.
+* **Quantity + Unit repository sample only — not artifact API**: Demonstrates a non-temporal unit
+  change replacing quantity items, step, formatting, and semantics while committing one repaired
+  logical value.
 * **DatePicker**: A complete date picker for selecting year, month, and day with automatic day
   validation.
 * **DateRangePicker**: An ordered start/end date picker for booking, filtering, and reporting flows.
@@ -24,8 +27,8 @@ generic `WheelPicker<T>` plus date/time presets with consistent APIs across Andr
 
 ## Sample App
 
-The repository includes a Compose Multiplatform sample app with copyable generic wheel, date, time,
-duration, and bottom sheet flows.
+The repository includes a Compose Multiplatform sample app with inspectable generic wheel,
+dependent quantity/unit, date, time, duration, and bottom sheet flows.
 
 <p align="center">
   <img src="docs/images/sample/sample-home.png" alt="Sample app home screen" width="23%" />
@@ -228,6 +231,29 @@ column represents elapsed whole hours rather than time-of-day. A changed hour pr
 minute when possible, then repairs it to the closest selectable minute inside the inclusive scalar
 bounds. Numeric ties prefer the smaller duration. Negative, infinite, or sub-minute state and bound
 values throw `IllegalArgumentException` instead of being silently truncated.
+
+### Quantity + Unit dependent sample
+
+The sample app includes a sample-local `QuantityUnitPicker` vertical slice for coarse allowed-weight
+buckets. It is not yet a supported library API. The slice intentionally validates the
+core source-repair and state-first callback path before the repository proposes a generic
+multi-column wheel engine API or a domain-specific quantity preset.
+
+- grams use `100..5000` in 100 g steps;
+- kilograms use `1..5` in 1 kg steps;
+- changing the unit replaces the quantity source, value formatting, and accessibility description;
+- `2500 g` repairs to `2 kg` because equal-distance ties choose the smaller normalized mass;
+- user-settled changes commit state before one callback, while programmatic presets dispatch none.
+
+The deliberately coarse integer grids make repair behavior easy to inspect; this is a constrained
+selection example, not a precision unit converter. See the reference implementation's
+[state and constraint contract](sample/src/commonMain/kotlin/com/kez/picker/sample/ui/screen/quantity/QuantityUnitPickerContract.kt),
+[picker composable](sample/src/commonMain/kotlin/com/kez/picker/sample/ui/screen/quantity/QuantityUnitPicker.kt),
+and [sample screen](sample/src/commonMain/kotlin/com/kez/picker/sample/ui/screen/QuantityUnitPickerSampleScreen.kt).
+The first two files contain the core reference; the screen uses repository-specific presentation
+components and is not a standalone copy target.
+This sample is evidence for the future engine API, not a promise that mass conversion belongs in the
+core picker library.
 
 ### DatePicker
 

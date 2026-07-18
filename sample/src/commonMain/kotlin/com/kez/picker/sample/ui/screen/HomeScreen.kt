@@ -63,7 +63,8 @@ internal fun HomeScreen(navController: NavController) {
             modifier = Modifier
                 .fillMaxSize()
                 .padding(innerPadding)
-                .padding(16.dp),
+                .padding(16.dp)
+                .testTag("sample-menu-list"),
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
             item {
@@ -100,6 +101,15 @@ internal fun HomeScreen(navController: NavController) {
                     icon = FeatherIcons.Clock,
                     modifier = Modifier.testTag("sample-menu-duration-picker"),
                     onClick = { navController.navigate(Screen.DurationPicker.route) }
+                )
+            }
+            item {
+                MenuListItem(
+                    title = "Quantity + Unit Sample",
+                    description = "Unit-dependent quantity source, step, and repair",
+                    icon = FeatherIcons.Layers,
+                    modifier = Modifier.testTag("sample-menu-quantity-unit-picker"),
+                    onClick = { navController.navigate(Screen.QuantityUnitPicker.route) }
                 )
             }
             item {
