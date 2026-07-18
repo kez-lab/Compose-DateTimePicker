@@ -17,7 +17,11 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.TextStyle
@@ -81,12 +85,15 @@ fun DatePickerSampleScreen(
                 initialMonth = today.month.number,
                 initialDay = today.day
             )
+            var lastUserDateText by rememberSaveable { mutableStateOf("No user change") }
+            var userCallbackCount by rememberSaveable { mutableIntStateOf(0) }
 
             SelectedValueCard(
                 icon = FeatherIcons.Calendar,
                 label = "Selected date",
                 value = state.selectedDate.toString(),
-                supportingText = "Range: $today..$leapDate · Days: ${allowedDays.joinToString()}"
+                supportingText = "Range: $today..$leapDate · User callbacks: $userCallbackCount · " +
+                        "Last: $lastUserDateText"
             )
 
             Spacer(modifier = Modifier.height(16.dp))
@@ -122,6 +129,10 @@ fun DatePickerSampleScreen(
                 DatePicker(
                     state = state,
                     items = pickerItems,
+                    onSelectedDateChange = { date ->
+                        lastUserDateText = date.toString()
+                        userCallbackCount += 1
+                    },
                     format = PickerDefaults.datePickerFormat(
                         yearItemText = { "${it}년" },
                         monthItemText = { getMonthName(it) },

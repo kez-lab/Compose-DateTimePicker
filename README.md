@@ -72,6 +72,13 @@ UI, that state object is the source of truth for the currently selected value.
   `state.selectedDateRange`, or `state.selectedYearMonth`.
 - Use `onSelected*Change` when you need to mirror user-driven picker changes into app state,
   a `ViewModel`, or form data.
+- `TimePicker` and `DatePicker` dispatch that callback once after the changed column settles and all
+  dependent values are repaired. The callback receives the final selectable logical value, which is
+  already committed to the picker state; visual `columnOrder` does not change that transition.
+- A changed column value is preserved only while it still belongs to the active constrained source.
+  A late value that is no longer selectable in that source is ignored. If an upstream settle replaces
+  a dependent source while that child wheel is moving, the invalidated child interaction is cancelled
+  without a callback.
 - `onSelected*Change` is not called when your app calls `state.select*` programmatically. If a
   button, preset, or external value changes the picker, call `state.select*(...)` and update your
   app-owned value in the same handler.
@@ -618,8 +625,10 @@ TimePicker(
 ### Programmatic Selection
 
 Create picker state with `remember*State`, pass it to the picker, then call the public selection method
-from an event handler or a `LaunchedEffect(externalValue)`. Do not recreate the state just to reset the
-selection.
+from an event handler or a `LaunchedEffect(externalValue)`. `LaunchedEffect` is suitable while the
+active item source still contains the current value. When replacing an item source or constraints,
+coerce the state with the replacement source before publishing that source to the picker. Do not
+recreate the state just to reset the selection.
 
 | State | Method |
 | :--- | :--- |
@@ -652,6 +661,16 @@ fun ProgrammaticTimePickerExample() {
 }
 ```
 
+For a dynamic item-source replacement, update the logical state and source in that order in the same
+event handler:
+
+```kotlin
+fun replaceItems(newItems: TimePickerItems, requestedTime: LocalTime) {
+    state.selectTime(requestedTime, newItems)
+    items = newItems
+}
+```
+
 The picker scroll position is synchronized when the current item lists contain the requested values. Custom
 item lists are strict: they must be non-empty, distinct, within the supported value ranges, and contain the
 current selected value. `TimePicker` filters hour, minute, and AM/PM columns through optional
@@ -661,12 +680,19 @@ configured bounds, call `items.contains(...)` to check primitive or value object
 value, or call the `state.select*(value, items)` overload or `items.coerce*` helper to move to the
 closest selectable value before rendering the picker.
 For first composition, use `remember*State(items = items, initial... = value)` to apply the same coercion
-before the picker is rendered.
+before the picker is rendered. These items-aware state overloads also coerce a saved value against the
+items supplied by the recreated composition, so changed constraints cannot restore an invalid logical
+value.
 
 `onSelectedTimeChange`, `onSelectedDateChange`, `onSelectedDateRangeChange`, and
 `onSelectedYearMonthChange` are called for user-driven picker changes. Programmatic `state.select*`
 calls update the state directly; update your app-owned value in the same event handler when you
-trigger programmatic changes.
+trigger programmatic changes. `TimePicker` and `DatePicker` wait for the changed child wheel to
+settle, repair dependent columns against the active constraints, commit one logical value, and then
+invoke the callback once. A compatible item-source replacement is app-driven and invokes no callback;
+if the new source excludes the current value, coerce the state with that new source before composing.
+Date repair preserves the accepted changed column and then repairs year/month/day dependencies; Time
+repair does the same in period/hour/minute dependency order. Numeric ties choose the smaller value.
 
 Use `PickerDefaults.timePickerLayout(...)`, `datePickerLayout(...)`, or `yearMonthPickerLayout(...)`
 when a composite picker needs different column proportions. Pass `null` for a column weight to let
@@ -694,7 +720,7 @@ is rendered only in 12-hour mode and ignored in 24-hour mode.
 | Parameter | Description | Default |
 | :--- | :--- | :--- |
 | `state` | The state object to control the picker. | `rememberTimePickerState()` |
-| `onSelectedTimeChange` | Called after user interaction changes the selected `LocalTime`. | `{}` |
+| `onSelectedTimeChange` | Called once with the committed selectable `LocalTime` after a changed column settles and dependent values are repaired. | `{}` |
 | `enabled` | Whether user scroll, click, and semantics selection actions are enabled. | `true` |
 | `items` | Selectable minute, 24-hour hour, 12-hour format-hour, and AM/PM item lists plus optional inclusive `minTime`/`maxTime` bounds. | `PickerDefaults.timePickerItems()` |
 | `format` | Visible item text and optional accessibility value descriptions for each picker column. | `PickerDefaults.timePickerFormat()` |
@@ -733,7 +759,7 @@ Invalid custom item values, duplicate items, empty required lists, or current se
 | Parameter           | Description                             | Default                     |
 |:--------------------|:----------------------------------------|:----------------------------|
 | `state`             | The state object to control the picker. | `rememberDatePickerState()` |
-| `onSelectedDateChange` | Called after user interaction changes the selected `LocalDate`. | `{}` |
+| `onSelectedDateChange` | Called once with the committed selectable `LocalDate` after a changed column settles and dependent values are repaired. | `{}` |
 | `enabled` | Whether user scroll, click, and semantics selection actions are enabled. | `true` |
 | `items`             | Selectable year/month/day item lists plus optional inclusive `minDate`/`maxDate` bounds. Values must be in `1000..9999`, `1..12`, and `1..31`. | `PickerDefaults.datePickerItems()` |
 | `format` | Visible item text and optional accessibility value descriptions for each picker column. | `PickerDefaults.datePickerFormat()` |

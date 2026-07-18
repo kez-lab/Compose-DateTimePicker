@@ -70,6 +70,12 @@ truth는 이 state 객체입니다.
   `state.selectedYearMonth`에서 읽습니다.
 - 사용자 조작으로 바뀐 값을 앱 state, `ViewModel`, form data에 반영해야 할 때만 `onSelected*Change`를
   사용합니다.
+- `TimePicker`와 `DatePicker`는 변경한 column이 settle되고 모든 dependent 값이 보정된 뒤 callback을
+  한 번만 호출합니다. callback에는 picker state에 이미 commit된 최종 선택 가능 logical value가
+  전달되며, visual `columnOrder`는 이 transition 결과를 바꾸지 않습니다.
+- 변경된 column 값은 현재 constrained source에 계속 포함될 때만 보존됩니다. 그 source에서 더 이상
+  선택할 수 없는 late value는 무시합니다. upstream settle이 움직이는 dependent child source를 교체하면
+  그 무효화된 child interaction은 callback 없이 취소됩니다.
 - 앱이 버튼, preset, 외부 값 변경으로 `state.select*`를 직접 호출할 때는 `onSelected*Change`가 호출되지
   않습니다. 이 경우 같은 이벤트 핸들러 안에서 `state.select*(...)`와 앱이 소유한 값 갱신을 함께 수행하세요.
 - picker를 reset하려고 `remember*State`를 새로 만들지 마세요. 기존 state 객체를 유지하고 public
@@ -606,8 +612,10 @@ TimePicker(
 ### 프로그래밍 방식 선택
 
 `remember*State`로 picker state를 만들고 picker에 전달한 뒤, 이벤트 핸들러나
-`LaunchedEffect(externalValue)`에서 공개 선택 메서드를 호출하세요. 선택값을 다시 맞추기 위해
-state를 새로 만들 필요는 없습니다.
+`LaunchedEffect(externalValue)`에서 공개 선택 메서드를 호출하세요. `LaunchedEffect`는 active item
+source가 현재 값을 계속 포함할 때 적합합니다. item source나 constraint를 교체할 때는 replacement
+source로 state를 먼저 보정한 뒤 그 source를 picker에 게시하세요. 선택값을 다시 맞추기 위해 state를
+새로 만들 필요는 없습니다.
 
 | State | Method |
 | :--- | :--- |
@@ -640,6 +648,16 @@ fun ProgrammaticTimePickerExample() {
 }
 ```
 
+동적 item-source 교체에서는 같은 이벤트 핸들러 안에서 logical state를 먼저 갱신하고 source를 그다음
+게시하세요.
+
+```kotlin
+fun replaceItems(newItems: TimePickerItems, requestedTime: LocalTime) {
+    state.selectTime(requestedTime, newItems)
+    items = newItems
+}
+```
+
 요청한 값이 현재 item list에 포함되어 있으면 picker 스크롤 위치가 동기화됩니다. custom list는 엄격하게
 검증됩니다. 비어 있지 않아야 하고, 중복이 없어야 하며, 지원 범위 안의 값만 포함해야 하고, 현재 선택값도
 반드시 포함해야 합니다. `TimePicker`는 선택적 `minTime`/`maxTime` 범위에 맞춰 시간, 분, 오전/오후
@@ -649,12 +667,18 @@ column을 필터링합니다. `DatePicker`는 `dayItems`를 선택된 연/월의
 보정해야 한다면 `state.select*(value, items)` overload나 `items.coerce*` helper로 가장 가까운 선택 가능
 값으로 이동한 뒤 picker를 렌더링하세요.
 첫 composition의 초기값에도 같은 보정이 필요하면 `remember*State(items = items, initial... = value)`를
-사용하세요.
+사용하세요. 이 items-aware state overload는 저장값을 recreated composition이 제공한 items로 다시
+보정하므로 변경된 constraint 밖의 logical value를 복원하지 않습니다.
 
 `onSelectedTimeChange`, `onSelectedDateChange`, `onSelectedDateRangeChange`,
 `onSelectedYearMonthChange`는 사용자가 picker를 조작해서 값이 바뀔 때 호출됩니다. 프로그래밍 방식의
 `state.select*` 호출은 state를 직접 변경하므로, 그 이벤트 핸들러 안에서 앱이 소유한 값도 함께
-갱신하세요.
+갱신하세요. `TimePicker`와 `DatePicker`는 변경된 child wheel이 settle될 때까지 기다린 뒤 active
+constraint에 맞게 dependent column을 보정하고, 하나의 logical value를 commit한 다음 callback을 한 번
+호출합니다. 현재 값을 계속 포함하는 item-source 교체는 app-driven 변경이므로 callback을 호출하지
+않습니다. 새 source가 현재 값을 제외한다면 composition 전에 그 새 source로 state를 보정하세요.
+Date repair는 승인된 changed column을 보존한 뒤 year/month/day dependency 순서로 보정하고, Time repair는
+period/hour/minute 순서로 보정합니다. 숫자 거리가 같으면 더 작은 값을 선택합니다.
 
 composite picker의 column 비율을 조정해야 한다면 `PickerDefaults.timePickerLayout(...)`,
 `datePickerLayout(...)`, `yearMonthPickerLayout(...)`을 사용하세요. 특정 column의 weight를
@@ -682,7 +706,7 @@ DatePicker(
 | 파라미터 | 설명 | 기본값 |
 | :--- | :--- | :--- |
 | `state` | Picker를 제어하기 위한 상태 객체입니다. | `rememberTimePickerState()` |
-| `onSelectedTimeChange` | 사용자 조작으로 선택된 `LocalTime`이 바뀐 뒤 호출됩니다. | `{}` |
+| `onSelectedTimeChange` | 변경한 column이 settle되고 dependent 값이 보정된 뒤, commit된 선택 가능 `LocalTime`으로 한 번 호출됩니다. | `{}` |
 | `enabled` | 사용자 scroll, click, semantics 선택 action을 허용할지 여부입니다. | `true` |
 | `items` | 선택 가능한 분, 24시간제 시간, 12시간제 표시 시간, 오전/오후 목록과 선택적 `minTime`/`maxTime` 범위입니다. | `PickerDefaults.timePickerItems()` |
 | `format` | 각 picker column의 화면 표시 텍스트와 선택적 접근성 값 설명입니다. | `PickerDefaults.timePickerFormat()` |
@@ -721,7 +745,7 @@ custom item 값이 유효 범위를 벗어나거나, 중복이 있거나, 필수
 | 파라미터 | 설명 | 기본값 |
 | :--- | :--- | :--- |
 | `state` | Picker를 제어하기 위한 상태 객체입니다. | `rememberDatePickerState()` |
-| `onSelectedDateChange` | 사용자 조작으로 선택된 `LocalDate`가 바뀐 뒤 호출됩니다. | `{}` |
+| `onSelectedDateChange` | 변경한 column이 settle되고 dependent 값이 보정된 뒤, commit된 선택 가능 `LocalDate`로 한 번 호출됩니다. | `{}` |
 | `enabled` | 사용자 scroll, click, semantics 선택 action을 허용할지 여부입니다. | `true` |
 | `items` | 선택 가능한 연도/월/일 목록과 선택적 `minDate`/`maxDate` inclusive 범위입니다. 값은 `1000..9999`, `1..12`, `1..31` 범위여야 합니다. | `PickerDefaults.datePickerItems()` |
 | `format` | 각 picker column의 화면 표시 텍스트와 선택적 접근성 값 설명입니다. | `PickerDefaults.datePickerFormat()` |
