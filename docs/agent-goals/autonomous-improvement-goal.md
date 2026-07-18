@@ -1,12 +1,13 @@
-# Constraint-aware Wheel Picker Engine 장기 목표
+# Compose-Pickers 장기 목표
 
-이 문서는 Compose-DateTimePicker의 장기 Codex goal을 다시 시작할 때 사용하는 기준 프롬프트다. 제품 판단과
-시장 근거는 [`docs/product/wheel-picker-engine-direction.md`](../product/wheel-picker-engine-direction.md)를 먼저
-읽는다.
+이 문서는 현재 `Compose-DateTimePicker` 저장소를 목표 브랜드 `Compose-Pickers`로 발전시키는 장기 Codex
+goal을 다시 시작할 때 사용하는 기준 프롬프트다. 제품 판단, 시장 근거, 브랜드 migration gate는
+[`docs/product/wheel-picker-engine-direction.md`](../product/wheel-picker-engine-direction.md)를 먼저 읽는다.
 
 ```text
-Goal: Compose-DateTimePicker를 date/time 전용 component 모음에서, 서로 의존하는 여러 열을 하나의 유효한
-논리 상태로 유지하는 constraint-aware Compose Multiplatform wheel selection engine으로 발전시킨다.
+Goal: 현재 Compose-DateTimePicker를 date/time 전용 component 모음에서, 목표 브랜드 Compose-Pickers 아래
+서로 의존하는 여러 열을 하나의 유효한 논리 상태로 유지하는 constraint-aware Compose Multiplatform wheel
+selection engine으로 발전시킨다.
 
 기존 TimePicker, DatePicker, YearMonthPicker, DateRangePicker와 공개 API를 버리고 다시 만들지 않는다. 이들은
 engine의 temporal presets이자 회귀 기준으로 유지하고 점진적으로 공통 core 위로 이전한다. generic single-column
